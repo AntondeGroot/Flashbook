@@ -1,0 +1,581 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Fri Sep 14 12:39:47 2018
+
+@author: Anton
+"""
+import json
+import math
+import os
+import PIL
+import PIL.Image
+import random
+import re
+from termcolor import colored
+import wx
+
+# figures: 
+#import matplotlib
+import pylab
+pylab.ioff() # make sure it is inactive, otherwise possible qwindows error    .... https://stackoverflow.com/questions/26970002/matplotlib-cant-suppress-figure-window
+#matplotlib.use('Agg')
+from matplotlib.figure import Figure
+from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
+##
+
+datadir = os.getenv("LOCALAPPDATA")
+dir0 = datadir + r"\FlashBook"
+dir7 = dir0 + r"\resources"
+path_add = os.path.join(dir7,"add.png")
+path_min = os.path.join(dir7,"min.png")
+path_repeat = os.path.join(dir7,"repeat.png")
+path_repeat_na = os.path.join(dir7,"repeat_na.png")
+
+ # create settings folder for debugging
+if not os.path.exists(dir0+r"\settings.txt"): #notna
+    with open(dir0+r"\settings.txt", 'w') as file:
+        file.write(json.dumps({'debugmode' : 0})) 
+with open(dir0+r"\settings.txt", 'r') as file:
+    debug_var = json.load(file)['debugmode']
+    if debug_var == 0:
+        debugmode = False
+    else:
+        debugmode = True
+        print("debugging is enabled: in fc_functions")
+
+#%%
+"""
+##= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = 
+###################### defined functions #######################################
+##= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+"""
+#   contains(1)               - to find if a string is contained in a list of strings
+#   find_hook(2)              - to find a "}" which closes a command
+#   findchar(3)               - find a character in a string
+#   find_arguments(5)         - finds all the arguments for a certain command
+#   replace_allcommands(4)    - replaces user defined commands into LaTeX commands that are known.
+
+## to check if a string is contained in a list of strings, returns (T/F, index)
+def contains(iterable):
+    if debugmode:
+        print("f=contains")
+    k = 0
+    ans = []
+    con = []
+    for element in iterable:
+        if element:
+             ans.append(k)
+             con = True
+        k=k+1
+    return con,ans 
+
+#%% keeping track of user progress data
+def StatsDir(self):
+    if debugmode:
+        print("f=statsdir")
+    return os.path.join(self.dir4, 'data_' + self.bookname +'.txt')
+
+def SaveStats(self):
+    if debugmode:
+        print("f=savestats")
+    try:
+        with open(StatsDir(self), 'w') as file:
+            file.write(json.dumps(self.resumedata)) 
+    except:
+        pass
+
+def LoadStats(self):    
+    if debugmode:
+        print("f=loadstats")
+    try:
+        with open(StatsDir(self), 'r') as file:
+            self.resumedata = json.load(file)
+            self.score = self.resumedata['score']
+            self.index = self.resumedata['index']
+            self.nr_questions = self.resumedata['nr_questions']
+            self.cardorder = self.resumedata['cardorder']
+            self.m_Score.SetValue("{} %".format(round(float(self.score)/self.nr_questions*100,1)))    
+    except:
+        print("no stats found for this book, continue")
+        
+def RemoveStats(self):
+    if debugmode:
+        print("f=removestats")
+    try:
+        os.remove(StatsDir(self))
+    except:
+        print(colored("Error: could not delete saved stats","red"))
+        
+def SetStats(self):
+    if debugmode:
+        print("f=setstats")
+    self.resumedata = {'score': self.score, 'index': self.index, 'nr_questions':self.nr_questions, 'cardorder': self.cardorder[:self.nr_questions] }
+
+
+## start from a given command \cmd{ and count "{" as +1 and "}" as -1, stop when count = 0
+# returns index so that you know from where to where the argument of the command is located
+
+def find_hook(hookpos,string):    
+    #if debugmode:
+    #    print("f=find hooks")
+    k = 0
+    hookcount = 0
+    condition = True
+    for i in range(hookpos,len(string)):#make sure it starts with {
+        if (condition == True):
+            k = k+1
+            A = string[i]
+            
+            if A == '{':
+                hookcount += 1
+            if A == '}':
+                hookcount -= 1
+                if hookcount == 0:
+                    condition = False
+                    end_index = k+hookpos-1
+                    return end_index
+
+## find a character in a string return either all values nr="", or first for nr=0, or last for nr=-1
+def findchar(char,string,nr):
+    if debugmode:
+        print("f=findchar")
+    nr1 = str(nr)
+    if nr1.isdigit() == True:
+        ans = [m.start() for m in re.finditer(r'{}'.format(char), string )][nr]
+        return ans 
+    if nr == -1:  # negative numbers arent considered digits, we will only need [0,1,-1, or no argument]
+        ans = [m.start() for m in re.finditer(r'{}'.format(char), string )][nr]
+        return ans 
+    else:
+        ans = [m.start() for m in re.finditer(r'{}'.format(char), string )]
+        return ans 
+
+## find all the hooks for N arguments
+def find_arguments(hookpos,sentence,defined_command,nr):
+    if debugmode:
+        print("f=findarguments")
+    # EXAMPLE:
+    # defined command = " \secpar{a}{b}   "
+    # nr = #arguments = 2 which are (a,b)
+    # sentence = "if we take the second partial derivative \secpar{X+Y}{t}"
+    # returns: position where (X+Y), (t)  begin and end and in the string and that they are the arguments
+    k = 0
+    hookcount = 0      
+    condition = True
+    argcount = 0
+    # find opening and closing {} for the arguments
+    argclose_index = [] 
+    argopen_index  = []
+
+    cstr_start = [m.start() for m in re.finditer(r'\{}'.format(defined_command), sentence )][0]#should actually search for command not {}
+    
+    for i in range(cstr_start,len(sentence)):#make sure it starts with {
+        if (condition == True):
+            k = k+1
+            char = sentence[i]
+            
+            if char == '{':
+                hookcount += 1
+                if hookcount ==1:
+                    argopen_index.append(k+cstr_start-1) #save opening indices
+                
+            if char == '}':
+                hookcount -= 1
+                if hookcount == 0:
+                    argcount += 1
+                    if argcount== nr: #if the nr of closed loops == nr of arguments, means we are done
+                        condition = False
+                    argclose_index.append(k+cstr_start-1) #save closing indices
+    arguments = []
+    for i in range(nr):
+        arguments.append(sentence[argopen_index[i]+1:argclose_index[i]])
+    return arguments, argopen_index, argclose_index
+
+## replace all defined commands in a string
+def replace_allcommands(defined_command,LaTeX_command,Question,nr_arg):    
+    if debugmode:
+        print("f=replace allcommands")
+    
+    length_c = len(defined_command) 
+    # check if the command can be found in Q&A
+    FindCommand = (defined_command in Question)
+    while FindCommand == True: 
+        # if a command has arguments: you need to find their positions
+        if nr_arg != 0:
+            cmd_start = [m.start() for m in re.finditer(r'\{}'.format(defined_command), Question )][0]
+            arguments = find_arguments(cmd_start,Question,defined_command,nr_arg)[0]
+            # check if it gives empty [], otherwise index1 = [] will give errors
+            A = find_arguments(cmd_start,Question ,defined_command,nr_arg)
+    
+            if not A[0]: # quits if the index is empty
+                FindCommand = False
+            else:
+                index1 = find_arguments(cmd_start,Question ,defined_command,nr_arg)[1][0]-length_c
+                index2 = find_arguments(cmd_start,Question,defined_command,nr_arg)[2][1]+1
+                
+                #replace the command by a LaTeX command
+                Question = Question.replace(Question[index1:index2],LaTeX_command )
+                #replace the temporary arguments #1,#2... by the real arguments
+                for i in range(nr_arg):
+                    Question = Question.replace("#{}".format(i+1), arguments[i])
+                # check if another command is in the Q&A
+                FindCommand = (defined_command in Question)
+        else:
+            # if there are no arguments you can directly replace the defined_cmd for the latex_cmd
+            # only needs to do this once for the entire string
+            Question = Question.replace(defined_command,LaTeX_command)
+            FindCommand = False
+    
+    return Question
+
+
+
+#%%
+def remove_pics(string,pic_command):
+    #if debugmode:
+    #    print("f=remove_pics")
+    
+    # there is only 1 pic per Q/A, in the form of "some text \pic{name.jpg} some text"   
+    boolean = []
+    if pic_command in string: # if \pic is found in text
+        # start and endpoints of brackets
+        pic_start = [m.start() for m in re.finditer(r'\{}'.format(pic_command), string )][0]        
+        pic_end = find_hook(pic_start,string)
+        # output
+        boolean = True
+        picname = find_arguments(pic_start,string,pic_command,1)[0][0] # returns string instead of list
+        string = string[:pic_start]+string[pic_end+1:] #Question without picture
+    else:
+        boolean = False
+        picname = []
+    return boolean, string, picname
+
+
+#%%
+
+
+
+
+
+def SwitchBitmap(self): # checks if there is an answer card, if not changes mode back to question.
+    if debugmode:
+        print("f=switchbitmap")
+    try:
+        # display a bitmap indicating whether or not you can flip over the flashcard
+        # source:   https://stackoverflow.com/questions/27957257/how-to-change-bitmap1-for-toolbartoolbase-object-in-wxpython
+        
+        # you always start with a question: check if there is an answer:
+        key = 'A{}'.format(self.cardorder[self.index]) # do not use self.key: only check if there is an answer, don't change the key
+        try:
+            if key not in self.textdictionary and key not in self.picdictionary: # there is no answer card!
+                self.mode = 'Question'
+                self.SwitchCard = False        
+                id = self.m_toolSwitch.GetId()
+                self.m_toolBar11.SetToolNormalBitmap(id,wx.Bitmap( path_repeat_na, wx.BITMAP_TYPE_ANY ))        
+            else:
+                self.SwitchCard = True
+                id = self.m_toolSwitch.GetId()
+                self.m_toolBar11.SetToolNormalBitmap(id,wx.Bitmap( path_repeat, wx.BITMAP_TYPE_ANY ))
+        except:
+            print(colored("Error: could not switch bitmap #2","red"))
+    except:
+        
+        print(colored("Error: could not switch bitmap #1","red"))
+    
+def CombinePicText(self):
+    if debugmode:
+        print("f=combinepictext")
+    # get images
+    imagepic = PIL.Image.open(self.dir2+"\\"+self.bookname+"\\"+self.picdictionary[self.key])
+    images = [self.imagetext,imagepic]
+    # get info
+    widths, heights = zip(*(i.size for i in images))
+    total_height = sum(heights)
+    max_width = max(widths)
+    new_im = PIL.Image.new('RGB', (max_width, total_height), "white")
+    # combine images to one image
+    x_offset = 0
+    for im in images:
+        new_im.paste(im, (0,x_offset))
+        x_offset += im.size[1]
+    # output
+    self.image = new_im
+    
+
+def clearbitmap(self):
+    if debugmode:
+        print("f=clearbitmap")
+    # to clear: just display a 1x1 empty bitmap
+    image2 = wx.Image( 1,1 )
+    self.m_bitmapScroll.SetBitmap(wx.Bitmap(image2))
+
+
+def displaycard(self):
+    if debugmode:
+        print("f=displaycard")
+    try:
+        self.TextCard = False
+        self.key = '{}{}'.format(self.mode[0],self.cardorder[self.index])
+        
+        # try to create a TextCard
+        if self.key in self.textdictionary:
+            try:
+                CreateTextCard(self)
+            except:
+                print(colored("Error: could not create textcard","red"))
+        # if there is a textcard either combine them with a picture or display it on its own
+        if self.TextCard == True: 
+            if self.key in self.picdictionary:
+                try:
+                    CombinePicText(self)
+                    ShowPage(self)
+                except:
+                    pass
+            else:
+                self.image = self.imagetext
+                ShowPage(self)
+        else: #if there is no textcard only display the picture
+            try:
+                self.image = PIL.Image.open(self.dir2+"\\"+self.bookname+"\\"+self.picdictionary[self.key])
+                ShowPage(self)
+            except:
+                pass
+    except:
+        print(colored("Error: could not display card","red"))
+
+def CreateTextCard(self):
+    if debugmode:
+        print("f=createtextcard")
+        print("is pylab interactive? = {}".format(pylab.isinteractive()))
+        pylab.ioff()
+        print("is pylab interactive? = {} (after explicitly deactivating it)".format(pylab.isinteractive()))
+    # acquire text
+    usertext = self.textdictionary[self.key]
+    # display text in a plot
+    height_card = math.ceil(len(usertext)/40)/2
+    figure = Figure(figsize=[8, height_card],dpi=100)
+    ax = figure.gca()
+    ax.plot([0, 0,0, height_card],color = (1,1,1,1))
+    ax.axis('off')
+    ax.text(-0.5, height_card/2,usertext, fontsize = 20, horizontalalignment='left', verticalalignment='center',wrap = True)
+    # convert picture to data
+    canvas = FigureCanvas(figure)
+    canvas.draw()
+    renderer = canvas.get_renderer()
+    raw_data = renderer.tostring_rgb()
+    size = canvas.get_width_height()
+    # output
+    self.TextCard = True
+    self.imagetext = PIL.Image.frombytes("RGB", size, raw_data, decoder_name='raw', )
+
+
+
+def LoadFlashCards(self):
+    if debugmode:
+        print("f=loadflashcards")
+    try:
+        #=============================================================================
+        ###################  FIND CLOSING } FOR quiz / answer COMMAND  ################
+        #=============================================================================                                         
+        end_q_index = 0
+        end_a_index = 0
+    
+        
+        for N in range(self.nr_cards):   
+            end_q_index = find_hook(self.q_hookpos[N],self.letterfile)
+            end_a_index = find_hook(self.a_hookpos[N],self.letterfile)    
+            # collect all Questions and Answers
+            self.questions.append(self.letterfile[self.q_hookpos[N]+1:end_q_index])
+            self.answers.append(self.letterfile[self.a_hookpos[N]+1:end_a_index])
+        
+        #%% 
+        #==============================================================================
+        ###### replace user defined commands in Q&A ##########              
+        #==============================================================================
+        
+        # find all user defined commands in a separate file
+        # open that file
+        # start reading after "###" because I defined that as the end of the notes
+        
+        file1 = open(os.path.join(self.dir_LaTeX_commands, r"usercommands.txt"), 'r')
+        newcommand_line_lst = file1.readlines()
+        
+        index = []
+        for i in range(len(newcommand_line_lst)):
+            cond = "###" in newcommand_line_lst[i]
+            if cond == True:
+                index = i+1
+                
+        if "{}".format(index).isdigit() == True:
+            newcommand_line_lst[:index]=[]
+            
+        # only look at lines containing "newcommand" removes all empty and irrelevant lines
+        newcommand_line_lst = [x for x in newcommand_line_lst if ("newcommand"  in x)]
+        nr_c = len(newcommand_line_lst)
+        
+        ###  how to replace a user defined command with a command that is known in latex ###
+        
+        # look for all commands if they appear anywhere in questions or answers.
+        for i in range(nr_c):
+            # find indices of: -defined command -original command, -number of arguments
+            newcommand_line = newcommand_line_lst[i]
+            ## extract all the data from a commandline
+            c_start = findchar('{',newcommand_line,0)
+            c_end   = findchar('}',newcommand_line,0)
+            
+            num_start = findchar('\[',newcommand_line,"") # the function requires an argument, but none must be given
+            num_end   = findchar('\]',newcommand_line,"") # in this case, therefore use ""
+           
+            newc_start = findchar('{',newcommand_line,1)   
+            newc_end = findchar('}',newcommand_line,-1)
+            # find the commands explicitly
+            defined_command = newcommand_line[c_start+1:c_end]     ## finds \secpar
+            
+            
+            LaTeX_command = newcommand_line[newc_start+1:newc_end] ## finds \frac{\partial^2 #1}{\partial #2^2}
+            #print "defined_command {}".format(defined_command)
+            #print "LaTeX_command {}".format(LaTeX_command)
+            nr_arg = int(newcommand_line[int(num_start[0]+1):int(num_end[0])])
+            
+            
+            # find where they can be found in list of strings, and at which list_indices
+            cond_q = contains(defined_command in x for x in self.questions) 
+            cond_a = contains(defined_command in x for x in self.answers)  
+            
+            #check questions: does the i-th command occur in the questions
+            if cond_q[0] == True: #first index gives T/F, 2nd index gives index where it is true
+                nr = len(cond_q[1])
+                for i in range(nr):
+                    index1 = cond_q[1] # can contain multiple indices 
+                    index2 = index1[i]
+                    
+                    #select the right question:
+                    Q = self.questions[index2]
+                    #replace all the commands in a single question
+                    self.questions[index2] = replace_allcommands(defined_command,LaTeX_command,Q,nr_arg)
+                    
+                
+            #check answers: does the i-th command occur in the answers
+            if cond_a[0] == True: #first index gives T/F, 2nd index gives index where it is true
+                nr = len(cond_a[1])
+                for i in range(nr):
+                    index1 = cond_a[1]
+                    index2 = index1[i]
+                    A = self.answers[index2]
+                    
+                    #replace all the commands in a single answer
+                    self.answers[index2] = replace_allcommands(defined_command,LaTeX_command,A,nr_arg)
+        #%%
+        #%% replace all \pics out of the QnA and save the picture names.
+        
+        
+        self.picdictionary = {}
+        self.textdictionary = {}
+        
+        # if a question or answer contains an image
+        self.q_pics = []
+        self.a_pics = []
+        
+        for i in range(self.nr_cards):
+            ######################### remove all \pic{} commands #############################
+            findpic = True
+            findpic2 = True
+            
+            # Questions: replace pics{}
+            while findpic == True:#find all pic commands
+                [T_F,QnA,picname]=remove_pics(self.questions[i],self.pic_command)
+                self.questions[i] = QnA # removed pic{} from Question
+                if T_F == True:
+                    #templist.append(arguments)
+                    #templist3.append(i)
+                    self.picdictionary.update({'Q{}'.format(i): picname})
+                findpic = T_F
+                
+            #if findpic == False:
+                #q_pics.append(templist)
+                #q_index.append(i)
+            # Answers: replace pics{}    
+            while findpic2 == True: 
+                [T_F2,QnA,picname]=remove_pics(self.answers[i],self.pic_command) # removed pic{} from Question
+                self.answers[i] = QnA 
+                if T_F2 == True:
+                    self.picdictionary.update({'A{}'.format(i): picname})
+                findpic2 = T_F2 
+                
+        """
+        CARD ORDER
+        """
+        if self.continueSession == False:
+            #    determine cardorder based on user given input
+            if self.nr_questions < self.nr_cards:   # less questions than cards
+                if self.chrono == True:
+                    self.cardorder = range(self.nr_questions)    
+                elif self.chrono == False:
+                    self.cardorder = random.sample(range(self.nr_cards),self.nr_questions) #picks nr_questions from [nr_cards]
+            else: # more questions than cards
+                # we would like to get every question about the same number of times, to do this we do sampling without
+                # replacement, so if you have 4 questions you always have variations of [0, 3,2,1] instead of [0,1,1,0]
+                # then we remove a number if they are consecutive: [0,3,2,1] [1,3,2,0] will then remove one [1] 
+                if self.chrono == True:
+                    self.cardorder = list(range(self.nr_cards))*self.nr_questions
+                    self.cardorder = self.cardorder[:self.nr_questions]
+                else:
+                    
+                    cardorder = []
+                    for i in range(self.nr_cards):   # anton , gjør jeg det ikke for ofte? Det skal være nrcards*nrcards lenge, da jeg bruker bare #nrquestions spørsmål
+                        cardorder.append(random.sample(range(self.nr_cards),self.nr_cards))
+                    # flatten list of lists, to just 1 list of all elements instead of [[],[],[]] => [ , , ]
+                    cardorder = [val for sublist in cardorder for val in sublist]
+                    con=True
+                    i = 0
+                    # remove duplicate numbers
+                    while con == True:
+                        if i == len(cardorder)-2:
+                            con = False
+                        if cardorder[i] == cardorder[i+1]:
+                            del cardorder[i+1]
+                            i=i+1
+                        i = i+1    
+                    self.cardorder = cardorder[:self.nr_questions] 
+        else:
+            LoadStats(self)
+            
+        #% change ... about questions/answers
+        self.questions2 = []
+        self.answers2 = []
+        for i in range(len(self.questions)):
+            self.questions2.append(self.questions[i].strip())
+            self.answers2.append(self.answers[i].strip())
+            
+            
+        self.no_qpics = []
+        self.no_apics = []
+        for i in range(len(self.questions)):
+            # empty list 
+            if self.questions2[i] != '':
+                self.textdictionary.update({'Q{}'.format(i): self.questions2[i]})
+            
+            if self.answers2[i] != '':
+               self.textdictionary.update({'A{}'.format(i): self.answers2[i]})
+    except:
+        print(colored("Error: couldn't pick file",'red'))
+
+def ShowPage(self):
+    if debugmode:
+        print("f=showpage")
+    try:
+        width, height = self.image.size
+        image2 = wx.Image( width, height )
+        image2.SetData( self.image.tobytes() )        
+        self.m_bitmapScroll.SetBitmap(wx.Bitmap(image2))        
+    except:        
+        print(colored("Error: cannot show image","red"))
+
+
+#%%
+def SetScrollbars(self):
+    if debugmode:
+        print("f=setscrollbars")
+    # reset scroll bar when switching page:
+    scrollWin = self.m_scrolledWindow1
+    scrollWin.SetScrollbars(0,int(20*self.zoom),0,int(100*self.zoom) )
