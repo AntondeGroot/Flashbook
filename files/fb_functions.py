@@ -306,16 +306,23 @@ def CombinePicText(self,directory):
 def ShowInPopup(self,mode):
     if debugmode:
         print("fb=ShowInPopup")
-    if mode == "Answer":
-        directory = self.pic_answer_dir[0]
-    if mode == "Question":
-        directory = self.pic_question_dir[0]
-    image = PIL.Image.open(directory)
-    
+    try:# a picture directory may not exist: antonadd
+        if mode == "Answer":
+            directory = self.pic_answer_dir[0]
+        if mode == "Question":
+            directory = self.pic_question_dir[0]
+        image = PIL.Image.open(directory)
+    except:
+        pass
     try:
         CreateTextCard(self)
         CombinePicText(self,directory)
         image = self.image
+    except:
+        pass
+    try:#only text
+        CreateTextCard(self)
+        image = self.imagetext
     except:
         pass
     
