@@ -306,7 +306,7 @@ def CombinePicText(self,directory):
 def ShowInPopup(self,mode):
     if debugmode:
         print("fb=ShowInPopup")
-    try:# a picture directory may not exist: antonadd
+    try:# a picture directory may not exist
         if mode == "Answer":
             directory = self.pic_answer_dir[0]
         if mode == "Question":
