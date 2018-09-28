@@ -217,19 +217,8 @@ class MainFrame(gui.MyFrame):
         self.panel2.Hide()
         set_richtext(self)
         
-        # set keyboard short cuts: accelerator table        
-        Id_leftkey = wx.NewIdRef() #wx.NewId()
-        Id_rightkey  = wx.NewIdRef() #wx.NewId()
-        
-        # combine functions with the id
-        self.Bind( wx.EVT_MENU, self.m_toolBackOnToolClicked, id = Id_leftkey )
-        self.Bind( wx.EVT_MENU, self.m_toolNextOnToolClicked,   id = Id_rightkey   )
-        
-        # combine id with keyboard = now keyboard is connected to functions
-        entries = wx.AcceleratorTable([(wx.ACCEL_NORMAL,  wx.WXK_LEFT, Id_leftkey),
-                                      (wx.ACCEL_NORMAL,  wx.WXK_RIGHT, Id_rightkey )])
-        self.SetAcceleratorTable(entries)
-        
+        m.SetKeyboardShortcuts(self)
+    
         
     # zoom in #=======================================================
     def m_toolPlusOnToolClicked( self, event ):
