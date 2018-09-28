@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 """
 Created on Fri Sep 14 13:26:43 2018
-
 @author: Anton
 """
 from random import randint
@@ -110,9 +109,9 @@ def dirchanged(self,event):
             print("no drawn rects found for this file, continue")
         try:
             self.jpgdir = self.dir3+r'\{}\{}'.format(self.bookname,self.picnames[self.currentpage-1])
-            self.image = PIL.Image.open(self.jpgdir)
-            self.imagecopy = self.image
-            self.width, self.height = self.image.size
+            self.pageimage = PIL.Image.open(self.jpgdir)
+            self.pageimagecopy = self.pageimage
+            self.width, self.height = self.pageimage.size
         except:
             print(colored("Error: could not load scrolled window",'red'))
         
@@ -125,7 +124,7 @@ def dirchanged(self,event):
             pass            
         try:
             image2 = wx.Image( self.width, self.height )
-            image2.SetData( self.image.tobytes() )
+            image2.SetData( self.pageimage.tobytes() )
             self.m_bitmapScroll.SetBitmap(wx.Bitmap(image2))
             f.SetScrollbars(self)
             
@@ -223,7 +222,7 @@ def selectionentered(self,event):
             self.tempdictionary = {}
             
             # remove temporary borders
-            self.image = self.imagecopy
+            self.pageimage = self.pageimagecopy
             f.ShowPage(self)
 
             with open(self.PathBorders, 'w') as file:
