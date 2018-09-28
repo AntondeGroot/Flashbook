@@ -187,12 +187,11 @@ def set_richtext(self):
     self.txt.EndFontSize()
     self.txt.EndBold()
     self.txt.BeginFontSize(12)
-    self.txt.WriteText("        - when the program isn't full screen and you try to draw a rectangle it may jump to a wrong place. Undoing this selection and then trying again might resolve this. \n"
-                       "        - zooming out may result in: not being able to scroll to the next page but only previous pages.\n"
-                       "        - same applies to zooming too much in\n"
-                       "        - when scrolling the cursor should be placed on the bookpage itself, otherwise it doesn't have 'focus' and it won't trigger the event that switches the page \n"
-                       "        - some websites that convert pdf to jpg may result in unusual numberings like (1,2a,2b,3,...) this may result in an error when trying to determine the order in which these jpgs should be placed \n"
-                       "        - when you combine a rectangle and text given by the use: it won't show up as a pop-up picture. When there's only rectangles it does show a pop-up as intended. \n"
+    self.txt.WriteText("        - when the program isn't full screen and you try to draw a rectangle it may jump around and select the wrong area. \n"
+                       "        - zooming out may result in: not being able to scroll to the next page but only previous pages. The key buttons still work to swtich between pages.\n"
+                       "        - same applies to zooming in too much\n"
+                       "        - when scrolling; the cursor should be placed on the bookpage itself, otherwise it doesn't have 'focus' and it won't trigger the event that switches the page \n"
+                       "        - some websites that convert pdf to jpg may sometimes result in unusual numberings like (1,2a,2b,3,...) this may result in an error when trying to determine the order in which these jpgs should be placed \n"
                        )
     self.txt.EndFontSize()
     
