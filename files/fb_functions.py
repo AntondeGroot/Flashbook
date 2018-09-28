@@ -268,7 +268,7 @@ def CreateTextCard(self):
     if debugmode:
         print("fb=CreateTextCard")
     self.TextCard = True    
-    LaTeXcode = self.usertext
+    LaTeXcode = UserText2LaTeX(self)
 
     height_card = math.ceil(len(LaTeXcode)/40)/2
     fig = Figure(figsize=[8, height_card],dpi=100)
@@ -329,3 +329,86 @@ def ShowInPopup(self,mode):
     #print(' pos = {}'.format(pos))
     win.Position(pos, (0, 200))
     win.Show(True)  
+    
+
+
+#%% turn user LaTeX macro into useable LaTeX code
+import re
+import os
+import fc_functions as fc
+datadir = os.getenv("LOCALAPPDATA")
+dir0 = datadir + r"\FlashBook"
+dir1 = dir0 + r"\files"
+
+# EXAMPLE:
+# defined command = " \secpar{a}{b}   " for the second partial derivative of a wrt b
+# nr = #arguments = 2 which are (a,b)
+# sentence = "if we take the second partial derivative \secpar{X+Y}{t}"
+# returns: position where (X+Y), (t)  begin and end and in the string and that they are the arguments
+
+def Text2Latex(self,usertext):
+    
+    # find all user defined commands in a separate file
+    # start reading after "###" because I defined that as the end of the notes    
+    file1 = open(os.path.join(self.dir_LaTeX_commands, r"usercommands.txt"), 'r')
+    newcommand_line_lst = file1.readlines()
+    
+    index = []
+    for i in range(len(newcommand_line_lst)):
+        if "###" in newcommand_line_lst[i]:
+            index = i+1
+    # remove the lines that precede the ###     
+    newcommand_line_lst[:index]=[]
+    # only look at lines containing "newcommand"
+    newcommand_line_lst = [x for x in newcommand_line_lst if ("newcommand"  in x)]
+    nr_commands = len(newcommand_line_lst)
+    
+    ###  how to replace a user defined command with a command that is known in latex ###
+    
+    # check for all commands
+    for i in range(nr_commands):
+        newcommand_line = newcommand_line_lst[i]
+        # extract all the data from a commandline
+        definition_start = fc.findchar('{',newcommand_line,0)
+        definition_end   = fc.findchar('}',newcommand_line,0)
+        
+        num_start = fc.findchar('\[',newcommand_line,"")
+        num_end   = fc.findchar('\]',newcommand_line,"")
+        
+        latex_start = fc.findchar('{',newcommand_line,1)   
+        latex_end = fc.findchar('}',newcommand_line,-1)
+        # find the commands explicitly
+        defined_command = newcommand_line[definition_start+1:definition_end]     ## finds \secpar        
+        LaTeX_command = newcommand_line[latex_start+1:latex_end] ## finds \frac{\partial^2 #1}{\partial #2^2}
+        nr_arg = int(newcommand_line[int(num_start[0]+1):int(num_end[0])])            
+        
+        while defined_command in usertext:
+            Q = usertext
+            #replace all the commands
+            usertext = replacecommands(defined_command,LaTeX_command,Q,nr_arg)              
+    return usertext
+
+
+def replacecommands(defined_command,LaTeX_command,inputstring,nr_arg):        
+    length_c = len(defined_command) 
+    # check if the command can be found in Q&A
+    #while FindCommand == True: 
+    while defined_command in inputstring:
+        # if a command has arguments: you need to find their positions
+        if nr_arg != 0:
+            cmd_start = [m.start() for m in re.finditer(r'\{}'.format(defined_command), inputstring )][0]
+            arguments = fc.find_arguments(cmd_start,inputstring,defined_command,nr_arg)[0]
+            
+            index1 = fc.find_arguments(cmd_start,inputstring ,defined_command,nr_arg)[1][0]-length_c
+            index2 = fc.find_arguments(cmd_start,inputstring,defined_command,nr_arg)[2][1]+1
+            
+            #replace the command by a LaTeX command
+            inputstring = inputstring.replace(inputstring[index1:index2],LaTeX_command )
+            #replace the temporary arguments #1,#2... by the real arguments
+            for i in range(nr_arg):
+                inputstring = inputstring.replace("#{}".format(i+1), arguments[i])
+        else:
+            # if there are no arguments you can directly replace the defined_cmd for the latex_cmd
+            inputstring = inputstring.replace(defined_command,LaTeX_command)
+    
+    return inputstring
