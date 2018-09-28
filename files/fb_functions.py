@@ -268,8 +268,8 @@ def CreateTextCard(self):
     if debugmode:
         print("fb=CreateTextCard")
     self.TextCard = True    
-    LaTeXcode = UserText2LaTeX(self)
-
+    #LaTeXcode = Text2Latex(self)
+    LaTeXcode = self.usertext
     height_card = math.ceil(len(LaTeXcode)/40)/2
     fig = Figure(figsize=[8, height_card],dpi=100)
     ax = fig.gca()
@@ -336,9 +336,7 @@ def ShowInPopup(self,mode):
 import re
 import os
 import fc_functions as fc
-datadir = os.getenv("LOCALAPPDATA")
-dir0 = datadir + r"\FlashBook"
-dir1 = dir0 + r"\files"
+
 
 # EXAMPLE:
 # defined command = " \secpar{a}{b}   " for the second partial derivative of a wrt b
@@ -346,11 +344,11 @@ dir1 = dir0 + r"\files"
 # sentence = "if we take the second partial derivative \secpar{X+Y}{t}"
 # returns: position where (X+Y), (t)  begin and end and in the string and that they are the arguments
 
-def Text2Latex(self,usertext):
-    
+def Text2Latex(self):
+    usertext = self.usertext
     # find all user defined commands in a separate file
     # start reading after "###" because I defined that as the end of the notes    
-    file1 = open(os.path.join(self.dir_LaTeX_commands, r"usercommands.txt"), 'r')
+    file1 = open(os.path.join(self.dir1, r"usercommands.txt"), 'r')
     newcommand_line_lst = file1.readlines()
     
     index = []
