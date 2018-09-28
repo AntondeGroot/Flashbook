@@ -232,7 +232,7 @@ class MainFrame(gui.MyFrame):
     def m_checkBox1OnCheckBox( self, event ):
         lf = event.GetEventObject()
         self.drawborders = lf.GetValue()        
-        self.image = self.imagecopy # reset image
+        self.pageimage = self.pageimagecopy # reset image
         f.ShowPage(self)
 
     #pop up window
