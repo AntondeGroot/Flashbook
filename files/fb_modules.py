@@ -182,72 +182,72 @@ def bitmapleftup(self,event):
         f.ShowPage(self)     
         
 def selectionentered(self,event):
-    #try:
-    if self.questionmode == True:
-        # change mode to answer
-        self.usertext = self.m_textCtrl2.GetValue()
-        self.pdf_question = self.usertext
-        self.usertext = f.Text2Latex(self)
-        self.questionmode = False
-        self.m_textCtrl1.SetValue("Answer:")
-        self.m_textCtrl2.SetValue("")
-        
-        if len(self.pic_question)>1:
-            f.CombinePics(self,self.pic_question_dir)
-            self.pdf_question = str(self.pdf_question) + r" \pic{" + "{}".format(self.pic_question[0])+r"}"
-        else:                
-            if len(self.pic_question) == 1:
+    try:
+        if self.questionmode == True:
+            # change mode to answer
+            self.usertext = self.m_textCtrl2.GetValue()
+            self.pdf_question = self.usertext
+            self.usertext = f.Text2Latex(self)
+            self.questionmode = False
+            self.m_textCtrl1.SetValue("Answer:")
+            self.m_textCtrl2.SetValue("")
+            
+            if len(self.pic_question)>1:
+                f.CombinePics(self,self.pic_question_dir)
                 self.pdf_question = str(self.pdf_question) + r" \pic{" + "{}".format(self.pic_question[0])+r"}"
-        try:                     
-            f.ShowInPopup(self,"Question")
-        except:
-            pass
-         
-    else:
-        self.usertext = self.m_textCtrl2.GetValue()
-        self.pdf_answer = self.usertext
-        self.usertext = f.Text2Latex(self)
-        self.questionmode = True
-        self.m_textCtrl1.SetValue("Question:")
-        self.m_textCtrl2.SetValue("")
-        
-        # save everything!!------------------------------------------------------------------------------------------------------------
-        findic = self.dictionary
-        tempdic = self.tempdictionary
-        for key in list(tempdic):      # go over all keys
-            for value in tempdic[key]: # go over all values
-                if key in findic:      # if already exists: just add value
-                    findic[key].append(value)
-                else:                  # if not, add key and value, where key = pagenr and value is rectangle coordinates
-                    findic.update({key : [value]})
-        self.dictionary = findic
-        self.tempdictionary = {}
-        
-        # remove temporary borders
-        self.pageimage = self.pageimagecopy
-        f.ShowPage(self)
-
-        with open(self.PathBorders, 'w') as file:
-                file.write(json.dumps(self.dictionary)) 
-        if len(self.pic_answer)>1:
-            f.CombinePics(self,self.pic_answer_dir)
-            self.pdf_answer = str(self.pdf_answer) + r" \pic{" + "{}".format(self.pic_answer[0])+r"}"
-        elif len(self.pic_answer) == 1:
-            self.pdf_answer = str(self.pdf_answer) + r" \pic{" + "{}".format(self.pic_answer[0])+r"}"                        
-        
-        try:   
-            f.ShowInPopup(self,"Answer")                    
-        except:
-            pass
-        # save the user inputs in .tex file
-        if len(self.pdf_question)!=0:
-            with open(os.path.join(self.dir1, self.bookname +'.tex'), 'a') as output: # the mode "a" appends to the file    
-                output.write(r"\quiz{" + str(self.pdf_question) + "}")
-                output.write(r"\ans{"  + str(self.pdf_answer)   + "}"+"\n")
-        #reset all
-        f.ResetQuestions(self)
-    #except:
-    #    print(colored("Error: cannot enter selection",'red'))
+            else:                
+                if len(self.pic_question) == 1:
+                    self.pdf_question = str(self.pdf_question) + r" \pic{" + "{}".format(self.pic_question[0])+r"}"
+            try:                     
+                f.ShowInPopup(self,"Question")
+            except:
+                pass
+             
+        else:
+            self.usertext = self.m_textCtrl2.GetValue()
+            self.pdf_answer = self.usertext
+            self.usertext = f.Text2Latex(self)
+            self.questionmode = True
+            self.m_textCtrl1.SetValue("Question:")
+            self.m_textCtrl2.SetValue("")
+            
+            # save everything!!------------------------------------------------------------------------------------------------------------
+            findic = self.dictionary
+            tempdic = self.tempdictionary
+            for key in list(tempdic):      # go over all keys
+                for value in tempdic[key]: # go over all values
+                    if key in findic:      # if already exists: just add value
+                        findic[key].append(value)
+                    else:                  # if not, add key and value, where key = pagenr and value is rectangle coordinates
+                        findic.update({key : [value]})
+            self.dictionary = findic
+            self.tempdictionary = {}
+            
+            # remove temporary borders
+            self.pageimage = self.pageimagecopy
+            f.ShowPage(self)
+    
+            with open(self.PathBorders, 'w') as file:
+                    file.write(json.dumps(self.dictionary)) 
+            if len(self.pic_answer)>1:
+                f.CombinePics(self,self.pic_answer_dir)
+                self.pdf_answer = str(self.pdf_answer) + r" \pic{" + "{}".format(self.pic_answer[0])+r"}"
+            elif len(self.pic_answer) == 1:
+                self.pdf_answer = str(self.pdf_answer) + r" \pic{" + "{}".format(self.pic_answer[0])+r"}"                        
+            
+            try:   
+                f.ShowInPopup(self,"Answer")                    
+            except:
+                pass
+            # save the user inputs in .tex file
+            if len(self.pdf_question)!=0:
+                with open(os.path.join(self.dir1, self.bookname +'.tex'), 'a') as output: # the mode "a" appends to the file    
+                    output.write(r"\quiz{" + str(self.pdf_question) + "}")
+                    output.write(r"\ans{"  + str(self.pdf_answer)   + "}"+"\n")
+            #reset all
+            f.ResetQuestions(self)
+    except:
+        print(colored("Error: cannot enter selection",'red'))
         
 def mousewheel(self,event):
     scrollWin = self.m_scrolledWindow1
