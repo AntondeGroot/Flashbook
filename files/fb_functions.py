@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 """
 Created on Fri Sep 14 12:39:47 2018
-
 @author: Anton
 """
 from termcolor import colored
@@ -155,7 +154,7 @@ def drawRec(self,layer,color): # no errors
 def drawCoordinates(self): # no errors
     if debugmode:
         print("fb=drawCoordinates")
-    img = np.array(self.image)
+    img = np.array(self.pageimage)
     img = np.uint8(img)
     try:#try to look if there already exists borders that need to be drawn
         coordinatelist = self.dictionary['page {}'.format(self.currentpage)]
@@ -175,7 +174,7 @@ def drawCoordinates(self): # no errors
     except:
         pass
     #export image
-    self.image = PIL.Image.fromarray(img)
+    self.pageimage = PIL.Image.fromarray(img)
     
 def SetScrollbars(self): #no errors
     if debugmode:
@@ -191,13 +190,13 @@ def LoadPage(self): # no error
     try:
         self.jpgdir = self.dir3+r'\{}\{}'.format(self.bookname,self.picnames[self.currentpage-1])
         print(self.jpgdir)
-        self.image = PIL.Image.open(self.jpgdir)
-        self.imagecopy = self.image
-        self.width, self.height = self.image.size
+        self.pageimage = PIL.Image.open(self.jpgdir)
+        self.pageimagecopy = self.pageimage
+        self.width, self.height = self.pageimage.size
         #rescale
-        self.width, self.height = self.imagecopy.size #so that it doesn't rescale it everytime ShowPage() is used
+        self.width, self.height = self.pageimagecopy.size #so that it doesn't rescale it everytime ShowPage() is used
         self.width , self.height = int(self.width*self.zoom) , int(self.height*self.zoom)
-        self.image = self.image.resize((self.width, self.height), PIL.Image.ANTIALIAS)
+        self.pageimage = self.pageimage.resize((self.width, self.height), PIL.Image.ANTIALIAS)
     except:
         print(colored("Error: cannot load page",'red'))
     
@@ -212,9 +211,9 @@ def ShowPage(self): # no error
         # update
         self.m_PageCtrl.SetValue(str(self.currentpage))
         #rescale image
-        self.width, self.height = self.imagecopy.size #so that it doesn't rescale it everytime ShowPage() is used
+        self.width, self.height = self.pageimagecopy.size #so that it doesn't rescale it everytime ShowPage() is used
         self.width , self.height = int(self.width*self.zoom) , int(self.height*self.zoom)
-        self.image = self.image.resize((self.width, self.height), PIL.Image.ANTIALIAS)
+        self.pageimage = self.pageimage.resize((self.width, self.height), PIL.Image.ANTIALIAS)
          
         try:   #try to draw borders, but if there are no borders, do nothing
             if self.drawborders == True:
@@ -223,7 +222,7 @@ def ShowPage(self): # no error
             pass
         
         image2 = wx.Image( self.width, self.height )
-        image2.SetData( self.image.tobytes() )
+        image2.SetData( self.pageimage.tobytes() )
         
         ##
         self.m_bitmapScroll.SetBitmap(wx.Bitmap(image2))
