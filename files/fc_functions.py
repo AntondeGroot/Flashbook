@@ -459,9 +459,9 @@ def LoadFlashCards(self):
             #check questions: does the i-th command occur in the questions
             if cond_q[0] == True: #first index gives T/F, 2nd index gives index where it is true
                 nr = len(cond_q[1])
-                for i in range(nr):
+                for j in range(nr):
                     index1 = cond_q[1] # can contain multiple indices 
-                    index2 = index1[i]
+                    index2 = index1[j]
                     
                     #select the right question:
                     Q = self.questions[index2]
@@ -472,9 +472,9 @@ def LoadFlashCards(self):
             #check answers: does the i-th command occur in the answers
             if cond_a[0] == True: #first index gives T/F, 2nd index gives index where it is true
                 nr = len(cond_a[1])
-                for i in range(nr):
+                for k in range(nr):
                     index1 = cond_a[1]
-                    index2 = index1[i]
+                    index2 = index1[k]
                     A = self.answers[index2]
                     
                     #replace all the commands in a single answer
