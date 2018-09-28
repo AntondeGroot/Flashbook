@@ -229,7 +229,7 @@ def selectionentered(self,event):
             with open(self.PathBorders, 'w') as file:
                     file.write(json.dumps(self.dictionary)) 
             if len(self.pic_answer)>1:
-                f.CombinePics(self,self.pic_answer)
+                f.CombinePics(self,self.pic_answer_dir)
                 self.pdf_answer = str(self.pdf_answer) + r" \pic{" + "{}".format(self.pic_answer[0])+r"}"
             elif len(self.pic_answer) == 1:
                 self.pdf_answer = str(self.pdf_answer) + r" \pic{" + "{}".format(self.pic_answer[0])+r"}"                        
