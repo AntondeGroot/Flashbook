@@ -318,12 +318,11 @@ def ShowInPopup(self,mode):
         CombinePicText(self,directory)
         image = self.image
     except:
-        pass
-    try:#only text
-        CreateTextCard(self)
-        image = self.imagetext
-    except:
-        pass
+        try:#only text
+            CreateTextCard(self)
+            image = self.imagetext
+        except:
+            pass
     
     win = Window2(self.GetTopLevelParent(), wx.SIMPLE_BORDER,image)
     pos = self.m_scrolledWindow1.ClientToScreen( (0,0) )
