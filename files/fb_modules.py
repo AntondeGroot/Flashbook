@@ -355,3 +355,36 @@ def zoomin(self,event):
         #self.m_panel1.Update()
     except:
         print(colored("Error: cannot zoom",'red'))
+def SetKeyboardShortcuts(self):
+    try:# look if Id's already exist
+        # combine functions with the id
+        self.Bind( wx.EVT_MENU, self.m_toolBackOnToolClicked, id = self.Id_leftkey )
+        self.Bind( wx.EVT_MENU, self.m_toolNextOnToolClicked,   id = self.Id_rightkey   )
+        
+        # combine id with keyboard = now keyboard is connected to functions
+        entries = wx.AcceleratorTable([(wx.ACCEL_NORMAL,  wx.WXK_LEFT, self.Id_leftkey),
+                                      (wx.ACCEL_NORMAL,  wx.WXK_RIGHT, self.Id_rightkey )])
+        self.SetAcceleratorTable(entries)
+    except:
+        # set keyboard short cuts: accelerator table        
+        self.Id_leftkey = wx.NewIdRef() #wx.NewId()
+        self.Id_rightkey  = wx.NewIdRef() #wx.NewId()
+        
+        # combine functions with the id
+        self.Bind( wx.EVT_MENU, self.m_toolBackOnToolClicked, id = self.Id_leftkey )
+        self.Bind( wx.EVT_MENU, self.m_toolNextOnToolClicked,   id = self.Id_rightkey   )
+        
+        # combine id with keyboard = now keyboard is connected to functions
+        entries = wx.AcceleratorTable([(wx.ACCEL_NORMAL,  wx.WXK_LEFT, self.Id_leftkey),
+                                      (wx.ACCEL_NORMAL,  wx.WXK_RIGHT, self.Id_rightkey )])
+        self.SetAcceleratorTable(entries)
+
+def RemoveKeyboardShortcuts(self):
+    try:# look if Id's already exist
+        # combine functions with the id        
+        self.Unbind( wx.EVT_MENU, self.m_toolBackOnToolClicked, id = self.Id_leftkey )
+        self.Unbind( wx.EVT_MENU, self.m_toolNextOnToolClicked,   id = self.Id_rightkey   )
+        # empty acceleratortable?
+        self.SetAcceleratorTable()
+    except:
+        pass
