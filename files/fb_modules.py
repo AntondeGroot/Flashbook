@@ -231,9 +231,8 @@ def selectionentered(self,event):
             if len(self.pic_answer)>1:
                 f.CombinePics(self,self.pic_answer)
                 self.pdf_answer = str(self.pdf_answer) + r" \pic{" + "{}".format(self.pic_answer[0])+r"}"
-            else:
-                if len(self.pic_answer) == 1:
-                    self.pdf_answer = str(self.pdf_answer) + r" \pic{" + "{}".format(self.pic_answer[0])+r"}"                        
+            elif len(self.pic_answer) == 1:
+                self.pdf_answer = str(self.pdf_answer) + r" \pic{" + "{}".format(self.pic_answer[0])+r"}"                        
             
             try:   
                 f.ShowInPopup(self,"Answer")                    
