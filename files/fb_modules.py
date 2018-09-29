@@ -362,32 +362,36 @@ def zoomin(self,event):
 def SetKeyboardShortcuts(self):
     try:# look if Id's already exist
         # combine functions with the id
-        self.Bind( wx.EVT_MENU, self.m_toolBackOnToolClicked, id = self.Id_leftkey )
-        self.Bind( wx.EVT_MENU, self.m_toolNextOnToolClicked,   id = self.Id_rightkey   )
-        
+        self.Bind( wx.EVT_MENU, self.m_toolBackOnToolClicked,       id = self.Id_leftkey  )
+        self.Bind( wx.EVT_MENU, self.m_toolNextOnToolClicked,       id = self.Id_rightkey )
+        self.Bind( wx.EVT_MENU, self.m_enterselectionOnButtonClick, id = self.Id_enterkey )
         # combine id with keyboard = now keyboard is connected to functions
         entries = wx.AcceleratorTable([(wx.ACCEL_NORMAL,  wx.WXK_LEFT, self.Id_leftkey),
-                                      (wx.ACCEL_NORMAL,  wx.WXK_RIGHT, self.Id_rightkey )])
+                                      (wx.ACCEL_NORMAL,  wx.WXK_RIGHT, self.Id_rightkey),
+                                      (wx.ACCEL_NORMAL,  wx.WXK_RETURN, self.Id_enterkey)])
         self.SetAcceleratorTable(entries)
     except:
         # set keyboard short cuts: accelerator table        
-        self.Id_leftkey = wx.NewIdRef() #wx.NewId()
-        self.Id_rightkey  = wx.NewIdRef() #wx.NewId()
-        
+        self.Id_leftkey   = wx.NewIdRef() 
+        self.Id_rightkey  = wx.NewIdRef() 
+        self.Id_enterkey  = wx.NewIdRef()
         # combine functions with the id
-        self.Bind( wx.EVT_MENU, self.m_toolBackOnToolClicked, id = self.Id_leftkey )
-        self.Bind( wx.EVT_MENU, self.m_toolNextOnToolClicked,   id = self.Id_rightkey   )
+        self.Bind( wx.EVT_MENU, self.m_toolBackOnToolClicked,       id = self.Id_leftkey  )
+        self.Bind( wx.EVT_MENU, self.m_toolNextOnToolClicked,       id = self.Id_rightkey )
+        self.Bind( wx.EVT_MENU, self.m_enterselectionOnButtonClick, id = self.Id_enterkey )
         
         # combine id with keyboard = now keyboard is connected to functions
         entries = wx.AcceleratorTable([(wx.ACCEL_NORMAL,  wx.WXK_LEFT, self.Id_leftkey),
-                                      (wx.ACCEL_NORMAL,  wx.WXK_RIGHT, self.Id_rightkey )])
+                                      (wx.ACCEL_NORMAL,  wx.WXK_RIGHT, self.Id_rightkey ),
+                                      (wx.ACCEL_NORMAL,  wx.WXK_RETURN, self.Id_enterkey )])
         self.SetAcceleratorTable(entries)
 
 def RemoveKeyboardShortcuts(self):
     try:# look if Id's already exist
         # combine functions with the id        
-        self.Unbind( wx.EVT_MENU, self.m_toolBackOnToolClicked, id = self.Id_leftkey )
-        self.Unbind( wx.EVT_MENU, self.m_toolNextOnToolClicked,   id = self.Id_rightkey   )
+        self.Unbind( wx.EVT_MENU, self.m_toolBackOnToolClicked,       id = self.Id_leftkey  )
+        self.Unbind( wx.EVT_MENU, self.m_toolNextOnToolClicked,       id = self.Id_rightkey )
+        self.Unbind( wx.EVT_MENU, self.m_enterselectionOnButtonClick, id = self.Id_enterkey )
         # empty acceleratortable?
         self.SetAcceleratorTable()
     except:
