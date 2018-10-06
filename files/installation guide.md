@@ -19,4 +19,4 @@ at the beginning of the file
 
 1. if it gives any errors like: `"pyqt5 folder cannot be found"` then delete pyqt5 and install it again with `pip3 install pyqt5`
 
-1. if the error reads: `"pyinstaller bincache may be corrupted"` then go to `%appdata%` and delete the entire pyinstaller folder
+1. if the error reads: `"pyinstaller bincache may be corrupted"` then go to `%appdata%` and delete the entire pyinstaller folder and run pyinstaller again.
