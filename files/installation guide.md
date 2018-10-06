@@ -14,8 +14,8 @@ at the beginning of the file
 4. run pyinstaller `"pyinstaller flashbook-1.0.0.spec"`  
 5. do the same for the flashcard files
 
-
-### Errors: 
+--------------------------------
+## Errors: 
 
 1. if it gives any errors like: `"pyqt5 folder cannot be found"` then delete pyqt5 and install it again with pip3 install pyqt5
 
