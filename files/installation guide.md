@@ -1,8 +1,18 @@
 ## Installation
 
-1) download all the other files
-2) run pyinstaller "pyinstaller flashbook-1.0.0.spec -- icon=book.ico"  
-3) and then "pyinstaller flashcard-1.0.0.spec -- icon=book.ico"  
+1. download all the other files
+1. run `pyi-makespec pyinstaller flashbook-1.0.0.py --icon=book.ico`
+1. then add to the .spec file:
+```
+import sys
+sys.setrecursionlimit(5000)
+block_cipher = None
+```
+at the beginning of the file
+
+4. run pyinstaller `"pyinstaller flashbook-1.0.0.spec"`  
+5. do the same for flashcard
+
 
 ### Errors: 
 
