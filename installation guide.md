@@ -1,6 +1,6 @@
 ## Installation
 
-1. download all the files
+1. download all the files in the `files` folder
 1. go in command prompt to the relevant folder
 1. create a .spec file by typing: `pyi-makespec pyinstaller flashbook-1.0.0.py --icon=book.ico`
 1. then add to the created .spec file:
