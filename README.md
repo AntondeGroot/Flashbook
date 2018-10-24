@@ -13,3 +13,6 @@ You can take notes by simply selecting an area with your mouse, a rectangle will
 - In the ‘files’ subfolder you can define your own LaTeX macros
 -	LaTeX environments like matrices are not included
 
+# Needs to be added or changed:
+- abilility to print out all the notes
+- taken notes are saved as images in the format "bookname_page_XXXX" with a 4 digit random number, although unlikely it may overwrite a previous taken note.
