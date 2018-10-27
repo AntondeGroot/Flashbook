@@ -164,7 +164,7 @@
                         <property name="permission">none</property>
                         <property name="shortcut"></property>
                         <property name="unchecked_bitmap"></property>
-                        <event name="OnMenuSelection"></event>
+                        <event name="OnMenuSelection">m_menuItemBackToMainOnMenuSelection</event>
                         <event name="OnUpdateUI"></event>
                     </object>
                 </object>
@@ -233,7 +233,7 @@
                         <property name="minimize_button">0</property>
                         <property name="minimum_size"></property>
                         <property name="moveable">1</property>
-                        <property name="name">panel00</property>
+                        <property name="name">panel0</property>
                         <property name="pane_border">1</property>
                         <property name="pane_position"></property>
                         <property name="pane_size"></property>
@@ -279,7 +279,17 @@
                             <property name="permission">none</property>
                             <object class="sizeritem" expanded="1">
                                 <property name="border">5</property>
-                                <property name="flag">wxEXPAND</property>
+                                <property name="flag"></property>
+                                <property name="proportion">0</property>
+                                <object class="spacer" expanded="1">
+                                    <property name="height">0</property>
+                                    <property name="permission">protected</property>
+                                    <property name="width">100</property>
+                                </object>
+                            </object>
+                            <object class="sizeritem" expanded="1">
+                                <property name="border">5</property>
+                                <property name="flag"></property>
                                 <property name="proportion">0</property>
                                 <object class="wxGridSizer" expanded="1">
                                     <property name="cols">2</property>
@@ -289,6 +299,26 @@
                                     <property name="permission">none</property>
                                     <property name="rows">0</property>
                                     <property name="vgap">0</property>
+                                    <object class="sizeritem" expanded="1">
+                                        <property name="border">5</property>
+                                        <property name="flag">wxEXPAND</property>
+                                        <property name="proportion">1</property>
+                                        <object class="spacer" expanded="1">
+                                            <property name="height">0</property>
+                                            <property name="permission">protected</property>
+                                            <property name="width">0</property>
+                                        </object>
+                                    </object>
+                                    <object class="sizeritem" expanded="1">
+                                        <property name="border">5</property>
+                                        <property name="flag">wxEXPAND</property>
+                                        <property name="proportion">1</property>
+                                        <object class="spacer" expanded="1">
+                                            <property name="height">0</property>
+                                            <property name="permission">protected</property>
+                                            <property name="width">0</property>
+                                        </object>
+                                    </object>
                                     <object class="sizeritem" expanded="1">
                                         <property name="border">5</property>
                                         <property name="flag">wxALL</property>
@@ -434,7 +464,7 @@
                                             <property name="window_extra_style"></property>
                                             <property name="window_name"></property>
                                             <property name="window_style"></property>
-                                            <event name="OnButtonClick"></event>
+                                            <event name="OnButtonClick">m_btnOpenFlashbookOnButtonClick</event>
                                             <event name="OnChar"></event>
                                             <event name="OnEnterWindow"></event>
                                             <event name="OnEraseBackground"></event>
@@ -605,7 +635,7 @@
                                             <property name="window_extra_style"></property>
                                             <property name="window_name"></property>
                                             <property name="window_style"></property>
-                                            <event name="OnButtonClick"></event>
+                                            <event name="OnButtonClick">m_btnOpenFlashcardOnButtonClick</event>
                                             <event name="OnChar"></event>
                                             <event name="OnEnterWindow"></event>
                                             <event name="OnEraseBackground"></event>
@@ -776,7 +806,7 @@
                                             <property name="window_extra_style"></property>
                                             <property name="window_name"></property>
                                             <property name="window_style"></property>
-                                            <event name="OnButtonClick"></event>
+                                            <event name="OnButtonClick">m_btnPrintNotesOnButtonClick</event>
                                             <event name="OnChar"></event>
                                             <event name="OnEnterWindow"></event>
                                             <event name="OnEraseBackground"></event>
@@ -846,7 +876,7 @@
                         <property name="minimize_button">0</property>
                         <property name="minimum_size"></property>
                         <property name="moveable">1</property>
-                        <property name="name">panel0</property>
+                        <property name="name">panel1</property>
                         <property name="pane_border">1</property>
                         <property name="pane_position"></property>
                         <property name="pane_size"></property>
@@ -929,7 +959,7 @@
                                     <property name="minimize_button">0</property>
                                     <property name="minimum_size"></property>
                                     <property name="moveable">1</property>
-                                    <property name="name">panel1</property>
+                                    <property name="name">panel11</property>
                                     <property name="pane_border">1</property>
                                     <property name="pane_position"></property>
                                     <property name="pane_size"></property>
@@ -1140,7 +1170,7 @@
                                                     <event name="OnUpdateUI"></event>
                                                 </object>
                                                 <object class="tool" expanded="0">
-                                                    <property name="bitmap">Load From File; C:\Users\Anton\.spyder-py3\gui example\Flashbook\add.png</property>
+                                                    <property name="bitmap">Load From File; path_add</property>
                                                     <property name="context_menu">0</property>
                                                     <property name="id">wxID_ANY</property>
                                                     <property name="kind">wxITEM_NORMAL</property>
@@ -1161,7 +1191,7 @@
                                                     <event name="OnUpdateUI"></event>
                                                 </object>
                                                 <object class="tool" expanded="0">
-                                                    <property name="bitmap">Load From File; C:\Users\Anton\.spyder-py3\gui example\Flashbook\min.png</property>
+                                                    <property name="bitmap">Load From File; path_min</property>
                                                     <property name="context_menu">0</property>
                                                     <property name="id">wxID_ANY</property>
                                                     <property name="kind">wxITEM_NORMAL</property>
@@ -1217,7 +1247,7 @@
                                                     <property name="minimize_button">0</property>
                                                     <property name="minimum_size"></property>
                                                     <property name="moveable">1</property>
-                                                    <property name="name">m_textZoom</property>
+                                                    <property name="name">m_Zoom</property>
                                                     <property name="pane_border">1</property>
                                                     <property name="pane_position"></property>
                                                     <property name="pane_size"></property>
@@ -1423,7 +1453,7 @@
                                                     <property name="minimize_button">0</property>
                                                     <property name="minimum_size">10,-1</property>
                                                     <property name="moveable">1</property>
-                                                    <property name="name">m_PageCtrl</property>
+                                                    <property name="name">m_CurrentPage</property>
                                                     <property name="pane_border">1</property>
                                                     <property name="pane_position"></property>
                                                     <property name="pane_size"></property>
@@ -1467,7 +1497,7 @@
                                                     <event name="OnRightUp"></event>
                                                     <event name="OnSetFocus"></event>
                                                     <event name="OnSize"></event>
-                                                    <event name="OnText">m_PageCtrlOnText</event>
+                                                    <event name="OnText">m_CurrentPageOnText</event>
                                                     <event name="OnTextEnter"></event>
                                                     <event name="OnTextMaxLen"></event>
                                                     <event name="OnTextURL"></event>
@@ -1587,7 +1617,7 @@
                                                     <property name="minimize_button">0</property>
                                                     <property name="minimum_size">20,-1</property>
                                                     <property name="moveable">1</property>
-                                                    <property name="name">m_textCtrl5</property>
+                                                    <property name="name">m_TotalPages</property>
                                                     <property name="pane_border">1</property>
                                                     <property name="pane_position"></property>
                                                     <property name="pane_size"></property>
@@ -1673,7 +1703,7 @@
                                                     <property name="minimize_button">0</property>
                                                     <property name="minimum_size"></property>
                                                     <property name="moveable">1</property>
-                                                    <property name="name">m_staticText4</property>
+                                                    <property name="name">m_TotalPage</property>
                                                     <property name="pane_border">1</property>
                                                     <property name="pane_position"></property>
                                                     <property name="pane_size"></property>
@@ -2703,7 +2733,7 @@
                                     <property name="minimize_button">0</property>
                                     <property name="minimum_size"></property>
                                     <property name="moveable">1</property>
-                                    <property name="name">panel2</property>
+                                    <property name="name">panel12</property>
                                     <property name="pane_border">1</property>
                                     <property name="pane_position"></property>
                                     <property name="pane_size"></property>
@@ -2788,7 +2818,7 @@
                                                 <property name="minimize_button">0</property>
                                                 <property name="minimum_size"></property>
                                                 <property name="moveable">1</property>
-                                                <property name="name">m_toolBar11</property>
+                                                <property name="name">m_toolBar2</property>
                                                 <property name="packing">1</property>
                                                 <property name="pane_border">1</property>
                                                 <property name="pane_position"></property>
@@ -2866,7 +2896,7 @@
                                                     <property name="minimize_button">0</property>
                                                     <property name="minimum_size"></property>
                                                     <property name="moveable">1</property>
-                                                    <property name="name">m_dirPicker11</property>
+                                                    <property name="name">m_dirPicker1</property>
                                                     <property name="pane_border">1</property>
                                                     <property name="pane_position"></property>
                                                     <property name="pane_size"></property>
@@ -2914,12 +2944,12 @@
                                                     <event name="OnUpdateUI"></event>
                                                 </object>
                                                 <object class="tool" expanded="0">
-                                                    <property name="bitmap">Load From File; C:\Users\Anton\.spyder-py3\gui example\Flashbook\add.png</property>
+                                                    <property name="bitmap">Load From File; path_add</property>
                                                     <property name="context_menu">0</property>
                                                     <property name="id">wxID_ANY</property>
                                                     <property name="kind">wxITEM_NORMAL</property>
                                                     <property name="label">plus</property>
-                                                    <property name="name">m_toolPlus1</property>
+                                                    <property name="name">m_toolPlus</property>
                                                     <property name="permission">protected</property>
                                                     <property name="statusbar"></property>
                                                     <property name="tooltip"></property>
@@ -2935,12 +2965,12 @@
                                                     <event name="OnUpdateUI"></event>
                                                 </object>
                                                 <object class="tool" expanded="0">
-                                                    <property name="bitmap">Load From File; C:\Users\Anton\.spyder-py3\gui example\Flashbook\min.png</property>
+                                                    <property name="bitmap">Load From File; path_min</property>
                                                     <property name="context_menu">0</property>
                                                     <property name="id">wxID_ANY</property>
                                                     <property name="kind">wxITEM_NORMAL</property>
                                                     <property name="label">min</property>
-                                                    <property name="name">m_toolMin1</property>
+                                                    <property name="name">m_toolMin</property>
                                                     <property name="permission">protected</property>
                                                     <property name="statusbar"></property>
                                                     <property name="tooltip"></property>
@@ -2991,7 +3021,7 @@
                                                     <property name="minimize_button">0</property>
                                                     <property name="minimum_size"></property>
                                                     <property name="moveable">1</property>
-                                                    <property name="name">m_textZoom1</property>
+                                                    <property name="name">m_Zoom</property>
                                                     <property name="pane_border">1</property>
                                                     <property name="pane_position"></property>
                                                     <property name="pane_size"></property>
@@ -3047,7 +3077,7 @@
                                                     <property name="id">wxID_ANY</property>
                                                     <property name="kind">wxITEM_NORMAL</property>
                                                     <property name="label">tool</property>
-                                                    <property name="name">m_toolBack1</property>
+                                                    <property name="name">m_toolBack</property>
                                                     <property name="permission">protected</property>
                                                     <property name="statusbar"></property>
                                                     <property name="tooltip"></property>
@@ -3068,7 +3098,7 @@
                                                     <property name="id">wxID_ANY</property>
                                                     <property name="kind">wxITEM_NORMAL</property>
                                                     <property name="label">tool</property>
-                                                    <property name="name">m_toolNext1</property>
+                                                    <property name="name">m_toolNext</property>
                                                     <property name="permission">protected</property>
                                                     <property name="statusbar"></property>
                                                     <property name="tooltip"></property>
@@ -3197,7 +3227,7 @@
                                                     <property name="minimize_button">0</property>
                                                     <property name="minimum_size">10,-1</property>
                                                     <property name="moveable">1</property>
-                                                    <property name="name">m_PageCtrl1</property>
+                                                    <property name="name">m_CurrentPage</property>
                                                     <property name="pane_border">1</property>
                                                     <property name="pane_position"></property>
                                                     <property name="pane_size"></property>
@@ -3241,7 +3271,7 @@
                                                     <event name="OnRightUp"></event>
                                                     <event name="OnSetFocus"></event>
                                                     <event name="OnSize"></event>
-                                                    <event name="OnText">m_PageCtrlOnText</event>
+                                                    <event name="OnText">m_CurrentPageOnText</event>
                                                     <event name="OnTextEnter"></event>
                                                     <event name="OnTextMaxLen"></event>
                                                     <event name="OnTextURL"></event>
@@ -3361,7 +3391,7 @@
                                                     <property name="minimize_button">0</property>
                                                     <property name="minimum_size">20,-1</property>
                                                     <property name="moveable">1</property>
-                                                    <property name="name">m_textCtrl51</property>
+                                                    <property name="name">m_TotalPages</property>
                                                     <property name="pane_border">1</property>
                                                     <property name="pane_position"></property>
                                                     <property name="pane_size"></property>
@@ -3526,7 +3556,7 @@
                                                     <property name="minimize_button">0</property>
                                                     <property name="minimum_size"></property>
                                                     <property name="moveable">1</property>
-                                                    <property name="name">m_checkBox11</property>
+                                                    <property name="name">m_checkBox1</property>
                                                     <property name="pane_border">1</property>
                                                     <property name="pane_position"></property>
                                                     <property name="pane_size"></property>
@@ -3687,7 +3717,7 @@
                                                     <property name="minimize_button">0</property>
                                                     <property name="minimum_size"></property>
                                                     <property name="moveable">1</property>
-                                                    <property name="name">m_checkBoxCursor1</property>
+                                                    <property name="name">m_checkBoxCursor</property>
                                                     <property name="pane_border">1</property>
                                                     <property name="pane_position"></property>
                                                     <property name="pane_size"></property>
@@ -3921,7 +3951,7 @@
                     </object>
                 </object>
                 <object class="sizeritem" expanded="1">
-                    <property name="border">5</property>
+                    <property name="border">0</property>
                     <property name="flag">wxEXPAND | wxALL</property>
                     <property name="proportion">1</property>
                     <object class="wxPanel" expanded="1">
@@ -3959,7 +3989,7 @@
                         <property name="minimize_button">0</property>
                         <property name="minimum_size"></property>
                         <property name="moveable">1</property>
-                        <property name="name">panel01</property>
+                        <property name="name">panel2</property>
                         <property name="pane_border">1</property>
                         <property name="pane_position"></property>
                         <property name="pane_size"></property>
@@ -4042,7 +4072,7 @@
                                     <property name="minimize_button">0</property>
                                     <property name="minimum_size"></property>
                                     <property name="moveable">1</property>
-                                    <property name="name">panel11</property>
+                                    <property name="name">panel21</property>
                                     <property name="pane_border">1</property>
                                     <property name="pane_position"></property>
                                     <property name="pane_size"></property>
@@ -4127,7 +4157,7 @@
                                                 <property name="minimize_button">0</property>
                                                 <property name="minimum_size"></property>
                                                 <property name="moveable">1</property>
-                                                <property name="name">m_toolBar11</property>
+                                                <property name="name">m_toolBar3</property>
                                                 <property name="packing">1</property>
                                                 <property name="pane_border">1</property>
                                                 <property name="pane_position"></property>
@@ -4440,7 +4470,7 @@
                                                     <event name="OnRightUp"></event>
                                                     <event name="OnSetFocus"></event>
                                                     <event name="OnSize"></event>
-                                                    <event name="OnText">m_PageCtrlOnText</event>
+                                                    <event name="OnText">m_CurrentPageOnText</event>
                                                     <event name="OnTextEnter"></event>
                                                     <event name="OnTextMaxLen"></event>
                                                     <event name="OnTextURL"></event>
@@ -4780,7 +4810,7 @@
                                                     <property name="id">wxID_ANY</property>
                                                     <property name="kind">wxITEM_NORMAL</property>
                                                     <property name="label">plus</property>
-                                                    <property name="name">m_toolPlus1</property>
+                                                    <property name="name">m_toolPlus</property>
                                                     <property name="permission">protected</property>
                                                     <property name="statusbar"></property>
                                                     <property name="tooltip"></property>
@@ -4801,7 +4831,7 @@
                                                     <property name="id">wxID_ANY</property>
                                                     <property name="kind">wxITEM_NORMAL</property>
                                                     <property name="label">min</property>
-                                                    <property name="name">m_toolMin1</property>
+                                                    <property name="name">m_toolMin</property>
                                                     <property name="permission">protected</property>
                                                     <property name="statusbar"></property>
                                                     <property name="tooltip"></property>
@@ -4852,7 +4882,7 @@
                                                     <property name="minimize_button">0</property>
                                                     <property name="minimum_size"></property>
                                                     <property name="moveable">1</property>
-                                                    <property name="name">m_Zoom1</property>
+                                                    <property name="name">m_Zoom</property>
                                                     <property name="pane_border">1</property>
                                                     <property name="pane_position"></property>
                                                     <property name="pane_size"></property>
@@ -5383,7 +5413,7 @@
                                     <property name="minimize_button">0</property>
                                     <property name="minimum_size"></property>
                                     <property name="moveable">1</property>
-                                    <property name="name">panel21</property>
+                                    <property name="name">panel22</property>
                                     <property name="pane_border">1</property>
                                     <property name="pane_position"></property>
                                     <property name="pane_size"></property>
