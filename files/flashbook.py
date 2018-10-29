@@ -49,7 +49,7 @@ def setup_sources(self):
     self.path_repeat = os.path.join(self.dir7,"repeat.png")
     self.path_repeat_na = os.path.join(self.dir7,"repeat_na.png")
     self.path_icon = os.path.join(self.dir7,"open-book1.png")
-
+    
 
 def initialize(self):
     datadir = os.getenv("LOCALAPPDATA")
@@ -230,6 +230,7 @@ class MainFrame(gui.MyFrame):
         # icon
         iconimage = wx.Icon(self.path_icon, type=wx.BITMAP_TYPE_ANY, desiredWidth=-1, desiredHeight=-1)
         self.SetIcon(iconimage)
+        self.m_dirPicker1.SetInitialDirectory(self.dir3)
         SwitchPanel(self,0,0)
         ## short cuts
         #ini.initializeparameters(self)
@@ -237,10 +238,14 @@ class MainFrame(gui.MyFrame):
         #set_richtext(self)
         
         m.SetKeyboardShortcuts(self)
-        
-    # Panel Behavior
+    
+    #%% Panel selection
     def m_btnOpenFlashbookOnButtonClick( self, event ):
-        SwitchPanel(self,1,0)
+        setup_sources(self)
+        set_richtext(self)
+        SwitchPanel(self,1,0)        
+        import program
+        program.run_flashbook(self)
         
     def m_btnOpenFlashcardOnButtonClick( self, event ):
         SwitchPanel(self,2,0)
@@ -248,9 +253,144 @@ class MainFrame(gui.MyFrame):
     def m_btnPrintNotesOnButtonClick( self, event ):
         event.skip()
     
+    #%% menu item events
+    def m_menuItemFlashbookOnMenuSelection( self, event ):
+        os.system("explorer {}".format(self.dir3)) 
+	
     def m_menuItemBackToMainOnMenuSelection( self, event ):
-        SwitchPanel(self,0,0)
+        SwitchPanel(self,0,0)  
+	
+    def m_menuHelpOnMenuSelection( self, event ):
+        print("panel 0 is : {}".format(self.panel0.IsShown()))
+        if self.panel0.IsShown():
+            pass
+        if self.panel1.IsShown():
+            self.panel11.Hide()
+            self.panel12.Show()
+            self.Layout()
+        if self.panel2.IsShown():
+            self.panel21.Hide()
+            self.panel22.Show()
+            self.Layout()
+    #
+    def m_richText1OnLeftDown( self, event ):
+        SwitchPanel(self,1,0) 
+	
+    #%% flashbook events
+	
+    def m_dirPicker1OnDirChanged(self,event):
+        m.dirchanged(self,event)
+    # open Appdata folder in Windows #=========================================
+    
+	# zoom in #=======================================================
+    def m_toolPlusOnToolClicked( self, event ):
+        m.zoomout(self,event)
+	
+    def m_toolMinOnToolClicked( self, event ):
+        m.zoomin(self,event)
+	
+    # change page #=======================================================
+    def m_toolBackOnToolClicked( self, event ):
+        m.previouspage(self,event)
+	
+    def m_toolNextOnToolClicked( self, event ):
+        m.nextpage(self,event)
+	
+    def m_PageCtrlOnKeyUp( self, event ):
+        m.switchpage(self,event)
+    
+    def m_bitmapScrollOnMouseWheel( self, event ):
+        m.mousewheel(self,event)
         
+    # user selections #========================================================
+    def m_resetselectionOnButtonClick( self, event ):               
+        m.resetselection(self,event)
+    
+    def m_enterselectionOnButtonClick( self, event ):
+        m.selectionentered(self,event)
+        
+    def m_checkBoxCursorOnCheckBox( self, event ):  
+        m.setcursor(self,event)
+    
+    # show drawn borders 
+    def m_checkBox1OnCheckBox( self, event ):
+        lf = event.GetEventObject()
+        self.drawborders = lf.GetValue()        
+        self.pageimage = self.pageimagecopy # reset image
+        f.ShowPage(self)
+    
+	#%%	
+        
+	# bitmap # DRAW RECTANGLE WITH MOUSE, GET COORDINATES  
+    def m_bitmapScrollOnLeftDown( self, event ):
+        self.panel_pos = self.m_bitmapScroll.ScreenToClient(wx.GetMousePosition())
+        self.SetCursor(wx.Cursor(wx.CURSOR_CROSS))
+        
+    def m_bitmapScrollOnLeftUp( self, event ):
+        m.bitmapleftup(self,event)   
+	
+    
+    
+    
+    #%% flashcard
+    def m_richText11OnLeftDown( self, event ):
+        SwitchPanel(self,2,0) 
+    
+    
+    
+    
+    
+    
+    
+    
+    def m_bitmapScrollOnMotion( self, event ):
+        event.Skip()
+	
+    def m_bitmapScrollOnMouseEvents( self, event ):
+        event.Skip()
+	
+
+	
+    def m_bitmapScrollOnRightDown( self, event ):
+        event.Skip()
+	
+    
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+    
+	
+    def m_filePickerOnFileChanged( self, event ):
+        event.Skip()
+	
+    def m_toolSwitchOnToolClicked( self, event ):
+        event.Skip()
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+    def m_buttonCorrectOnButtonClick( self, event ):
+        event.Skip()
+	
+    def m_buttonWrongOnButtonClick( self, event ):
+        event.Skip()
+    
         
 # start the application
 app = wx.App(False) 
