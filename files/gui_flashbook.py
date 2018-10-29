@@ -108,6 +108,11 @@ class MyFrame ( wx.Frame ):
 		
 		gSizer1.Add( self.m_btnPrintNotes, 0, wx.ALL, 5 )
 		
+		self.m_filePickerPrint = wx.FilePickerCtrl( self.panel0, wx.ID_ANY, wx.EmptyString, u"Select a file", u"*.*", wx.DefaultPosition, wx.DefaultSize, wx.FLP_DEFAULT_STYLE )
+		self.m_filePickerPrint.Hide()
+		
+		gSizer1.Add( self.m_filePickerPrint, 0, wx.ALL, 5 )
+		
 		
 		bSizer71.Add( gSizer1, 0, 0, 5 )
 		
@@ -130,7 +135,7 @@ class MyFrame ( wx.Frame ):
 		self.m_toolBar1.AddControl( self.m_dirPicker1 )
 		self.m_toolPlus = self.m_toolBar1.AddLabelTool( wx.ID_ANY, u"plus", wx.Bitmap( path_add, wx.BITMAP_TYPE_ANY ), wx.NullBitmap, wx.ITEM_NORMAL, wx.EmptyString, wx.EmptyString, None ) 
 		
-		self.m_toolMin = self.m_toolBar1.AddLabelTool( wx.ID_ANY, u"min", wx.Bitmap( path_min, wx.BITMAP_TYPE_ANY ), wx.NullBitmap, wx.ITEM_NORMAL, wx.EmptyString, wx.EmptyString, None ) 
+		self.m_toolMin = self.m_toolBar1.AddLabelTool( wx.ID_ANY, u"min", wx.Bitmap(path_min, wx.BITMAP_TYPE_ANY ), wx.NullBitmap, wx.ITEM_NORMAL, wx.EmptyString, wx.EmptyString, None ) 
 		
 		self.m_Zoom = wx.TextCtrl( self.m_toolBar1, wx.ID_ANY, u"100%", wx.DefaultPosition, wx.Size( 40,-1 ), wx.TE_READONLY|wx.NO_BORDER )
 		self.m_toolBar1.AddControl( self.m_Zoom )
@@ -219,11 +224,11 @@ class MyFrame ( wx.Frame ):
 		bSizer21 = wx.BoxSizer( wx.VERTICAL )
 		
 		self.m_toolBar2 = wx.ToolBar( self.panel12, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TB_HORIZONTAL ) 
-		self.m_dirPicker1 = wx.DirPickerCtrl( self.m_toolBar2, wx.ID_ANY, wx.EmptyString, u"Select a folder", wx.DefaultPosition, wx.DefaultSize, wx.DIRP_DEFAULT_STYLE )
-		self.m_toolBar2.AddControl( self.m_dirPicker1 )
+		self.m_dirPicker2 = wx.DirPickerCtrl( self.m_toolBar2, wx.ID_ANY, wx.EmptyString, u"Select a folder", wx.DefaultPosition, wx.DefaultSize, wx.DIRP_DEFAULT_STYLE )
+		self.m_toolBar2.AddControl( self.m_dirPicker2 )
 		self.m_toolPlus = self.m_toolBar2.AddLabelTool( wx.ID_ANY, u"plus", wx.Bitmap( path_add, wx.BITMAP_TYPE_ANY ), wx.NullBitmap, wx.ITEM_NORMAL, wx.EmptyString, wx.EmptyString, None ) 
 		
-		self.m_toolMin = self.m_toolBar2.AddLabelTool( wx.ID_ANY, u"min", wx.Bitmap( path_min, wx.BITMAP_TYPE_ANY ), wx.NullBitmap, wx.ITEM_NORMAL, wx.EmptyString, wx.EmptyString, None ) 
+		self.m_toolMin = self.m_toolBar2.AddLabelTool( wx.ID_ANY, u"min", wx.Bitmap(path_min, wx.BITMAP_TYPE_ANY ), wx.NullBitmap, wx.ITEM_NORMAL, wx.EmptyString, wx.EmptyString, None ) 
 		
 		self.m_Zoom = wx.TextCtrl( self.m_toolBar2, wx.ID_ANY, u"100%", wx.DefaultPosition, wx.Size( 40,-1 ), wx.TE_READONLY|wx.NO_BORDER )
 		self.m_toolBar2.AddControl( self.m_Zoom )
@@ -317,7 +322,7 @@ class MyFrame ( wx.Frame ):
 		self.m_toolBar3.AddControl( self.m_Score )
 		self.m_toolPlus = self.m_toolBar3.AddLabelTool( wx.ID_ANY, u"plus", wx.Bitmap( path_add, wx.BITMAP_TYPE_ANY ), wx.NullBitmap, wx.ITEM_NORMAL, wx.EmptyString, wx.EmptyString, None ) 
 		
-		self.m_toolMin = self.m_toolBar3.AddLabelTool( wx.ID_ANY, u"min", wx.Bitmap( path_min, wx.BITMAP_TYPE_ANY ), wx.NullBitmap, wx.ITEM_NORMAL, wx.EmptyString, wx.EmptyString, None ) 
+		self.m_toolMin = self.m_toolBar3.AddLabelTool( wx.ID_ANY, u"min", wx.Bitmap(path_min, wx.BITMAP_TYPE_ANY ), wx.NullBitmap, wx.ITEM_NORMAL, wx.EmptyString, wx.EmptyString, None ) 
 		
 		self.m_Zoom = wx.TextCtrl( self.m_toolBar3, wx.ID_ANY, u"100%", wx.DefaultPosition, wx.Size( 40,-1 ), wx.TE_READONLY|wx.NO_BORDER )
 		self.m_toolBar3.AddControl( self.m_Zoom )
@@ -421,7 +426,7 @@ class MyFrame ( wx.Frame ):
 		self.m_bitmapScroll.Bind( wx.EVT_RIGHT_DOWN, self.m_bitmapScrollOnRightDown )
 		self.m_enterselection.Bind( wx.EVT_BUTTON, self.m_enterselectionOnButtonClick )
 		self.m_resetselection.Bind( wx.EVT_BUTTON, self.m_resetselectionOnButtonClick )
-		self.m_dirPicker1.Bind( wx.EVT_DIRPICKER_CHANGED, self.m_dirPicker1OnDirChanged )
+		self.m_dirPicker2.Bind( wx.EVT_DIRPICKER_CHANGED, self.m_dirPicker1OnDirChanged )
 		self.Bind( wx.EVT_TOOL, self.m_toolPlusOnToolClicked, id = self.m_toolPlus.GetId() )
 		self.Bind( wx.EVT_TOOL, self.m_toolMinOnToolClicked, id = self.m_toolMin.GetId() )
 		self.Bind( wx.EVT_TOOL, self.m_toolBackOnToolClicked, id = self.m_toolBack.GetId() )
@@ -459,7 +464,7 @@ class MyFrame ( wx.Frame ):
 		self.m_bitmapScroll1.Bind( wx.EVT_RIGHT_DOWN, self.m_bitmapScrollOnRightDown )
 		self.m_buttonCorrect.Bind( wx.EVT_BUTTON, self.m_buttonCorrectOnButtonClick )
 		self.m_buttonWrong.Bind( wx.EVT_BUTTON, self.m_buttonWrongOnButtonClick )
-		self.m_richText11.Bind( wx.EVT_LEFT_DOWN, self.m_richText1OnLeftDown )
+		self.m_richText11.Bind( wx.EVT_LEFT_DOWN, self.m_richText11OnLeftDown )
 	
 	def __del__( self ):
 		pass
@@ -573,4 +578,9 @@ class MyFrame ( wx.Frame ):
 	
 	def m_buttonWrongOnButtonClick( self, event ):
 		event.Skip()
+	
+	def m_richText11OnLeftDown( self, event ):
+		event.Skip()
+	
+
 	
