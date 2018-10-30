@@ -21,7 +21,6 @@ import wx.html as html
 import gui_flashbook as gui
 #------------------------------------------------------------------- modules
 import fb_initialization as ini 
-import fb_modules as m
 import resources
 import fb_functions as f
 
@@ -120,73 +119,6 @@ class info():
 
 
 
-def set_richtext(self):
-    self.txt = self.m_richText1
-    self.txt.BeginBold()
-    self.txt.BeginFontSize(16)
-    self.txt.WriteText("  Getting Started                                                       ")
-    self.txt.EndFontSize()
-    self.txt.EndBold()
-    self.txt.WriteText("                                                                                 (left click to close window)\n")
-    self.txt.BeginFontSize(12)
-    self.txt.WriteText("        This will allow you to make flashcards out of the notes you take.\n")
-    self.txt.WriteText("        1) You need to convert a pdf to jpg files, using a free online webpage of your choise\n"
-                      "        2) Click in the menu 'open/open Flashbook folder' to open the correct Windows folder\n"
-                      "        3) Place all the pictures in a map named after the book or course in said folder\n"
-                      '        4) Then click on "Browse" in the menubar and open the book that you would like to read\n\n' )
-    self.txt.EndFontSize()
-    self.txt.BeginBold()
-    self.txt.BeginFontSize(16)
-    self.txt.WriteText("  Taking Notes:\n")
-    self.txt.EndFontSize()
-    self.txt.EndBold()
-    
-    
-    
-    self.txt.BeginFontSize(12)   
-    self.txt.WriteText("        1) You can type a Question and an Answer in the textbox at the bottom, this is LaTeX compatible if you include $$\n"
-                      "        2) with ")
-    self.txt.BeginBold()
-    self.txt.WriteText("left mouse click ")
-    self.txt.EndBold()
-    self.txt.WriteText("you can take multiple screenshots, all the rectangles you draw will be combined\n        3) With ")
-    self.txt.BeginBold()
-    self.txt.WriteText("middle mouse click ")
-    self.txt.EndBold()
-    self.txt.WriteText("you can confirm your selections. It switches between the modes" )
-    self.txt.BeginBold()
-    self.txt.WriteText(" 'question'")
-    self.txt.EndBold()
-    self.txt.WriteText(" and ")
-    self.txt.BeginBold()
-    self.txt.WriteText("'answer' ")
-    self.txt.EndBold()
-    self.txt.WriteText(".\n        4) With ")
-    self.txt.BeginBold()
-    self.txt.WriteText("right mouse click ")
-    self.txt.EndBold()
-    self.txt.WriteText("you can reset your selections, both Question and Answer.\n"
-                      
-                      "        5) Multiple screenshots across different pages will be combined into a single picture per Question / Answer\n"
-                      "        6) Only when you confirm your selection during the Answer mode will everything be saved\n        7) You can use arrow keys to scroll or turn a page\n"
-                        )
-    self.txt.EndFontSize()
-    self.txt.BeginBold()
-    self.txt.BeginFontSize(16)
-    self.txt.WriteText("  Known Errors:\n")
-    self.txt.EndFontSize()
-    self.txt.EndBold()
-    self.txt.BeginFontSize(12)
-    self.txt.WriteText("        - when the program isn't full screen and you try to draw a rectangle it may jump around and select the wrong area. \n"
-                       "        - zooming out may result in: not being able to scroll to the next page but only previous pages. The key buttons still work to swtich between pages.\n"
-                       "        - same applies to zooming in too much\n"
-                       "        - when scrolling; the cursor should be placed on the bookpage itself, otherwise it doesn't have 'focus' and it won't trigger the event that switches the page \n"
-                       "        - some websites that convert pdf to jpg may sometimes result in unusual numberings like (1,2a,2b,3,...) this may result in an error when trying to determine the order in which these jpgs should be placed \n"
-                       )
-    self.txt.EndFontSize()
-    
-    
-    self.Layout()
 
 ########################################################################
 def SwitchPanel(self,n,m):
@@ -218,7 +150,9 @@ def SwitchPanel(self,n,m):
             self.panel22.Show()
         self.Layout() # force refresh of windows
     
-    
+
+import fb_modules as m
+#import fc_modules as m2  
 
 class MainFrame(gui.MyFrame):
     #constructor    
@@ -230,28 +164,38 @@ class MainFrame(gui.MyFrame):
         # icon
         iconimage = wx.Icon(self.path_icon, type=wx.BITMAP_TYPE_ANY, desiredWidth=-1, desiredHeight=-1)
         self.SetIcon(iconimage)
-        self.m_dirPicker1.SetInitialDirectory(self.dir3)
+        self.m_dirPicker11.SetInitialDirectory(self.dir3)
         SwitchPanel(self,0,0)
         ## short cuts
         #ini.initializeparameters(self)
-        
-        #set_richtext(self)
-        
-        m.SetKeyboardShortcuts(self)
+        self.m_filePickerPrint.Bind( wx.EVT_FILEPICKER_CHANGED, self.m_btnPrintNotesOnButtonClick )
+        self.m_filePickerPrint.Bind(wx.EVT_BUTTON,self.m_btnPrintNotesOnButtonClick)
     
     #%% Panel selection
     def m_btnOpenFlashbookOnButtonClick( self, event ):
         setup_sources(self)
-        set_richtext(self)
-        SwitchPanel(self,1,0)        
+        SwitchPanel(self,1,0)    
+        
+        m.SetKeyboardShortcuts(self)
         import program
         program.run_flashbook(self)
         
     def m_btnOpenFlashcardOnButtonClick( self, event ):
         SwitchPanel(self,2,0)
+        import fc_modules as m2
+        import program
+        program.run_flashcard(self)
         	
     def m_btnPrintNotesOnButtonClick( self, event ):
-        event.skip()
+        self.printbool = False
+        with gui.MyPrintDialog(self,'data') as self.dlg: #use this to set the max range of the slider , add ",data" in the initialization of the dialog window
+            self.dlg.ShowModal()
+        
+            #if self.dlg.m_PrintFinal                
+            #self.nr_questions = dlg.m_slider1.GetValue()                        
+            #self.chrono = dlg.m_radioChrono.GetValue()
+            #self.continueSession = False
+            #self.multiplier = dlg.m_textCtrl11.GetValue()
     
     #%% menu item events
     def m_menuItemFlashbookOnMenuSelection( self, event ):
@@ -273,30 +217,31 @@ class MainFrame(gui.MyFrame):
             self.panel22.Show()
             self.Layout()
     #
-    def m_richText1OnLeftDown( self, event ):
+    def m_richText12OnLeftDown( self, event ):
         SwitchPanel(self,1,0) 
 	
-    #%% flashbook events
+    #% flashbook events
 	
-    def m_dirPicker1OnDirChanged(self,event):
+    def m_dirPicker11OnDirChanged(self,event):
         m.dirchanged(self,event)
+        
     # open Appdata folder in Windows #=========================================
     
 	# zoom in #=======================================================
-    def m_toolPlusOnToolClicked( self, event ):
+    def m_toolPlus11OnToolClicked( self, event ):
         m.zoomout(self,event)
 	
-    def m_toolMinOnToolClicked( self, event ):
+    def m_toolMin11OnToolClicked( self, event ):
         m.zoomin(self,event)
 	
     # change page #=======================================================
-    def m_toolBackOnToolClicked( self, event ):
+    def m_toolBack11OnToolClicked( self, event ):
         m.previouspage(self,event)
 	
-    def m_toolNextOnToolClicked( self, event ):
+    def m_toolNext11OnToolClicked( self, event ):
         m.nextpage(self,event)
 	
-    def m_PageCtrlOnKeyUp( self, event ):
+    def m_CurrentPage11OnKeyUp( self, event ):
         m.switchpage(self,event)
     
     def m_bitmapScrollOnMouseWheel( self, event ):
@@ -309,17 +254,17 @@ class MainFrame(gui.MyFrame):
     def m_enterselectionOnButtonClick( self, event ):
         m.selectionentered(self,event)
         
-    def m_checkBoxCursorOnCheckBox( self, event ):  
+    def m_checkBoxCursor11OnCheckBox( self, event ):  
         m.setcursor(self,event)
     
     # show drawn borders 
-    def m_checkBox1OnCheckBox( self, event ):
+    def m_checkBox11OnCheckBox( self, event ):
         lf = event.GetEventObject()
         self.drawborders = lf.GetValue()        
         self.pageimage = self.pageimagecopy # reset image
         f.ShowPage(self)
     
-	#%%	
+	#%
         
 	# bitmap # DRAW RECTANGLE WITH MOUSE, GET COORDINATES  
     def m_bitmapScrollOnLeftDown( self, event ):
@@ -329,67 +274,39 @@ class MainFrame(gui.MyFrame):
     def m_bitmapScrollOnLeftUp( self, event ):
         m.bitmapleftup(self,event)   
 	
-    
-    
-    
-    #%% flashcard
-    def m_richText11OnLeftDown( self, event ):
+    def m_richText22OnLeftDown( self, event ):
         SwitchPanel(self,2,0) 
     
     
+    #%% flashcard
+    def m_filePicker21OnFileChanged( self, event ):
+        m2.startprogram(self,event)
     
     
-    
-    
-    
-    
-    def m_bitmapScrollOnMotion( self, event ):
-        event.Skip()
-	
-    def m_bitmapScrollOnMouseEvents( self, event ):
-        event.Skip()
-	
-
-	
-    def m_bitmapScrollOnRightDown( self, event ):
-        event.Skip()
-	
-    
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-    
-	
-    def m_filePickerOnFileChanged( self, event ):
-        event.Skip()
-	
-    def m_toolSwitchOnToolClicked( self, event ):
-        event.Skip()
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+    #buttons
     def m_buttonCorrectOnButtonClick( self, event ):
-        event.Skip()
+        import fc_modules as m2
+        m2.buttonCorrect(self)
 	
     def m_buttonWrongOnButtonClick( self, event ):
-        event.Skip()
+        m2.buttonWrong(self)
+	
+    def m_toolSwitch21OnToolClicked( self, event ):
+        m2.switchCard(self)
+	
+    #%% print the notes
+    
+    
+    
+	
+	
+	
+	
+	
+	
+	
+	
+	
     
         
 # start the application
