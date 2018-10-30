@@ -209,12 +209,11 @@ def ShowPage(self): # no error
         print("fb=ShowPage")
     try:
         # update
-        self.m_CurrentPage.SetValue(str(self.currentpage))
+        self.m_CurrentPage11.SetValue(str(self.currentpage))
         #rescale image
         self.width, self.height = self.pageimagecopy.size #so that it doesn't rescale it everytime ShowPage() is used
         self.width , self.height = int(self.width*self.zoom) , int(self.height*self.zoom)
         self.pageimage = self.pageimage.resize((self.width, self.height), PIL.Image.ANTIALIAS)
-         
         try:   #try to draw borders, but if there are no borders, do nothing
             if self.drawborders == True:
                 drawCoordinates(self)
