@@ -12,7 +12,7 @@ def initializeparameters(self):
     self.m_bitmapScroll.Bind( wx.EVT_MIDDLE_DOWN, self.m_enterselectionOnButtonClick )
     # for scrolling: only remember current and last position, append and pop, if the numbers repeat [0,0] or [X,X] then you know you've reached either the beginning or the end of the window: then flip page
     self.scrollpos = [42,1337] 
-    self.m_dirPicker1.SetInitialDirectory(self.dir3) #set initial directory
+    self.m_dirPicker11.SetInitialDirectory(self.dir3) #set initial directory
     # initialize variables:
     self.bookname       = ''
     self.BorderCoords   = []         
@@ -27,6 +27,6 @@ def initializeparameters(self):
     self.questionmode   = True
     self.zoom           = 1.0
     self.m_textCtrl1.SetValue("Question:")
-    self.m_Zoom.SetValue("{}%".format(int(self.zoom*100)))  
+    self.m_Zoom11.SetValue("{}%".format(int(self.zoom*100)))  
     f.ResetQuestions(self)
     f.SetScrollbars(self)
