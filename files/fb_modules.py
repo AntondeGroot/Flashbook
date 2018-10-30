@@ -100,8 +100,8 @@ def dirchanged(self,event):
     if not os.path.exists(self.dir2+r"\{}".format(self.bookname)):
         os.makedirs(self.dir2+r"\{}".format(self.bookname))
     
-    self.m_CurrentPage.SetValue(str(self.currentpage))
-    self.m_TotalPages.SetValue(str(self.nr_pics))
+    self.m_CurrentPage11.SetValue(str(self.currentpage))
+    self.m_TotalPages11.SetValue(str(self.nr_pics))
     nrlist.sort()
     
     ## open dictionary if it exists
@@ -264,11 +264,11 @@ def mousewheel(self,event):
         if self.scrollpos[0] == 0:             # beginning
             if self.WheelRot > 0:
                 self.scrollpos = [42,1337]     # make it a little more difficult to scroll back once you scrolled a page
-                self.m_toolBackOnToolClicked(self)
+                self.m_toolBack11OnToolClicked(self)
         else:                                  # end of page
             if self.WheelRot < 0:
                 self.scrollpos = [42,1337] 
-                self.m_toolNextOnToolClicked(self)
+                self.m_toolNext11OnToolClicked(self)
     event.Skip()                               # necessary to use other functions after this one is used
     
 def resetselection(self,event):
@@ -345,9 +345,10 @@ def zoomout(self,event):
         f.ShowPage(self)
         f.SetScrollbars(self)
         value = int(self.zoom*100)
-        self.m_textZoom.SetValue("{}%".format(value))
+        self.m_Zoom11.SetValue("{}%".format(value))
+        self.panel1.Layout()
     except:
-        print(colored("Error: cannot zoom",'red'))
+        print(colored("Error: cannot zoom out",'red'))
 def zoomin(self,event):
     try:
         if self.zoom == 0.1:
@@ -358,16 +359,17 @@ def zoomin(self,event):
         f.ShowPage(self)
         f.SetScrollbars(self)
         value = int(self.zoom*100)
-        self.m_textZoom.SetValue("{}%".format(value))
-        self.m_panel1.Refresh() # to remove the remnants of a larger bitmap when the page shrinks
+        self.m_Zoom11.SetValue("{}%".format(value))
+        self.panel1.Refresh() # to remove the remnants of a larger bitmap when the page shrinks
+        self.panel1.Layout()
         #self.m_panel1.Update()
     except:
-        print(colored("Error: cannot zoom",'red'))
+        print(colored("Error: cannot zoom in",'red'))
 def SetKeyboardShortcuts(self):
     try:# look if Id's already exist
         # combine functions with the id
-        self.Bind( wx.EVT_MENU, self.m_toolBackOnToolClicked,       id = self.Id_leftkey  )
-        self.Bind( wx.EVT_MENU, self.m_toolNextOnToolClicked,       id = self.Id_rightkey )
+        self.Bind( wx.EVT_MENU, self.m_toolBack11OnToolClicked,       id = self.Id_leftkey  )
+        self.Bind( wx.EVT_MENU, self.m_toolNext11OnToolClicked,       id = self.Id_rightkey )
         self.Bind( wx.EVT_MENU, self.m_enterselectionOnButtonClick, id = self.Id_enterkey )
         # combine id with keyboard = now keyboard is connected to functions
         entries = wx.AcceleratorTable([(wx.ACCEL_NORMAL,  wx.WXK_LEFT, self.Id_leftkey),
@@ -380,8 +382,8 @@ def SetKeyboardShortcuts(self):
         self.Id_rightkey  = wx.NewIdRef() 
         self.Id_enterkey  = wx.NewIdRef()
         # combine functions with the id
-        self.Bind( wx.EVT_MENU, self.m_toolBackOnToolClicked,       id = self.Id_leftkey  )
-        self.Bind( wx.EVT_MENU, self.m_toolNextOnToolClicked,       id = self.Id_rightkey )
+        self.Bind( wx.EVT_MENU, self.m_toolBack11OnToolClicked,       id = self.Id_leftkey  )
+        self.Bind( wx.EVT_MENU, self.m_toolNext11OnToolClicked,       id = self.Id_rightkey )
         self.Bind( wx.EVT_MENU, self.m_enterselectionOnButtonClick, id = self.Id_enterkey )
         
         # combine id with keyboard = now keyboard is connected to functions
@@ -393,8 +395,8 @@ def SetKeyboardShortcuts(self):
 def RemoveKeyboardShortcuts(self):
     try:# look if Id's already exist
         # combine functions with the id        
-        self.Unbind( wx.EVT_MENU, self.m_toolBackOnToolClicked,       id = self.Id_leftkey  )
-        self.Unbind( wx.EVT_MENU, self.m_toolNextOnToolClicked,       id = self.Id_rightkey )
+        self.Unbind( wx.EVT_MENU, self.m_toolBack11OnToolClicked,       id = self.Id_leftkey  )
+        self.Unbind( wx.EVT_MENU, self.m_toolNext11OnToolClicked,       id = self.Id_rightkey )
         self.Unbind( wx.EVT_MENU, self.m_enterselectionOnButtonClick, id = self.Id_enterkey )
         # empty acceleratortable?
         self.SetAcceleratorTable()
