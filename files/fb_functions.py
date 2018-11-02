@@ -23,31 +23,23 @@ from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 datadir = os.getenv("LOCALAPPDATA")
 dir0 = datadir + r"\FlashBook"
 # create settings folder for debugging
-if not os.path.exists(dir0+r"\settings.txt"): #notna
-    with open(dir0+r"\settings.txt", 'w') as file:
-        file.write(json.dumps({'debugmode' : 0})) 
-with open(dir0+r"\settings.txt", 'r') as file:
-    debug_var = json.load(file)['debugmode']
-    if debug_var == 0:
-        debugmode = False
-    else:
-        debugmode = True
-        print("debugging is enabled: in fb_functions")
+
 
 
 
 class Window2(wx.PopupWindow):
     """"""
-    if debugmode:
-        print("fb=Window2")
+    
     #----------------------------------------------------------------------
     def __init__(self, parent, style,information):
+        
         self.info=information
         #print("picinfo in w2 {}".format(self.info))
         self.border = 10
         """Constructor"""
         wx.PopupWindow.__init__(self, parent, style)
-        
+        if self.debugmode:
+            print("fb=Window2")
         
         
         panel = wx.Panel(self)
@@ -118,7 +110,7 @@ def is_number(s):
 
 
 def drawRec(self,layer,color): # no errors
-    if debugmode:
+    if self.debugmode:
         print("fb=drawRec")
     x0 , y0 = self.cord1
     x1 , y1 = self.cord2
@@ -152,7 +144,7 @@ def drawRec(self,layer,color): # no errors
     return layer        
 
 def drawCoordinates(self): # no errors
-    if debugmode:
+    if self.debugmode:
         print("fb=drawCoordinates")
     img = np.array(self.pageimage)
     img = np.uint8(img)
@@ -177,13 +169,13 @@ def drawCoordinates(self): # no errors
     self.pageimage = PIL.Image.fromarray(img)
     
 def SetScrollbars(self): #no errors
-    if debugmode:
+    if self.debugmode:
         print("fb=SetScrollbars")
     scrollWin = self.m_scrolledWindow1
     scrollWin.SetScrollbars(0,int(20*self.zoom),0,int(100*self.zoom) )
 
 def LoadPage(self): # no error
-    if debugmode:
+    if self.debugmode:
         print("fb=LoadPage")
     
     
@@ -205,7 +197,7 @@ def LoadPage(self): # no error
     
     
 def ShowPage(self): # no error
-    if debugmode:
+    if self.debugmode:
         print("fb=ShowPage")
     try:
         # update
@@ -225,13 +217,14 @@ def ShowPage(self): # no error
         
         ##
         self.m_bitmapScroll.SetBitmap(wx.Bitmap(image2))
+        self.Layout()
         with open(os.path.join(self.temp_dir, self.bookname +'.txt'), 'w') as output:   
             output.write("{}".format(self.currentpage))
     except:
         print(colored("Error: cannot show page",'red'))
 
 def ResetQuestions(self): # no errors
-    if debugmode:
+    if self.debugmode:
         print("fb=ResetQuestions")
     self.pdf_question     = ''
     self.pdf_answer       = ''
@@ -243,7 +236,7 @@ def ResetQuestions(self): # no errors
 
 
 def CombinePics(self,directory):
-    if debugmode:
+    if self.debugmode:
         print("fb=CombinePics")
     images = list(map(PIL.Image.open, directory))   
     widths, heights = zip(*(i.size for i in images))
@@ -264,7 +257,7 @@ def CombinePics(self,directory):
             except:
                 pass
 def CreateTextCard(self):
-    if debugmode:
+    if self.debugmode:
         print("fb=CreateTextCard")
     self.TextCard = True    
     #LaTeXcode = Text2Latex(self)
@@ -285,7 +278,7 @@ def CreateTextCard(self):
     
 
 def CombinePicText(self,directory):
-    if debugmode:
+    if self.debugmode:
         print("fb=CombinePicText")
     imagepic = PIL.Image.open(directory)
     images = [self.imagetext,imagepic]
@@ -302,7 +295,7 @@ def CombinePicText(self,directory):
     self.image = new_im
 
 def ShowInPopup(self,mode):
-    if debugmode:
+    if self.debugmode:
         print("fb=ShowInPopup")
     try:# a picture directory may not exist
         if mode == "Answer":
