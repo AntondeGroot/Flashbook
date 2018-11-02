@@ -34,27 +34,29 @@ import wx.richtext
 ###########################################################################
 ## Class MyFrame
 ###########################################################################
-
 class MyFrame ( wx.Frame ):
 	
 	def __init__( self, parent ):
-		wx.Frame.__init__ ( self, parent, id = wx.ID_ANY, title = u"FlashBook", pos = wx.DefaultPosition, size = wx.Size( 1155,800 ), style = wx.DEFAULT_FRAME_STYLE|wx.TAB_TRAVERSAL )
+		wx.Frame.__init__ ( self, parent, id = wx.ID_ANY, title = u"FlashBook", pos = wx.DefaultPosition, size = wx.Size( -1,-1 ), style = wx.DEFAULT_FRAME_STYLE|wx.TAB_TRAVERSAL )
 		
-		self.SetSizeHintsSz( wx.DefaultSize, wx.DefaultSize )
+		self.SetSizeHints( wx.DefaultSize, wx.DefaultSize )
 		
 		self.m_menubar1 = wx.MenuBar( 0 )
 		self.m_menuOpen = wx.Menu()
-		self.m_menuItemFlashbook = wx.MenuItem( self.m_menuOpen, wx.ID_ANY, u"Open Flashbook Folder", wx.EmptyString, wx.ITEM_NORMAL )
-		self.m_menuOpen.AppendItem( self.m_menuItemFlashbook )
+		self.m_menuItemFlashbook = wx.MenuItem( self.m_menuOpen, wx.ID_ANY, u"Open Flashbook folder", wx.EmptyString, wx.ITEM_NORMAL )
+		self.m_menuOpen.Append( self.m_menuItemFlashbook )
 		
-		self.m_menuItemBackToMain = wx.MenuItem( self.m_menuOpen, wx.ID_ANY, u"Open Flashbook / Flashcard", wx.EmptyString, wx.ITEM_NORMAL )
-		self.m_menuOpen.AppendItem( self.m_menuItemBackToMain )
+		self.m_menuPDFfolder = wx.MenuItem( self.m_menuOpen, wx.ID_ANY, u"Open PDF-notes folder", wx.EmptyString, wx.ITEM_NORMAL )
+		self.m_menuOpen.Append( self.m_menuPDFfolder )
+		
+		self.m_menuItemBackToMain = wx.MenuItem( self.m_menuOpen, wx.ID_ANY, u"Return to main menu", wx.EmptyString, wx.ITEM_NORMAL )
+		self.m_menuOpen.Append( self.m_menuItemBackToMain )
 		
 		self.m_menubar1.Append( self.m_menuOpen, u"Open" ) 
 		
 		self.m_menu2 = wx.Menu()
 		self.m_menuHelp = wx.MenuItem( self.m_menu2, wx.ID_ANY, u"How to use ...", wx.EmptyString, wx.ITEM_NORMAL )
-		self.m_menu2.AppendItem( self.m_menuHelp )
+		self.m_menu2.Append( self.m_menuHelp )
 		
 		self.m_menubar1.Append( self.m_menu2, u"Help" ) 
 		
@@ -65,62 +67,91 @@ class MyFrame ( wx.Frame ):
 		self.panel0 = wx.Panel( self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TAB_TRAVERSAL )
 		self.panel0.SetBackgroundColour( wx.Colour( 254, 240, 231 ) )
 		
-		bSizer71 = wx.BoxSizer( wx.HORIZONTAL )
+		bSizer37 = wx.BoxSizer( wx.HORIZONTAL )
 		
 		
-		bSizer71.Add( ( 100, 0), 0, 0, 5 )
+		bSizer37.Add( ( 100, 0), 0, wx.EXPAND, 5 )
+		
+		bSizer71 = wx.BoxSizer( wx.VERTICAL )
+		
+		
+		bSizer71.Add( ( 100, 100), 0, 0, 5 )
 		
 		gSizer1 = wx.GridSizer( 0, 2, 0, 0 )
 		
+		gSizer1.SetMinSize( wx.Size( 700,-1 ) ) 
+		bSizer33 = wx.BoxSizer( wx.VERTICAL )
 		
-		gSizer1.Add( ( 0, 0), 1, wx.EXPAND, 5 )
-		
-		
-		gSizer1.Add( ( 0, 0), 1, wx.EXPAND, 5 )
-		
-		self.m_staticText9 = wx.StaticText( self.panel0, wx.ID_ANY, u"Read a book", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_staticText9 = wx.StaticText( self.panel0, wx.ID_ANY, u"Flashbook", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.m_staticText9.Wrap( -1 )
-		gSizer1.Add( self.m_staticText9, 0, wx.ALL, 5 )
+		self.m_staticText9.SetFont( wx.Font( 20, 70, 90, 92, False, wx.EmptyString ) )
 		
-		self.m_btnOpenFlashbook = wx.Button( self.panel0, wx.ID_ANY, u"Open Flashbook", wx.DefaultPosition, wx.DefaultSize, 0 )
-		self.m_btnOpenFlashbook.SetDefault() 
-		self.m_btnOpenFlashbook.SetMinSize( wx.Size( 110,-1 ) )
-		self.m_btnOpenFlashbook.SetMaxSize( wx.Size( 110,-1 ) )
+		bSizer33.Add( self.m_staticText9, 0, wx.ALL, 0 )
 		
-		gSizer1.Add( self.m_btnOpenFlashbook, 0, wx.ALL, 5 )
+		self.m_staticText91 = wx.StaticText( self.panel0, wx.ID_ANY, u"Read a PDF that has been converted to jpg\nand make flashcards / notes while you read", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_staticText91.Wrap( -1 )
+		self.m_staticText91.SetFont( wx.Font( 10, 70, 90, 90, False, wx.EmptyString ) )
 		
-		self.m_staticText10 = wx.StaticText( self.panel0, wx.ID_ANY, u"Study the notes you took", wx.DefaultPosition, wx.DefaultSize, 0 )
+		bSizer33.Add( self.m_staticText91, 0, wx.ALL, 0 )
+		
+		
+		gSizer1.Add( bSizer33, 1, wx.EXPAND, 5 )
+		
+		self.m_OpenFlashbook = wx.BitmapButton( self.panel0, wx.ID_ANY, wx.ArtProvider.GetBitmap( wx.ART_ADD_BOOKMARK,  ), wx.DefaultPosition, wx.Size( 110,110 ), wx.BU_AUTODRAW )
+		gSizer1.Add( self.m_OpenFlashbook, 0, wx.ALL, 0 )
+		
+		bSizer34 = wx.BoxSizer( wx.VERTICAL )
+		
+		self.m_staticText10 = wx.StaticText( self.panel0, wx.ID_ANY, u"Flashcard", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.m_staticText10.Wrap( -1 )
-		gSizer1.Add( self.m_staticText10, 0, wx.ALL, 5 )
+		self.m_staticText10.SetFont( wx.Font( 20, 70, 90, 92, False, wx.EmptyString ) )
 		
-		self.m_btnOpenFlashcard = wx.Button( self.panel0, wx.ID_ANY, u"Open Flashcard", wx.DefaultPosition, wx.DefaultSize, 0 )
-		self.m_btnOpenFlashcard.SetMinSize( wx.Size( 110,-1 ) )
-		self.m_btnOpenFlashcard.SetMaxSize( wx.Size( 110,-1 ) )
+		bSizer34.Add( self.m_staticText10, 0, wx.ALL, 0 )
 		
-		gSizer1.Add( self.m_btnOpenFlashcard, 0, wx.ALL, 5 )
+		self.m_staticText101 = wx.StaticText( self.panel0, wx.ID_ANY, u"Study the notes you took, either as flashcards\nor just as notes. ", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_staticText101.Wrap( -1 )
+		self.m_staticText101.SetFont( wx.Font( 10, 70, 90, 90, False, wx.EmptyString ) )
 		
-		self.m_staticText11 = wx.StaticText( self.panel0, wx.ID_ANY, u"Save the notes you took \n in a pdf", wx.DefaultPosition, wx.DefaultSize, 0 )
+		bSizer34.Add( self.m_staticText101, 0, wx.ALL, 0 )
+		
+		
+		gSizer1.Add( bSizer34, 1, wx.EXPAND, 5 )
+		
+		self.m_OpenFlashcard = wx.BitmapButton( self.panel0, wx.ID_ANY, wx.NullBitmap, wx.DefaultPosition, wx.Size( 110,110 ), wx.BU_AUTODRAW )
+		self.m_OpenFlashcard.SetDefault() 
+		gSizer1.Add( self.m_OpenFlashcard, 0, wx.ALL, 0 )
+		
+		bSizer35 = wx.BoxSizer( wx.VERTICAL )
+		
+		self.m_staticText11 = wx.StaticText( self.panel0, wx.ID_ANY, u"Print", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.m_staticText11.Wrap( -1 )
-		gSizer1.Add( self.m_staticText11, 0, wx.ALL, 5 )
+		self.m_staticText11.SetFont( wx.Font( 20, 70, 90, 92, False, wx.EmptyString ) )
 		
-		self.m_btnPrintNotes = wx.Button( self.panel0, wx.ID_ANY, u"Print", wx.DefaultPosition, wx.DefaultSize, 0 )
-		self.m_btnPrintNotes.SetMinSize( wx.Size( 110,-1 ) )
-		self.m_btnPrintNotes.SetMaxSize( wx.Size( 110,-1 ) )
+		bSizer35.Add( self.m_staticText11, 0, wx.ALL, 0 )
 		
-		gSizer1.Add( self.m_btnPrintNotes, 0, wx.ALL, 5 )
+		self.m_staticText111 = wx.StaticText( self.panel0, wx.ID_ANY, u"combines all the flashcards and saves them\nas a pdf. Includes both Question and Answer.", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_staticText111.Wrap( -1 )
+		self.m_staticText111.SetFont( wx.Font( 10, 70, 90, 90, False, wx.EmptyString ) )
 		
-		self.m_filePickerPrint = wx.FilePickerCtrl( self.panel0, wx.ID_ANY, wx.EmptyString, u"Select a file", u"*.*", wx.DefaultPosition, wx.DefaultSize, wx.FLP_DEFAULT_STYLE )
-		self.m_filePickerPrint.Hide()
+		bSizer35.Add( self.m_staticText111, 0, wx.ALL, 0 )
 		
-		gSizer1.Add( self.m_filePickerPrint, 0, wx.ALL, 5 )
+		
+		gSizer1.Add( bSizer35, 1, wx.EXPAND, 5 )
+		
+		self.m_OpenPrint = wx.BitmapButton( self.panel0, wx.ID_ANY, wx.NullBitmap, wx.DefaultPosition, wx.Size( 110,110 ), wx.BU_AUTODRAW )
+		self.m_OpenPrint.SetDefault() 
+		gSizer1.Add( self.m_OpenPrint, 0, wx.ALL, 0 )
 		
 		
 		bSizer71.Add( gSizer1, 0, 0, 5 )
 		
 		
-		self.panel0.SetSizer( bSizer71 )
+		bSizer37.Add( bSizer71, 1, wx.EXPAND, 5 )
+		
+		
+		self.panel0.SetSizer( bSizer37 )
 		self.panel0.Layout()
-		bSizer71.Fit( self.panel0 )
+		bSizer37.Fit( self.panel0 )
 		bSizer7.Add( self.panel0, 1, wx.EXPAND |wx.ALL, 0 )
 		
 		self.panel1 = wx.Panel( self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TAB_TRAVERSAL )
@@ -134,15 +165,15 @@ class MyFrame ( wx.Frame ):
 		self.m_toolBar1 = wx.ToolBar( self.panel11, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TB_HORIZONTAL ) 
 		self.m_dirPicker11 = wx.DirPickerCtrl( self.m_toolBar1, wx.ID_ANY, wx.EmptyString, u"Select a folder", wx.DefaultPosition, wx.DefaultSize, wx.DIRP_DEFAULT_STYLE )
 		self.m_toolBar1.AddControl( self.m_dirPicker11 )
-		self.m_toolPlus11 = self.m_toolBar1.AddLabelTool( wx.ID_ANY, u"plus", wx.Bitmap( path_add, wx.BITMAP_TYPE_ANY ), wx.NullBitmap, wx.ITEM_NORMAL, wx.EmptyString, wx.EmptyString, None ) 
+		self.m_toolPlus11 = self.m_toolBar1.AddTool( wx.ID_ANY, u"plus", wx.Bitmap( path_add, wx.BITMAP_TYPE_ANY ), wx.NullBitmap, wx.ITEM_NORMAL, wx.EmptyString, wx.EmptyString, None ) 
 		
-		self.m_toolMin11 = self.m_toolBar1.AddLabelTool( wx.ID_ANY, u"min", wx.Bitmap( path_min, wx.BITMAP_TYPE_ANY ), wx.NullBitmap, wx.ITEM_NORMAL, wx.EmptyString, wx.EmptyString, None ) 
+		self.m_toolMin11 = self.m_toolBar1.AddTool( wx.ID_ANY, u"min", wx.Bitmap( path_min, wx.BITMAP_TYPE_ANY ), wx.NullBitmap, wx.ITEM_NORMAL, wx.EmptyString, wx.EmptyString, None ) 
 		
 		self.m_Zoom11 = wx.TextCtrl( self.m_toolBar1, wx.ID_ANY, u"100%", wx.DefaultPosition, wx.Size( 40,-1 ), wx.TE_READONLY|wx.NO_BORDER )
 		self.m_toolBar1.AddControl( self.m_Zoom11 )
-		self.m_toolBack11 = self.m_toolBar1.AddLabelTool( wx.ID_ANY, u"tool", wx.ArtProvider.GetBitmap( wx.ART_GO_BACK,  ), wx.NullBitmap, wx.ITEM_NORMAL, wx.EmptyString, wx.EmptyString, None ) 
+		self.m_toolBack11 = self.m_toolBar1.AddTool( wx.ID_ANY, u"tool", wx.ArtProvider.GetBitmap( wx.ART_GO_BACK,  ), wx.NullBitmap, wx.ITEM_NORMAL, wx.EmptyString, wx.EmptyString, None ) 
 		
-		self.m_toolNext11 = self.m_toolBar1.AddLabelTool( wx.ID_ANY, u"tool", wx.ArtProvider.GetBitmap( wx.ART_GO_FORWARD,  ), wx.NullBitmap, wx.ITEM_NORMAL, wx.EmptyString, wx.EmptyString, None ) 
+		self.m_toolNext11 = self.m_toolBar1.AddTool( wx.ID_ANY, u"tool", wx.ArtProvider.GetBitmap( wx.ART_GO_FORWARD,  ), wx.NullBitmap, wx.ITEM_NORMAL, wx.EmptyString, wx.EmptyString, None ) 
 		
 		self.m_staticText3 = wx.StaticText( self.m_toolBar1, wx.ID_ANY, u"Page: ", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.m_staticText3.Wrap( -1 )
@@ -173,23 +204,38 @@ class MyFrame ( wx.Frame ):
 		self.m_toolBar1.AddControl( self.m_checkBoxCursor11 )
 		self.m_toolBar1.Realize() 
 		
-		bSizer2.Add( self.m_toolBar1, 0, wx.ALIGN_CENTER|wx.EXPAND, 5 )
+		bSizer2.Add( self.m_toolBar1, 0, wx.ALIGN_CENTER|wx.EXPAND, 0 )
 		
 		self.m_staticline2 = wx.StaticLine( self.panel11, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.LI_HORIZONTAL )
 		bSizer2.Add( self.m_staticline2, 0, wx.ALL|wx.EXPAND, 3 )
 		
-		self.m_scrolledWindow1 = wx.ScrolledWindow( self.panel11, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, 0 )
-		self.m_scrolledWindow1.SetScrollRate( 5, 5 )
-		bSizer5 = wx.BoxSizer( wx.VERTICAL )
+		self.m_panel15 = wx.Panel( self.panel11, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TAB_TRAVERSAL )
+		bSizer46 = wx.BoxSizer( wx.HORIZONTAL )
 		
-		self.m_bitmapScroll = wx.StaticBitmap( self.m_scrolledWindow1, wx.ID_ANY, wx.NullBitmap, wx.DefaultPosition, wx.DefaultSize, 0 )
-		bSizer5.Add( self.m_bitmapScroll, 0, wx.ALL, 5 )
+		self.m_scrolledWindow1 = wx.ScrolledWindow( self.m_panel15, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_scrolledWindow1.SetScrollRate( 5, 5 )
+		bSizer5 = wx.BoxSizer( wx.HORIZONTAL )
+		
+		self.m_panel16 = wx.Panel( self.m_scrolledWindow1, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TAB_TRAVERSAL )
+		bSizer5.Add( self.m_panel16, 1, wx.EXPAND |wx.ALL, 0 )
+		
+		self.m_bitmapScroll = wx.StaticBitmap( self.m_scrolledWindow1, wx.ID_ANY, wx.NullBitmap, wx.DefaultPosition, wx.DefaultSize, wx.SIMPLE_BORDER )
+		bSizer5.Add( self.m_bitmapScroll, 0, wx.ALL, 0 )
+		
+		self.m_panel17 = wx.Panel( self.m_scrolledWindow1, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TAB_TRAVERSAL )
+		bSizer5.Add( self.m_panel17, 1, wx.EXPAND |wx.ALL, 0 )
 		
 		
 		self.m_scrolledWindow1.SetSizer( bSizer5 )
 		self.m_scrolledWindow1.Layout()
 		bSizer5.Fit( self.m_scrolledWindow1 )
-		bSizer2.Add( self.m_scrolledWindow1, 1, wx.EXPAND |wx.ALL, 5 )
+		bSizer46.Add( self.m_scrolledWindow1, 1, wx.EXPAND |wx.ALL, 0 )
+		
+		
+		self.m_panel15.SetSizer( bSizer46 )
+		self.m_panel15.Layout()
+		bSizer46.Fit( self.m_panel15 )
+		bSizer2.Add( self.m_panel15, 1, wx.ALL|wx.EXPAND, 0 )
 		
 		bSizer3 = wx.BoxSizer( wx.HORIZONTAL )
 		
@@ -227,15 +273,15 @@ class MyFrame ( wx.Frame ):
 		self.m_toolBar2 = wx.ToolBar( self.panel12, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TB_HORIZONTAL ) 
 		self.m_dirPicker12 = wx.DirPickerCtrl( self.m_toolBar2, wx.ID_ANY, wx.EmptyString, u"Select a folder", wx.DefaultPosition, wx.DefaultSize, wx.DIRP_DEFAULT_STYLE )
 		self.m_toolBar2.AddControl( self.m_dirPicker12 )
-		self.m_toolPlus12 = self.m_toolBar2.AddLabelTool( wx.ID_ANY, u"plus", wx.Bitmap( path_add, wx.BITMAP_TYPE_ANY ), wx.NullBitmap, wx.ITEM_NORMAL, wx.EmptyString, wx.EmptyString, None ) 
+		self.m_toolPlus12 = self.m_toolBar2.AddTool( wx.ID_ANY, u"plus", wx.Bitmap( path_add, wx.BITMAP_TYPE_ANY ), wx.NullBitmap, wx.ITEM_NORMAL, wx.EmptyString, wx.EmptyString, None ) 
 		
-		self.m_toolMin12 = self.m_toolBar2.AddLabelTool( wx.ID_ANY, u"min", wx.Bitmap( path_min, wx.BITMAP_TYPE_ANY ), wx.NullBitmap, wx.ITEM_NORMAL, wx.EmptyString, wx.EmptyString, None ) 
+		self.m_toolMin12 = self.m_toolBar2.AddTool( wx.ID_ANY, u"min", wx.Bitmap( path_min, wx.BITMAP_TYPE_ANY ), wx.NullBitmap, wx.ITEM_NORMAL, wx.EmptyString, wx.EmptyString, None ) 
 		
 		self.m_Zoom12 = wx.TextCtrl( self.m_toolBar2, wx.ID_ANY, u"100%", wx.DefaultPosition, wx.Size( 40,-1 ), wx.TE_READONLY|wx.NO_BORDER )
 		self.m_toolBar2.AddControl( self.m_Zoom12 )
-		self.m_toolBack12 = self.m_toolBar2.AddLabelTool( wx.ID_ANY, u"tool", wx.ArtProvider.GetBitmap( wx.ART_GO_BACK,  ), wx.NullBitmap, wx.ITEM_NORMAL, wx.EmptyString, wx.EmptyString, None ) 
+		self.m_toolBack12 = self.m_toolBar2.AddTool( wx.ID_ANY, u"tool", wx.ArtProvider.GetBitmap( wx.ART_GO_BACK,  ), wx.NullBitmap, wx.ITEM_NORMAL, wx.EmptyString, wx.EmptyString, None ) 
 		
-		self.m_toolNext12 = self.m_toolBar2.AddLabelTool( wx.ID_ANY, u"tool", wx.ArtProvider.GetBitmap( wx.ART_GO_FORWARD,  ), wx.NullBitmap, wx.ITEM_NORMAL, wx.EmptyString, wx.EmptyString, None ) 
+		self.m_toolNext12 = self.m_toolBar2.AddTool( wx.ID_ANY, u"tool", wx.ArtProvider.GetBitmap( wx.ART_GO_FORWARD,  ), wx.NullBitmap, wx.ITEM_NORMAL, wx.EmptyString, wx.EmptyString, None ) 
 		
 		self.m_staticText31 = wx.StaticText( self.m_toolBar2, wx.ID_ANY, u"Page: ", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.m_staticText31.Wrap( -1 )
@@ -297,7 +343,7 @@ class MyFrame ( wx.Frame ):
 		self.m_toolBar3 = wx.ToolBar( self.panel21, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TB_HORIZONTAL ) 
 		self.m_filePicker21 = wx.FilePickerCtrl( self.m_toolBar3, wx.ID_ANY, wx.EmptyString, u"Select a file", u"*.tex*", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.m_toolBar3.AddControl( self.m_filePicker21 )
-		self.m_toolSwitch21 = self.m_toolBar3.AddLabelTool( wx.ID_ANY, u"Switch", wx.Bitmap( path_switch, wx.BITMAP_TYPE_ANY ), wx.NullBitmap, wx.ITEM_NORMAL, wx.EmptyString, wx.EmptyString, None ) 
+		self.m_toolSwitch21 = self.m_toolBar3.AddTool( wx.ID_ANY, u"Switch", wx.Bitmap( path_switch, wx.BITMAP_TYPE_ANY ), wx.NullBitmap, wx.ITEM_NORMAL, wx.EmptyString, wx.EmptyString, None ) 
 		
 		self.m_textCtrlMode = wx.TextCtrl( self.m_toolBar3, wx.ID_ANY, u"Question:", wx.DefaultPosition, wx.DefaultSize, wx.TE_READONLY|wx.NO_BORDER )
 		self.m_textCtrlMode.SetFont( wx.Font( 12, 70, 90, 92, False, wx.EmptyString ) )
@@ -323,9 +369,9 @@ class MyFrame ( wx.Frame ):
 		self.m_Score21.SetMaxSize( wx.Size( 20,-1 ) )
 		
 		self.m_toolBar3.AddControl( self.m_Score21 )
-		self.m_toolPlus21 = self.m_toolBar3.AddLabelTool( wx.ID_ANY, u"plus", wx.Bitmap( path_add, wx.BITMAP_TYPE_ANY ), wx.NullBitmap, wx.ITEM_NORMAL, wx.EmptyString, wx.EmptyString, None ) 
+		self.m_toolPlus21 = self.m_toolBar3.AddTool( wx.ID_ANY, u"plus", wx.Bitmap( path_add, wx.BITMAP_TYPE_ANY ), wx.NullBitmap, wx.ITEM_NORMAL, wx.EmptyString, wx.EmptyString, None ) 
 		
-		self.m_toolMin21 = self.m_toolBar3.AddLabelTool( wx.ID_ANY, u"min", wx.Bitmap( path_min, wx.BITMAP_TYPE_ANY ), wx.NullBitmap, wx.ITEM_NORMAL, wx.EmptyString, wx.EmptyString, None ) 
+		self.m_toolMin21 = self.m_toolBar3.AddTool( wx.ID_ANY, u"min", wx.Bitmap( path_min, wx.BITMAP_TYPE_ANY ), wx.NullBitmap, wx.ITEM_NORMAL, wx.EmptyString, wx.EmptyString, None ) 
 		
 		self.m_Zoom21 = wx.TextCtrl( self.m_toolBar3, wx.ID_ANY, u"100%", wx.DefaultPosition, wx.Size( 40,-1 ), wx.TE_READONLY|wx.NO_BORDER )
 		self.m_toolBar3.AddControl( self.m_Zoom21 )
@@ -334,7 +380,7 @@ class MyFrame ( wx.Frame ):
 		bSizer211.Add( self.m_toolBar3, 0, wx.ALIGN_CENTER|wx.EXPAND, 0 )
 		
 		self.m_staticline22 = wx.StaticLine( self.panel21, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.LI_HORIZONTAL )
-		bSizer211.Add( self.m_staticline22, 0, wx.EXPAND |wx.ALL, 5 )
+		bSizer211.Add( self.m_staticline22, 0, wx.EXPAND |wx.ALL, 0 )
 		
 		self.m_scrolledWindow11 = wx.ScrolledWindow( self.panel21, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.m_scrolledWindow11.SetScrollRate( 5, 5 )
@@ -386,9 +432,165 @@ class MyFrame ( wx.Frame ):
 		bSizer81.Fit( self.panel2 )
 		bSizer7.Add( self.panel2, 1, wx.EXPAND |wx.ALL, 0 )
 		
+		self.panel3 = wx.Panel( self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TAB_TRAVERSAL )
+		self.panel3.SetBackgroundColour( wx.Colour( 254, 240, 231 ) )
+		
+		bSizer26 = wx.BoxSizer( wx.HORIZONTAL )
+		
+		self.m_panel31 = wx.Panel( self.panel3, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TAB_TRAVERSAL )
+		self.m_panel31.SetBackgroundColour( wx.Colour( 254, 240, 231 ) )
+		self.m_panel31.SetMaxSize( wx.Size( 400,-1 ) )
+		
+		bSizer30 = wx.BoxSizer( wx.HORIZONTAL )
+		
+		
+		bSizer30.Add( ( 0, 0), 1, wx.EXPAND, 5 )
+		
+		bSizer23 = wx.BoxSizer( wx.VERTICAL )
+		
+		
+		bSizer23.Add( ( 0, 5), 0, wx.EXPAND, 5 )
+		
+		sbSizer1 = wx.StaticBoxSizer( wx.StaticBox( self.m_panel31, wx.ID_ANY, wx.EmptyString ), wx.VERTICAL )
+		
+		sbSizer1.SetMinSize( wx.Size( 275,-1 ) ) 
+		gSizer12 = wx.GridSizer( 0, 2, 0, 0 )
+		
+		self.m_staticText52 = wx.StaticText( sbSizer1.GetStaticBox(), wx.ID_ANY, u"Boundary in each card \nbetween Q and A?", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_staticText52.Wrap( -1 )
+		gSizer12.Add( self.m_staticText52, 0, wx.ALL, 5 )
+		
+		self.m_lineQA = wx.CheckBox( sbSizer1.GetStaticBox(), wx.ID_ANY, u" yes", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_lineQA.SetValue(True) 
+		gSizer12.Add( self.m_lineQA, 0, wx.ALL, 5 )
+		
+		self.m_staticText62 = wx.StaticText( sbSizer1.GetStaticBox(), wx.ID_ANY, u"Line Thickness", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_staticText62.Wrap( -1 )
+		gSizer12.Add( self.m_staticText62, 0, wx.ALL, 5 )
+		
+		bSizer222 = wx.BoxSizer( wx.HORIZONTAL )
+		
+		self.m_lineWqa = wx.TextCtrl( sbSizer1.GetStaticBox(), wx.ID_ANY, u"1", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_lineWqa.SetMaxSize( wx.Size( 30,-1 ) )
+		
+		bSizer222.Add( self.m_lineWqa, 0, wx.ALL, 5 )
+		
+		self.m_staticText24 = wx.StaticText( sbSizer1.GetStaticBox(), wx.ID_ANY, u"pixels", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_staticText24.Wrap( -1 )
+		bSizer222.Add( self.m_staticText24, 0, wx.ALL, 5 )
+		
+		
+		gSizer12.Add( bSizer222, 1, 0, 5 )
+		
+		self.m_staticText7 = wx.StaticText( sbSizer1.GetStaticBox(), wx.ID_ANY, u"Line Color", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_staticText7.Wrap( -1 )
+		gSizer12.Add( self.m_staticText7, 0, wx.ALL, 5 )
+		
+		self.m_colorQAline = wx.ColourPickerCtrl( sbSizer1.GetStaticBox(), wx.ID_ANY, wx.Colour( 0, 0, 0 ), wx.DefaultPosition, wx.DefaultSize, wx.CLRP_DEFAULT_STYLE )
+		gSizer12.Add( self.m_colorQAline, 0, wx.ALL, 5 )
+		
+		
+		sbSizer1.Add( gSizer12, 1, 0, 5 )
+		
+		
+		bSizer23.Add( sbSizer1, 0, 0, 5 )
+		
+		
+		bSizer23.Add( ( 0, 10), 0, wx.EXPAND, 5 )
+		
+		sbSizer11 = wx.StaticBoxSizer( wx.StaticBox( self.m_panel31, wx.ID_ANY, wx.EmptyString ), wx.VERTICAL )
+		
+		sbSizer11.SetMinSize( wx.Size( 275,-1 ) ) 
+		gSizer11 = wx.GridSizer( 0, 2, 0, 0 )
+		
+		self.m_staticText511 = wx.StaticText( sbSizer11.GetStaticBox(), wx.ID_ANY, u"Boundary in each row\nof multiple cards?", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_staticText511.Wrap( -1 )
+		gSizer11.Add( self.m_staticText511, 0, wx.ALL, 5 )
+		
+		self.m_linePDF = wx.CheckBox( sbSizer11.GetStaticBox(), wx.ID_ANY, u" yes", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_linePDF.SetValue(True) 
+		gSizer11.Add( self.m_linePDF, 0, wx.ALL, 5 )
+		
+		self.m_staticText612 = wx.StaticText( sbSizer11.GetStaticBox(), wx.ID_ANY, u"Line Thickness", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_staticText612.Wrap( -1 )
+		gSizer11.Add( self.m_staticText612, 0, wx.ALL, 5 )
+		
+		bSizer221 = wx.BoxSizer( wx.HORIZONTAL )
+		
+		self.m_lineWpdf = wx.TextCtrl( sbSizer11.GetStaticBox(), wx.ID_ANY, u"10", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_lineWpdf.SetMaxSize( wx.Size( 30,-1 ) )
+		
+		bSizer221.Add( self.m_lineWpdf, 0, wx.ALL, 5 )
+		
+		self.m_staticText241 = wx.StaticText( sbSizer11.GetStaticBox(), wx.ID_ANY, u"pixels", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_staticText241.Wrap( -1 )
+		bSizer221.Add( self.m_staticText241, 0, wx.ALL, 5 )
+		
+		
+		gSizer11.Add( bSizer221, 1, 0, 5 )
+		
+		self.m_staticText71 = wx.StaticText( sbSizer11.GetStaticBox(), wx.ID_ANY, u"Line Color", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_staticText71.Wrap( -1 )
+		gSizer11.Add( self.m_staticText71, 0, wx.ALL, 5 )
+		
+		self.m_colorPDFline = wx.ColourPickerCtrl( sbSizer11.GetStaticBox(), wx.ID_ANY, wx.Colour( 18, 5, 250 ), wx.DefaultPosition, wx.DefaultSize, wx.CLRP_DEFAULT_STYLE )
+		gSizer11.Add( self.m_colorPDFline, 0, wx.ALL, 5 )
+		
+		
+		sbSizer11.Add( gSizer11, 0, 0, 0 )
+		
+		
+		bSizer23.Add( sbSizer11, 0, 0, 5 )
+		
+		
+		bSizer23.Add( ( 0, 10), 0, wx.EXPAND, 5 )
+		
+		self.m_PrintFinal = wx.Button( self.m_panel31, wx.ID_ANY, u"Apply", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_PrintFinal.SetFont( wx.Font( 10, 70, 90, 90, False, wx.EmptyString ) )
+		self.m_PrintFinal.SetMinSize( wx.Size( 275,-1 ) )
+		self.m_PrintFinal.SetMaxSize( wx.Size( -1,30 ) )
+		
+		bSizer23.Add( self.m_PrintFinal, 1, wx.ALL, 0 )
+		
+		
+		bSizer30.Add( bSizer23, 1, wx.EXPAND, 5 )
+		
+		
+		bSizer30.Add( ( 0, 0), 1, wx.EXPAND, 5 )
+		
+		
+		self.m_panel31.SetSizer( bSizer30 )
+		self.m_panel31.Layout()
+		bSizer30.Fit( self.m_panel31 )
+		bSizer26.Add( self.m_panel31, 1, wx.EXPAND |wx.ALL, 0 )
+		
+		self.m_panel32 = wx.Panel( self.panel3, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.DOUBLE_BORDER|wx.TAB_TRAVERSAL )
+		self.m_panel32.SetBackgroundColour( wx.SystemSettings.GetColour( wx.SYS_COLOUR_BTNSHADOW ) )
+		
+		bSizer28 = wx.BoxSizer( wx.VERTICAL )
+		
+		self.m_bitmap3 = wx.StaticBitmap( self.m_panel32, wx.ID_ANY, wx.ArtProvider.GetBitmap( wx.ART_HELP_BOOK,  ), wx.DefaultPosition, wx.Size( -1,-1 ), 0 )
+		bSizer28.Add( self.m_bitmap3, 0, wx.ALIGN_CENTER, 10 )
+		
+		
+		self.m_panel32.SetSizer( bSizer28 )
+		self.m_panel32.Layout()
+		bSizer28.Fit( self.m_panel32 )
+		bSizer26.Add( self.m_panel32, 1, wx.ALIGN_CENTER_HORIZONTAL|wx.ALL|wx.EXPAND, 0 )
+		
+		self.m_panel33 = wx.Panel( self.panel3, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TAB_TRAVERSAL )
+		bSizer26.Add( self.m_panel33, 1, wx.EXPAND |wx.ALL, 5 )
+		
+		
+		self.panel3.SetSizer( bSizer26 )
+		self.panel3.Layout()
+		bSizer26.Fit( self.panel3 )
+		bSizer7.Add( self.panel3, 1, wx.EXPAND |wx.ALL, 0 )
+		
 		
 		self.SetSizer( bSizer7 )
 		self.Layout()
+		bSizer7.Fit( self )
 		
 		self.Centre( wx.BOTH )
 		
@@ -396,12 +598,9 @@ class MyFrame ( wx.Frame ):
 		self.Bind( wx.EVT_MENU, self.m_menuItemFlashbookOnMenuSelection, id = self.m_menuItemFlashbook.GetId() )
 		self.Bind( wx.EVT_MENU, self.m_menuItemBackToMainOnMenuSelection, id = self.m_menuItemBackToMain.GetId() )
 		self.Bind( wx.EVT_MENU, self.m_menuHelpOnMenuSelection, id = self.m_menuHelp.GetId() )
-		self.m_btnOpenFlashbook.Bind( wx.EVT_BUTTON, self.m_btnOpenFlashbookOnButtonClick )
-		self.m_btnOpenFlashbook.Bind( wx.EVT_KEY_DOWN, self.m_btnOpenFlashbookOnKeyDown )
-		self.m_btnOpenFlashcard.Bind( wx.EVT_BUTTON, self.m_btnOpenFlashcardOnButtonClick )
-		self.m_btnOpenFlashcard.Bind( wx.EVT_KEY_DOWN, self.m_btnOpenFlashcardOnKeyDown )
-		self.m_btnPrintNotes.Bind( wx.EVT_BUTTON, self.m_btnPrintNotesOnButtonClick )
-		self.m_btnPrintNotes.Bind( wx.EVT_KEY_DOWN, self.m_btnPrintNotesOnKeyDown )
+		self.m_OpenFlashbook.Bind( wx.EVT_BUTTON, self.m_OpenFlashbookOnButtonClick )
+		self.m_OpenFlashcard.Bind( wx.EVT_BUTTON, self.m_OpenFlashcardOnButtonClick )
+		self.m_OpenPrint.Bind( wx.EVT_BUTTON, self.m_OpenPrintOnButtonClick )
 		self.m_dirPicker11.Bind( wx.EVT_DIRPICKER_CHANGED, self.m_dirPicker11OnDirChanged )
 		self.Bind( wx.EVT_TOOL, self.m_toolPlus11OnToolClicked, id = self.m_toolPlus11.GetId() )
 		self.Bind( wx.EVT_TOOL, self.m_toolMin11OnToolClicked, id = self.m_toolMin11.GetId() )
@@ -452,25 +651,37 @@ class MyFrame ( wx.Frame ):
 		self.Bind( wx.EVT_TOOL, self.m_toolMin21OnToolClicked, id = self.m_toolMin21.GetId() )
 		self.m_bitmapScroll1.Bind( wx.EVT_LEFT_DOWN, self.m_bitmapScroll1OnLeftDown )
 		self.m_bitmapScroll1.Bind( wx.EVT_LEFT_UP, self.m_bitmapScroll1OnLeftUp )
-		self.m_bitmapScroll1.Bind( wx.EVT_MOTION, self.m_bitmapScrollOnMotion )
-		self.m_bitmapScroll1.Bind( wx.EVT_LEFT_DOWN, self.m_bitmapScrollOnMouseEvents )
-		self.m_bitmapScroll1.Bind( wx.EVT_LEFT_UP, self.m_bitmapScrollOnMouseEvents )
-		self.m_bitmapScroll1.Bind( wx.EVT_MIDDLE_DOWN, self.m_bitmapScrollOnMouseEvents )
-		self.m_bitmapScroll1.Bind( wx.EVT_MIDDLE_UP, self.m_bitmapScrollOnMouseEvents )
-		self.m_bitmapScroll1.Bind( wx.EVT_RIGHT_DOWN, self.m_bitmapScrollOnMouseEvents )
-		self.m_bitmapScroll1.Bind( wx.EVT_RIGHT_UP, self.m_bitmapScrollOnMouseEvents )
-		self.m_bitmapScroll1.Bind( wx.EVT_MOTION, self.m_bitmapScrollOnMouseEvents )
-		self.m_bitmapScroll1.Bind( wx.EVT_LEFT_DCLICK, self.m_bitmapScrollOnMouseEvents )
-		self.m_bitmapScroll1.Bind( wx.EVT_MIDDLE_DCLICK, self.m_bitmapScrollOnMouseEvents )
-		self.m_bitmapScroll1.Bind( wx.EVT_RIGHT_DCLICK, self.m_bitmapScrollOnMouseEvents )
-		self.m_bitmapScroll1.Bind( wx.EVT_LEAVE_WINDOW, self.m_bitmapScrollOnMouseEvents )
-		self.m_bitmapScroll1.Bind( wx.EVT_ENTER_WINDOW, self.m_bitmapScrollOnMouseEvents )
-		self.m_bitmapScroll1.Bind( wx.EVT_MOUSEWHEEL, self.m_bitmapScrollOnMouseEvents )
-		self.m_bitmapScroll1.Bind( wx.EVT_MOUSEWHEEL, self.m_bitmapScrollOnMouseWheel )
+		self.m_bitmapScroll1.Bind( wx.EVT_MOTION, self.m_bitmapScroll1OnMotion )
+		self.m_bitmapScroll1.Bind( wx.EVT_LEFT_DOWN, self.m_bitmapScroll1OnMouseEvents )
+		self.m_bitmapScroll1.Bind( wx.EVT_LEFT_UP, self.m_bitmapScroll1OnMouseEvents )
+		self.m_bitmapScroll1.Bind( wx.EVT_MIDDLE_DOWN, self.m_bitmapScroll1OnMouseEvents )
+		self.m_bitmapScroll1.Bind( wx.EVT_MIDDLE_UP, self.m_bitmapScroll1OnMouseEvents )
+		self.m_bitmapScroll1.Bind( wx.EVT_RIGHT_DOWN, self.m_bitmapScroll1OnMouseEvents )
+		self.m_bitmapScroll1.Bind( wx.EVT_RIGHT_UP, self.m_bitmapScroll1OnMouseEvents )
+		self.m_bitmapScroll1.Bind( wx.EVT_MOTION, self.m_bitmapScroll1OnMouseEvents )
+		self.m_bitmapScroll1.Bind( wx.EVT_LEFT_DCLICK, self.m_bitmapScroll1OnMouseEvents )
+		self.m_bitmapScroll1.Bind( wx.EVT_MIDDLE_DCLICK, self.m_bitmapScroll1OnMouseEvents )
+		self.m_bitmapScroll1.Bind( wx.EVT_RIGHT_DCLICK, self.m_bitmapScroll1OnMouseEvents )
+		self.m_bitmapScroll1.Bind( wx.EVT_LEAVE_WINDOW, self.m_bitmapScroll1OnMouseEvents )
+		self.m_bitmapScroll1.Bind( wx.EVT_ENTER_WINDOW, self.m_bitmapScroll1OnMouseEvents )
+		self.m_bitmapScroll1.Bind( wx.EVT_MOUSEWHEEL, self.m_bitmapScroll1OnMouseEvents )
+		self.m_bitmapScroll1.Bind( wx.EVT_MOUSEWHEEL, self.m_bitmapScroll1OnMouseWheel )
 		self.m_bitmapScroll1.Bind( wx.EVT_RIGHT_DOWN, self.m_bitmapScrollOnRightDown )
+		self.m_bitmapScroll1.Bind( wx.EVT_RIGHT_UP, self.m_bitmapScroll1OnRightUp )
 		self.m_buttonCorrect.Bind( wx.EVT_BUTTON, self.m_buttonCorrectOnButtonClick )
 		self.m_buttonWrong.Bind( wx.EVT_BUTTON, self.m_buttonWrongOnButtonClick )
 		self.m_richText22.Bind( wx.EVT_LEFT_DOWN, self.m_richText22OnLeftDown )
+		self.m_lineQA.Bind( wx.EVT_CHECKBOX, self.m_lineQAOnCheckBox )
+		self.m_lineQA.Bind( wx.EVT_LEFT_UP, self.m_lineQAOnLeftUp )
+		self.m_lineWqa.Bind( wx.EVT_TEXT, self.m_lineWqaOnText )
+		self.m_lineWqa.Bind( wx.EVT_TEXT_ENTER, self.m_lineWqaOnTextEnter )
+		self.m_colorQAline.Bind( wx.EVT_COLOURPICKER_CHANGED, self.m_colorQAlineOnColourChanged )
+		self.m_linePDF.Bind( wx.EVT_CHECKBOX, self.m_linePDFOnCheckBox )
+		self.m_linePDF.Bind( wx.EVT_LEFT_UP, self.m_linePDFOnLeftUp )
+		self.m_lineWpdf.Bind( wx.EVT_TEXT, self.m_lineWpdfOnText )
+		self.m_lineWpdf.Bind( wx.EVT_TEXT_ENTER, self.m_lineWpdfOnTextEnter )
+		self.m_colorPDFline.Bind( wx.EVT_COLOURPICKER_CHANGED, self.m_colorPDFlineOnColourChanged )
+		self.m_PrintFinal.Bind( wx.EVT_BUTTON, self.m_PrintFinalOnButtonClick )
 	
 	def __del__( self ):
 		pass
@@ -486,22 +697,13 @@ class MyFrame ( wx.Frame ):
 	def m_menuHelpOnMenuSelection( self, event ):
 		event.Skip()
 	
-	def m_btnOpenFlashbookOnButtonClick( self, event ):
+	def m_OpenFlashbookOnButtonClick( self, event ):
 		event.Skip()
 	
-	def m_btnOpenFlashbookOnKeyDown( self, event ):
+	def m_OpenFlashcardOnButtonClick( self, event ):
 		event.Skip()
 	
-	def m_btnOpenFlashcardOnButtonClick( self, event ):
-		event.Skip()
-	
-	def m_btnOpenFlashcardOnKeyDown( self, event ):
-		event.Skip()
-	
-	def m_btnPrintNotesOnButtonClick( self, event ):
-		event.Skip()
-	
-	def m_btnPrintNotesOnKeyDown( self, event ):
+	def m_OpenPrintOnButtonClick( self, event ):
 		event.Skip()
 	
 	def m_dirPicker11OnDirChanged( self, event ):
@@ -618,9 +820,18 @@ class MyFrame ( wx.Frame ):
 	def m_bitmapScroll1OnLeftUp( self, event ):
 		event.Skip()
 	
+	def m_bitmapScroll1OnMotion( self, event ):
+		event.Skip()
+	
+	def m_bitmapScroll1OnMouseEvents( self, event ):
+		event.Skip()
+	
+	def m_bitmapScroll1OnMouseWheel( self, event ):
+		event.Skip()
 	
 	
-	
+	def m_bitmapScroll1OnRightUp( self, event ):
+		event.Skip()
 	
 	def m_buttonCorrectOnButtonClick( self, event ):
 		event.Skip()
@@ -631,13 +842,50 @@ class MyFrame ( wx.Frame ):
 	def m_richText22OnLeftDown( self, event ):
 		event.Skip()
 	
+	def m_lineQAOnCheckBox( self, event ):
+		event.Skip()
 	
+	def m_lineQAOnLeftUp( self, event ):
+		event.Skip()
+	
+	def m_lineWqaOnText( self, event ):
+		event.Skip()
+	
+	def m_lineWqaOnTextEnter( self, event ):
+		event.Skip()
+	
+	def m_colorQAlineOnColourChanged( self, event ):
+		event.Skip()
+	
+	def m_linePDFOnCheckBox( self, event ):
+		event.Skip()
+	
+	def m_linePDFOnLeftUp( self, event ):
+		event.Skip()
+	
+	def m_lineWpdfOnText( self, event ):
+		event.Skip()
+	
+	def m_lineWpdfOnTextEnter( self, event ):
+		event.Skip()
+	
+	def m_colorPDFlineOnColourChanged( self, event ):
+		event.Skip()
+	
+	def m_PrintFinalOnButtonClick( self, event ):
+		event.Skip()
+	
+
+###########################################################################
+## Class MyDialog
+###########################################################################
+
 class MyDialog ( wx.Dialog ):
 	
-	def __init__( self, parent,data ):
-		wx.Dialog.__init__ ( self, parent, id = wx.ID_ANY, title = wx.EmptyString, pos = wx.DefaultPosition, size = wx.Size( 349,250 ), style = wx.DEFAULT_DIALOG_STYLE )
+	def __init__( self, parent ):
+		wx.Dialog.__init__ ( self, parent, id = wx.ID_ANY, title = u"Settings", pos = wx.DefaultPosition, size = wx.Size( 349,250 ), style = wx.DEFAULT_DIALOG_STYLE )
 		
-		self.SetSizeHintsSz( wx.DefaultSize, wx.Size( 350,250 ) )
+		self.SetSizeHints( wx.DefaultSize, wx.Size( 350,250 ) )
 		
 		bSizer8 = wx.BoxSizer( wx.VERTICAL )
 		
@@ -652,7 +900,7 @@ class MyDialog ( wx.Dialog ):
 		self.m_staticText5.Wrap( -1 )
 		gSizer1.Add( self.m_staticText5, 0, wx.ALL, 5 )
 		
-		self.m_slider1 = wx.Slider( self.m_panel4, wx.ID_ANY, data, 1, data, wx.DefaultPosition, wx.DefaultSize, wx.SL_HORIZONTAL|wx.SL_LABELS )
+		self.m_slider1 = wx.Slider( self.m_panel4, wx.ID_ANY, 50, 1, 100, wx.DefaultPosition, wx.DefaultSize, wx.SL_HORIZONTAL|wx.SL_LABELS )
 		gSizer1.Add( self.m_slider1, 0, wx.ALL, 5 )
 		
 		self.m_staticText6 = wx.StaticText( self.m_panel4, wx.ID_ANY, u"Multiplier  :", wx.DefaultPosition, wx.DefaultSize, 0 )
@@ -660,6 +908,8 @@ class MyDialog ( wx.Dialog ):
 		gSizer1.Add( self.m_staticText6, 0, wx.ALL, 5 )
 		
 		self.m_textCtrl11 = wx.TextCtrl( self.m_panel4, wx.ID_ANY, u"1", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_textCtrl11.SetMaxSize( wx.Size( 30,-1 ) )
+		
 		gSizer1.Add( self.m_textCtrl11, 0, wx.ALL, 5 )
 		
 		self.m_staticText7 = wx.StaticText( self.m_panel4, wx.ID_ANY, u"Order of cards  :", wx.DefaultPosition, wx.DefaultSize, 0 )
@@ -707,13 +957,18 @@ class MyDialog ( wx.Dialog ):
 	
 	def m_radioRandomOnRadioButton( self, event ):
 		event.Skip()
+	
+
+###########################################################################
+## Class MyDialog2
+###########################################################################
 
 class MyDialog2 ( wx.Dialog ):
 	
-	def __init__( self, parent,data ):
-		wx.Dialog.__init__ ( self, parent, id = wx.ID_ANY, title = wx.EmptyString, pos = wx.DefaultPosition, size = wx.Size( 349,300 ), style = wx.DEFAULT_DIALOG_STYLE )
+	def __init__( self, parent ):
+		wx.Dialog.__init__ ( self, parent, id = wx.ID_ANY, title = u"Settings", pos = wx.DefaultPosition, size = wx.Size( 349,300 ), style = wx.DEFAULT_DIALOG_STYLE )
 		
-		self.SetSizeHintsSz( wx.DefaultSize, wx.Size( 350,300 ) )
+		self.SetSizeHints( wx.DefaultSize, wx.Size( 350,300 ) )
 		
 		bSizer8 = wx.BoxSizer( wx.VERTICAL )
 		
@@ -728,7 +983,7 @@ class MyDialog2 ( wx.Dialog ):
 		self.m_staticText5.Wrap( -1 )
 		gSizer1.Add( self.m_staticText5, 0, wx.ALL, 5 )
 		
-		self.m_slider1 = wx.Slider( self.m_panel4, wx.ID_ANY, data, 1, data, wx.DefaultPosition, wx.DefaultSize, wx.SL_HORIZONTAL|wx.SL_LABELS )
+		self.m_slider1 = wx.Slider( self.m_panel4, wx.ID_ANY, 50, 1, 100, wx.DefaultPosition, wx.DefaultSize, wx.SL_HORIZONTAL|wx.SL_LABELS )
 		gSizer1.Add( self.m_slider1, 0, wx.ALL, 5 )
 		
 		self.m_staticText6 = wx.StaticText( self.m_panel4, wx.ID_ANY, u"Multiplier  :", wx.DefaultPosition, wx.DefaultSize, 0 )
@@ -736,6 +991,8 @@ class MyDialog2 ( wx.Dialog ):
 		gSizer1.Add( self.m_staticText6, 0, wx.ALL, 5 )
 		
 		self.m_textCtrl11 = wx.TextCtrl( self.m_panel4, wx.ID_ANY, u"1", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_textCtrl11.SetMaxSize( wx.Size( 30,-1 ) )
+		
 		gSizer1.Add( self.m_textCtrl11, 0, wx.ALL, 5 )
 		
 		self.m_staticText7 = wx.StaticText( self.m_panel4, wx.ID_ANY, u"Order of cards  :", wx.DefaultPosition, wx.DefaultSize, 0 )
@@ -799,14 +1056,18 @@ class MyDialog2 ( wx.Dialog ):
 	
 	def m_radioRandomOnRadioButton( self, event ):
 		event.Skip()
+	
 
+###########################################################################
+## Class MyPrintDialog
+###########################################################################
 
 class MyPrintDialog ( wx.Dialog ):
 	
-	def __init__( self, parent, data ):
+	def __init__( self, parent ):
 		wx.Dialog.__init__ ( self, parent, id = wx.ID_ANY, title = u"Print settings", pos = wx.DefaultPosition, size = wx.Size( 645,450 ), style = wx.DEFAULT_DIALOG_STYLE )
 		
-		self.SetSizeHintsSz( wx.DefaultSize, wx.Size( -1,450 ) )
+		self.SetSizeHints( wx.DefaultSize, wx.Size( -1,450 ) )
 		
 		bSizer8 = wx.BoxSizer( wx.HORIZONTAL )
 		
@@ -814,176 +1075,16 @@ class MyPrintDialog ( wx.Dialog ):
 		self.m_panel4.SetBackgroundColour( wx.Colour( 254, 239, 231 ) )
 		self.m_panel4.SetMaxSize( wx.Size( 300,450 ) )
 		
-		bSizer23 = wx.BoxSizer( wx.VERTICAL )
-		
-		
-		bSizer23.Add( ( 0, 5), 0, wx.EXPAND, 5 )
-		
-		sbSizer1 = wx.StaticBoxSizer( wx.StaticBox( self.m_panel4, wx.ID_ANY, wx.EmptyString ), wx.VERTICAL )
-		
-		gSizer1 = wx.GridSizer( 0, 2, 0, 0 )
-		
-		self.m_staticText5 = wx.StaticText( sbSizer1.GetStaticBox(), wx.ID_ANY, u"Boundary in each card \nbetween Q and A?", wx.DefaultPosition, wx.DefaultSize, 0 )
-		self.m_staticText5.Wrap( -1 )
-		gSizer1.Add( self.m_staticText5, 0, wx.ALL, 5 )
-		
-		self.m_lineQA = wx.CheckBox( sbSizer1.GetStaticBox(), wx.ID_ANY, u" yes", wx.DefaultPosition, wx.DefaultSize, 0 )
-		self.m_lineQA.SetValue(True) 
-		gSizer1.Add( self.m_lineQA, 0, wx.ALL, 5 )
-		
-		self.m_staticText6 = wx.StaticText( sbSizer1.GetStaticBox(), wx.ID_ANY, u"Line Thickness", wx.DefaultPosition, wx.DefaultSize, 0 )
-		self.m_staticText6.Wrap( -1 )
-		gSizer1.Add( self.m_staticText6, 0, wx.ALL, 5 )
-		
-		bSizer22 = wx.BoxSizer( wx.HORIZONTAL )
-		
-		self.m_lineWqa = wx.TextCtrl( sbSizer1.GetStaticBox(), wx.ID_ANY, u"1", wx.DefaultPosition, wx.DefaultSize, 0 )
-		self.m_lineWqa.SetMaxSize( wx.Size( 30,-1 ) )
-		
-		bSizer22.Add( self.m_lineWqa, 0, wx.ALL, 5 )
-		
-		self.m_staticText24 = wx.StaticText( sbSizer1.GetStaticBox(), wx.ID_ANY, u"pixels", wx.DefaultPosition, wx.DefaultSize, 0 )
-		self.m_staticText24.Wrap( -1 )
-		bSizer22.Add( self.m_staticText24, 0, wx.ALL, 5 )
-		
-		
-		gSizer1.Add( bSizer22, 1, wx.EXPAND, 5 )
-		
-		self.m_staticText7 = wx.StaticText( sbSizer1.GetStaticBox(), wx.ID_ANY, u"Line Color", wx.DefaultPosition, wx.DefaultSize, 0 )
-		self.m_staticText7.Wrap( -1 )
-		gSizer1.Add( self.m_staticText7, 0, wx.ALL, 5 )
-		
-		self.m_colorQAline = wx.ColourPickerCtrl( sbSizer1.GetStaticBox(), wx.ID_ANY, wx.Colour( 0, 0, 0 ), wx.DefaultPosition, wx.DefaultSize, wx.CLRP_DEFAULT_STYLE )
-		gSizer1.Add( self.m_colorQAline, 0, wx.ALL, 5 )
-		
-		
-		sbSizer1.Add( gSizer1, 1, wx.EXPAND, 5 )
-		
-		
-		bSizer23.Add( sbSizer1, 1, wx.EXPAND, 5 )
-		
-		
-		bSizer23.Add( ( 0, 10), 0, wx.EXPAND, 5 )
-		
-		sbSizer11 = wx.StaticBoxSizer( wx.StaticBox( self.m_panel4, wx.ID_ANY, wx.EmptyString ), wx.VERTICAL )
-		
-		gSizer11 = wx.GridSizer( 0, 2, 0, 0 )
-		
-		self.m_staticText51 = wx.StaticText( sbSizer11.GetStaticBox(), wx.ID_ANY, u"Boundary in each row\nof multiple cards?", wx.DefaultPosition, wx.DefaultSize, 0 )
-		self.m_staticText51.Wrap( -1 )
-		gSizer11.Add( self.m_staticText51, 0, wx.ALL, 5 )
-		
-		self.m_linePDF = wx.CheckBox( sbSizer11.GetStaticBox(), wx.ID_ANY, u" yes", wx.DefaultPosition, wx.DefaultSize, 0 )
-		self.m_linePDF.SetValue(True) 
-		gSizer11.Add( self.m_linePDF, 0, wx.ALL, 5 )
-		
-		self.m_staticText61 = wx.StaticText( sbSizer11.GetStaticBox(), wx.ID_ANY, u"Line Thickness", wx.DefaultPosition, wx.DefaultSize, 0 )
-		self.m_staticText61.Wrap( -1 )
-		gSizer11.Add( self.m_staticText61, 0, wx.ALL, 5 )
-		
-		bSizer221 = wx.BoxSizer( wx.HORIZONTAL )
-		
-		self.m_lineWpdf = wx.TextCtrl( sbSizer11.GetStaticBox(), wx.ID_ANY, u"10", wx.DefaultPosition, wx.DefaultSize, 0 )
-		self.m_lineWpdf.SetMaxSize( wx.Size( 30,-1 ) )
-		
-		bSizer221.Add( self.m_lineWpdf, 0, wx.ALL, 5 )
-		
-		self.m_staticText241 = wx.StaticText( sbSizer11.GetStaticBox(), wx.ID_ANY, u"pixels", wx.DefaultPosition, wx.DefaultSize, 0 )
-		self.m_staticText241.Wrap( -1 )
-		bSizer221.Add( self.m_staticText241, 0, wx.ALL, 5 )
-		
-		
-		gSizer11.Add( bSizer221, 1, wx.EXPAND, 5 )
-		
-		self.m_staticText71 = wx.StaticText( sbSizer11.GetStaticBox(), wx.ID_ANY, u"Line Color", wx.DefaultPosition, wx.DefaultSize, 0 )
-		self.m_staticText71.Wrap( -1 )
-		gSizer11.Add( self.m_staticText71, 0, wx.ALL, 5 )
-		
-		self.m_colorPDFline = wx.ColourPickerCtrl( sbSizer11.GetStaticBox(), wx.ID_ANY, wx.Colour( 18, 5, 250 ), wx.DefaultPosition, wx.DefaultSize, wx.CLRP_DEFAULT_STYLE )
-		gSizer11.Add( self.m_colorPDFline, 0, wx.ALL, 5 )
-		
-		
-		sbSizer11.Add( gSizer11, 1, wx.EXPAND, 5 )
-		
-		
-		bSizer23.Add( sbSizer11, 1, wx.EXPAND, 5 )
-		
-		
-		bSizer23.Add( ( 0, 10), 1, wx.EXPAND, 5 )
-		
-		self.m_PrintFinal = wx.Button( self.m_panel4, wx.ID_ANY, u"Apply", wx.DefaultPosition, wx.DefaultSize, 0 )
-		self.m_PrintFinal.SetFont( wx.Font( 10, 70, 90, 90, False, wx.EmptyString ) )
-		self.m_PrintFinal.SetMinSize( wx.Size( 300,-1 ) )
-		self.m_PrintFinal.SetMaxSize( wx.Size( -1,30 ) )
-		
-		bSizer23.Add( self.m_PrintFinal, 1, wx.ALL, 5 )
-		
-		
-		self.m_panel4.SetSizer( bSizer23 )
-		self.m_panel4.Layout()
-		bSizer23.Fit( self.m_panel4 )
 		bSizer8.Add( self.m_panel4, 1, wx.EXPAND |wx.ALL, 0 )
-		
-		self.m_panel11 = wx.Panel( self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.DOUBLE_BORDER|wx.TAB_TRAVERSAL )
-		self.m_panel11.SetBackgroundColour( wx.Colour( 247, 255, 244 ) )
-		
-		bSizer27 = wx.BoxSizer( wx.VERTICAL )
-		
-		self.m_bitmap3 = wx.StaticBitmap( self.m_panel11, wx.ID_ANY, wx.ArtProvider.GetBitmap( wx.ART_HELP_BOOK,  ), wx.DefaultPosition, wx.DefaultSize, 0 )
-		self.m_bitmap3.SetMinSize( wx.Size( 320,450 ) )
-		
-		bSizer27.Add( self.m_bitmap3, 0, wx.ALL, 5 )
-		
-		
-		self.m_panel11.SetSizer( bSizer27 )
-		self.m_panel11.Layout()
-		bSizer27.Fit( self.m_panel11 )
-		bSizer8.Add( self.m_panel11, 1, wx.EXPAND |wx.ALL, 0 )
 		
 		
 		self.SetSizer( bSizer8 )
 		self.Layout()
 		
 		self.Centre( wx.BOTH )
-		
-		# Connect Events
-		self.m_lineQA.Bind( wx.EVT_CHECKBOX, self.m_lineQAOnCheckBox )
-		self.m_lineWqa.Bind( wx.EVT_TEXT, self.m_lineWqaOnText )
-		self.m_colorQAline.Bind( wx.EVT_COLOURPICKER_CHANGED, self.m_colorQAlineOnColourChanged )
-		self.m_linePDF.Bind( wx.EVT_CHECKBOX, self.m_linePDFOnCheckBox )
-		self.m_lineWpdf.Bind( wx.EVT_TEXT, self.m_lineWpdfOnText )
-		self.m_colorPDFline.Bind( wx.EVT_COLOURPICKER_CHANGED, self.m_colorPDFlineOnColourChanged )
-		self.m_PrintFinal.Bind( wx.EVT_BUTTON, self.m_PrintFinalOnButtonClick )
 	
 	def __del__( self ):
 		pass
 	
-	
-	# Virtual event handlers, overide them in your derived class
-	def m_lineQAOnCheckBox( self, event ):
-		event.Skip()
-	
-	def m_lineWqaOnText( self, event ):
-		event.Skip()
-	
-	def m_colorQAlineOnColourChanged( self, event ):
-		event.Skip()
-	
-	def m_linePDFOnCheckBox( self, event ):
-		event.Skip()
-	
-	def m_lineWpdfOnText( self, event ):
-		event.Skip()
-	
-	def m_colorPDFlineOnColourChanged( self, event ):
-		event.Skip()
-	
-	def m_PrintFinalOnButtonClick( self, event ):
-		self.printbool = True
-		self.Destroy()
-		if self.printbool == True:
-				print("het werkte")
-		
-	
 
-
+	
