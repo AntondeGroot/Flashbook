@@ -225,17 +225,7 @@ def run_flashcard(self):
         self.dir5 = dir0 + r"\borders"
         self.dir6 = dir0 + r"\resources"
         self.temp_dir = self.dir4
-        # create settings-folder for debugging: user can set it to debug mode if an error were to occur
-        if not os.path.exists(dir0+r"\settings.txt"):
-            with open(dir0+r"\settings.txt", 'w') as file:
-                file.write(json.dumps({'debugmode' : 0})) 
-        with open(dir0+r"\settings.txt", 'r') as file:
-            debug_var = json.load(file)['debugmode']
-            if debug_var == 0:
-                self.debugmode = False
-            else:
-                self.debugmode = True
-                print("debugging is enabled")
+
                 
         self.m_filePicker21.SetInitialDirectory(self.dir1+'\.') #for filepicker you can't just set a directory like dirPicker, in this case it should end in "\." so that it has to look for files, otherwise it will see a folder as a file...
         os.chdir(self.dir1)
@@ -331,20 +321,10 @@ def run_flashcard(self):
         
         self.Layout()
         
-    # create settings folder for debugging
-    if not os.path.exists(dir0+r"\settings.txt"): 
-        with open(dir0+r"\settings.txt", 'w') as file:
-            file.write(json.dumps({'debugmode' : 0})) 
-    with open(dir0+r"\settings.txt", 'r') as file:
-        debug_var = json.load(file)['debugmode']
-        if debug_var == 0:
-            debugmode = False
-        else:
-            debugmode = True
-            print("debugging is enabled: in fc_functions")
 
 
 
+    import gui_flashbook as gui
 
     def onShowPopup(self, event):
         win = gui.MyFrame2(self.GetTopLevelParent(), wx.SIMPLE_BORDER)
@@ -411,7 +391,7 @@ def run_flashcard(self):
         m2.startprogram(self,event)
         
 
-def run_print(self):
+def run_print(self,event):
     
     #------------------------------------------------------------------- general
     import os
@@ -422,7 +402,7 @@ def run_print(self):
     import wx.adv as adv
     import wx.richtext
     import wx.html as html
-    import print_gui as gui
+    #import print_gui as gui
     #------------------------------------------------------------------- modules
     import print_functions as f
     import print_modules as m
@@ -449,19 +429,7 @@ def run_print(self):
         self.dir6 = dir0 + r"\resources"
         self.temp_dir = self.dir4
         
-        # create settings folder for debugging
-        if not os.path.exists(dir0+r"\settings.txt"): 
-            with open(dir0+r"\settings.txt", 'w') as file:
-                file.write(json.dumps({'debugmode' : 0})) 
-        with open(dir0+r"\settings.txt", 'r') as file:
-            debug_var = json.load(file)['debugmode']
-            print(debug_var)
-            print(type(debug_var))
-            if debug_var == 0:
-                self.debugmode = False
-            else:
-                self.debugmode = True
-                print("debugging is enabled")
+        
                     
         folders = []
         dirs = [dir0,self.dir1,self.dir2,self.dir3,self.dir4,self.dir5,self.dir6]
@@ -511,17 +479,10 @@ def run_print(self):
     self.pic_command      = "\pic{"
     self.question_command = r'\\quiz{'
     self.answer_command   = r"\\ans{"
+        
     
-    
-    
-    
-    ## short cuts
+    #
     ini.initializeparameters(self)                  
-        
-        
-        
-
-        
     ## LOAD ALL DATA ==========================================================
     m.startprogram(self,event)
         
