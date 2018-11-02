@@ -23,9 +23,6 @@ from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 datadir = os.getenv("LOCALAPPDATA")
 dir0 = datadir + r"\FlashBook"
 # create settings folder for debugging
-if not os.path.exists(dir0+r"\settings.txt"): #notna
-    with open(dir0+r"\settings.txt", 'w') as file:
-        file.write(json.dumps({'debugmode' : 0})) 
 with open(dir0+r"\settings.txt", 'r') as file:
     debug_var = json.load(file)['debugmode']
     if debug_var == 0:
