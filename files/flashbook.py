@@ -265,6 +265,7 @@ class MainFrame(gui.MyFrame):
         
     #%% Panel selection
     def m_OpenFlashbookOnButtonClick( self, event ):
+        self.m_bitmapScroll.SetWindowStyleFlag(False)
         self.m_dirPicker11.SetInitialDirectory(self.dir3)
         setup_sources(self)
         SwitchPanel(self,1,0)      
@@ -348,6 +349,7 @@ class MainFrame(gui.MyFrame):
     #% flashbook events
 	
     def m_dirPicker11OnDirChanged(self,event):
+        self.m_bitmapScroll.SetWindowStyleFlag(wx.SIMPLE_BORDER)
         m.dirchanged(self,event)
         
     # open Appdata folder in Windows #=========================================
