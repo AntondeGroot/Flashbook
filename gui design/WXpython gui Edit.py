@@ -15,7 +15,7 @@ org = [
        '.AppendItem','.Append',
        '.SetSizeHintsSz','.SetSizeHints'
        ]
-
+a=[]
 for i in read:  
     k = 0
     for j in range(int(len(org)/2)):
