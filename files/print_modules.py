@@ -17,16 +17,7 @@ import re
 datadir = os.getenv("LOCALAPPDATA")
 dir0 = datadir + r"\FlashBook"
 # create settings folder for debugging
-if not os.path.exists(dir0+r"\settings.txt"): #notna
-    with open(dir0+r"\settings.txt", 'w') as file:
-        file.write(json.dumps({'debugmode' : 0})) 
-with open(dir0+r"\settings.txt", 'r') as file:
-    debug_var = json.load(file)['debugmode']
-    if debug_var == 0:
-        debugmode = False
-    else:
-        debugmode = True
-        print("debugging is enabled: in fb_functions")
+
 
 
 def dirchanged(self,event):
@@ -137,120 +128,9 @@ def dirchanged(self,event):
         print(colored("Error: could not load image",'red'))
 
 
-def bitmapleftup(self,event):
-    if self.cursor == False:
-        self.SetCursor(wx.Cursor(wx.CURSOR_ARROW))
-    self.panel_pos2 = self.m_bitmapScroll.ScreenToClient(wx.GetMousePosition())
-    
-    x0, y0 = self.panel_pos
-    x1, y1 = self.panel_pos2
-    #rescale
-    x0 = int(x0/self.zoom)
-    y0 = int(y0/self.zoom)
-    x1 = int(x1/self.zoom)
-    y1 = int(y1/self.zoom)
-    
-    if abs(x1-x0)>2 and abs(y1-y0)>2:            
-        self.BorderCoords = [x0,y0,x1,y1]
-        ## save all borders in dict
-        try:
-            #dict key exists, so you should append its value
-            val = self.tempdictionary['page {}'.format(self.currentpage)]
-            val.append(self.BorderCoords)
-            self.tempdictionary['page {}'.format(self.currentpage)] = val
-            #print("val = {}".format(val))
-            #print("dict = {}".format(self.tempdictionary))
-        except:
-            #dict key does not exist, just add the value to the new key
-            self.tempdictionary.update({'page {}'.format(self.currentpage): [self.BorderCoords]})
-            #print("temp dictionary is: {}".format(self.tempdictionary))            
+
         
-        # cut down image
-        img = PIL.Image.open(self.jpgdir)
-        img = np.array(img)            
-        img = img[y0:y1,x0:x1]
-        img = PIL.Image.fromarray(img)
-                        
-        picname =  "{}_{}_{}{}{}{}.jpg".format(self.bookname,self.currentpage,randint(0,9),randint(0,9),randint(0,9),randint(0,9))
-        img.save(self.dir2+r"\{}\{}".format(self.bookname,picname))
-        if self.questionmode == True:
-            self.pic_question.append(picname)  
-            self.pic_question_dir.append(self.dir2+r"\{}\{}".format(self.bookname,picname))  
-        else:
-            #self.tempdictionary = {}
-            self.pic_answer.append(picname)  
-            self.pic_answer_dir.append(self.dir2+r"\{}\{}".format(self.bookname,picname))    
-        
-        # show current page
-        f.ShowPage(self)     
-        
-def selectionentered(self,event):
-    try:
-        if self.questionmode == True:
-            # change mode to answer
-            self.usertext = self.m_textCtrl2.GetValue()
-            self.pdf_question = self.usertext
-            self.usertext = f.Text2Latex(self)
-            self.questionmode = False
-            self.m_textCtrl1.SetValue("Answer:")
-            self.m_textCtrl2.SetValue("")
-            
-            if len(self.pic_question)>1:
-                f.CombinePics(self,self.pic_question_dir)
-                self.pdf_question = str(self.pdf_question) + r" \pic{" + "{}".format(self.pic_question[0])+r"}"
-            else:                
-                if len(self.pic_question) == 1:
-                    self.pdf_question = str(self.pdf_question) + r" \pic{" + "{}".format(self.pic_question[0])+r"}"
-            try:                     
-                f.ShowInPopup(self,"Question")
-            except:
-                pass
-             
-        else:
-            self.usertext = self.m_textCtrl2.GetValue()
-            self.pdf_answer = self.usertext
-            self.usertext = f.Text2Latex(self)
-            self.questionmode = True
-            self.m_textCtrl1.SetValue("Question:")
-            self.m_textCtrl2.SetValue("")
-            
-            # save everything!!------------------------------------------------------------------------------------------------------------
-            findic = self.dictionary
-            tempdic = self.tempdictionary
-            for key in list(tempdic):      # go over all keys
-                for value in tempdic[key]: # go over all values
-                    if key in findic:      # if already exists: just add value
-                        findic[key].append(value)
-                    else:                  # if not, add key and value, where key = pagenr and value is rectangle coordinates
-                        findic.update({key : [value]})
-            self.dictionary = findic
-            self.tempdictionary = {}
-            
-            # remove temporary borders
-            self.pageimage = self.pageimagecopy
-            f.ShowPage(self)
-    
-            with open(self.PathBorders, 'w') as file:
-                    file.write(json.dumps(self.dictionary)) 
-            if len(self.pic_answer)>1:
-                f.CombinePics(self,self.pic_answer_dir)
-                self.pdf_answer = str(self.pdf_answer) + r" \pic{" + "{}".format(self.pic_answer[0])+r"}"
-            elif len(self.pic_answer) == 1:
-                self.pdf_answer = str(self.pdf_answer) + r" \pic{" + "{}".format(self.pic_answer[0])+r"}"                        
-            
-            try:   
-                f.ShowInPopup(self,"Answer")                    
-            except:
-                pass
-            # save the user inputs in .tex file
-            if len(self.pdf_question)!=0:
-                with open(os.path.join(self.dir1, self.bookname +'.tex'), 'a') as output: # the mode "a" appends to the file    
-                    output.write(r"\quiz{" + str(self.pdf_question) + "}")
-                    output.write(r"\ans{"  + str(self.pdf_answer)   + "}"+"\n")
-            #reset all
-            f.ResetQuestions(self)
-    except:
-        print(colored("Error: cannot enter selection",'red'))
+
 
 def find_hook(hookpos,string):    
     k = 0
@@ -270,27 +150,9 @@ def find_hook(hookpos,string):
                     return end_index
 
         
-def mousewheel(self,event):
-    scrollWin = self.m_scrolledWindow1
-    self.scrollpos.append(scrollWin.GetScrollPos(0))
-    self.scrollpos.pop(0)
-    if debugmode:
-        print("scroll pos = {}".format(self.scrollpos))
-    self.WheelRot = event.GetWheelRotation()   # get rotation from mouse wheel
-    if self.scrollpos[0] == self.scrollpos[1]: # you've reached either the beginning or end of the document
-        if self.scrollpos[0] == 0:             # beginning
-            if self.WheelRot > 0:
-                self.scrollpos = [42,1337]     # make it a little more difficult to scroll back once you scrolled a page
-                self.m_toolBackOnToolClicked(self)
-        else:                                  # end of page
-            if self.WheelRot < 0:
-                self.scrollpos = [42,1337] 
-                self.m_toolNextOnToolClicked(self)
-    event.Skip()                               # necessary to use other functions after this one is used
+
 
 def findchar(char,string,nr):
-    if debugmode:
-        print("f=findchar")
     nr1 = str(nr)
     if nr1.isdigit() == True:
         ans = [m.start() for m in re.finditer(r'{}'.format(char), string )][nr]
@@ -303,8 +165,6 @@ def findchar(char,string,nr):
         return ans 
 
 def contains(iterable):
-    if debugmode:
-        print("f=contains")
     k = 0
     ans = []
     con = []
@@ -316,8 +176,7 @@ def contains(iterable):
     return con,ans 
 
 def find_arguments(hookpos,sentence,defined_command,nr_arguments):
-    if debugmode:
-        print("f=findarguments")
+    
     k = 0
     hookcount = 0      
     condition = True
@@ -352,7 +211,7 @@ def find_arguments(hookpos,sentence,defined_command,nr_arguments):
 
 
 def replace_allcommands(defined_command,LaTeX_command,Question,nr_arg):    
-    if debugmode:
+    if self.debugmode:
         print("f=replace allcommands")
     length_c = len(defined_command) 
     # check if the command can be found in Q&A
@@ -404,8 +263,8 @@ def remove_pics(string,pic_command):
     return boolean, string, picname
 
 def LoadFlashCards(self):
-    if debugmode:
-        print("f=loadflashcards")
+    #if self.debugmode:
+    #    print("f=loadflashcards")
     try:
         # find the closing '}' for a command                                         
         end_q_index = 0
@@ -519,7 +378,7 @@ def LoadFlashCards(self):
     except:
         print(colored("Error: couldn't pick file",'red'))
     
-                
+               
     notes2paper(self)
     
     #self.allimages.show()
@@ -544,7 +403,7 @@ def LoadFlashCards(self):
 
 
 def ShowPage(self):
-    if debugmode:
+    if self.debugmode:
         print("f=showpage")
     try:
         width, height = self.image.size
@@ -690,7 +549,7 @@ def RemoveKeyboardShortcuts(self):
         pass
 
 def SwitchBitmap(self): # checks if there is an answer card, if not changes mode back to question.
-    if debugmode:
+    if self.debugmode:
         print("f=switchbitmap")
     try:
         # you always start with a question, check if there is an answer:
@@ -717,8 +576,10 @@ def drawborder(self,img):
 #%%
 def add_border(self,img):
     
-    new_im = PIL.Image.new("RGB", (self.a4page_w,img.size[1]+5),"white")
-    border = PIL.Image.new("RGB", (self.a4page_w,5),"blue")
+    new_im = PIL.Image.new("RGB", (self.a4page_w,img.size[1]+self.pdfline_thickness),"white")
+    border = PIL.Image.new("RGB", (self.a4page_w,self.pdfline_thickness), self.pdfline_color)
+    
+    #print(type(self.pdfline_color ))
     new_im.paste(border, (0,img.size[1]))
     new_im.paste(img, (0,0))
     return new_im
@@ -735,7 +596,7 @@ def notes2paper(self):
     import print_functions as f
     import bisect
     import img2pdf
-    self.drawborder = False
+    
     N = 1.3
     self.a4page_w  = round(1240*N) # in pixels
     self.a4page_h = round(1754*N)
@@ -799,19 +660,20 @@ def notes2paper(self):
             widths, heights = zip(*(i.size for i in images)) 
             total_height = sum(heights)
             max_width = max(widths)
-            new_im = PIL.Image.new('RGB', (max_width, total_height+1), "white")
-            line = PIL.Image.new('RGB', (round(0.7*max_width), 1), "black")
+            new_im = PIL.Image.new('RGB', (max_width, total_height+self.QAline_thickness), "white")
+            line = PIL.Image.new('RGB', (round(0.7*max_width), self.QAline_thickness), self.QAline_color)
             #combine images to 1
             
             new_im.paste(images[0], (0,0))
-            if self.drawborder == True:
+            if self.QAline_bool == True:
                 new_im.paste(line,(0,self.image_q.size[1]))
-            new_im.paste(images[1], (0,self.image_q.size[1]+1))
+            new_im.paste(images[1], (0,self.image_q.size[1]+self.QAline_thickness))
             
             self.image = new_im
             
         else:
             self.image = self.image_q
+        
         
         self.allimages.append(self.image)
         self.allimages_w.append(self.image.size[0])
@@ -867,18 +729,22 @@ def notes2paper(self):
         self.img_heights.append(img.size[1])
     
     A = np.cumsum(self.img_heights)
-    while len(self.img_heights) != 0:        
+    if self.printpreview == False:
+        while len(self.img_heights) != 0:        
+            index = bisect.bisect_left(A, self.a4page_h) #look for index where value is too large        
+            if index != len(A):        
+                D.append(self.paper_h[:index] )
+                self.paper_h = self.paper_h[index:] 
+                self.img_heights = self.img_heights[index:] 
+                A = np.cumsum(self.img_heights)
+                print(A)
+                print("\n")      
+            else:
+                D.append(self.paper_h)
+                self.img_heights = []
+    else:
         index = bisect.bisect_left(A, self.a4page_h) #look for index where value is too large        
-        if index != len(A):        
-            D.append(self.paper_h[:index] )
-            self.paper_h = self.paper_h[index:] 
-            self.img_heights = self.img_heights[index:] 
-            A = np.cumsum(self.img_heights)
-            print(A)
-            print("\n")      
-        else:
-            D.append(self.paper_h)
-            self.img_heights = []
+        D.append(self.paper_h[:index] )
                
     self.paper_h = D
     
@@ -909,16 +775,20 @@ def notes2paper(self):
     
     i = 0
     folder = []
-    for image in imagelist:
+    if self.printpreview == False:
+        for image in imagelist:
+            
+            pathname = os.path.join(self.dir_t,"temporary{}.png".format(i))
+            folder.append(pathname)
+            image.save(pathname)
+            #image.show()
+            i += 1
+        filename = os.path.join(dir0,"{}.pdf".format(self.bookname))
+        with open(filename, "wb") as f:
+            f.write(img2pdf.convert([i for i in folder if i.endswith(".png")]))
+    else:
+        pass
         
-        pathname = os.path.join(self.dir_t,"temporary{}.png".format(i))
-        folder.append(pathname)
-        image.save(pathname)
-        i += 1
-    filename = os.path.join(dir0,"{}.pdf".format(self.bookname))
-    with open(filename, "wb") as f:
-        f.write(img2pdf.convert([i for i in folder if i.endswith(".png")]))
-    
     
     
     
@@ -945,11 +815,13 @@ def startprogram(self,event):
     
     # open file
     try:
-        self.path = event.GetPath()
-        print("path = {}".format(self.path))
-        self.bookname = self.path.replace("{}".format(self.dir1),"")[1:-4]#to remove '\' and '.tex'
-        self.filename = self.path.replace("{}".format(self.dir1),"")[1:]#to remove '\' but not '.tex'
-        print("book = {} ".format(self.bookname))
+        if self.FilePickEvent == True:
+            self.path = self.fileDialog.GetPath()
+            self.bookname = self.fileDialog.GetFilename().replace(".tex","")
+            self.bookname = self.path.replace("{}".format(self.dir1),"")[1:-4]#to remove '\' and '.tex'
+            print(f"bookname after {self.bookname}")
+            self.filename = self.path.replace("{}".format(self.dir1),"")[1:]#to remove '\' but not '.tex'
+            print("book = {} ".format(self.bookname))
     except:
         print(colored("Error: Couldn't open path",'red'))
     try:
@@ -984,9 +856,6 @@ def startprogram(self,event):
     
         
     # display nr of questions and current index of questions            
-    self.m_CurrentPage.SetValue("{}".format(self.index+1))
-    self.m_TotalPages.SetValue("{}".format(self.nr_questions))
-        
     LoadFlashCards(self)
     print(self.allimages)  
     print(self.allimages_w)      
