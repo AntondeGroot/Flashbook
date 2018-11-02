@@ -132,8 +132,6 @@ def find_hook(hookpos,string):
 ## find a character in a string 
 #  return either all values nr="", or first for nr=0, or last for nr=-1
 def findchar(char,string,nr):
-    if self.debugmode:
-        print("f=findchar")
     nr1 = str(nr)
     if nr1.isdigit() == True:
         ans = [m.start() for m in re.finditer(r'{}'.format(char), string )][nr]
