@@ -5,24 +5,29 @@ output = open(filename2, 'w')
 f = open(filename, 'r')
 read = f.readlines()
 
-
-org = [".AddSpacer",'u"../../Flashbook Flashcard/Final/Flashbook-master/gui design/path_min"',
-       'u"../../Flashbook Flashcard/Final/Flashbook-master/gui design/path_add"','u"../../Flashbook Flashcard/Final/Flashbook-master/gui design/path_switch"']
-rep = ['.Add','path_min','path_add','path_switch']
-
-a = []
+# every first item will be replaced by the one following it.
+org = [
+       ".AddSpacer",'.Add',
+       'u"../../Flashbook Flashcard/Final/Flashbook-master/gui design/path_min"','path_min',
+       'u"../../Flashbook Flashcard/Final/Flashbook-master/gui design/path_add"','path_add',
+       'u"../../Flashbook Flashcard/Final/Flashbook-master/gui design/path_switch"','path_switch',
+       '.AddLabelTool','.AddTool',
+       '.AppendItem','.Append',
+       '.SetSizeHintsSz','.SetSizeHints'
+       ]
 
 for i in read:  
-    for j in range(len(org)):
-        print(i)
+    k = 0
+    for j in range(int(len(org)/2)):
         # the string.replace() function don't do the change at place
         # it's return a new string with the new changes.
         
-        i = i.replace(org[j],rep[j])
+        i = i.replace(org[k],org[k+1])
+        k += 2
     a.append(i)
 
 for page in a:
-    print(page)
+    #print(page)
     output.write(page)
 f.close()   
 output.close()
