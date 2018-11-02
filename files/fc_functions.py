@@ -30,16 +30,7 @@ path_repeat    = os.path.join(dir7,"repeat.png")
 path_repeat_na = os.path.join(dir7,"repeat_na.png")
 
  # create settings folder for debugging
-if not os.path.exists(dir0+r"\settings.txt"):
-    with open(dir0+r"\settings.txt", 'w') as file:
-        file.write(json.dumps({'debugmode' : 0})) 
-with open(dir0+r"\settings.txt", 'r') as file:
-    debug_var = json.load(file)['debugmode']
-    if debug_var == 0:
-        debugmode = False
-    else:
-        debugmode = True
-        print("debugging is enabled: in fc_functions")
+
 
 
 """
@@ -56,8 +47,6 @@ with open(dir0+r"\settings.txt", 'r') as file:
 ## to check if a string is contained in a list of strings,
 #  returns (T/F, index)
 def contains(iterable):
-    if debugmode:
-        print("f=contains")
     k = 0
     ans = []
     con = []
@@ -70,12 +59,12 @@ def contains(iterable):
 
 ## keeping track of user progress data
 def StatsDir(self):
-    if debugmode:
+    if self.debugmode:
         print("f=statsdir")
     return os.path.join(self.dir4, 'data_sessions.json')
 
 def SaveStats(self):
-    if debugmode:
+    if self.debugmode:
         print("f=savestats")
         print(self.resumedata)
         print(type(self.resumedata))
@@ -90,7 +79,7 @@ def SaveStats(self):
             file.write(json.dumps(self.resumedata) )
         
 def LoadStats(self):    
-    if debugmode:
+    if self.debugmode:
         print("f=loadstats")
     try:
         with open(StatsDir(self), 'r') as file:
@@ -105,7 +94,7 @@ def LoadStats(self):
         print("no stats found for this book, continue")
         
 def RemoveStats(self):
-    if debugmode:
+    if self.debugmode:
         print("f=removestats")
     try:
         self.resumedata.pop(self.bookname)
@@ -113,7 +102,7 @@ def RemoveStats(self):
         print(colored("Error: could not delete saved stats","red"))
           
 def SetStats(self):
-    if debugmode:
+    if self.debugmode:
         print("f=setstats")
     try:
         self.resumedata.update({self.bookname: {'score': self.score, 'index': self.index, 'nr_questions':self.nr_questions, 'cardorder': self.cardorder[:self.nr_questions] }})
@@ -143,7 +132,7 @@ def find_hook(hookpos,string):
 ## find a character in a string 
 #  return either all values nr="", or first for nr=0, or last for nr=-1
 def findchar(char,string,nr):
-    if debugmode:
+    if self.debugmode:
         print("f=findchar")
     nr1 = str(nr)
     if nr1.isdigit() == True:
@@ -162,7 +151,7 @@ def findchar(char,string,nr):
 #  sentence = "if we take the second partial derivative \secpar{X+Y}{t}"
 #  returns: position where (X+Y), (t)  begin and end and in the string and that they are the arguments
 def find_arguments(hookpos,sentence,defined_command,nr_arguments):
-    if debugmode:
+    if self.debugmode:
         print("f=findarguments")
     k = 0
     hookcount = 0      
@@ -198,7 +187,7 @@ def find_arguments(hookpos,sentence,defined_command,nr_arguments):
 
 ## replace all defined commands in a string
 def replace_allcommands(defined_command,LaTeX_command,Question,nr_arg):    
-    if debugmode:
+    if self.debugmode:
         print("f=replace allcommands")
     length_c = len(defined_command) 
     # check if the command can be found in Q&A
@@ -252,7 +241,7 @@ def remove_pics(string,pic_command):
 ## display a bitmap indicating whether or not you can flip over the flashcard
 # source:   https://stackoverflow.com/questions/27957257/how-to-change-bitmap1-for-toolbartoolbase-object-in-wxpython
 def SwitchBitmap(self): # checks if there is an answer card, if not changes mode back to question.
-    if debugmode:
+    if self.debugmode:
         print("f=switchbitmap")
     try:
         # you always start with a question, check if there is an answer:
@@ -274,7 +263,7 @@ def SwitchBitmap(self): # checks if there is an answer card, if not changes mode
         print(colored("Error: could not switch bitmap #1","red"))
     
 def CombinePicText(self):
-    if debugmode:
+    if self.debugmode:
         print("f=combinepictext")
     # get images
     imagepic = PIL.Image.open(self.dir2+"\\"+self.bookname+"\\"+self.picdictionary[self.key])
@@ -297,7 +286,7 @@ def clearbitmap(self):
     self.m_bitmapScroll1.SetBitmap(wx.Bitmap(wx.Image( 1,1 )))
 
 def displaycard(self):
-    if debugmode:
+    if self.debugmode:
         print("f=displaycard")
     try:
         self.TextCard = False
@@ -330,7 +319,7 @@ def displaycard(self):
         print(colored("Error: could not display card","red"))
 
 def CreateTextCard(self):
-    if debugmode:
+    if self.debugmode:
         print("f=createtextcard")
         print("is pylab interactive? = {}".format(pylab.isinteractive()))
         pylab.ioff()
@@ -355,7 +344,7 @@ def CreateTextCard(self):
     self.imagetext = PIL.Image.frombytes("RGB", size, raw_data, decoder_name='raw', )
 
 def LoadFlashCards(self):
-    if debugmode:
+    if self.debugmode:
         print("f=loadflashcards")
     try:
         # find the closing '}' for a command                                         
@@ -501,7 +490,7 @@ def LoadFlashCards(self):
         print(colored("Error: couldn't pick file",'red'))
 
 def ShowPage(self):
-    if debugmode:
+    if self.debugmode:
         print("f=showpage")
     try:
         width, height = self.image.size
@@ -513,7 +502,7 @@ def ShowPage(self):
 
 # reset scroll bar when switching page:
 def SetScrollbars(self):
-    if debugmode:
+    if self.debugmode:
         print("f=setscrollbars")    
     scrollWin = self.m_scrolledWindow11
     scrollWin.SetScrollbars(0,int(20*self.zoom),0,int(100*self.zoom) )
