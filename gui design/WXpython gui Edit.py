@@ -14,8 +14,9 @@ org = [
        '.AddLabelTool','.AddTool',
        '.AppendItem','.Append',
        '.SetSizeHintsSz','.SetSizeHints'
+       '50, 1, 100','data, 1, data'
        ]
-a=[]
+a = []
 for i in read:  
     k = 0
     for j in range(int(len(org)/2)):
