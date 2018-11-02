@@ -48,6 +48,9 @@ def setup_sources(self):
     self.path_repeat = os.path.join(self.dir7,"repeat.png")
     self.path_repeat_na = os.path.join(self.dir7,"repeat_na.png")
     self.path_icon = os.path.join(self.dir7,"open-book1.png")
+    self.path_fb = os.path.join(self.dir7,"flashbook.png")
+    self.path_fc = os.path.join(self.dir7,"flashcard.png")
+    self.path_pr = os.path.join(self.dir7,"print.png")
 
 #%% settings   
 def settings_get(self):
@@ -185,19 +188,19 @@ import fc_modules as m2
 #import fc_modules as m2  
 
 def set_bitmapbuttons(self):
-    image = PIL.Image.open("pic1.png", mode='r')
+    image = PIL.Image.open(self.path_fb, mode='r')
     image = image.resize((105, 105), PIL.Image.ANTIALIAS) 
     image2 = wx.Image( image.size)
     image2.SetData( image.tobytes() )
     self.m_OpenFlashbook.SetBitmap(wx.Bitmap(image2))
     
-    image = PIL.Image.open("pic3.png", mode='r')
+    image = PIL.Image.open(self.path_fc, mode='r')
     image = image.resize((105, 105), PIL.Image.ANTIALIAS) 
     image2 = wx.Image( image.size)
     image2.SetData( image.tobytes() )
     self.m_OpenFlashcard.SetBitmap(wx.Bitmap(image2))
     
-    image = PIL.Image.open("pic2.png", mode='r')
+    image = PIL.Image.open(self.path_pr, mode='r')
     image = image.resize((105, 105), PIL.Image.ANTIALIAS) 
     image2 = wx.Image( image.size)
     image2.SetData( image.tobytes() )
