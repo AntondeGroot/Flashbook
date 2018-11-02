@@ -355,10 +355,10 @@ class MainFrame(gui.MyFrame):
     
 	# zoom in #=======================================================
     def m_toolPlus11OnToolClicked( self, event ):
-        m.zoomout(self,event)
+        m.zoomin(self,event)
 	
     def m_toolMin11OnToolClicked( self, event ):
-        m.zoomin(self,event)
+        m.zoomout(self,event)
 	
     # change page #=======================================================
     def m_toolBack11OnToolClicked( self, event ):
