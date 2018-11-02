@@ -16,16 +16,7 @@ import json
 datadir = os.getenv("LOCALAPPDATA")
 dir0 = datadir + r"\FlashBook"
 # create settings folder for debugging
-if not os.path.exists(dir0+r"\settings.txt"): #notna
-    with open(dir0+r"\settings.txt", 'w') as file:
-        file.write(json.dumps({'debugmode' : 0})) 
-with open(dir0+r"\settings.txt", 'r') as file:
-    debug_var = json.load(file)['debugmode']
-    if debug_var == 0:
-        debugmode = False
-    else:
-        debugmode = True
-        print("debugging is enabled: in fb_functions")
+
 
 
 def dirchanged(self,event):
@@ -257,7 +248,7 @@ def mousewheel(self,event):
     scrollWin = self.m_scrolledWindow1
     self.scrollpos.append(scrollWin.GetScrollPos(0))
     self.scrollpos.pop(0)
-    if debugmode:
+    if self.debugmode:
         print("scroll pos = {}".format(self.scrollpos))
     self.WheelRot = event.GetWheelRotation()   # get rotation from mouse wheel
     if self.scrollpos[0] == self.scrollpos[1]: # you've reached either the beginning or end of the document
