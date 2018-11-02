@@ -155,7 +155,7 @@ def SwitchPanel(self,n,m):
         self.panel0.Hide()
         self.panel1.Show()
         self.panel2.Hide()
-        self.panel2.Hide()
+        self.panel3.Hide()
         if m == 0:
             self.panel11.Show()
             self.panel12.Hide()
@@ -167,7 +167,7 @@ def SwitchPanel(self,n,m):
         self.panel0.Hide()
         self.panel1.Hide()
         self.panel2.Show()
-        self.panel2.Hide()
+        self.panel3.Hide()
         if m == 0:
             self.panel21.Show()
             self.panel22.Hide()
@@ -273,7 +273,6 @@ class MainFrame(gui.MyFrame):
         program.run_flashbook(self)
         
     def m_OpenFlashcardOnButtonClick( self, event ):
-        self.m_filePickerPrint.SetInitialDirectory(self.dir1+'\.') #for filepicker you can't just set a directory like dirPicker, in this case it should end in "\." so that it has to look for files, otherwise it will see a folder as a file...
         SwitchPanel(self,2,0)
         program.run_flashcard(self)
         
