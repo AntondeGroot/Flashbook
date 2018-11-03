@@ -284,19 +284,20 @@ def CreateTextCard(self):
 def CombinePicText(self,directory):
     if self.debugmode:
         print("fb=CombinePicText")
-    imagepic = PIL.Image.open(directory)
-    images = [self.imagetext,imagepic]
-    
-    widths, heights = zip(*(i.size for i in images))
-    total_height = sum(heights)
-    max_width = max(widths)
-    new_im = PIL.Image.new('RGB', (max_width, total_height), "white")
-    #combine images to 1
-    x_offset = 0
-    for im in images:
-        new_im.paste(im, (0,x_offset))
-        x_offset += im.size[1]
-    self.image = new_im
+    if os.path.exists(directory):
+        imagepic = PIL.Image.open(directory)
+        images = [self.imagetext,imagepic]
+        
+        widths, heights = zip(*(i.size for i in images))
+        total_height = sum(heights)
+        max_width = max(widths)
+        new_im = PIL.Image.new('RGB', (max_width, total_height), "white")
+        #combine images to 1
+        x_offset = 0
+        for im in images:
+            new_im.paste(im, (0,x_offset))
+            x_offset += im.size[1]
+        self.image = new_im
 
 def ShowInPopup(self,event,mode):
     if self.debugmode:
@@ -313,9 +314,12 @@ def ShowInPopup(self,event,mode):
         pass
     try:
         CreateTextCard(self)
+    except:
+        pass
+    try:
         CombinePicText(self,directory)
     except:
-        print("test test2")
+        self.image = self.imagetext
         
     print("test test")
     image = self.image
@@ -327,8 +331,11 @@ def ShowInPopup(self,event,mode):
     ######image = self.imagetext
     ##except:
     ##    pass
-    
-    
+    try:
+        a = self.mousepos # try to access mousepos, but if there wasn't any mouseclick: then just place the popupwindow in the middle of your screen.
+    except:
+        self.mousepos = (int(wx.GetDisplaySize()[0]/2),int(wx.GetDisplaySize()[1]/2))
+        
     win = Window2(self.GetTopLevelParent(), wx.SIMPLE_BORDER,image)    
     win.Position((self.mousepos[0]-10,self.mousepos[1]-10), (0,0))
     win.Show(True)  
