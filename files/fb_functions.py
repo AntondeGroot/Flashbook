@@ -31,38 +31,41 @@ class Window2(wx.PopupWindow):
     """"""
     
     #----------------------------------------------------------------------
-    def __init__(self, parent, style,information):
+    def __init__(self, parent, style,image):
         
-        self.info=information
         #print("picinfo in w2 {}".format(self.info))
-        self.border = 10
+        
         """Constructor"""
         wx.PopupWindow.__init__(self, parent, style)
-        if self.debugmode:
-            print("fb=Window2")
-        
-        
+        border = 10
+        #if self.debugmode:
+        print("fb=Window2")
+
         panel = wx.Panel(self)
-        self.panel = panel
+        
         #panel.SetBackgroundColour("CADET BLUE")
         
         panel.SetBackgroundColour(wx.Colour(179, 236, 255) )
+   
+        #self.m_bitmap123 = wx.StaticBitmap( panel, wx.ID_ANY, wx.NullBitmap, wx.DefaultPosition, wx.DefaultSize, 0 )
         
-        #self.m_bitmap4 = wx.StaticBitmap( panel, wx.ID_ANY, wx.NullBitmap, wx.DefaultPosition, wx.DefaultSize, 0 )
-        self.m_bitmap4 = wx.StaticBitmap( panel, wx.ID_ANY, wx.NullBitmap,[self.border,self.border], wx.DefaultSize, 0 ) #displace image by width of border
-        
+        self.m_bitmap123 = wx.StaticBitmap( panel, wx.ID_ANY, wx.NullBitmap,[border,border], wx.DefaultSize, 0 ) #displace image by width of border
         
         st = wx.StaticBitmap( panel, wx.ID_ANY, wx.NullBitmap, wx.DefaultPosition, wx.DefaultSize, 0 )
-        image = self.info
+        print(type(image))
+        #image = self.image
+        
+        
         width, height = image.size
         
         image2 = wx.Image( width, height )
         image2.SetData( image.tobytes() )
-        self.m_bitmap4.SetBitmap(wx.Bitmap(image2))   
         
-        self.SetSize( (width+2*self.border ,height+2*self.border) )
-        panel.SetSize( (width+2*self.border, height+2*self.border) )
-
+        self.m_bitmap123.SetBitmap(wx.Bitmap(image2))   
+        
+        self.SetSize( (width+2*border ,height+2*border) )
+        panel.SetSize( (width+2*border, height+2*border) )
+        
         panel.Bind(wx.EVT_LEFT_DOWN, self.OnMouseLeftDown)
         panel.Bind(wx.EVT_MOTION, self.OnMouseMotion)
         panel.Bind(wx.EVT_LEFT_UP, self.OnMouseLeftUp)
@@ -74,6 +77,7 @@ class Window2(wx.PopupWindow):
         st.Bind(wx.EVT_RIGHT_UP, self.OnRightUp)
         
         wx.CallAfter(self.Refresh)
+        
     
     def OnMouseLeftDown(self, evt):
         self.Refresh()
@@ -99,7 +103,7 @@ class Window2(wx.PopupWindow):
     def OnRightUp(self, evt):#orininal
         self.Show(False)
         self.Destroy()
-
+    
 
 def is_number(s):
     try:
@@ -294,7 +298,7 @@ def CombinePicText(self,directory):
         x_offset += im.size[1]
     self.image = new_im
 
-def ShowInPopup(self,mode):
+def ShowInPopup(self,event,mode):
     if self.debugmode:
         print("fb=ShowInPopup")
     try:# a picture directory may not exist
@@ -303,23 +307,30 @@ def ShowInPopup(self,mode):
         if mode == "Question":
             directory = self.pic_question_dir[0]
         image = PIL.Image.open(directory)
+        self.image = image
+        #image.show()
     except:
         pass
     try:
         CreateTextCard(self)
         CombinePicText(self,directory)
-        image = self.image
     except:
-        try:#only text
-            CreateTextCard(self)
-            image = self.imagetext
-        except:
-            pass
+        print("test test2")
+        
+    print("test test")
+    image = self.image
+    print(type(image))
+    #image.show()
+    #except:
+    ##try:#only text
+    #####CreateTextCard(self)
+    ######image = self.imagetext
+    ##except:
+    ##    pass
     
-    win = Window2(self.GetTopLevelParent(), wx.SIMPLE_BORDER,image)
-    pos = self.m_scrolledWindow1.ClientToScreen( (0,0) )
-    #print(' pos = {}'.format(pos))
-    win.Position(pos, (0, 200))
+    
+    win = Window2(self.GetTopLevelParent(), wx.SIMPLE_BORDER,image)    
+    win.Position((self.mousepos[0]-10,self.mousepos[1]-10), (0,0))
     win.Show(True)  
     
 
