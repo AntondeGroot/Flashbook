@@ -395,6 +395,7 @@ class MainFrame(gui.MyFrame):
 	# bitmap # DRAW RECTANGLE WITH MOUSE, GET COORDINATES  
     def m_bitmapScrollOnLeftDown( self, event ):
         self.panel_pos = self.m_bitmapScroll.ScreenToClient(wx.GetMousePosition())
+        self.mousepos = wx.GetMousePosition() # absolute position
         self.SetCursor(wx.Cursor(wx.CURSOR_CROSS))
         
     def m_bitmapScrollOnLeftUp( self, event ):
