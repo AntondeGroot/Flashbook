@@ -165,7 +165,8 @@ def run_flashbook(self):
     set_richtext(self)    
     m.SetKeyboardShortcuts(self)
     initialize(self)
-    
+    def m_CurrentPage11OnText( self, event ):
+        print("hallo")
 
 def run_flashcard(self):
     
@@ -187,30 +188,7 @@ def run_flashcard(self):
     import fc_modules as m2
     import fc_initialization as ini2 
     import resources
-    
-    datadir = os.getenv("LOCALAPPDATA")
-    dir0 = datadir+r"\FlashBook"
-    dir7 = dir0 + r"\resources"
-    path_add = os.path.join(dir7,"add.png")
-    path_min = os.path.join(dir7,"min.png")
-    path_repeat = os.path.join(dir7,"repeat.png")
-    path_repeat_na = os.path.join(dir7,"repeat_na.png")
-    path_icon = os.path.join(dir7,"open-book1.png")
-    
-    
-    # when using Pyinstaller to get the .exe file: it will standard give an error that it is missing the module 'qwindows.dll'
-    # since the .exe created by --onefile takes ages to start, i won't be using that option and then module can be found in the folder below
-    # it is resolved by simply copying the qwindows.dll module next to the .exe file
-    cwd = os.getcwd()
-    #print("current cwd {}".format(cwd))
-    try:
-        if os.path.exists(cwd+"\PyQt5\Qt\plugins\platforms\qwindows.dll"):
-            shutil.copy2(cwd+"\PyQt5\Qt\plugins\platforms\qwindows.dll",cwd+r'\\') 
-            print("copied qwindows.dll module")
-        else:
-            print("no qwindows.dll module found")    
-    except:
-        print("no qwindows.dll module found (#2)")
+    import gui_flashbook as gui
     
     
     #%%
@@ -324,7 +302,7 @@ def run_flashcard(self):
 
 
 
-    import gui_flashbook as gui
+    
 
     def onShowPopup(self, event):
         win = gui.MyFrame2(self.GetTopLevelParent(), wx.SIMPLE_BORDER)
