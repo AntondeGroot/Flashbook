@@ -193,10 +193,10 @@ def selectionentered(self,event):
         else:                
             if len(self.pic_question) == 1:
                 self.pdf_question = str(self.pdf_question) + r" \pic{" + "{}".format(self.pic_question[0])+r"}"
-        try:                     
-            f.ShowInPopup(self,"Question")
-        except:
-            pass
+        #try:                     
+        f.ShowInPopup(self,event,"Question")
+        #except:
+        #    pass
          
     else:
         self.usertext = self.m_textCtrl2.GetValue()
@@ -230,10 +230,10 @@ def selectionentered(self,event):
         elif len(self.pic_answer) == 1:
             self.pdf_answer = str(self.pdf_answer) + r" \pic{" + "{}".format(self.pic_answer[0])+r"}"                        
         
-        try:   
-            f.ShowInPopup(self,"Answer")                    
-        except:
-            pass
+        #try:   
+        f.ShowInPopup(self,event,"Answer")                    
+        #except:
+        #    pass
         # save the user inputs in .tex file
         if len(self.pdf_question)!=0:
             with open(os.path.join(self.dir1, self.bookname +'.tex'), 'a') as output: # the mode "a" appends to the file    
