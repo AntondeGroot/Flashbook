@@ -92,7 +92,7 @@ def initialize(self):
     self.dir6 = dir0 + r"\resources"
     self.dir7 = dir0 + r"\pdfs of notes"
     self.temp_dir = self.dir4
-    
+    self.statsdir = os.path.join(self.dir4, 'data_sessions.json')
     # create settings folder for debugging
     settings_create(self)
     settings_get(self)
