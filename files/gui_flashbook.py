@@ -34,6 +34,40 @@ import wx.richtext
 ###########################################################################
 ## Class MyFrame
 ###########################################################################
+# -*- coding: utf-8 -*- 
+
+###########################################################################
+## Python code generated with wxFormBuilder (version Jun 17 2015)
+## http://www.wxformbuilder.org/
+##
+## PLEASE DO "NOT" EDIT THIS FILE!
+###########################################################################
+
+import wx
+import wx.xrc
+import wx.richtext
+
+###########################################################################
+## Class MyFrame
+###########################################################################
+
+# -*- coding: utf-8 -*- 
+
+###########################################################################
+## Python code generated with wxFormBuilder (version Jun 17 2015)
+## http://www.wxformbuilder.org/
+##
+## PLEASE DO "NOT" EDIT THIS FILE!
+###########################################################################
+
+import wx
+import wx.xrc
+import wx.richtext
+
+###########################################################################
+## Class MyFrame
+###########################################################################
+
 class MyFrame ( wx.Frame ):
 	
 	def __init__( self, parent ):
@@ -333,6 +367,8 @@ class MyFrame ( wx.Frame ):
 		bSizer7.Add( self.panel1, 1, wx.EXPAND |wx.ALL, 0 )
 		
 		self.panel2 = wx.Panel( self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TAB_TRAVERSAL )
+		self.panel2.SetBackgroundColour( wx.Colour( 254, 240, 231 ) )
+		
 		bSizer81 = wx.BoxSizer( wx.VERTICAL )
 		
 		self.panel21 = wx.Panel( self.panel2, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TAB_TRAVERSAL )
@@ -596,6 +632,7 @@ class MyFrame ( wx.Frame ):
 		
 		# Connect Events
 		self.Bind( wx.EVT_MENU, self.m_menuItemFlashbookOnMenuSelection, id = self.m_menuItemFlashbook.GetId() )
+		self.Bind( wx.EVT_MENU, self.m_menuPDFfolderOnMenuSelection, id = self.m_menuPDFfolder.GetId() )
 		self.Bind( wx.EVT_MENU, self.m_menuItemBackToMainOnMenuSelection, id = self.m_menuItemBackToMain.GetId() )
 		self.Bind( wx.EVT_MENU, self.m_menuHelpOnMenuSelection, id = self.m_menuHelp.GetId() )
 		self.m_OpenFlashbook.Bind( wx.EVT_BUTTON, self.m_OpenFlashbookOnButtonClick )
@@ -689,6 +726,9 @@ class MyFrame ( wx.Frame ):
 	
 	# Virtual event handlers, overide them in your derived class
 	def m_menuItemFlashbookOnMenuSelection( self, event ):
+		event.Skip()
+	
+	def m_menuPDFfolderOnMenuSelection( self, event ):
 		event.Skip()
 	
 	def m_menuItemBackToMainOnMenuSelection( self, event ):
@@ -882,7 +922,7 @@ class MyFrame ( wx.Frame ):
 
 class MyDialog ( wx.Dialog ):
 	
-	def __init__( self, parent ):
+	def __init__( self, parent,data ):
 		wx.Dialog.__init__ ( self, parent, id = wx.ID_ANY, title = u"Settings", pos = wx.DefaultPosition, size = wx.Size( 349,250 ), style = wx.DEFAULT_DIALOG_STYLE )
 		
 		self.SetSizeHints( wx.DefaultSize, wx.Size( 350,250 ) )
@@ -900,7 +940,7 @@ class MyDialog ( wx.Dialog ):
 		self.m_staticText5.Wrap( -1 )
 		gSizer1.Add( self.m_staticText5, 0, wx.ALL, 5 )
 		
-		self.m_slider1 = wx.Slider( self.m_panel4, wx.ID_ANY, 50, 1, 100, wx.DefaultPosition, wx.DefaultSize, wx.SL_HORIZONTAL|wx.SL_LABELS )
+		self.m_slider1 = wx.Slider( self.m_panel4, wx.ID_ANY, data, 1, data, wx.DefaultPosition, wx.DefaultSize, wx.SL_HORIZONTAL|wx.SL_LABELS )
 		gSizer1.Add( self.m_slider1, 0, wx.ALL, 5 )
 		
 		self.m_staticText6 = wx.StaticText( self.m_panel4, wx.ID_ANY, u"Multiplier  :", wx.DefaultPosition, wx.DefaultSize, 0 )
@@ -965,10 +1005,11 @@ class MyDialog ( wx.Dialog ):
 
 class MyDialog2 ( wx.Dialog ):
 	
-	def __init__( self, parent ):
+	def __init__( self, parent,data ):
 		wx.Dialog.__init__ ( self, parent, id = wx.ID_ANY, title = u"Settings", pos = wx.DefaultPosition, size = wx.Size( 349,300 ), style = wx.DEFAULT_DIALOG_STYLE )
 		
 		self.SetSizeHints( wx.DefaultSize, wx.Size( 350,300 ) )
+		self.SetBackgroundColour( wx.SystemSettings.GetColour( wx.SYS_COLOUR_INFOTEXT ) )
 		
 		bSizer8 = wx.BoxSizer( wx.VERTICAL )
 		
@@ -983,7 +1024,7 @@ class MyDialog2 ( wx.Dialog ):
 		self.m_staticText5.Wrap( -1 )
 		gSizer1.Add( self.m_staticText5, 0, wx.ALL, 5 )
 		
-		self.m_slider1 = wx.Slider( self.m_panel4, wx.ID_ANY, 50, 1, 100, wx.DefaultPosition, wx.DefaultSize, wx.SL_HORIZONTAL|wx.SL_LABELS )
+		self.m_slider1 = wx.Slider( self.m_panel4, wx.ID_ANY, data, 1, data, wx.DefaultPosition, wx.DefaultSize, wx.SL_HORIZONTAL|wx.SL_LABELS )
 		gSizer1.Add( self.m_slider1, 0, wx.ALL, 5 )
 		
 		self.m_staticText6 = wx.StaticText( self.m_panel4, wx.ID_ANY, u"Multiplier  :", wx.DefaultPosition, wx.DefaultSize, 0 )
@@ -1058,33 +1099,3 @@ class MyDialog2 ( wx.Dialog ):
 		event.Skip()
 	
 
-###########################################################################
-## Class MyPrintDialog
-###########################################################################
-
-class MyPrintDialog ( wx.Dialog ):
-	
-	def __init__( self, parent ):
-		wx.Dialog.__init__ ( self, parent, id = wx.ID_ANY, title = u"Print settings", pos = wx.DefaultPosition, size = wx.Size( 645,450 ), style = wx.DEFAULT_DIALOG_STYLE )
-		
-		self.SetSizeHints( wx.DefaultSize, wx.Size( -1,450 ) )
-		
-		bSizer8 = wx.BoxSizer( wx.HORIZONTAL )
-		
-		self.m_panel4 = wx.Panel( self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.DOUBLE_BORDER|wx.TAB_TRAVERSAL )
-		self.m_panel4.SetBackgroundColour( wx.Colour( 254, 239, 231 ) )
-		self.m_panel4.SetMaxSize( wx.Size( 300,450 ) )
-		
-		bSizer8.Add( self.m_panel4, 1, wx.EXPAND |wx.ALL, 0 )
-		
-		
-		self.SetSizer( bSizer8 )
-		self.Layout()
-		
-		self.Centre( wx.BOTH )
-	
-	def __del__( self ):
-		pass
-	
-
-	
