@@ -58,31 +58,45 @@ def contains(iterable):
     return con,ans 
 
 ## keeping track of user progress data
-def StatsDir(self):
-    if self.debugmode:
-        print("f=statsdir")
-    return os.path.join(self.dir4, 'data_sessions.json')
-
 def SaveStats(self):
     if self.debugmode:
         print("f=savestats")
         print(self.resumedata)
         print(type(self.resumedata))
     key = self.bookname
+    value = self.resumedata[self.bookname]
+    print(f"value = {value}")
     try:
         value = self.resumedata[self.bookname]
-        with open(StatsDir(self), 'w') as file:
-            self.resumedata.update({key: value})
-            file.write(json.dumps(self.resumedata) )
-    except: # no update, just overwrite with popped dictionary
-        with open(StatsDir(self), 'w') as file:
-            file.write(json.dumps(self.resumedata) )
-        
+        with open(self.statsdir, 'r') as file:
+            try:
+                dictionary = json.load(file)
+            except:
+                dictionary={}
+        with open(self.statsdir, 'w') as file:
+            print(dictionary)
+            #self.resumedata.update({key: value}) #original
+            #file.write(json.dumps(self.resumedata) )
+            #file.update({key: value})
+            dictionary[self.bookname] =  value
+            
+            file.write(json.dumps(dictionary) )
+    except: #a certain key was not in the dictionary
+
+        with open(self.statsdir, 'r') as file:
+            try:
+                dictionary = json.load(file)
+            except:
+                dictionary={}
+            dictionary.update({key: value})
+            file.write(json.dumps(dictionary) )
+        with open(self.statsdir, 'w') as file:
+            file.write(json.dumps(dictionary) )
 def LoadStats(self):    
     if self.debugmode:
         print("f=loadstats")
     try:
-        with open(StatsDir(self), 'r') as file:
+        with open(self.statsdir, 'r') as file:
             
             self.resumedata = json.load(file)
             self.score = self.resumedata[self.bookname]['score']
@@ -97,17 +111,25 @@ def RemoveStats(self):
     if self.debugmode:
         print("f=removestats")
     try:
-        self.resumedata.pop(self.bookname)
-    except:
-        print(colored("Error: could not delete saved stats","red"))
-          
+        with open(self.statsdir, 'r') as file:
+            dictionary = json.load(file)
+        with open(self.statsdir, 'w') as file:
+            del dictionary[self.bookname]
+            file.write(json.dumps(dictionary))
+    except: # no update, just overwrite with popped dictionary
+        print("Error could not load saved stats from RemoveStats()")
+        #with open(self.statsdir, 'w') as file:
+        #    file.write(json.dumps(self.resumedata) )
+    
+    
 def SetStats(self):
     if self.debugmode:
         print("f=setstats")
-    try:
-        self.resumedata.update({self.bookname: {'score': self.score, 'index': self.index, 'nr_questions':self.nr_questions, 'cardorder': self.cardorder[:self.nr_questions] }})
-    except:# if it doesn't yet exist
-        self.resumedata = {self.bookname: {'score': self.score, 'index': self.index, 'nr_questions':self.nr_questions, 'cardorder': self.cardorder[:self.nr_questions] }}
+    #try:
+    #    self.resumedata.update({self.bookname: {'score': self.score, 'index': self.index, 'nr_questions':self.nr_questions, 'cardorder': self.cardorder[:self.nr_questions] }})
+    #except:# if it doesn't yet exist
+    self.resumedata[self.bookname]= {'score': self.score, 'index': self.index, 'nr_questions':self.nr_questions, 'cardorder': self.cardorder[:self.nr_questions] }
+        
 
 
 ## start from a given command \cmd{ and count "{" as +1 and "}" as -1, stop when count = 0
@@ -149,8 +171,6 @@ def findchar(char,string,nr):
 #  sentence = "if we take the second partial derivative \secpar{X+Y}{t}"
 #  returns: position where (X+Y), (t)  begin and end and in the string and that they are the arguments
 def find_arguments(hookpos,sentence,defined_command,nr_arguments):
-    if self.debugmode:
-        print("f=findarguments")
     k = 0
     hookcount = 0      
     condition = True
@@ -185,8 +205,6 @@ def find_arguments(hookpos,sentence,defined_command,nr_arguments):
 
 ## replace all defined commands in a string
 def replace_allcommands(defined_command,LaTeX_command,Question,nr_arg):    
-    if self.debugmode:
-        print("f=replace allcommands")
     length_c = len(defined_command) 
     # check if the command can be found in Q&A
     FindCommand = (defined_command in Question)
@@ -344,148 +362,148 @@ def CreateTextCard(self):
 def LoadFlashCards(self):
     if self.debugmode:
         print("f=loadflashcards")
-    try:
-        # find the closing '}' for a command                                         
-        end_q_index = 0
-        end_a_index = 0    
-        for N in range(self.nr_cards):   
-            end_q_index = find_hook(self.q_hookpos[N],self.letterfile)
-            end_a_index = find_hook(self.a_hookpos[N],self.letterfile)    
-            # collect all Questions and Answers
-            self.questions.append(self.letterfile[self.q_hookpos[N]+1:end_q_index])
-            self.answers.append(self.letterfile[self.a_hookpos[N]+1:end_a_index])        
-        # replace user defined commands, found in a separate file                  
-        file1 = open(os.path.join(self.dir_LaTeX_commands, r"usercommands.txt"), 'r')
-        newcommand_line_lst = file1.readlines()
-        # start reading after "###" because I defined that as the end of the notes
-        index = []
-        for i in range(len(newcommand_line_lst)):
-            cond = "###" in newcommand_line_lst[i]
-            if cond == True:
-                index = i+1
-        # remove the lines that precede the ### for user explanation on how to use newcommand        
-        if "{}".format(index).isdigit() == True:
-            newcommand_line_lst[:index]=[]
-        # only look at lines containing "newcommand" removes all empty and irrelevant lines
-        newcommand_line_lst = [x for x in newcommand_line_lst if ("newcommand"  in x)]
-        nr_c = len(newcommand_line_lst)
+    #try:
+    # find the closing '}' for a command                                         
+    end_q_index = 0
+    end_a_index = 0    
+    for N in range(self.nr_cards):   
+        end_q_index = find_hook(self.q_hookpos[N],self.letterfile)
+        end_a_index = find_hook(self.a_hookpos[N],self.letterfile)    
+        # collect all Questions and Answers
+        self.questions.append(self.letterfile[self.q_hookpos[N]+1:end_q_index])
+        self.answers.append(self.letterfile[self.a_hookpos[N]+1:end_a_index])        
+    # replace user defined commands, found in a separate file                  
+    file1 = open(os.path.join(self.dir_LaTeX_commands, r"usercommands.txt"), 'r')
+    newcommand_line_lst = file1.readlines()
+    # start reading after "###" because I defined that as the end of the notes
+    index = []
+    for i in range(len(newcommand_line_lst)):
+        cond = "###" in newcommand_line_lst[i]
+        if cond == True:
+            index = i+1
+    # remove the lines that precede the ### for user explanation on how to use newcommand        
+    if "{}".format(index).isdigit() == True:
+        newcommand_line_lst[:index]=[]
+    # only look at lines containing "newcommand" removes all empty and irrelevant lines
+    newcommand_line_lst = [x for x in newcommand_line_lst if ("newcommand"  in x)]
+    nr_c = len(newcommand_line_lst)
+    
+    ##  how to replace a user defined command with a command that is known in latex
+    # look for all commands if they appear anywhere in questions or answers.
+    # find indices of: -defined command -original command, -number of arguments
+    for i in range(nr_c):
+        newcommand_line = newcommand_line_lst[i]
+        # extract all the data from a commandline
+        c_start = findchar('{',newcommand_line,0)
+        c_end   = findchar('}',newcommand_line,0)
         
-        ##  how to replace a user defined command with a command that is known in latex
-        # look for all commands if they appear anywhere in questions or answers.
-        # find indices of: -defined command -original command, -number of arguments
-        for i in range(nr_c):
-            newcommand_line = newcommand_line_lst[i]
-            # extract all the data from a commandline
-            c_start = findchar('{',newcommand_line,0)
-            c_end   = findchar('}',newcommand_line,0)
-            
-            num_start = findchar('\[',newcommand_line,"")              # the argument "" indicates it will find all instances
-            num_end   = findchar('\]',newcommand_line,"") 
-           
-            newc_start = findchar('{',newcommand_line,1)   
-            newc_end = findchar('}',newcommand_line,-1)
-            # find the commands explicitly
-            defined_command = newcommand_line[c_start+1:c_end]         # finds \secpar{}{}            
-            LaTeX_command   = newcommand_line[newc_start+1:newc_end]   # finds \frac{\partial^2 #1}{\partial #2^2}
-            nr_arg          = int(newcommand_line[int(num_start[0]+1):int(num_end[0])])
-            
-            # find where they can be found in all of the questions/answers
-            cond_q = contains(defined_command in x for x in self.questions) 
-            cond_a = contains(defined_command in x for x in self.answers)  
-            
-            #check questions: does the i-th command occur in the questions
-            if cond_q[0] == True: #first index gives T/F, 2nd index gives index where it is true
-                nr = len(cond_q[1])
-                for j in range(nr):
-                    index1 = cond_q[1]
-                    index2 = index1[j]                    
-                    # select the right question and replace all the commands
-                    Q = self.questions[index2]
-                    self.questions[index2] = replace_allcommands(defined_command,LaTeX_command,Q,nr_arg)
-                                    
-            #check answers: does the i-th command occur in the answers
-            if cond_a[0] == True: #first index gives T/F, 2nd index gives index where it is true
-                nr = len(cond_a[1])
-                for k in range(nr):
-                    index1 = cond_a[1]
-                    index2 = index1[k]
-                    # select the right answer and replace all the commands
-                    A = self.answers[index2]
-                    self.answers[index2] = replace_allcommands(defined_command,LaTeX_command,A,nr_arg)
-                    
-        ## replace all \pics out of the QnA and save the picture names.
-        self.picdictionary  = {}
-        self.textdictionary = {}
-        self.q_pics = []
-        self.a_pics = []
-        # remove all \pic{} commands
-        for i in range(self.nr_cards):
-            findpic = True
-            findpic2 = True            
-            # Questions: replace pics{}
-            while findpic == True:#find all pic commands
-                [T_F,QnA,picname]=remove_pics(self.questions[i],self.pic_command)
-                self.questions[i] = QnA # removed pic{} from Question
-                if T_F == True:
-                    self.picdictionary.update({'Q{}'.format(i): picname})
-                findpic = T_F
-                  
-            while findpic2 == True: 
-                [T_F2,QnA,picname]=remove_pics(self.answers[i],self.pic_command) 
-                self.answers[i] = QnA # removed pic{} from Question
-                if T_F2 == True:
-                    self.picdictionary.update({'A{}'.format(i): picname})
-                findpic2 = T_F2      
-        """
-        CARD ORDER
-        """
-        ## determine cardorder based on user given input
-        if self.continueSession == False:
-            if self.nr_questions < self.nr_cards:   
-                if self.chrono == True:
-                    self.cardorder = range(self.nr_questions)    
-                elif self.chrono == False:
-                    self.cardorder = random.sample(range(self.nr_cards),self.nr_questions) 
-            else: 
-                ## If there are more questions than cards
-                # we would like to get every question about the same number of times, to do this we do sampling without
-                # replacement, then we remove a question if it is immediately repeated.
-                if self.chrono == True:
-                    self.cardorder = list(range(self.nr_cards))*self.nr_questions
-                    self.cardorder = self.cardorder[:self.nr_questions]
-                else:
-                    cardorder = []
-                    for i in range(self.nr_cards):   # possibly way larger than needed:
-                        cardorder.append(random.sample(range(self.nr_cards),self.nr_cards))
-                    cardorder = [val for sublist in cardorder for val in sublist]
-                    con=True
-                    index = 0
-                    # remove duplicate numbers
-                    while con == True:
-                        if index == len(cardorder)-2:
-                            con = False
-                        if cardorder[index] == cardorder[index+1]:
-                            del cardorder[index+1]
-                            index=index+1
-                        index = index+1    
-                    self.cardorder = cardorder[:self.nr_questions] 
-        else:
-            LoadStats(self)
-            
-        # reformat QnA
-        self.questions2 = []
-        self.answers2 = []
-        for i in range(len(self.questions)):
-            self.questions2.append(self.questions[i].strip())
-            self.answers2.append(self.answers[i].strip())
-        # save questions and answers in dictionaries
-        for i in range(len(self.questions)):
-            if self.questions2[i] != '':
-                self.textdictionary.update({'Q{}'.format(i): self.questions2[i]})
-            if self.answers2[i] != '':
-               self.textdictionary.update({'A{}'.format(i): self.answers2[i]})
-    except:
-        print(colored("Error: couldn't pick file",'red'))
+        num_start = findchar('\[',newcommand_line,"")              # the argument "" indicates it will find all instances
+        num_end   = findchar('\]',newcommand_line,"") 
+       
+        newc_start = findchar('{',newcommand_line,1)   
+        newc_end = findchar('}',newcommand_line,-1)
+        # find the commands explicitly
+        defined_command = newcommand_line[c_start+1:c_end]         # finds \secpar{}{}            
+        LaTeX_command   = newcommand_line[newc_start+1:newc_end]   # finds \frac{\partial^2 #1}{\partial #2^2}
+        nr_arg          = int(newcommand_line[int(num_start[0]+1):int(num_end[0])])
+        
+        # find where they can be found in all of the questions/answers
+        cond_q = contains(defined_command in x for x in self.questions) 
+        cond_a = contains(defined_command in x for x in self.answers)  
+        
+        #check questions: does the i-th command occur in the questions
+        if cond_q[0] == True: #first index gives T/F, 2nd index gives index where it is true
+            nr = len(cond_q[1])
+            for j in range(nr):
+                index1 = cond_q[1]
+                index2 = index1[j]                    
+                # select the right question and replace all the commands
+                Q = self.questions[index2]
+                self.questions[index2] = replace_allcommands(defined_command,LaTeX_command,Q,nr_arg)
+                                
+        #check answers: does the i-th command occur in the answers
+        if cond_a[0] == True: #first index gives T/F, 2nd index gives index where it is true
+            nr = len(cond_a[1])
+            for k in range(nr):
+                index1 = cond_a[1]
+                index2 = index1[k]
+                # select the right answer and replace all the commands
+                A = self.answers[index2]
+                self.answers[index2] = replace_allcommands(defined_command,LaTeX_command,A,nr_arg)
+                
+    ## replace all \pics out of the QnA and save the picture names.
+    self.picdictionary  = {}
+    self.textdictionary = {}
+    self.q_pics = []
+    self.a_pics = []
+    # remove all \pic{} commands
+    for i in range(self.nr_cards):
+        findpic = True
+        findpic2 = True            
+        # Questions: replace pics{}
+        while findpic == True:#find all pic commands
+            [T_F,QnA,picname]=remove_pics(self.questions[i],self.pic_command)
+            self.questions[i] = QnA # removed pic{} from Question
+            if T_F == True:
+                self.picdictionary.update({'Q{}'.format(i): picname})
+            findpic = T_F
+              
+        while findpic2 == True: 
+            [T_F2,QnA,picname]=remove_pics(self.answers[i],self.pic_command) 
+            self.answers[i] = QnA # removed pic{} from Question
+            if T_F2 == True:
+                self.picdictionary.update({'A{}'.format(i): picname})
+            findpic2 = T_F2      
+    """
+    CARD ORDER
+    """
+    ## determine cardorder based on user given input
+    if self.continueSession == False:
+        if self.nr_questions < self.nr_cards:   
+            if self.chrono == True:
+                self.cardorder = range(self.nr_questions)    
+            elif self.chrono == False:
+                self.cardorder = random.sample(range(self.nr_cards),self.nr_questions) 
+        else: 
+            ## If there are more questions than cards
+            # we would like to get every question about the same number of times, to do this we do sampling without
+            # replacement, then we remove a question if it is immediately repeated.
+            if self.chrono == True:
+                self.cardorder = list(range(self.nr_cards))*self.nr_questions
+                self.cardorder = self.cardorder[:self.nr_questions]
+            else:
+                cardorder = []
+                for i in range(self.nr_cards):   # possibly way larger than needed:
+                    cardorder.append(random.sample(range(self.nr_cards),self.nr_cards))
+                cardorder = [val for sublist in cardorder for val in sublist]
+                con=True
+                index = 0
+                # remove duplicate numbers
+                while con == True:
+                    if index == len(cardorder)-2:
+                        con = False
+                    if cardorder[index] == cardorder[index+1]:
+                        del cardorder[index+1]
+                        index=index+1
+                    index = index+1    
+                self.cardorder = cardorder[:self.nr_questions] 
+    else:
+        LoadStats(self)
+        
+    # reformat QnA
+    self.questions2 = []
+    self.answers2 = []
+    for i in range(len(self.questions)):
+        self.questions2.append(self.questions[i].strip())
+        self.answers2.append(self.answers[i].strip())
+    # save questions and answers in dictionaries
+    for i in range(len(self.questions)):
+        if self.questions2[i] != '':
+            self.textdictionary.update({'Q{}'.format(i): self.questions2[i]})
+        if self.answers2[i] != '':
+           self.textdictionary.update({'A{}'.format(i): self.answers2[i]})
+    #except:
+    #    print(colored("Error: couldn't pick file",'red'))
 
 def ShowPage(self):
     if self.debugmode:
