@@ -90,15 +90,16 @@ def initialize(self):
     self.dir4 = dir0 + r"\temporary"
     self.dir5 = dir0 + r"\borders"
     self.dir6 = dir0 + r"\resources"
-    self.dir7 = dir0 + r"\pdfs of notes"
+    self.dirpdf = dir0 + r"\PDF folder"
+    self.dirsettings = dir0 + r"\settings"
     self.temp_dir = self.dir4
-    self.statsdir = os.path.join(self.dir4, 'data_sessions.json')
+    self.statsdir = os.path.join(self.dirsettings, 'data_sessions.json')
     # create settings folder for debugging
     settings_create(self)
     settings_get(self)
                 
     folders = []
-    dirs = [dir0,self.dir1,self.dir2,self.dir3,self.dir4,self.dir5,self.dir6]
+    dirs = [dir0,self.dir1,self.dir2,self.dir3,self.dir4,self.dir5,self.dir6,self.dirpdf,self.dirsettings]
     
     print("=========================================================================================")
     print("\nThe files will be saved to the following directory: {}\n".format(dir0))
@@ -328,7 +329,8 @@ class MainFrame(gui.MyFrame):
 	
     def m_menuItemBackToMainOnMenuSelection( self, event ):
         SwitchPanel(self,0,0)  
-	
+    def m_menuPDFfolderOnMenuSelection( self, event ):
+        os.system("explorer {}".format(self.dirpdf)) 
     def m_menuHelpOnMenuSelection( self, event ):
         print("panel 0 is : {}".format(self.panel0.IsShown()))
         if self.panel0.IsShown():
