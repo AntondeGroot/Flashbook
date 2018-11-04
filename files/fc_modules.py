@@ -71,7 +71,7 @@ def buttonWrong(self):
     self.m_CurrentPage21.SetValue(str(self.index+1))
     
     ## update stats
-    if self.runprogram == False:
+    if self.runprogram == True:
         f2.SetStats(self)
         f2.SaveStats(self)
     
@@ -147,7 +147,7 @@ def startprogram(self,event):
     self.index  = 0
     self.score  = 0
     
-    self.resumedata = {'score': self.score, 'index': self.index, 'nr_questions':self.nr_questions}
+    
     
     
     self.mode = 'Question'
@@ -169,6 +169,7 @@ def startprogram(self,event):
         print("book = {} ".format(self.bookname))
     except:
         print(colored("Error: Couldn't open path",'red'))
+    self.resumedata = {self.bookname : {'score': self.score, 'index': self.index, 'nr_questions':self.nr_questions}}
     try:
         if os.path.exists(self.path):
             file = open(self.path, 'r')
@@ -192,40 +193,46 @@ def startprogram(self,event):
     #and use these values to set the slider as you wish. Don't forget to add "self.Destroy" when you press the button
     data = self.nr_cards
     #open dialog window
-    if os.path.exists(f2.StatsDir(self)):# anton the dir should not just exist, but data of specific course should exist
+    if os.path.exists(self.statsdir):# the dir should not just exist, but data of specific course should exist
         try:
-            with gui.MyDialog2(self,data) as dlg: #use this to set the max range of the slider
-                dlg.ShowModal()
-                self.nr_questions = dlg.m_slider1.GetValue()   #nr_cards = total unique questions , nr_questions how many you want to ask #anton this might cause problems further down the line
-                self.chrono = dlg.m_radioChrono.GetValue()                    
-                self.continueSession = dlg.m_radioYes.GetValue()
-                self.multiplier = dlg.m_textCtrl11.GetValue()
+            with open(self.statsdir, 'r') as file:    
+                dictionary = json.load(file)
+        except:
+            dictionary = {}
+        if self.bookname in dictionary:
+            try:
+                with gui.MyDialog2(self,data) as dlg: #use this to set the max range of the slider
+                    dlg.ShowModal()
+                    self.nr_questions = dlg.m_slider1.GetValue()   #nr_cards = total unique questions , nr_questions how many you want to ask #anton this might cause problems further down the line
+                    self.chrono = dlg.m_radioChrono.GetValue()                    
+                    self.continueSession = dlg.m_radioYes.GetValue()
+                    self.multiplier = dlg.m_textCtrl11.GetValue()
+                    
+                    # you cannot continue when the questions are randomly chosen
+                    if self.chrono == False:
+                        self.continueSession = False
+                    
+                if self.continueSession == True:
+                    print("continue session")
+                    f2.LoadStats(self)
+                else:
+                    print("don't continue session")
+                    f2.RemoveStats(self)
+                    #f2.SetStats(self)
                 
-                # you cannot continue when the questions are randomly chosen
-                if self.chrono == False:
+            except:
+                print(colored("Error: Couldn't open Dialog window nr 1",'red'))
+        else:
+            try:
+                with gui.MyDialog(self,data) as dlg: #use this to set the max range of the slider , add ",data" in the initialization of the dialog window
+                    dlg.ShowModal()
+                    self.nr_questions = dlg.m_slider1.GetValue()                        
+                    self.chrono = dlg.m_radioChrono.GetValue()
                     self.continueSession = False
-                
-            if self.continueSession == True:
-                print("continue session")
-                f2.LoadStats(self)
-            else:
-                print("don't continue session")
-                f2.RemoveStats(self)
-                #f2.SetStats(self)
-            
-        except:
-            print(colored("Error: Couldn't open Dialog window nr 1",'red'))
-    else:
-        try:
-            with gui.MyDialog(self,data) as dlg: #use this to set the max range of the slider , add ",data" in the initialization of the dialog window
-                dlg.ShowModal()
-                self.nr_questions = dlg.m_slider1.GetValue()                        
-                self.chrono = dlg.m_radioChrono.GetValue()
-                self.continueSession = False
-                self.multiplier = dlg.m_textCtrl11.GetValue()
-            print(self.nr_questions)
-        except:
-            print(colored("Error: Couldn't open Dialog window nr 2",'red'))
+                    self.multiplier = dlg.m_textCtrl11.GetValue()
+                print(self.nr_questions)
+            except:
+                print(colored("Error: Couldn't open Dialog window nr 2",'red'))
             
     
         
