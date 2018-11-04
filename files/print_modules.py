@@ -211,8 +211,8 @@ def find_arguments(hookpos,sentence,defined_command,nr_arguments):
 
 
 def replace_allcommands(defined_command,LaTeX_command,Question,nr_arg):    
-    if self.debugmode:
-        print("f=replace allcommands")
+    #if self.debugmode:
+    #    print("f=replace allcommands")
     length_c = len(defined_command) 
     # check if the command can be found in Q&A
     FindCommand = (defined_command in Question)
@@ -559,11 +559,11 @@ def SwitchBitmap(self): # checks if there is an answer card, if not changes mode
                 self.mode = 'Question'
                 self.SwitchCard = False        
                 id = self.m_toolSwitch.GetId()
-                self.m_toolBar11.SetToolNormalBitmap(id,wx.Bitmap( path_repeat_na, wx.BITMAP_TYPE_ANY ))        
+                self.m_toolBar11.SetToolNormalBitmap(id,wx.Bitmap( self.path_repeat_na, wx.BITMAP_TYPE_ANY ))        
             else:
                 self.SwitchCard = True
                 id = self.m_toolSwitch.GetId()
-                self.m_toolBar11.SetToolNormalBitmap(id,wx.Bitmap( path_repeat, wx.BITMAP_TYPE_ANY ))
+                self.m_toolBar11.SetToolNormalBitmap(id,wx.Bitmap( self.path_repeat, wx.BITMAP_TYPE_ANY ))
         except:
             print(colored("Error: could not switch bitmap #2","red"))
     except:
@@ -575,15 +575,15 @@ def drawborder(self,img):
 
 #%%
 def add_border(self,img):
-    
-    new_im = PIL.Image.new("RGB", (self.a4page_w,img.size[1]+self.pdfline_thickness),"white")
-    border = PIL.Image.new("RGB", (self.a4page_w,self.pdfline_thickness), self.pdfline_color)
-    
-    #print(type(self.pdfline_color ))
-    new_im.paste(border, (0,img.size[1]))
-    new_im.paste(img, (0,0))
-    return new_im
-
+    if self.pdfline_bool == True:
+        new_im = PIL.Image.new("RGB", (self.a4page_w,img.size[1]+self.pdfline_thickness),"white")    
+        border = PIL.Image.new("RGB", (self.a4page_w,self.pdfline_thickness), self.pdfline_color)    
+        #print(type(self.pdfline_color ))
+        new_im.paste(border, (0,img.size[1]))
+        new_im.paste(img, (0,0))
+        return new_im
+    else:
+        return img
 def add_margins(self,img):
     margin = 0.05
     margin_pxs = round(margin * self.a4page_w)
@@ -660,15 +660,18 @@ def notes2paper(self):
             widths, heights = zip(*(i.size for i in images)) 
             total_height = sum(heights)
             max_width = max(widths)
-            new_im = PIL.Image.new('RGB', (max_width, total_height+self.QAline_thickness), "white")
-            line = PIL.Image.new('RGB', (round(0.7*max_width), self.QAline_thickness), self.QAline_color)
-            #combine images to 1
-            
-            new_im.paste(images[0], (0,0))
             if self.QAline_bool == True:
+                new_im = PIL.Image.new('RGB', (max_width, total_height+self.QAline_thickness), "white")
+                line = PIL.Image.new('RGB', (round(0.7*max_width), self.QAline_thickness), self.QAline_color)
+                #combine images to 1
+                new_im.paste(images[0], (0,0))
                 new_im.paste(line,(0,self.image_q.size[1]))
-            new_im.paste(images[1], (0,self.image_q.size[1]+self.QAline_thickness))
-            
+                new_im.paste(images[1], (0,self.image_q.size[1]+self.QAline_thickness))
+            else:
+                new_im = PIL.Image.new('RGB', (max_width, total_height), "white")
+                #combine images to 1
+                new_im.paste(images[0], (0,0))
+                new_im.paste(images[1], (0,self.image_q.size[1]))
             self.image = new_im
             
         else:
@@ -716,7 +719,7 @@ def notes2paper(self):
             self.image = new_im
             new_im = add_border(self,new_im)
             self.paper_h.append(new_im)
-        except:
+        except: # if only one picture left
             images = add_border(self,images)
             self.paper_h.append(images)
             
