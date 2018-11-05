@@ -13,7 +13,7 @@ org = [
        'u"../../Flashbook Flashcard/Final/Flashbook-master/gui design/path_switch"','path_switch',
        '.AddLabelTool','.AddTool',
        '.AppendItem','.Append',
-       '.SetSizeHintsSz','.SetSizeHints'
+       '.SetSizeHintsSz','.SetSizeHints',
        '50, 1, 100','data, 1, data'
        ]
 a = []
