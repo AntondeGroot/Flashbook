@@ -319,8 +319,10 @@ def ShowInPopup(self,event,mode):
     try:
         CombinePicText(self,directory)
     except:
-        self.image = self.imagetext
-        
+        try:
+            self.image = self.imagetext
+        except:
+            pass
     print("test test")
     image = self.image
     print(type(image))
