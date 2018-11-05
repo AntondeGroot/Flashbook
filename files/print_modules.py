@@ -786,7 +786,7 @@ def notes2paper(self):
             image.save(pathname)
             #image.show()
             i += 1
-        filename = os.path.join(dir0,"{}.pdf".format(self.bookname))
+        filename = os.path.join(self.dirpdf,"{}.pdf".format(self.bookname))
         with open(filename, "wb") as f:
             f.write(img2pdf.convert([i for i in folder if i.endswith(".png")]))
     else:
