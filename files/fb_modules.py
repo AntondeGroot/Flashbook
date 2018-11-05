@@ -298,6 +298,7 @@ def switchpage(self,event):
         f.ShowPage(self)
     except:
         print(colored("Error: invalid page number",'red'))
+    self.Layout()
 def nextpage(self,event):
     try:
         if self.currentpage > self.nr_pics-1:
@@ -309,6 +310,7 @@ def nextpage(self,event):
         f.SetScrollbars(self)
     except:
         print(colored("Error: can't click on next",'red'))
+    self.Layout()
 def previouspage(self,event):
     try:
         if self.currentpage == 1:
@@ -320,7 +322,7 @@ def previouspage(self,event):
         f.SetScrollbars(self)            
     except:
         print(colored("Error: can't click on back",'red'))
-
+    self.Layout()
 def setcursor(self,event):
     lf = event.GetEventObject()
     cursor = lf.GetValue()
