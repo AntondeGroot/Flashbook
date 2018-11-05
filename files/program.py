@@ -4,31 +4,38 @@ Created on Sun Apr  1 23:49:47 2018
 @author: Anton
 """
 
+import os
+import json
+import shutil
+#-------------------------------------------------------------------- gui
+import threading
+import wx
+import wx.adv as adv
+import wx.richtext
+import wx.html as html
+import wx._html
+import gui_flashbook as gui
+#------------------------------------------------------------------- modules
+import fb_initialization as ini 
+import fc_initialization as ini2 
+import print_initialization as ini3
+import resources
+import fb_modules    as m
+import fc_modules    as m2
+import print_modules as m3
+import fb_functions    as f
+import fc_functions    as f2
+import print_functions as f3
 
 
 
 
-#def run_flashbook(self,event):
+#--- for colored error messages -----------------------------------------------
+from termcolor import colored
+
 
 def run_flashbook(self):
-    print("Welcome to Flashbook , one moment ...")
-    #------------------------------------------------------------------- general
-    import os
-    import json
-    import shutil
-    #-------------------------------------------------------------------- gui
-    import wx
-    import wx.adv as adv
-    import wx.richtext
-    import wx.html as html
-    import gui_flashbook as gui
-    import resources
-    #------------------------------------------------------------------- modules
-    import fb_initialization as ini 
-    import fb_modules as m
-    import fb_functions as f
-    
-    
+    print("Welcome to Flashbook , one moment ...")        
     def initialize(self):
         os.chdir(self.dir0)
         datadir = os.getenv("LOCALAPPDATA")
@@ -43,10 +50,10 @@ def run_flashbook(self):
         self.temp_dir = self.dir4
         
         # create settings folder for debugging
-        if not os.path.exists(dir0+r"\settings.txt"): 
+        if not os.path.exists(self.dirsettings+r"\settings.txt"): 
             with open(dir0+r"\settings.txt", 'w') as file:
                 file.write(json.dumps({'debugmode' : 0})) 
-        with open(dir0+r"\settings.txt", 'r') as file:
+        with open(self.dirsettings+r"\settings.txt", 'r') as file:
             debug_var = json.load(file)['debugmode']
             print(debug_var)
             print(type(debug_var))
@@ -168,28 +175,8 @@ def run_flashbook(self):
     def m_CurrentPage11OnText( self, event ):
         print("hallo")
 
-def run_flashcard(self):
-    
+def run_flashcard(self):    
     print("Welcome to Flashcard , one moment ...")
-    #--- general ------------------------------------------------------------------
-    import json
-    import os
-    #--- gui ----------------------------------------------------------------------
-    import wx
-    import wx.adv as adv
-    import wx._html
-    import wx.richtext
-    #--- displaying text in matplotlib like figure --------------------------------
-    import shutil
-    #--- for colored error messages -----------------------------------------------
-    from termcolor import colored
-    #-------
-    import fc_functions as f2
-    import fc_modules as m2
-    import fc_initialization as ini2 
-    import resources
-    import gui_flashbook as gui
-    
     
     #%%
     def initialize2(self):
@@ -369,27 +356,7 @@ def run_flashcard(self):
         m2.startprogram(self,event)
         
 
-def run_print(self,event):
-    
-    #------------------------------------------------------------------- general
-    import os
-    import json
-    import shutil
-    #-------------------------------------------------------------------- gui
-    import wx
-    import wx.adv as adv
-    import wx.richtext
-    import wx.html as html
-    #import print_gui as gui
-    #------------------------------------------------------------------- modules
-    import print_functions as f
-    import print_modules as m
-    import print_initialization as ini 
-    import resources
-    
-    
-    
-                
+def run_print(self,event):                
     #% path to resources: to circumvent needing a spec. file when you use Pyinstaller 
     datadir = os.getenv("LOCALAPPDATA")
     dir0 = datadir+r"\FlashBook"
@@ -460,9 +427,9 @@ def run_print(self,event):
         
     
     #
-    ini.initializeparameters(self)                  
+    ini3.initializeparameters(self)                  
     ## LOAD ALL DATA ==========================================================
-    m.startprogram(self,event)
+    m3.startprogram(self,event)
         
 
 
