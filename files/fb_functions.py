@@ -341,7 +341,10 @@ def ShowInPopup(self,event,mode):
     win = Window2(self.GetTopLevelParent(), wx.SIMPLE_BORDER,image)    
     win.Position((self.mousepos[0]-10,self.mousepos[1]-10), (0,0))
     win.Show(True)  
-    
+    try:
+        delattr(self, 'imagetext')
+    except AttributeError:
+        pass
 
 
 #%% turn user LaTeX macro into useable LaTeX code
