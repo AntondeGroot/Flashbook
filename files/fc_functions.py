@@ -82,14 +82,16 @@ def SaveStats(self):
             
             file.write(json.dumps(dictionary) )
     except: #a certain key was not in the dictionary
-
-        with open(self.statsdir, 'r') as file:
-            try:
-                dictionary = json.load(file)
-            except:
-                dictionary={}
+        try:
+            with open(self.statsdir, 'r') as file:
+                try:
+                    dictionary = json.load(file)
+                except:
+                    dictionary={}
+                dictionary.update({key: value})
+        except: # the file does not exist
+            dictionary={}
             dictionary.update({key: value})
-            file.write(json.dumps(dictionary) )
         with open(self.statsdir, 'w') as file:
             file.write(json.dumps(dictionary) )
 def LoadStats(self):    
@@ -458,6 +460,12 @@ def LoadFlashCards(self):
     CARD ORDER
     """
     ## determine cardorder based on user given input
+    try: # look if variable even exists.
+        if self.continueSession == False:
+            pass
+    except:
+        self.continueSession = False
+            
     if self.continueSession == False:
         if self.nr_questions < self.nr_cards:   
             if self.chrono == True:
