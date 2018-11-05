@@ -19,11 +19,33 @@ import wx
 import wx.adv as adv
 import wx.richtext
 import wx.html as html
+import wx._html
 import gui_flashbook as gui
 #------------------------------------------------------------------- modules
 import fb_initialization as ini 
+import fc_initialization as ini2 
+import print_initialization as ini3
 import resources
-import fb_functions as f
+import fb_modules    as m
+import fc_modules    as m2
+import print_modules as m3
+import fb_functions    as f
+import fc_functions    as f2
+import print_functions as f3
+
+
+
+
+#--- for colored error messages -----------------------------------------------
+from termcolor import colored
+
+
+
+
+
+
+
+
 
 
 # when using Pyinstaller to get the .exe file: it will standard give an error that it is missing the module 'qwindows.dll'
@@ -72,13 +94,7 @@ def settings_get(self):
             self.debugmode = True
             print("debugging is enabled")
     
-def settings_create(self):
-    if not os.path.exists(self.dir0+r"\settings.txt"):   
-        with open(self.dir0+r"\settings.txt", 'w') as file:
-            file.write(json.dumps({'debugmode' : 0, 'QAline_thickness' : 1, 'pdfline_thickness' : 5, 'QAline_color' : (0,0,0), 'pdfline_color' : (18,5,250), 'QAline_bool': True,'pdfline_bool': True }))       
-def settings_set(self):
-    with open(self.dir0+r"\settings.txt", 'w') as file:
-        file.write(json.dumps({'debugmode' : 0, 'QAline_thickness' : self.QAline_thickness, 'pdfline_thickness': self.pdfline_thickness, 'QAline_color' : self.QAline_color, 'pdfline_color' : self.pdfline_color, 'QAline_bool': self.QAline_bool,'pdfline_bool': self.pdfline_bool}))       
+
 #%%
 def initialize(self):
     datadir = os.getenv("LOCALAPPDATA")
@@ -130,6 +146,14 @@ def initialize(self):
         print("")
     print("=========================================================================================")
 
+
+def settings_create(self):
+    if not os.path.exists(self.dirsettings+r"\settings.txt"):   
+        with open(self.dirsettings+r"\settings.txt", 'w') as file:
+            file.write(json.dumps({'debugmode' : 0, 'QAline_thickness' : 1, 'pdfline_thickness' : 5, 'QAline_color' : (0,0,0), 'pdfline_color' : (18,5,250), 'QAline_bool': True,'pdfline_bool': True }))       
+def settings_set(self):
+    with open(self.dirsettings+r"\settings.txt", 'w') as file:
+        file.write(json.dumps({'debugmode' : 0, 'QAline_thickness' : self.QAline_thickness, 'pdfline_thickness': self.pdfline_thickness, 'QAline_color' : self.QAline_color, 'pdfline_color' : self.pdfline_color, 'QAline_bool': self.QAline_bool,'pdfline_bool': self.pdfline_bool}))       
 
 """
 ###############################################################################
@@ -186,7 +210,7 @@ def SwitchPanel(self,n,m):
 
 import fb_modules as m
 import fc_modules as m2
-
+from print_modules import notes2paper
 #import fc_modules as m2  
 
 def set_bitmapbuttons(self):
@@ -222,7 +246,7 @@ def print_preview(self,event):
     print(self.m_panel32.GetSize())
     self.Layout()
 def preview_refresh(self):
-    from print_modules import notes2paper
+    
     notes2paper(self)
     panelwidth = round(float(self.m_panel32.GetSize()[1])/1754.0*1240.0)
     panelheight = self.m_panel32.GetSize()[1]
@@ -236,6 +260,8 @@ def preview_refresh(self):
 
 import program
 import PIL
+import fc_modules as m2
+import ctypes
 
 class MainFrame(gui.MyFrame):
     #constructor    
@@ -252,7 +278,6 @@ class MainFrame(gui.MyFrame):
         # icon
         iconimage = wx.Icon(self.path_icon, type=wx.BITMAP_TYPE_ANY, desiredWidth=-1, desiredHeight=-1)
         self.SetIcon(iconimage)
-        self.m_dirPicker11.SetInitialDirectory(self.dir3)
         #self.m_filePickerPrint.SetInitialDirectory(self.dir1+'\.') #for filepicker you can't just set a directory like dirPicker, in this case it should end in "\." so that it has to look for files, otherwise it will see a folder as a file...
         SwitchPanel(self,0,0)
         self.printpreview = True
@@ -267,8 +292,9 @@ class MainFrame(gui.MyFrame):
         
     #%% Panel selection
     def m_OpenFlashbookOnButtonClick( self, event ):
-        self.m_bitmapScroll.SetWindowStyleFlag(False)
         self.m_dirPicker11.SetInitialDirectory(self.dir3)
+        self.m_bitmapScroll.SetWindowStyleFlag(False)
+        
         setup_sources(self)
         SwitchPanel(self,1,0)      
         m.SetKeyboardShortcuts(self)
@@ -298,6 +324,7 @@ class MainFrame(gui.MyFrame):
         with wx.FileDialog(self, "Choose which file to print", wildcard="*.tex",style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST) as fileDialog:
             fileDialog.SetPath(self.dir1+'\.')
             if fileDialog.ShowModal() == wx.ID_CANCEL:
+                SwitchPanel(self,0,0) 
                 return     # the user changed their mind
             else:
                 self.fileDialog = fileDialog
@@ -331,6 +358,7 @@ class MainFrame(gui.MyFrame):
             #self.multiplier = dlg.m_textCtrl11.GetValue()
     #%% menu item events
     def m_menuItemFlashbookOnMenuSelection( self, event ):
+        self.m_dirPicker11.SetInitialDirectory(self.dir3)
         os.system("explorer {}".format(self.dir3)) 
 	
     def m_menuItemBackToMainOnMenuSelection( self, event ):
@@ -420,17 +448,14 @@ class MainFrame(gui.MyFrame):
     
     
     #buttons
-    def m_buttonCorrectOnButtonClick( self, event ):
-        import fc_modules as m2
+    def m_buttonCorrectOnButtonClick( self, event ):        
         m2.buttonCorrect(self)
     def m_bitmapScroll1OnLeftUp( self, event ):
-        import fc_modules as m2
         m2.buttonCorrect(self)
     
     def m_buttonWrongOnButtonClick( self, event ):
         m2.buttonWrong(self)
     def m_bitmapScroll1OnRightUp( self, event ):# anton , dit nog over kopieren van wxformbiulder
-        import fc_modules as m2
         m2.buttonCorrect(self)    
 	
     def m_toolSwitch21OnToolClicked( self, event ):
@@ -471,7 +496,8 @@ class MainFrame(gui.MyFrame):
         self.FilePickEvent = False
         preview_refresh(self)
         self.printpreview = True
-    
+        SwitchPanel(self,0,0)
+        ctypes.windll.user32.MessageBoxW(0, " your pdf has been created\n open in the menubar: `Open/Open PDF-notes Folder` to\n open the folder in Windows explorer ", "Message", 1)
     def m_lineWpdfOnText( self, event ):
         try:
             int(self.m_lineWpdf.GetValue())
