@@ -43,8 +43,8 @@ def initializeparameters(self):
     self.Bind( wx.EVT_MENU, self.m_buttonWrongOnButtonClick,   id = Id_Wrong   )
     self.Bind( wx.EVT_MENU, self.m_toolSwitch21OnToolClicked,    id = Id_card    )
     # combine id with keyboard = now keyboard is connected to functions
-    entries = wx.AcceleratorTable([(wx.ACCEL_NORMAL,  wx.WXK_LEFT, Id_card),
-                                  (wx.ACCEL_NORMAL,  wx.WXK_RIGHT, Id_card ),
-                                  (wx.ACCEL_NORMAL,  wx.WXK_UP, Id_Correct),
-                                  (wx.ACCEL_NORMAL,  wx.WXK_DOWN, Id_Wrong)])
+    entries = wx.AcceleratorTable([(wx.ACCEL_NORMAL,  wx.WXK_LEFT, Id_Correct),
+                                  (wx.ACCEL_NORMAL,  wx.WXK_RIGHT, Id_Wrong ),
+                                  (wx.ACCEL_NORMAL,  wx.WXK_UP, Id_card),
+                                  (wx.ACCEL_NORMAL,  wx.WXK_DOWN, Id_card)])
     self.SetAcceleratorTable(entries)
