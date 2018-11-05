@@ -292,6 +292,7 @@ class MainFrame(gui.MyFrame):
         
     #%% Panel selection
     def m_OpenFlashbookOnButtonClick( self, event ):
+        self.m_textMode.Show(False)
         self.m_dirPicker11.SetInitialDirectory(self.dir3)
         self.m_bitmapScroll.SetWindowStyleFlag(False)
         
