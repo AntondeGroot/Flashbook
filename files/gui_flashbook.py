@@ -202,6 +202,8 @@ class MyFrame ( wx.Frame ):
 		bSizer2.Add( self.m_toolBar1, 0, wx.ALIGN_CENTER|wx.EXPAND, 0 )
 		
 		self.m_staticline2 = wx.StaticLine( self.panel11, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.LI_HORIZONTAL )
+		self.m_staticline2.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), 70, 90, 90, False, wx.EmptyString ) )
+		
 		bSizer2.Add( self.m_staticline2, 0, wx.ALL|wx.EXPAND, 3 )
 		
 		self.m_panel15 = wx.Panel( self.panel11, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TAB_TRAVERSAL )
@@ -212,6 +214,8 @@ class MyFrame ( wx.Frame ):
 		bSizer5 = wx.BoxSizer( wx.HORIZONTAL )
 		
 		self.m_panel16 = wx.Panel( self.m_scrolledWindow1, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TAB_TRAVERSAL )
+		self.m_panel16.Enable( False )
+		
 		bSizer5.Add( self.m_panel16, 1, wx.EXPAND |wx.ALL, 0 )
 		
 		self.m_bitmapScroll = wx.StaticBitmap( self.m_scrolledWindow1, wx.ID_ANY, wx.NullBitmap, wx.DefaultPosition, wx.DefaultSize, wx.SIMPLE_BORDER )
@@ -244,6 +248,22 @@ class MyFrame ( wx.Frame ):
 		
 		self.m_enterselection = wx.Button( self.panel11, wx.ID_ANY, u"Enter Selection", wx.DefaultPosition, wx.DefaultSize, 0 )
 		bSizer3.Add( self.m_enterselection, 0, wx.ALL, 5 )
+		
+		self.m_textMode = wx.TextCtrl( self.panel11, wx.ID_ANY, u"V3", wx.DefaultPosition, wx.DefaultSize, 0|wx.NO_BORDER )
+		self.m_textMode.SetFont( wx.Font( 15, 70, 90, 90, False, wx.EmptyString ) )
+		self.m_textMode.SetForegroundColour( wx.Colour( 0, 120, 215 ) )
+		self.m_textMode.SetBackgroundColour( wx.Colour( 254, 240, 231 ) )
+		self.m_textMode.SetToolTipString( u"V is select vertical\nH is select horizontal\nthe number following it is how many selections you've made\n" )
+		
+		bSizer3.Add( self.m_textMode, 0, wx.ALL, 5 )
+		
+		self.m_staticText32 = wx.StaticText( self.panel11, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_staticText32.Wrap( -1 )
+		self.m_staticText32.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), 70, 90, 92, False, wx.EmptyString ) )
+		self.m_staticText32.SetForegroundColour( wx.SystemSettings.GetColour( wx.SYS_COLOUR_HIGHLIGHT ) )
+		self.m_staticText32.SetToolTipString( u"V is for vertical mode.\nH is for horizontal mode\nin case you want to select multiple sentences." )
+		
+		bSizer3.Add( self.m_staticText32, 0, wx.ALL, 10 )
 		
 		self.m_staticline3 = wx.StaticLine( self.panel11, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.LI_VERTICAL )
 		bSizer3.Add( self.m_staticline3, 1, wx.EXPAND|wx.LEFT|wx.RIGHT, 2000 )
@@ -328,8 +348,6 @@ class MyFrame ( wx.Frame ):
 		bSizer7.Add( self.panel1, 1, wx.EXPAND |wx.ALL, 0 )
 		
 		self.panel2 = wx.Panel( self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TAB_TRAVERSAL )
-		self.panel2.SetBackgroundColour( wx.Colour( 254, 240, 231 ) )
-		
 		bSizer81 = wx.BoxSizer( wx.VERTICAL )
 		
 		self.panel21 = wx.Panel( self.panel2, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TAB_TRAVERSAL )
@@ -377,7 +395,7 @@ class MyFrame ( wx.Frame ):
 		bSizer211.Add( self.m_toolBar3, 0, wx.ALIGN_CENTER|wx.EXPAND, 0 )
 		
 		self.m_staticline22 = wx.StaticLine( self.panel21, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.LI_HORIZONTAL )
-		bSizer211.Add( self.m_staticline22, 0, wx.EXPAND |wx.ALL, 0 )
+		bSizer211.Add( self.m_staticline22, 0, wx.EXPAND |wx.ALL, 3 )
 		
 		self.m_scrolledWindow11 = wx.ScrolledWindow( self.panel21, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.m_scrolledWindow11.SetScrollRate( 5, 5 )
@@ -593,7 +611,6 @@ class MyFrame ( wx.Frame ):
 		
 		# Connect Events
 		self.Bind( wx.EVT_MENU, self.m_menuItemFlashbookOnMenuSelection, id = self.m_menuItemFlashbook.GetId() )
-		self.Bind( wx.EVT_MENU, self.m_menuPDFfolderOnMenuSelection, id = self.m_menuPDFfolder.GetId() )
 		self.Bind( wx.EVT_MENU, self.m_menuItemBackToMainOnMenuSelection, id = self.m_menuItemBackToMain.GetId() )
 		self.Bind( wx.EVT_MENU, self.m_menuHelpOnMenuSelection, id = self.m_menuHelp.GetId() )
 		self.m_OpenFlashbook.Bind( wx.EVT_BUTTON, self.m_OpenFlashbookOnButtonClick )
@@ -687,9 +704,6 @@ class MyFrame ( wx.Frame ):
 	
 	# Virtual event handlers, overide them in your derived class
 	def m_menuItemFlashbookOnMenuSelection( self, event ):
-		event.Skip()
-	
-	def m_menuPDFfolderOnMenuSelection( self, event ):
 		event.Skip()
 	
 	def m_menuItemBackToMainOnMenuSelection( self, event ):
@@ -883,7 +897,7 @@ class MyFrame ( wx.Frame ):
 
 class MyDialog ( wx.Dialog ):
 	
-	def __init__( self, parent,data ):
+	def __init__( self, parent, data ):
 		wx.Dialog.__init__ ( self, parent, id = wx.ID_ANY, title = u"Settings", pos = wx.DefaultPosition, size = wx.Size( 349,250 ), style = wx.DEFAULT_DIALOG_STYLE )
 		
 		self.SetSizeHints( wx.DefaultSize, wx.Size( 350,250 ) )
@@ -966,11 +980,10 @@ class MyDialog ( wx.Dialog ):
 
 class MyDialog2 ( wx.Dialog ):
 	
-	def __init__( self, parent,data ):
+	def __init__( self, parent, data ):
 		wx.Dialog.__init__ ( self, parent, id = wx.ID_ANY, title = u"Settings", pos = wx.DefaultPosition, size = wx.Size( 349,300 ), style = wx.DEFAULT_DIALOG_STYLE )
 		
 		self.SetSizeHints( wx.DefaultSize, wx.Size( 350,300 ) )
-		self.SetBackgroundColour( wx.SystemSettings.GetColour( wx.SYS_COLOUR_INFOTEXT ) )
 		
 		bSizer8 = wx.BoxSizer( wx.VERTICAL )
 		
@@ -1058,5 +1071,34 @@ class MyDialog2 ( wx.Dialog ):
 	
 	def m_radioRandomOnRadioButton( self, event ):
 		event.Skip()
+	
+
+###########################################################################
+## Class MyPrintDialog
+###########################################################################
+
+class MyPrintDialog ( wx.Dialog ):
+	
+	def __init__( self, parent ):
+		wx.Dialog.__init__ ( self, parent, id = wx.ID_ANY, title = u"Print settings", pos = wx.DefaultPosition, size = wx.Size( 645,450 ), style = wx.DEFAULT_DIALOG_STYLE )
+		
+		self.SetSizeHints( wx.DefaultSize, wx.Size( -1,450 ) )
+		
+		bSizer8 = wx.BoxSizer( wx.HORIZONTAL )
+		
+		self.m_panel4 = wx.Panel( self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.DOUBLE_BORDER|wx.TAB_TRAVERSAL )
+		self.m_panel4.SetBackgroundColour( wx.Colour( 254, 239, 231 ) )
+		self.m_panel4.SetMaxSize( wx.Size( 300,450 ) )
+		
+		bSizer8.Add( self.m_panel4, 1, wx.EXPAND |wx.ALL, 0 )
+		
+		
+		self.SetSizer( bSizer8 )
+		self.Layout()
+		
+		self.Centre( wx.BOTH )
+	
+	def __del__( self ):
+		pass
 	
 
