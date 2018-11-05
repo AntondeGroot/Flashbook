@@ -193,55 +193,54 @@ def startprogram(self,event):
     #and use these values to set the slider as you wish. Don't forget to add "self.Destroy" when you press the button
     data = self.nr_cards
     #open dialog window
-    if os.path.exists(self.statsdir):# the dir should not just exist, but data of specific course should exist
-        try:
-            with open(self.statsdir, 'r') as file:    
-                dictionary = json.load(file)
-        except:
-            dictionary = {}
-        if self.bookname in dictionary:
-            try:
-                with gui.MyDialog2(self,data) as dlg: #use this to set the max range of the slider
-                    dlg.ShowModal()
-                    self.nr_questions = dlg.m_slider1.GetValue()   #nr_cards = total unique questions , nr_questions how many you want to ask #anton this might cause problems further down the line
-                    self.chrono = dlg.m_radioChrono.GetValue()                    
-                    self.continueSession = dlg.m_radioYes.GetValue()
-                    self.multiplier = dlg.m_textCtrl11.GetValue()
-                    
-                    # you cannot continue when the questions are randomly chosen
-                    if self.chrono == False:
-                        self.continueSession = False
-                    
-                if self.continueSession == True:
-                    print("continue session")
-                    f2.LoadStats(self)
-                else:
-                    print("don't continue session")
-                    f2.RemoveStats(self)
-                    #f2.SetStats(self)
-                
-            except:
-                print(colored("Error: Couldn't open Dialog window nr 1",'red'))
-        else:
-            try:
-                with gui.MyDialog(self,data) as dlg: #use this to set the max range of the slider , add ",data" in the initialization of the dialog window
-                    dlg.ShowModal()
-                    self.nr_questions = dlg.m_slider1.GetValue()                        
-                    self.chrono = dlg.m_radioChrono.GetValue()
-                    self.continueSession = False
-                    self.multiplier = dlg.m_textCtrl11.GetValue()
-                print(self.nr_questions)
-            except:
-                print(colored("Error: Couldn't open Dialog window nr 2",'red'))
-            
     
+    try:
+        with open(self.statsdir, 'r') as file:    
+            dictionary = json.load(file)
+    except:
+        dictionary = {}
+    if self.bookname in dictionary:
+        try:
+            with gui.MyDialog2(self,data) as dlg: #use this to set the max range of the slider
+                dlg.ShowModal()
+                self.nr_questions = dlg.m_slider1.GetValue()   #nr_cards = total unique questions , nr_questions how many you want to ask #anton this might cause problems further down the line
+                self.chrono = dlg.m_radioChrono.GetValue()                    
+                self.continueSession = dlg.m_radioYes.GetValue()
+                self.multiplier = dlg.m_textCtrl11.GetValue()
+                
+                # you cannot continue when the questions are randomly chosen
+                if self.chrono == False:
+                    self.continueSession = False
+                
+            if self.continueSession == True:
+                print("continue session")
+                f2.LoadStats(self)
+            else:
+                print("don't continue session")
+                f2.RemoveStats(self)
+                #f2.SetStats(self)
+            
+        except:
+            print(colored("Error: Couldn't open Dialog window nr 1",'red'))
+    else:
+        try:
+            with gui.MyDialog(self,data) as dlg: #use this to set the max range of the slider , add ",data" in the initialization of the dialog window
+                dlg.ShowModal()
+                self.nr_questions = dlg.m_slider1.GetValue()                        
+                self.chrono = dlg.m_radioChrono.GetValue()
+                self.continueSession = False
+                self.multiplier = dlg.m_textCtrl11.GetValue()
+        except:
+            print(colored("Error: Couldn't open Dialog window nr 2",'red'))
         
+
+    
     # if you want to use all cards twice or 1.5 times for the quiz: then exclude invalid selections of this multiplier
     
     try:
         self.multiplier = float(self.multiplier)
     except:
-        print(colored("Error: entered multiplier was not a number\ncontinue as if multiplier = 1","red"))
+        print(colored("Error: entered multiplier was not a number, continue as if multiplier = 1","red"))
         self.multiplier = 1
     if self.multiplier < 0:
         self.multiplier = 1
