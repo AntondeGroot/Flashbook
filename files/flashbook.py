@@ -14,6 +14,7 @@ import os
 import json
 import shutil
 #-------------------------------------------------------------------- gui
+import threading
 import wx
 import wx.adv as adv
 import wx.richtext
@@ -291,6 +292,9 @@ class MainFrame(gui.MyFrame):
         print(self.image)
         
     def m_OpenPrintOnButtonClick(self,event):
+        thr1 = threading.Thread(target = SwitchPanel, name = 'thread1', args = (self,3,None ))
+        thr1.run()
+        
         with wx.FileDialog(self, "Choose which file to print", wildcard="*.tex",style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST) as fileDialog:
             fileDialog.SetPath(self.dir1+'\.')
             if fileDialog.ShowModal() == wx.ID_CANCEL:
@@ -298,7 +302,6 @@ class MainFrame(gui.MyFrame):
             else:
                 self.fileDialog = fileDialog
                 self.FilePickEvent = True
-                SwitchPanel(self,3,None)
                 settings_get(self)
                 self.m_colorQAline.SetColour(self.QAline_color)
                 self.m_colorPDFline.SetColour(self.pdfline_color)
@@ -306,7 +309,10 @@ class MainFrame(gui.MyFrame):
                 self.m_lineWqa.SetValue(str(self.QAline_thickness))
                 self.m_lineQA.SetValue(self.QAline_bool)
                 self.m_linePDF.SetValue(self.pdfline_bool)
-                print_preview(self,event)
+                
+                thr2 = threading.Thread(target = print_preview, name = 'thread2', args = (self,event ))
+                thr2.run()
+                #print_preview(self,event)
                 print(self.image)
         
         
@@ -495,8 +501,15 @@ class MainFrame(gui.MyFrame):
     
         
 # start the application
-app = wx.App(False) 
-frame = MainFrame(None)
-frame.Show(True)
-app.MainLoop()
-del app
+def runapp():
+    app = wx.App(False) 
+    frame = MainFrame(None)
+    frame.Show(True)
+    app.MainLoop()
+    del app
+    
+# initialize a thread
+thr_main = threading.Thread(target = runapp, name = 'mainthread',args = ())
+thr_main.run()
+
+
