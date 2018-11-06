@@ -162,9 +162,14 @@ def bitmapleftup(self,event):
         img = np.array(img)            
         img = img[y0:y1,x0:x1]
         img = PIL.Image.fromarray(img)
-                        
-        picname =  "{}_{}_{}{}{}{}.jpg".format(self.bookname,self.currentpage,randint(0,9),randint(0,9),randint(0,9),randint(0,9))
-        img.save(self.dir2+r"\{}\{}".format(self.bookname,picname))
+        find = True
+        while find == True:                
+            picname =  "{}_{}_{}{}{}{}.jpg".format(self.bookname,self.currentpage,randint(0,9),randint(0,9),randint(0,9),randint(0,9))
+            filename = self.dir2+r"\{}\{}".format(self.bookname,picname)
+            if not os.path.exists(filename):
+                find = False
+        img.save(filename)
+        
         # the list will look like the following:
         # [vert1 [hor1,hor2,hor3],vert2,vert3,[hor4,hor5]]
         # within so that first the hor [] will be combined first horizontally, then all will be combined vertically.
