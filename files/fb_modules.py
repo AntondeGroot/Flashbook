@@ -165,14 +165,31 @@ def bitmapleftup(self,event):
                         
         picname =  "{}_{}_{}{}{}{}.jpg".format(self.bookname,self.currentpage,randint(0,9),randint(0,9),randint(0,9),randint(0,9))
         img.save(self.dir2+r"\{}\{}".format(self.bookname,picname))
+        # the list will look like the following:
+        # [vert1 [hor1,hor2,hor3],vert2,vert3,[hor4,hor5]]
+        # within so that first the hor [] will be combined first horizontally, then all will be combined vertically.
         if self.questionmode == True:
-            self.pic_question.append(picname)  
-            self.pic_question_dir.append(self.dir2+r"\{}\{}".format(self.bookname,picname))  
+            if self.stitchmode_v == True:
+                self.pic_question.append(picname)  
+                self.pic_question_dir.append(self.dir2+r"\{}\{}".format(self.bookname,picname))  
+            else:
+                try:
+                    self.pic_question[-1].append(picname)  
+                    self.pic_question_dir[-1].append(self.dir2+r"\{}\{}".format(self.bookname,picname))  
+                except:
+                    self.pic_question.append([picname])  
+                    self.pic_question_dir.append([self.dir2+r"\{}\{}".format(self.bookname,picname)])  
         else:
-            #self.tempdictionary = {}
-            self.pic_answer.append(picname)  
-            self.pic_answer_dir.append(self.dir2+r"\{}\{}".format(self.bookname,picname))    
-        
+            if self.stitchmode_v == True:
+                self.pic_answer.append(picname)  
+                self.pic_answer_dir.append(self.dir2+r"\{}\{}".format(self.bookname,picname))    
+            else:
+                try:
+                    self.pic_answer[-1].append(picname)  
+                    self.pic_answer_dir[-1].append(self.dir2+r"\{}\{}".format(self.bookname,picname)) 
+                except:
+                    self.pic_answer.append([picname])  
+                    self.pic_answer_dir.append([self.dir2+r"\{}\{}".format(self.bookname,picname)])  
         # show current page
         f.ShowPage(self)     
         
@@ -187,11 +204,21 @@ def selectionentered(self,event):
         self.m_textCtrl1.SetValue("Answer:")
         self.m_textCtrl2.SetValue("")
         
+        # check for [[1,2,3]]
         if len(self.pic_question)>1:
             f.CombinePics(self,self.pic_question_dir)
+            if type(self.pic_question[0]) is list:
+                self.pic_question[0] = self.pic_question[0][0]
             self.pdf_question = str(self.pdf_question) + r" \pic{" + "{}".format(self.pic_question[0])+r"}"
-        else:                
+        else:       
+            print("only horizontal questions")
+            print(len(self.pic_question))
             if len(self.pic_question) == 1:
+                if type(self.pic_question[0]) is list:
+                    
+                    f.CombinePics(self,self.pic_question_dir)
+                else:
+                    print("is not a list")
                 self.pdf_question = str(self.pdf_question) + r" \pic{" + "{}".format(self.pic_question[0])+r"}"
         #try:                     
         f.ShowInPopup(self,event,"Question")
@@ -226,8 +253,14 @@ def selectionentered(self,event):
                 file.write(json.dumps(self.dictionary)) 
         if len(self.pic_answer)>1:
             f.CombinePics(self,self.pic_answer_dir)
+            if type(self.pic_answer[0]) is list:
+                self.pic_answer[0] = self.pic_answer[0][0]
             self.pdf_answer = str(self.pdf_answer) + r" \pic{" + "{}".format(self.pic_answer[0])+r"}"
         elif len(self.pic_answer) == 1:
+            if type(self.pic_answer[0]) is list:        
+                f.CombinePics(self,self.pic_answer_dir)
+            else:
+                print("is not a list")                        
             self.pdf_answer = str(self.pdf_answer) + r" \pic{" + "{}".format(self.pic_answer[0])+r"}"                        
         
         #try:   
@@ -360,31 +393,45 @@ def zoomout(self,event):
         #self.m_panel1.Update()
     except:
         print(colored("Error: cannot zoom in",'red'))
+
+def switch_stitchmode(self): # switch the boolean to opposite
+    print("you pressed switch")
+    print(str(self.stitchmode_v))
+    
+
+
 def SetKeyboardShortcuts(self):
+    
     try:# look if Id's already exist
         # combine functions with the id
         self.Bind( wx.EVT_MENU, self.m_toolBack11OnToolClicked,       id = self.Id_leftkey  )
         self.Bind( wx.EVT_MENU, self.m_toolNext11OnToolClicked,       id = self.Id_rightkey )
         self.Bind( wx.EVT_MENU, self.m_enterselectionOnButtonClick, id = self.Id_enterkey )
+        self.Bind( wx.EVT_MENU, self.m_toolStitchOnButtonClick, id = self.Id_stitch )
         # combine id with keyboard = now keyboard is connected to functions
         entries = wx.AcceleratorTable([(wx.ACCEL_NORMAL,  wx.WXK_LEFT, self.Id_leftkey),
                                       (wx.ACCEL_NORMAL,  wx.WXK_RIGHT, self.Id_rightkey),
-                                      (wx.ACCEL_NORMAL,  wx.WXK_RETURN, self.Id_enterkey)])
+                                      (wx.ACCEL_NORMAL,  wx.WXK_RETURN, self.Id_enterkey),
+                                      (wx.ACCEL_NORMAL,  wx.WXK_HOME, self.Id_stitch ),
+                                      (wx.ACCEL_NORMAL,  wx.WXK_NUMPAD0, self.Id_stitch )])
         self.SetAcceleratorTable(entries)
     except:
         # set keyboard short cuts: accelerator table        
         self.Id_leftkey   = wx.NewIdRef() 
         self.Id_rightkey  = wx.NewIdRef() 
         self.Id_enterkey  = wx.NewIdRef()
+        self.Id_stitch    = wx.NewIdRef()
         # combine functions with the id
         self.Bind( wx.EVT_MENU, self.m_toolBack11OnToolClicked,       id = self.Id_leftkey  )
         self.Bind( wx.EVT_MENU, self.m_toolNext11OnToolClicked,       id = self.Id_rightkey )
         self.Bind( wx.EVT_MENU, self.m_enterselectionOnButtonClick, id = self.Id_enterkey )
-        
+        self.Bind( wx.EVT_MENU, self.m_toolStitchOnButtonClick, id = self.Id_stitch )
         # combine id with keyboard = now keyboard is connected to functions
         entries = wx.AcceleratorTable([(wx.ACCEL_NORMAL,  wx.WXK_LEFT, self.Id_leftkey),
                                       (wx.ACCEL_NORMAL,  wx.WXK_RIGHT, self.Id_rightkey ),
-                                      (wx.ACCEL_NORMAL,  wx.WXK_RETURN, self.Id_enterkey )])
+                                      (wx.ACCEL_NORMAL,  wx.WXK_RETURN, self.Id_enterkey ),
+                                      (wx.ACCEL_NORMAL,  wx.WXK_HOME, self.Id_stitch ),
+                                      (wx.ACCEL_NORMAL,  wx.WXK_NUMPAD0, self.Id_stitch )])
         self.SetAcceleratorTable(entries)
 
 def RemoveKeyboardShortcuts(self):
