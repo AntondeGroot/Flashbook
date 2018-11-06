@@ -25,8 +25,7 @@ dir0 = datadir + r"\FlashBook"
 # create settings folder for debugging
 
 
-def switch_stitchmode(self): # switch the boolean to opposite
-    self.stitchmode_v =  not self.stitchmode_v
+
     
 
 
@@ -245,6 +244,33 @@ def ResetQuestions(self): # no errors
 def CombinePics(self,directory):
     if self.debugmode:
         print("fb=CombinePics")
+    i = 0
+    # combine horizontal pictures horizontally. They can be recognized as [] within a [] such that [vert,[hor,hor],vert,[hor,hor,hor]]
+    for im in directory:
+        if type(im) is list:
+            print(im)
+            images = list(map(PIL.Image.open, im))   
+            widths, heights = zip(*(i.size for i in images))
+            max_height = max(heights)
+            total_width = sum(widths)
+            new_im = PIL.Image.new('RGB', (total_width, max_height), "white")
+            x_offset = 0
+            for img in images:
+                new_im.paste(img, (x_offset,0))
+                x_offset += img.size[0]
+            new_im.save(im[0])
+            print(len(im))
+            for p in range(len(im)):
+                if p!=0:
+                    try:
+                        os.remove(im[p])
+                    except:
+                        pass
+            directory[i] = im[0]
+            print(im[0])
+        i += 1
+    print(directory)
+    #combine pictures vertically    
     images = list(map(PIL.Image.open, directory))   
     widths, heights = zip(*(i.size for i in images))
     total_height = sum(heights)
@@ -263,6 +289,7 @@ def CombinePics(self,directory):
                 os.remove(directory[p])
             except:
                 pass
+            
 def CreateTextCard(self):
     if self.debugmode:
         print("fb=CreateTextCard")
@@ -314,7 +341,7 @@ def ShowInPopup(self,event,mode):
         self.image = image
         #image.show()
     except:
-        pass
+        print("Error: could not open file in popup")
     try:
         CreateTextCard(self)
     except:
