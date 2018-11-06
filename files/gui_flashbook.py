@@ -243,6 +243,8 @@ class MyFrame ( wx.Frame ):
 		bSizer3 = wx.BoxSizer( wx.HORIZONTAL )
 		
 		self.m_textCtrl1 = wx.TextCtrl( self.panel11, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, wx.TE_READONLY )
+		self.m_textCtrl1.SetFont( wx.Font( 10, 70, 90, 92, False, wx.EmptyString ) )
+		
 		bSizer3.Add( self.m_textCtrl1, 0, wx.ALL, 5 )
 		
 		self.m_textCtrl2 = wx.TextCtrl( self.panel11, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
