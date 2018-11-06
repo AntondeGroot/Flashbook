@@ -25,6 +25,9 @@ dir0 = datadir + r"\FlashBook"
 # create settings folder for debugging
 
 
+def switch_stitchmode(self): # switch the boolean to opposite
+    self.stitchmode_v =  not self.stitchmode_v
+    
 
 
 class Window2(wx.PopupWindow):
