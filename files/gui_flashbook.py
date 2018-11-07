@@ -274,6 +274,9 @@ class MyFrame ( wx.Frame ):
 		self.m_staticline3 = wx.StaticLine( self.panel11, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.LI_VERTICAL )
 		bSizer3.Add( self.m_staticline3, 1, wx.EXPAND|wx.LEFT|wx.RIGHT, 2000 )
 		
+		self.m_btnScreenshot = wx.Button( self.panel11, wx.ID_ANY, u"Import Screenshot", wx.DefaultPosition, wx.DefaultSize, 0 )
+		bSizer3.Add( self.m_btnScreenshot, 0, wx.ALL, 5 )
+		
 		self.m_resetselection = wx.Button( self.panel11, wx.ID_ANY, u"Reset Selection", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.m_resetselection.SetToolTipString( u"shortcut: right mouse button" )
 		
@@ -483,7 +486,7 @@ class MyFrame ( wx.Frame ):
 		sbSizer1.SetMinSize( wx.Size( 275,-1 ) ) 
 		gSizer12 = wx.GridSizer( 0, 2, 0, 0 )
 		
-		self.m_staticText52 = wx.StaticText( sbSizer1.GetStaticBox(), wx.ID_ANY, u"Boundary in each card \nbetween Q and A?", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_staticText52 = wx.StaticText( sbSizer1.GetStaticBox(), wx.ID_ANY, u"Boundary line in each \ncard between Q and A?", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.m_staticText52.Wrap( -1 )
 		gSizer12.Add( self.m_staticText52, 0, wx.ALL, 5 )
 		
@@ -519,6 +522,12 @@ class MyFrame ( wx.Frame ):
 		
 		sbSizer1.Add( gSizer12, 1, 0, 5 )
 		
+		self.m_staticText34 = wx.StaticText( sbSizer1.GetStaticBox(), wx.ID_ANY, u"Settings may not be applied if there are no \nAnswer cards made by the user.", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_staticText34.Wrap( -1 )
+		self.m_staticText34.SetFont( wx.Font( 7, 70, 94, 90, False, wx.EmptyString ) )
+		
+		sbSizer1.Add( self.m_staticText34, 0, wx.ALL, 5 )
+		
 		
 		bSizer23.Add( sbSizer1, 0, 0, 5 )
 		
@@ -530,7 +539,7 @@ class MyFrame ( wx.Frame ):
 		sbSizer11.SetMinSize( wx.Size( 275,-1 ) ) 
 		gSizer11 = wx.GridSizer( 0, 2, 0, 0 )
 		
-		self.m_staticText511 = wx.StaticText( sbSizer11.GetStaticBox(), wx.ID_ANY, u"Boundary in each row\nof multiple cards?", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_staticText511 = wx.StaticText( sbSizer11.GetStaticBox(), wx.ID_ANY, u"Boundary line in each \nrow of the pdf?", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.m_staticText511.Wrap( -1 )
 		gSizer11.Add( self.m_staticText511, 0, wx.ALL, 5 )
 		
@@ -572,6 +581,17 @@ class MyFrame ( wx.Frame ):
 		
 		bSizer23.Add( ( 0, 10), 0, wx.EXPAND, 5 )
 		
+		self.m_staticText33 = wx.StaticText( self.m_panel31, wx.ID_ANY, u"Fine tune image size", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_staticText33.Wrap( -1 )
+		self.m_staticText33.SetFont( wx.Font( 8, 70, 94, 90, False, wx.EmptyString ) )
+		
+		bSizer23.Add( self.m_staticText33, 0, wx.ALL, 5 )
+		
+		self.m_sliderPDFsize = wx.Slider( self.m_panel31, wx.ID_ANY, 100, 70, 130, wx.DefaultPosition, wx.Size( 275,-1 ), wx.SL_BOTH|wx.SL_HORIZONTAL|wx.SL_LABELS )
+		self.m_sliderPDFsize.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), 70, 90, 90, False, wx.EmptyString ) )
+		
+		bSizer23.Add( self.m_sliderPDFsize, 0, wx.ALL, 0 )
+		
 		self.m_PrintFinal = wx.Button( self.m_panel31, wx.ID_ANY, u"Apply", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.m_PrintFinal.SetFont( wx.Font( 10, 70, 90, 90, False, wx.EmptyString ) )
 		self.m_PrintFinal.SetMinSize( wx.Size( 275,-1 ) )
@@ -592,6 +612,7 @@ class MyFrame ( wx.Frame ):
 		bSizer26.Add( self.m_panel31, 1, wx.EXPAND |wx.ALL, 0 )
 		
 		self.m_panel32 = wx.Panel( self.panel3, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.DOUBLE_BORDER|wx.TAB_TRAVERSAL )
+		self.m_panel32.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), 70, 90, 90, False, wx.EmptyString ) )
 		self.m_panel32.SetBackgroundColour( wx.SystemSettings.GetColour( wx.SYS_COLOUR_BTNSHADOW ) )
 		
 		bSizer28 = wx.BoxSizer( wx.VERTICAL )
@@ -613,6 +634,56 @@ class MyFrame ( wx.Frame ):
 		self.panel3.Layout()
 		bSizer26.Fit( self.panel3 )
 		bSizer7.Add( self.panel3, 1, wx.EXPAND |wx.ALL, 0 )
+		
+		self.panel4 = wx.Panel( self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TAB_TRAVERSAL )
+		self.panel4.SetBackgroundColour( wx.Colour( 254, 240, 231 ) )
+		
+		bSizer32 = wx.BoxSizer( wx.VERTICAL )
+		
+		self.m_panel18 = wx.Panel( self.panel4, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TAB_TRAVERSAL )
+		bSizer331 = wx.BoxSizer( wx.VERTICAL )
+		
+		self.m_scrolledWindow3 = wx.ScrolledWindow( self.m_panel18, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.HSCROLL|wx.VSCROLL )
+		self.m_scrolledWindow3.SetScrollRate( 5, 5 )
+		bSizer342 = wx.BoxSizer( wx.VERTICAL )
+		
+		self.m_bitmap4 = wx.StaticBitmap( self.m_scrolledWindow3, wx.ID_ANY, wx.NullBitmap, wx.DefaultPosition, wx.DefaultSize, wx.DOUBLE_BORDER )
+		bSizer342.Add( self.m_bitmap4, 1, wx.ALL, 0 )
+		
+		
+		self.m_scrolledWindow3.SetSizer( bSizer342 )
+		self.m_scrolledWindow3.Layout()
+		bSizer342.Fit( self.m_scrolledWindow3 )
+		bSizer331.Add( self.m_scrolledWindow3, 1, wx.EXPAND |wx.ALL, 5 )
+		
+		self.m_staticText35 = wx.StaticText( self.m_panel18, wx.ID_ANY, u"Select with left mouse button what area to select", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_staticText35.Wrap( -1 )
+		self.m_staticText35.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), 70, 94, 90, False, wx.EmptyString ) )
+		
+		bSizer331.Add( self.m_staticText35, 0, wx.ALL, 5 )
+		
+		bSizer341 = wx.BoxSizer( wx.HORIZONTAL )
+		
+		self.m_btnSelect = wx.Button( self.m_panel18, wx.ID_ANY, u"Undo Changes", wx.DefaultPosition, wx.DefaultSize, 0 )
+		bSizer341.Add( self.m_btnSelect, 0, wx.ALL, 5 )
+		
+		self.m_btnImportScreenshot = wx.Button( self.m_panel18, wx.ID_ANY, u"Import", wx.DefaultPosition, wx.DefaultSize, 0 )
+		bSizer341.Add( self.m_btnImportScreenshot, 0, wx.ALL, 5 )
+		
+		
+		bSizer331.Add( bSizer341, 0, wx.EXPAND, 5 )
+		
+		
+		self.m_panel18.SetSizer( bSizer331 )
+		self.m_panel18.Layout()
+		bSizer331.Fit( self.m_panel18 )
+		bSizer32.Add( self.m_panel18, 1, wx.EXPAND |wx.ALL, 0 )
+		
+		
+		self.panel4.SetSizer( bSizer32 )
+		self.panel4.Layout()
+		bSizer32.Fit( self.panel4 )
+		bSizer7.Add( self.panel4, 1, wx.EXPAND |wx.ALL, 0 )
 		
 		
 		self.SetSizer( bSizer7 )
@@ -659,6 +730,7 @@ class MyFrame ( wx.Frame ):
 		self.m_bitmapScroll.Bind( wx.EVT_RIGHT_DOWN, self.m_bitmapScrollOnRightDown )
 		self.m_enterselection.Bind( wx.EVT_BUTTON, self.m_enterselectionOnButtonClick )
 		self.m_toolStitch.Bind( wx.EVT_BUTTON, self.m_toolStitchOnButtonClick )
+		self.m_btnScreenshot.Bind( wx.EVT_BUTTON, self.m_btnScreenshotOnButtonClick )
 		self.m_resetselection.Bind( wx.EVT_BUTTON, self.m_resetselectionOnButtonClick )
 		self.m_dirPicker12.Bind( wx.EVT_DIRPICKER_CHANGED, self.m_dirPicker12OnDirChanged )
 		self.Bind( wx.EVT_TOOL, self.m_toolPlus12OnToolClicked, id = self.m_toolPlus12.GetId() )
@@ -710,7 +782,13 @@ class MyFrame ( wx.Frame ):
 		self.m_lineWpdf.Bind( wx.EVT_TEXT, self.m_lineWpdfOnText )
 		self.m_lineWpdf.Bind( wx.EVT_TEXT_ENTER, self.m_lineWpdfOnTextEnter )
 		self.m_colorPDFline.Bind( wx.EVT_COLOURPICKER_CHANGED, self.m_colorPDFlineOnColourChanged )
+		self.m_sliderPDFsize.Bind( wx.EVT_KEY_UP, self.m_sliderPDFsizeOnKeyUp )
+		self.m_sliderPDFsize.Bind( wx.EVT_SCROLL_CHANGED, self.m_sliderPDFsizeOnScrollChanged )
 		self.m_PrintFinal.Bind( wx.EVT_BUTTON, self.m_PrintFinalOnButtonClick )
+		self.m_bitmap4.Bind( wx.EVT_LEFT_DOWN, self.m_bitmap4OnLeftDown )
+		self.m_bitmap4.Bind( wx.EVT_LEFT_UP, self.m_bitmap4OnLeftUp )
+		self.m_btnSelect.Bind( wx.EVT_BUTTON, self.m_btnSelectOnButtonClick )
+		self.m_btnImportScreenshot.Bind( wx.EVT_BUTTON, self.m_btnImportScreenshotOnButtonClick )
 	
 	def __del__( self ):
 		pass
@@ -790,6 +868,9 @@ class MyFrame ( wx.Frame ):
 		event.Skip()
 	
 	def m_toolStitchOnButtonClick( self, event ):
+		event.Skip()
+	
+	def m_btnScreenshotOnButtonClick( self, event ):
 		event.Skip()
 	
 	def m_resetselectionOnButtonClick( self, event ):
@@ -907,7 +988,25 @@ class MyFrame ( wx.Frame ):
 	def m_colorPDFlineOnColourChanged( self, event ):
 		event.Skip()
 	
+	def m_sliderPDFsizeOnKeyUp( self, event ):
+		event.Skip()
+	
+	def m_sliderPDFsizeOnScrollChanged( self, event ):
+		event.Skip()
+	
 	def m_PrintFinalOnButtonClick( self, event ):
+		event.Skip()
+	
+	def m_bitmap4OnLeftDown( self, event ):
+		event.Skip()
+	
+	def m_bitmap4OnLeftUp( self, event ):
+		event.Skip()
+	
+	def m_btnSelectOnButtonClick( self, event ):
+		event.Skip()
+	
+	def m_btnImportScreenshotOnButtonClick( self, event ):
 		event.Skip()
 	
 
@@ -917,7 +1016,7 @@ class MyFrame ( wx.Frame ):
 
 class MyDialog ( wx.Dialog ):
 	
-	def __init__( self, parent,data ):
+	def __init__( self, parent, data ):
 		wx.Dialog.__init__ ( self, parent, id = wx.ID_ANY, title = u"Settings", pos = wx.DefaultPosition, size = wx.Size( 349,250 ), style = wx.DEFAULT_DIALOG_STYLE )
 		
 		self.SetSizeHints( wx.DefaultSize, wx.Size( 350,250 ) )
@@ -1000,7 +1099,7 @@ class MyDialog ( wx.Dialog ):
 
 class MyDialog2 ( wx.Dialog ):
 	
-	def __init__( self, parent,data ):
+	def __init__( self, parent, data ):
 		wx.Dialog.__init__ ( self, parent, id = wx.ID_ANY, title = u"Settings", pos = wx.DefaultPosition, size = wx.Size( 349,300 ), style = wx.DEFAULT_DIALOG_STYLE )
 		
 		self.SetSizeHints( wx.DefaultSize, wx.Size( 350,300 ) )
@@ -1093,33 +1192,4 @@ class MyDialog2 ( wx.Dialog ):
 		event.Skip()
 	
 
-###########################################################################
-## Class MyPrintDialog
-###########################################################################
-
-class MyPrintDialog ( wx.Dialog ):
-	
-	def __init__( self, parent ):
-		wx.Dialog.__init__ ( self, parent, id = wx.ID_ANY, title = u"Print settings", pos = wx.DefaultPosition, size = wx.Size( 645,450 ), style = wx.DEFAULT_DIALOG_STYLE )
 		
-		self.SetSizeHints( wx.DefaultSize, wx.Size( -1,450 ) )
-		
-		bSizer8 = wx.BoxSizer( wx.HORIZONTAL )
-		
-		self.m_panel4 = wx.Panel( self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.DOUBLE_BORDER|wx.TAB_TRAVERSAL )
-		self.m_panel4.SetBackgroundColour( wx.Colour( 254, 239, 231 ) )
-		self.m_panel4.SetMaxSize( wx.Size( 300,450 ) )
-		
-		bSizer8.Add( self.m_panel4, 1, wx.EXPAND |wx.ALL, 0 )
-		
-		
-		self.SetSizer( bSizer8 )
-		self.Layout()
-		
-		self.Centre( wx.BOTH )
-	
-	def __del__( self ):
-		pass
-	
-
-	
