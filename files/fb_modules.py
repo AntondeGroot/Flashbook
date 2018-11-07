@@ -198,6 +198,31 @@ def bitmapleftup(self,event):
         # show current page
         f.ShowPage(self)     
         
+def panel4_bitmapleftup(self,event):
+    self.SetCursor(wx.Cursor(wx.CURSOR_ARROW))
+    self.panel4_pos2 = self.m_bitmap4.ScreenToClient(wx.GetMousePosition())
+    
+    x0, y0 = self.panel4_pos
+    x1, y1 = self.panel4_pos2
+    #rescale
+    x0 = int(x0)
+    y0 = int(y0)
+    x1 = int(x1)
+    y1 = int(y1)
+    
+    if abs(x1-x0)>2 and abs(y1-y0)>2:            
+        # cut down image
+        img = PIL.Image.open(os.path.join(self.dir4,"screenshot.png"))
+        img = np.array(img)            
+        img = img[y0:y1,x0:x1]
+        img = PIL.Image.fromarray(img)
+        self.pageimagecopy = img
+        self.pageimage = img
+        # show current page
+        f.ShowPrintScreen(self)     
+    
+
+   
 def selectionentered(self,event):
     #try:
     if self.questionmode == True:
