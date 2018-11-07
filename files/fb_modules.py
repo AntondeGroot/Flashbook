@@ -350,7 +350,7 @@ def resetselection(self,event):
     f.ShowPage(self)
 def switchpage(self,event):
     try:
-        pagenumber = int(self.m_CurrentPage11.GetValue())
+        pagenumber = self.currentpage
         if pagenumber <1:
             pagenumber = 1
         if pagenumber > self.nr_pics:
