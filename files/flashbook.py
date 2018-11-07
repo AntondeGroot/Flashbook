@@ -42,6 +42,10 @@ from termcolor import colored
 
 
 
+###########################################################################
+## Class MyDialogScreenshot
+###########################################################################
+
 
 
 
@@ -177,12 +181,14 @@ def SwitchPanel(self,n,m):
         self.panel1.Hide()
         self.panel2.Hide()
         self.panel3.Hide()
+        self.panel4.Hide()
         self.Layout() # force refresh of windows
     elif n == 1:
         self.panel0.Hide()
         self.panel1.Show()
         self.panel2.Hide()
         self.panel3.Hide()
+        self.panel4.Hide()
         if m == 0:
             self.panel11.Show()
             self.panel12.Hide()
@@ -195,6 +201,7 @@ def SwitchPanel(self,n,m):
         self.panel1.Hide()
         self.panel2.Show()
         self.panel3.Hide()
+        self.panel4.Hide()
         if m == 0:
             self.panel21.Show()
             self.panel22.Hide()
@@ -207,8 +214,16 @@ def SwitchPanel(self,n,m):
         self.panel1.Hide()
         self.panel2.Hide()
         self.panel3.Show()
+        self.panel4.Hide()
         self.Layout()
-
+    elif n ==4:
+        self.panel0.Hide()
+        self.panel1.Hide()
+        self.panel2.Hide()
+        self.panel3.Hide()
+        self.panel4.Show()
+        self.Layout()
+        
 import fb_modules as m
 import fc_modules as m2
 from print_modules import notes2paper
@@ -409,7 +424,67 @@ class MainFrame(gui.MyFrame):
         SwitchPanel(self,1,0) 
 	
     #% flashbook events
-	
+    def m_btnScreenshotOnButtonClick( self, event ):
+        import wx
+        import win32clipboard
+        from win32api import GetSystemMetrics
+        from PIL import Image
+        
+        
+        win32clipboard.OpenClipboard()
+        print(f"book = {self.bookname}")
+        if hasattr(self,"bookname"):
+            if self.bookname != '':
+                try:
+                    if win32clipboard.IsClipboardFormatAvailable(win32clipboard.CF_DIB):# Device Independent Bitmap
+                        print("PrtScr available")
+                        data = win32clipboard.GetClipboardData(win32clipboard.CF_DIB)
+                        win32clipboard.CloseClipboard()
+                        ### convert bytes to PIL Image
+                        img = Image.frombytes('RGBA', (int(GetSystemMetrics(0)), int(GetSystemMetrics(1))), data)
+                        print(type(img))
+                        # the bytestream from win32 is from a Device Independent Bitmap, i.e.'RGBquad', meaning that it is not RGBA but BGRA coded:
+                        b,g,r,a = img.split() 
+                        image = Image.merge("RGB", (r, g, b))
+                        image = image.rotate(180) # image is otherwise flipped and rotated
+                        image = image.transpose(Image.FLIP_LEFT_RIGHT)
+                        image.save(os.path.join(self.dir4,"screenshot.png"))
+                        data = image.tobytes()
+                        ### back to wxBitmap
+                        image3 = wx.Bitmap().FromBuffer(GetSystemMetrics(0),GetSystemMetrics(1),data)
+                        self.m_bitmap4.SetBitmap(image3)
+                        SwitchPanel(self,4,None)
+                        
+                    else:
+                        ctypes.windll.user32.MessageBoxW(0, "There is no screenshot available\npress PrtScr again", "ErrorMessage", 1)
+                except:
+                    ctypes.windll.user32.MessageBoxW(0, "There is no screenshot available\npress PrtScr again", "ErrorMessage", 1)
+            else:
+                ctypes.windll.user32.MessageBoxW(0, "Please first open a book", "ErrorMessage", 1)
+        try:
+            win32clipboard.CloseClipboard()
+        except:
+            pass
+    def m_btnSelectOnButtonClick( self, event ):
+        pass
+    def m_btnImportScreenshotOnButtonClick( self, event ):
+        SwitchPanel(self,1,0)
+        
+    def m_bitmap4OnLeftDown( self, event ):
+        self.panel4_pos = self.m_bitmap4.ScreenToClient(wx.GetMousePosition())
+        self.SetCursor(wx.Cursor(wx.CURSOR_CROSS))
+        
+    def m_bitmap4OnLeftUp( self, event ):
+        m.panel4_bitmapleftup(self,event)   
+        self.panel4.Layout()
+        
+        
+        
+    
+        
+        
+                
+        
     def m_dirPicker11OnDirChanged(self,event):
         self.m_bitmapScroll.SetWindowStyleFlag(wx.SIMPLE_BORDER)
         m.dirchanged(self,event)
@@ -467,6 +542,7 @@ class MainFrame(gui.MyFrame):
 	
     def m_richText22OnLeftDown( self, event ):
         SwitchPanel(self,2,0) 
+    
     
     
     #%% flashcard
