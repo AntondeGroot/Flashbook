@@ -1,11 +1,5 @@
 # -*- coding: utf-8 -*- 
 
-###########################################################################
-## Python code generated with wxFormBuilder (version Jun 17 2015)
-## http://www.wxformbuilder.org/
-##
-## PLEASE DO "NOT" EDIT THIS FILE!
-###########################################################################
 
 # solving errors: 
 # - path_min /  path_add / path_switch are given a full path string, replace those by their respective variables: path_min,path_add,path_switch
@@ -24,6 +18,16 @@ path_min = os.path.join(dir7,"min.png")
 path_switch = os.path.join(dir7,"repeat.png")
 
 
+###########################################################################
+## Python code generated with wxFormBuilder (version Jun 17 2015)
+## http://www.wxformbuilder.org/
+##
+## PLEASE DO "NOT" EDIT THIS FILE!
+###########################################################################
+
+import wx
+import wx.xrc
+import wx.richtext
 
 ###########################################################################
 ## Class MyFrame
@@ -239,6 +243,8 @@ class MyFrame ( wx.Frame ):
 		bSizer3 = wx.BoxSizer( wx.HORIZONTAL )
 		
 		self.m_textCtrl1 = wx.TextCtrl( self.panel11, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, wx.TE_READONLY )
+		self.m_textCtrl1.SetFont( wx.Font( 10, 70, 90, 92, False, wx.EmptyString ) )
+		
 		bSizer3.Add( self.m_textCtrl1, 0, wx.ALL, 5 )
 		
 		self.m_textCtrl2 = wx.TextCtrl( self.panel11, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
@@ -247,15 +253,15 @@ class MyFrame ( wx.Frame ):
 		bSizer3.Add( self.m_textCtrl2, 0, wx.ALL, 5 )
 		
 		self.m_enterselection = wx.Button( self.panel11, wx.ID_ANY, u"Enter Selection", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_enterselection.SetToolTipString( u"shortcut: middle mouse button" )
+		
 		bSizer3.Add( self.m_enterselection, 0, wx.ALL, 5 )
 		
-		self.m_textMode = wx.TextCtrl( self.panel11, wx.ID_ANY, u"V3", wx.DefaultPosition, wx.DefaultSize, 0|wx.NO_BORDER )
-		self.m_textMode.SetFont( wx.Font( 15, 70, 90, 90, False, wx.EmptyString ) )
-		self.m_textMode.SetForegroundColour( wx.Colour( 0, 120, 215 ) )
-		self.m_textMode.SetBackgroundColour( wx.Colour( 254, 240, 231 ) )
-		self.m_textMode.SetToolTipString( u"V is select vertical\nH is select horizontal\nthe number following it is how many selections you've made\n" )
+		self.m_toolStitch = wx.BitmapButton( self.panel11, wx.ID_ANY, wx.NullBitmap, wx.DefaultPosition, wx.Size( 27,27 ), wx.BU_AUTODRAW )
+		self.m_toolStitch.SetDefault() 
+		self.m_toolStitch.SetToolTipString( u"shortcut: numpad 0 / Home\ndirection in which notes are taken\ncan be used to create a mozaic" )
 		
-		bSizer3.Add( self.m_textMode, 0, wx.ALL, 5 )
+		bSizer3.Add( self.m_toolStitch, 0, wx.ALL, 5 )
 		
 		self.m_staticText32 = wx.StaticText( self.panel11, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.m_staticText32.Wrap( -1 )
@@ -269,6 +275,8 @@ class MyFrame ( wx.Frame ):
 		bSizer3.Add( self.m_staticline3, 1, wx.EXPAND|wx.LEFT|wx.RIGHT, 2000 )
 		
 		self.m_resetselection = wx.Button( self.panel11, wx.ID_ANY, u"Reset Selection", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_resetselection.SetToolTipString( u"shortcut: right mouse button" )
+		
 		bSizer3.Add( self.m_resetselection, 0, wx.ALL, 5 )
 		
 		
@@ -413,9 +421,13 @@ class MyFrame ( wx.Frame ):
 		bSizer31 = wx.BoxSizer( wx.HORIZONTAL )
 		
 		self.m_buttonCorrect = wx.Button( self.panel21, wx.ID_ANY, u"Correct", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_buttonCorrect.SetToolTipString( u"shortcut: left mouse button / left arrow key" )
+		
 		bSizer31.Add( self.m_buttonCorrect, 1, wx.ALL|wx.EXPAND|wx.RIGHT, 5 )
 		
 		self.m_buttonWrong = wx.Button( self.panel21, wx.ID_ANY, u"Wrong", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_buttonWrong.SetToolTipString( u"shortcut: right mouse click / right arrow key" )
+		
 		bSizer31.Add( self.m_buttonWrong, 1, wx.ALL|wx.EXPAND|wx.LEFT, 5 )
 		
 		
@@ -611,6 +623,7 @@ class MyFrame ( wx.Frame ):
 		
 		# Connect Events
 		self.Bind( wx.EVT_MENU, self.m_menuItemFlashbookOnMenuSelection, id = self.m_menuItemFlashbook.GetId() )
+		self.Bind( wx.EVT_MENU, self.m_menuPDFfolderOnMenuSelection, id = self.m_menuPDFfolder.GetId() )
 		self.Bind( wx.EVT_MENU, self.m_menuItemBackToMainOnMenuSelection, id = self.m_menuItemBackToMain.GetId() )
 		self.Bind( wx.EVT_MENU, self.m_menuHelpOnMenuSelection, id = self.m_menuHelp.GetId() )
 		self.m_OpenFlashbook.Bind( wx.EVT_BUTTON, self.m_OpenFlashbookOnButtonClick )
@@ -645,6 +658,7 @@ class MyFrame ( wx.Frame ):
 		self.m_bitmapScroll.Bind( wx.EVT_MOUSEWHEEL, self.m_bitmapScrollOnMouseWheel )
 		self.m_bitmapScroll.Bind( wx.EVT_RIGHT_DOWN, self.m_bitmapScrollOnRightDown )
 		self.m_enterselection.Bind( wx.EVT_BUTTON, self.m_enterselectionOnButtonClick )
+		self.m_toolStitch.Bind( wx.EVT_BUTTON, self.m_toolStitchOnButtonClick )
 		self.m_resetselection.Bind( wx.EVT_BUTTON, self.m_resetselectionOnButtonClick )
 		self.m_dirPicker12.Bind( wx.EVT_DIRPICKER_CHANGED, self.m_dirPicker12OnDirChanged )
 		self.Bind( wx.EVT_TOOL, self.m_toolPlus12OnToolClicked, id = self.m_toolPlus12.GetId() )
@@ -704,6 +718,9 @@ class MyFrame ( wx.Frame ):
 	
 	# Virtual event handlers, overide them in your derived class
 	def m_menuItemFlashbookOnMenuSelection( self, event ):
+		event.Skip()
+	
+	def m_menuPDFfolderOnMenuSelection( self, event ):
 		event.Skip()
 	
 	def m_menuItemBackToMainOnMenuSelection( self, event ):
@@ -770,6 +787,9 @@ class MyFrame ( wx.Frame ):
 		event.Skip()
 	
 	def m_enterselectionOnButtonClick( self, event ):
+		event.Skip()
+	
+	def m_toolStitchOnButtonClick( self, event ):
 		event.Skip()
 	
 	def m_resetselectionOnButtonClick( self, event ):
@@ -897,7 +917,7 @@ class MyFrame ( wx.Frame ):
 
 class MyDialog ( wx.Dialog ):
 	
-	def __init__( self, parent, data ):
+	def __init__( self, parent,data ):
 		wx.Dialog.__init__ ( self, parent, id = wx.ID_ANY, title = u"Settings", pos = wx.DefaultPosition, size = wx.Size( 349,250 ), style = wx.DEFAULT_DIALOG_STYLE )
 		
 		self.SetSizeHints( wx.DefaultSize, wx.Size( 350,250 ) )
@@ -980,7 +1000,7 @@ class MyDialog ( wx.Dialog ):
 
 class MyDialog2 ( wx.Dialog ):
 	
-	def __init__( self, parent, data ):
+	def __init__( self, parent,data ):
 		wx.Dialog.__init__ ( self, parent, id = wx.ID_ANY, title = u"Settings", pos = wx.DefaultPosition, size = wx.Size( 349,300 ), style = wx.DEFAULT_DIALOG_STYLE )
 		
 		self.SetSizeHints( wx.DefaultSize, wx.Size( 350,300 ) )
@@ -1102,3 +1122,4 @@ class MyPrintDialog ( wx.Dialog ):
 		pass
 	
 
+	

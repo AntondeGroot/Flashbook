@@ -74,7 +74,8 @@ def setup_sources(self):
     self.path_fb = os.path.join(self.dir7,"flashbook.png")
     self.path_fc = os.path.join(self.dir7,"flashcard.png")
     self.path_pr = os.path.join(self.dir7,"print.png")
-
+    self.path_arrow = os.path.join(self.dir7,"arrow.png")
+    self.path_arrow2 = os.path.join(self.dir7,"arrow2.png")
 #%% settings   
 def settings_get(self):
 
@@ -231,7 +232,17 @@ def set_bitmapbuttons(self):
     image2 = wx.Image( image.size)
     image2.SetData( image.tobytes() )
     self.m_OpenPrint.SetBitmap(wx.Bitmap(image2))
-
+    
+    # stich
+    
+    image = PIL.Image.open(self.path_arrow, mode='r')
+    image = image.resize((32, 32))     
+    image2 = wx.Image( image.size)
+    image2.SetData( image.tobytes() )
+    self.m_toolStitch.SetBitmap(wx.Bitmap(self.path_arrow2))
+    #
+    
+    
 def print_preview(self,event):
     program.run_print(self,event) 
     #resize        
@@ -267,11 +278,17 @@ class MainFrame(gui.MyFrame):
     #constructor    
     def __init__(self,parent):
         self.FilePickEvent = True
-        setup_sources(self)
         
+        setup_sources(self)
         initialize(self)
         #initialize parent class
         gui.MyFrame.__init__(self,parent)
+        self.stitchmode_v = True
+        
+        
+        
+        
+        
         set_bitmapbuttons(self)
         self.Maximize(True)
         #self.TransferDataToWindow
@@ -293,7 +310,6 @@ class MainFrame(gui.MyFrame):
     #%% Panel selection
     def m_OpenFlashbookOnButtonClick( self, event ):
         self.stitchmode_v = True # stich vertical or horizontal
-        self.m_textMode.Show(False)
         self.m_dirPicker11.SetInitialDirectory(self.dir3)
         self.m_bitmapScroll.SetWindowStyleFlag(False)
         
@@ -359,6 +375,15 @@ class MainFrame(gui.MyFrame):
             #self.continueSession = False
             #self.multiplier = dlg.m_textCtrl11.GetValue()
     #%% menu item events
+    def m_toolStitchOnButtonClick( self, event ):
+        self.stitchmode_v =  not self.stitchmode_v
+        if self.stitchmode_v == True:
+            self.m_toolStitch.SetBitmap(wx.Bitmap(self.path_arrow2))
+        else:
+            self.m_toolStitch.SetBitmap(wx.Bitmap(self.path_arrow))
+        
+        
+    
     def m_menuItemFlashbookOnMenuSelection( self, event ):
         self.m_dirPicker11.SetInitialDirectory(self.dir3)
         os.system("explorer {}".format(self.dir3)) 
