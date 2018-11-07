@@ -198,7 +198,24 @@ def LoadPage(self): # no error
     except:
         print(colored("Error: cannot load page",'red'))
     
-
+def ShowPrintScreen(self): # no error
+    try:
+        # update
+        self.m_CurrentPage11.SetValue("PrtScr")
+        #rescale image
+        self.width, self.height = self.pageimagecopy.size #so that it doesn't rescale it everytime ShowPage() is used
+        self.width , self.height = int(self.width*self.zoom) , int(self.height*self.zoom)
+        self.pageimage = self.pageimage.resize((self.width, self.height), PIL.Image.ANTIALIAS)
+        
+        image2 = wx.Image( self.width, self.height )
+        image2.SetData( self.pageimage.tobytes() )
+        
+        ##
+        self.m_bitmapScroll.SetBitmap(wx.Bitmap(image2))
+        self.m_bitmap4.SetBitmap(wx.Bitmap(image2))
+        self.Layout()
+    except:
+        print(colored("Error: cannot show PrintScreen page",'red'))
     
     
     
