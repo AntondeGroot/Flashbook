@@ -118,9 +118,7 @@ def initialize(self):
     self.dirsettings = dir0 + r"\settings"
     self.temp_dir = self.dir4
     self.statsdir = os.path.join(self.dirsettings, 'data_sessions.json')
-    # create settings folder for debugging
-    settings_create(self)
-    settings_get(self)
+    
                 
     folders = []
     dirs = [dir0,self.dir1,self.dir2,self.dir3,self.dir4,self.dir5,self.dir6,self.dirpdf,self.dirsettings]
@@ -130,7 +128,9 @@ def initialize(self):
     for item in dirs:
         if not os.path.exists(item):
             os.makedirs(item)
-    
+    # create settings folder for debugging
+    settings_create(self)
+    settings_get(self)
      
     # unpacks png images used in the gui
     resources.resourceimages(self.dir6,self.dir1) 
