@@ -598,8 +598,8 @@ def notes2paper(self):
     import img2pdf
     
     N = 1.3
-    self.a4page_w  = round(1240*N) # in pixels
-    self.a4page_h = round(1754*N)
+    self.a4page_w  = round(1240*N*self.pdfmultiplier) # in pixels
+    self.a4page_h = round(1754*N*self.pdfmultiplier)
     self.paper_h      = []
     self.paper_h_list = []
     datadir = os.getenv("LOCALAPPDATA")
