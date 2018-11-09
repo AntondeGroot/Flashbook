@@ -183,13 +183,14 @@ def SetScrollbars(self): #no errors
 def LoadPage(self): # no error
     if self.debugmode:
         print("fb=LoadPage")
-    
-    
     try:
         self.jpgdir = self.dir3+r'\{}\{}'.format(self.bookname,self.picnames[self.currentpage-1])
         print(self.jpgdir)
-        self.pageimage = PIL.Image.open(self.jpgdir)
-        self.pageimagecopy = self.pageimage
+        if self.stayonpage == False:
+            self.pageimage = PIL.Image.open(self.jpgdir)
+            self.pageimagecopy = self.pageimage
+        if self.resetselection == True:
+            self.pageimage = self.pageimagecopy
         self.width, self.height = self.pageimage.size
         #rescale
         self.width, self.height = self.pageimagecopy.size #so that it doesn't rescale it everytime ShowPage() is used
@@ -381,7 +382,7 @@ def ShowInPopup(self,event,mode):
     ##except:
     ##    pass
     try:
-        a = self.mousepos # try to access mousepos, but if there wasn't any mouseclick: then just place the popupwindow in the middle of your screen.
+        a = self.mousepos # try to access mousepos, but if there wasn't any mouseclick: then just place the popupwindow in the middle of your screen. this is the case if you only entered text, but didn't select anything with the mouse
     except:
         self.mousepos = (int(wx.GetDisplaySize()[0]/2),int(wx.GetDisplaySize()[1]/2))
         
