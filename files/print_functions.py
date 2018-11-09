@@ -23,20 +23,14 @@ from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 datadir = os.getenv("LOCALAPPDATA")
 dir0 = datadir + r"\FlashBook"
 # create settings folder for debugging
-with open(dir0+r"\settings.txt", 'r') as file:
-    debug_var = json.load(file)['debugmode']
-    if debug_var == 0:
-        debugmode = False
-    else:
-        debugmode = True
-        print("debugging is enabled: in fb_functions")
+
 
 
 
 class Window2(wx.PopupWindow):
     """"""
-    if debugmode:
-        print("fb=Window2")
+    #if debugmode:
+    #    print("fb=Window2")
     #----------------------------------------------------------------------
     def __init__(self, parent, style,information):
         self.info=information
@@ -115,8 +109,8 @@ def is_number(s):
 
 
 def drawRec(self,layer,color): # no errors
-    if debugmode:
-        print("fb=drawRec")
+    #if debugmode:
+    #    print("fb=drawRec")
     x0 , y0 = self.cord1
     x1 , y1 = self.cord2
     #rename coordinates if square isn't drawn from top left to bottom right.
@@ -149,8 +143,8 @@ def drawRec(self,layer,color): # no errors
     return layer        
 
 def drawCoordinates(self): # no errors
-    if debugmode:
-        print("fb=drawCoordinates")
+    #if debugmode:
+    #    print("fb=drawCoordinates")
     img = np.array(self.pageimage)
     img = np.uint8(img)
     try:#try to look if there already exists borders that need to be drawn
@@ -174,14 +168,14 @@ def drawCoordinates(self): # no errors
     self.pageimage = PIL.Image.fromarray(img)
     
 def SetScrollbars(self): #no errors
-    if debugmode:
-        print("fb=SetScrollbars")
+    #if debugmode:
+    #    print("fb=SetScrollbars")
     scrollWin = self.m_scrolledWindow1
     scrollWin.SetScrollbars(0,int(20*self.zoom),0,int(100*self.zoom) )
 
 def LoadPage(self): # no error
-    if debugmode:
-        print("fb=LoadPage")
+    #if debugmode:
+    #    print("fb=LoadPage")
     
     
     try:
@@ -202,8 +196,8 @@ def LoadPage(self): # no error
     
     
 def ShowPage(self): # no error
-    if debugmode:
-        print("fb=ShowPage")
+    #if debugmode:
+    #    print("fb=ShowPage")
     try:
         # update
         self.m_PageCtrl.SetValue(str(self.currentpage))
@@ -229,8 +223,8 @@ def ShowPage(self): # no error
         print(colored("Error: cannot show page",'red'))
 
 def ResetQuestions(self): # no errors
-    if debugmode:
-        print("fb=ResetQuestions")
+    #if debugmode:
+    #    print("fb=ResetQuestions")
     self.pdf_question     = ''
     self.pdf_answer       = ''
     self.pic_question     = []
@@ -241,8 +235,8 @@ def ResetQuestions(self): # no errors
 
 
 def CombinePics(self,directory):
-    if debugmode:
-        print("fb=CombinePics")
+    #if debugmode:
+    #    print("fb=CombinePics")
     images = list(map(PIL.Image.open, directory))   
     widths, heights = zip(*(i.size for i in images))
     total_height = sum(heights)
@@ -262,8 +256,8 @@ def CombinePics(self,directory):
             except:
                 pass
 def CreateTextCard(self):
-    if debugmode:
-        print("fb=CreateTextCard")
+    #if debugmode:
+    #    print("fb=CreateTextCard")
     self.TextCard = True    
     #LaTeXcode = Text2Latex(self)
     self.usertext = self.textdictionary[self.key]
@@ -347,8 +341,8 @@ def CombinePicText_v(self):
     """
     
 def CombinePicText(self):
-    if debugmode:
-        print("fb=CombinePicText")
+    #if debugmode:
+    #    print("fb=CombinePicText")
     imagepic = PIL.Image.open(self.dir2+"\\"+self.bookname+"\\"+self.picdictionary[self.key])
     images = [self.imagetext,imagepic]
     
@@ -364,8 +358,8 @@ def CombinePicText(self):
     self.image = new_im
 
 def ShowInPopup(self,mode):
-    if debugmode:
-        print("fb=ShowInPopup")
+    #if debugmode:
+    #    print("fb=ShowInPopup")
     try:# a picture directory may not exist
         if mode == "Answer":
             directory = self.pic_answer_dir[0]
