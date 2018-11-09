@@ -106,7 +106,6 @@ def settings_get(self):
 def initialize(self):
     datadir = os.getenv("LOCALAPPDATA")
     dir0 = datadir+r"\FlashBook"
-    #os.chdir(dir0)
     self.dir0 = dir0
     self.dir1 = dir0 + r"\files"
     self.dir2 = dir0 + r"\pics"
@@ -119,7 +118,6 @@ def initialize(self):
     self.temp_dir = self.dir4
     self.statsdir = os.path.join(self.dirsettings, 'data_sessions.json')
     
-                
     folders = []
     dirs = [dir0,self.dir1,self.dir2,self.dir3,self.dir4,self.dir5,self.dir6,self.dirpdf,self.dirsettings]
     
@@ -145,6 +143,7 @@ def initialize(self):
     folders.sort() 
     
     if len(folders) == 0:
+        ctypes.windll.user32.MessageBoxW(0, f"No books were found in directory {self.dir3} \nGo to menubar  Open and open the Flashbook folder\nPlace a folder there named after a book containing jpg files", "ErrorMessage", 1)
         print("No books were found in directory: {}\n 1) please type '%localappdata%' in windows explorer\n 2) find Flashbook and place a folder containing jpg files of the pdf in the".format(self.dir3)+ r"'\books' directory"+"\n")
     else:
         print("the following books were found:")
@@ -229,7 +228,6 @@ def SwitchPanel(self,n,m):
 import fb_modules as m
 import fc_modules as m2
 from print_modules import notes2paper
-#import fc_modules as m2  
 
 def set_bitmapbuttons(self):
     image = PIL.Image.open(self.path_fb, mode='r')
@@ -290,45 +288,40 @@ import program
 import PIL
 import fc_modules as m2
 import ctypes
-
+import time
 class MainFrame(gui.MyFrame):
     #constructor    
     def __init__(self,parent):
-        self.FilePickEvent = True
+        
         setup_sources(self)
-        initialize(self)
+        
         #initialize parent class
         gui.MyFrame.__init__(self,parent)
+        self.Maximize(True) #open the app window maximized
+        thr3 = threading.Thread(target = initialize, name = 'threadINI', args = (self, ))
+        thr3.run()
+        #initialize(self)
         self.stitchmode_v = True
-        
-        
-        
+        self.FilePickEvent = True
         
         
         set_bitmapbuttons(self)
-        self.Maximize(True)
-        #self.TransferDataToWindow
         # icon
         iconimage = wx.Icon(self.path_icon, type=wx.BITMAP_TYPE_ANY, desiredWidth=-1, desiredHeight=-1)
         self.SetIcon(iconimage)
-        #self.m_filePickerPrint.SetInitialDirectory(self.dir1+'\.') #for filepicker you can't just set a directory like dirPicker, in this case it should end in "\." so that it has to look for files, otherwise it will see a folder as a file...
         SwitchPanel(self,0,0)
         self.printpreview = True
         #self.m_OpenFlashbook.Bind( self.m_OpenFlashbookOnButtonClick, self.m_btnOpenFlashbookOnButtonClick)
         
         ## short cuts
         #ini.initializeparameters(self)
-        #self.m_filePickerPrint.Bind( wx.EVT_FILEPICKER_CHANGED, self.m_btnPrintNotesOnButtonClick )
-        #self.m_filePickerPrint.Bind(wx.EVT_BUTTON,self.m_btnPrintNotesOnButtonClick)
-        #self.m_OpenPrint.Bind(wx.EVT_BUTTON,self.m_filePickerPrintOnKeyDown)
-        #self.Bind(wx.EVT_BUTTON, self.m_filePickerPrintOnButtonClick, self.m_OpenPrint)
         
     #%% Panel selection
     def m_OpenFlashbookOnButtonClick( self, event ):
         self.stayonpage = False
         self.stitchmode_v = True # stich vertical or horizontal
         self.m_dirPicker11.SetInitialDirectory(self.dir3)
-        self.m_bitmapScroll.SetWindowStyleFlag(False)
+        self.m_bitmapScroll.SetWindowStyleFlag(False) # at first disable the border of the bitmap, otherwise you get a bordered empty bitmap. Enable the border only when there is a bitmap
         
         setup_sources(self)
         SwitchPanel(self,1,0)      
