@@ -158,13 +158,19 @@ def bitmapleftup(self,event):
             #print("temp dictionary is: {}".format(self.tempdictionary))            
         
         # cut down image
-        img = PIL.Image.open(self.jpgdir)
+        if self.stayonpage == False:
+            img = PIL.Image.open(self.jpgdir)
+        else:
+            img = self.pageimage
         img = np.array(img)            
         img = img[y0:y1,x0:x1]
         img = PIL.Image.fromarray(img)
         find = True
-        while find == True:                
-            picname =  "{}_{}_{}{}{}{}.jpg".format(self.bookname,self.currentpage,randint(0,9),randint(0,9),randint(0,9),randint(0,9))
+        while find == True:
+            if self.stayonpage == False:
+                picname =  "{}_{}_{}{}{}{}.jpg".format(self.bookname,self.currentpage,randint(0,9),randint(0,9),randint(0,9),randint(0,9))
+            else:
+                picname =  "{}_{}_{}{}{}{}.jpg".format(self.bookname,"prtscr",randint(0,9),randint(0,9),randint(0,9),randint(0,9))
             filename = self.dir2+r"\{}\{}".format(self.bookname,picname)
             if not os.path.exists(filename):
                 find = False
@@ -278,9 +284,9 @@ def selectionentered(self,event):
         # remove temporary borders
         self.pageimage = self.pageimagecopy
         f.ShowPage(self)
-
-        with open(self.PathBorders, 'w') as file:
-                file.write(json.dumps(self.dictionary)) 
+        if self.stayonpage == False: # if screenshot mode
+            with open(self.PathBorders, 'w') as file:
+                    file.write(json.dumps(self.dictionary)) 
         if len(self.pic_answer)>1:
             f.CombinePics(self,self.pic_answer_dir)
             if type(self.pic_answer[0]) is list:
@@ -326,6 +332,7 @@ def mousewheel(self,event):
     event.Skip()                               # necessary to use other functions after this one is used
     
 def resetselection(self,event):
+    self.resetselection = True
     #  remove all temporary pictures taken
     if len (self.pic_answer_dir)>0:
         for pic in self.pic_answer_dir:
@@ -348,6 +355,7 @@ def resetselection(self,event):
     # update drawn borders
     f.LoadPage(self)
     f.ShowPage(self)
+    self.resetselection = False
 def switchpage(self,event):
     try:
         pagenumber = self.currentpage
