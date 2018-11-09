@@ -83,9 +83,11 @@ def setup_sources(self):
 #%% settings   
 def settings_get(self):
 
-    with open(self.dir0+r"\settings.txt", 'r') as file:
+    with open(os.path.join(self.dirsettings,"settings.txt"), 'r') as file:
         settings   = json.load(file)
         debug_var  = settings['debugmode']
+        self.pdfmultiplier     = settings['pdfmultiplier'] 
+        print(f"settins = {settings}")
         self.QAline_thickness  = settings['QAline_thickness']
         self.pdfline_thickness = settings['pdfline_thickness']
         self.QAline_color      = tuple(settings['QAline_color'])
@@ -155,10 +157,10 @@ def initialize(self):
 def settings_create(self):
     if not os.path.exists(self.dirsettings+r"\settings.txt"):   
         with open(self.dirsettings+r"\settings.txt", 'w') as file:
-            file.write(json.dumps({'debugmode' : 0, 'QAline_thickness' : 1, 'pdfline_thickness' : 5, 'QAline_color' : (0,0,0), 'pdfline_color' : (18,5,250), 'QAline_bool': True,'pdfline_bool': True }))       
+            file.write(json.dumps({'debugmode' : 0,'pdfmultiplier': 1.0, 'QAline_thickness' : 1, 'pdfline_thickness' : 5, 'QAline_color' : (0,0,0), 'pdfline_color' : (18,5,250), 'QAline_bool': True,'pdfline_bool': True }))       
 def settings_set(self):
     with open(self.dirsettings+r"\settings.txt", 'w') as file:
-        file.write(json.dumps({'debugmode' : 0, 'QAline_thickness' : self.QAline_thickness, 'pdfline_thickness': self.pdfline_thickness, 'QAline_color' : self.QAline_color, 'pdfline_color' : self.pdfline_color, 'QAline_bool': self.QAline_bool,'pdfline_bool': self.pdfline_bool}))       
+        file.write(json.dumps({'debugmode' : 0, 'pdfmultiplier': self.pdfmultiplier,'QAline_thickness' : self.QAline_thickness, 'pdfline_thickness': self.pdfline_thickness, 'QAline_color' : self.QAline_color, 'pdfline_color' : self.pdfline_color, 'QAline_bool': self.QAline_bool,'pdfline_bool': self.pdfline_bool}))       
 
 """
 ###############################################################################
@@ -293,7 +295,6 @@ class MainFrame(gui.MyFrame):
     #constructor    
     def __init__(self,parent):
         self.FilePickEvent = True
-        
         setup_sources(self)
         initialize(self)
         #initialize parent class
@@ -324,6 +325,7 @@ class MainFrame(gui.MyFrame):
         
     #%% Panel selection
     def m_OpenFlashbookOnButtonClick( self, event ):
+        self.stayonpage = False
         self.stitchmode_v = True # stich vertical or horizontal
         self.m_dirPicker11.SetInitialDirectory(self.dir3)
         self.m_bitmapScroll.SetWindowStyleFlag(False)
@@ -441,17 +443,29 @@ class MainFrame(gui.MyFrame):
                         data = win32clipboard.GetClipboardData(win32clipboard.CF_DIB)
                         win32clipboard.CloseClipboard()
                         ### convert bytes to PIL Image
-                        img = Image.frombytes('RGBA', (int(GetSystemMetrics(0)), int(GetSystemMetrics(1))), data)
-                        print(type(img))
-                        # the bytestream from win32 is from a Device Independent Bitmap, i.e.'RGBquad', meaning that it is not RGBA but BGRA coded:
-                        b,g,r,a = img.split() 
-                        image = Image.merge("RGB", (r, g, b))
-                        image = image.rotate(180) # image is otherwise flipped and rotated
-                        image = image.transpose(Image.FLIP_LEFT_RIGHT)
-                        image.save(os.path.join(self.dir4,"screenshot.png"))
-                        data = image.tobytes()
-                        ### back to wxBitmap
-                        image3 = wx.Bitmap().FromBuffer(GetSystemMetrics(0),GetSystemMetrics(1),data)
+                        try:                            # since I regularly work with 2 monitors: check if the processing makes sense for 2 monitors, else chose 1 monitor.
+                            img = Image.frombytes('RGBA', (int(GetSystemMetrics(0))*2, int(GetSystemMetrics(1))), data)
+                            # the bytestream from win32 is from a Device Independent Bitmap, i.e.'RGBquad', meaning that it is not RGBA but BGRA coded:
+                            b,g,r,a = img.split() 
+                            image = Image.merge("RGB", (r, g, b))
+                            image = image.rotate(180) # image is otherwise flipped and rotated
+                            image = image.transpose(Image.FLIP_LEFT_RIGHT)
+                            image.save(os.path.join(self.dir4,"screenshot.png"))
+                            ### back to wxBitmap
+                            data = image.tobytes()
+                            image3 = wx.Bitmap().FromBuffer(GetSystemMetrics(0)*2,GetSystemMetrics(1),data)
+                        except:
+                            img = Image.frombytes('RGBA', (int(GetSystemMetrics(0)), int(GetSystemMetrics(1))), data)
+                            # the bytestream from win32 is from a Device Independent Bitmap, i.e.'RGBquad', meaning that it is not RGBA but BGRA coded:
+                            b,g,r,a = img.split() 
+                            image = Image.merge("RGB", (r, g, b))
+                            image = image.rotate(180) # image is otherwise flipped and rotated
+                            image = image.transpose(Image.FLIP_LEFT_RIGHT)
+                            image.save(os.path.join(self.dir4,"screenshot.png"))
+                            ### back to wxBitmap
+                            data = image.tobytes()
+                            image3 = wx.Bitmap().FromBuffer(GetSystemMetrics(0),GetSystemMetrics(1),data)
+                        self.backupimage = image3
                         self.m_bitmap4.SetBitmap(image3)
                         SwitchPanel(self,4,None)
                         
@@ -460,15 +474,23 @@ class MainFrame(gui.MyFrame):
                 except:
                     ctypes.windll.user32.MessageBoxW(0, "There is no screenshot available\npress PrtScr again", "ErrorMessage", 1)
             else:
-                ctypes.windll.user32.MessageBoxW(0, "Please first open a book", "ErrorMessage", 1)
+                ctypes.windll.user32.MessageBoxW(0, "Please open a book first", "ErrorMessage", 1)
         try:
             win32clipboard.CloseClipboard()
         except:
             pass
+        
     def m_btnSelectOnButtonClick( self, event ):
-        pass
+        print("undo")
+        if hasattr(self,"backupimage"):
+            image3 = self.backupimage
+            self.m_bitmap4.SetBitmap(image3)
+        self.Layout()
+    
     def m_btnImportScreenshotOnButtonClick( self, event ):
+        self.stayonpage = True
         SwitchPanel(self,1,0)
+        
         
     def m_bitmap4OnLeftDown( self, event ):
         self.panel4_pos = self.m_bitmap4.ScreenToClient(wx.GetMousePosition())
@@ -477,7 +499,8 @@ class MainFrame(gui.MyFrame):
     def m_bitmap4OnLeftUp( self, event ):
         m.panel4_bitmapleftup(self,event)   
         self.panel4.Layout()
-        
+        self.Update()
+        self.Refresh()
         
         
     
@@ -500,9 +523,11 @@ class MainFrame(gui.MyFrame):
 	
     # change page #=======================================================
     def m_toolBack11OnToolClicked( self, event ):
+        self.stayonpage = False
         m.previouspage(self,event)
 	
     def m_toolNext11OnToolClicked( self, event ):
+        self.stayonpage = False
         m.nextpage(self,event)
 	
     def m_CurrentPage11OnKeyUp( self, event ):
@@ -567,6 +592,11 @@ class MainFrame(gui.MyFrame):
     def m_bitmapScroll1OnMouseWheel( self, event ):
         m2.switchCard(self)
     #%% print the notes
+    def m_sliderPDFsizeOnScrollChanged(self,event):
+        self.pdfmultiplier = float(self.m_sliderPDFsize.GetValue())/100
+        settings_set(self)
+        preview_refresh(self)
+    
     def m_lineQAOnCheckBox( self, event ):
         self.FilePickEvent = False
         self.QAline_bool = self.m_lineQA.GetValue()
