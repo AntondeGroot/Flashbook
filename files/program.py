@@ -165,7 +165,8 @@ def run_flashbook(self):
         self.Layout()
     
     ########################################################################
-    
+    self.stayonpage = False
+    self.resetselection = False
     self.m_dirPicker11.SetInitialDirectory(self.dir3)
     ## short cuts
     ini.initializeparameters(self)
