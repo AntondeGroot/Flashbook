@@ -13,6 +13,7 @@ print("Welcome to Flashbook , one moment ...")
 import os
 import json
 import shutil
+import PIL
 #-------------------------------------------------------------------- gui
 import threading
 import wx
@@ -21,7 +22,9 @@ import wx.richtext
 import wx.html as html
 import wx._html
 import gui_flashbook as gui
+import ctypes # pop up messages
 #------------------------------------------------------------------- modules
+import program
 import fb_initialization as ini 
 import fc_initialization as ini2 
 import print_initialization as ini3
@@ -32,19 +35,10 @@ import print_modules as m3
 import fb_functions    as f
 import fc_functions    as f2
 import print_functions as f3
-
-
-
-
-#--- for colored error messages -----------------------------------------------
+from print_modules import notes2paper
+#--- for colored error messages ------------------------------------- debugging
 from termcolor import colored
 
-
-
-
-###########################################################################
-## Class MyDialogScreenshot
-###########################################################################
 
 
 
@@ -143,7 +137,7 @@ def initialize(self):
     folders.sort() 
     
     if len(folders) == 0:
-        ctypes.windll.user32.MessageBoxW(0, f"No books were found in directory {self.dir3} \nGo to menubar  Open and open the Flashbook folder\nPlace a folder there named after a book containing jpg files", "ErrorMessage", 1)
+        ctypes.windll.user32.MessageBoxW(0, f"Welcome new user \n\nNo books were found in directory {self.dir3} \nGo to the menubar of the app:  `Open/Flashbook folder`\nPLace a new folder there named after a book containing jpg files", "Welcome to Flashbook", 1)
         print("No books were found in directory: {}\n 1) please type '%localappdata%' in windows explorer\n 2) find Flashbook and place a folder containing jpg files of the pdf in the".format(self.dir3)+ r"'\books' directory"+"\n")
     else:
         print("the following books were found:")
@@ -166,14 +160,6 @@ def settings_set(self):
 #####              MAINFRAME                                              #####
 ###############################################################################
 """
-
-
-class info():
-    def __init__(self):
-        self.info1 = []
-
-
-
 
 ########################################################################
 def SwitchPanel(self,n,m):
@@ -225,9 +211,8 @@ def SwitchPanel(self,n,m):
         self.panel4.Show()
         self.Layout()
         
-import fb_modules as m
-import fc_modules as m2
-from print_modules import notes2paper
+
+
 
 def set_bitmapbuttons(self):
     image = PIL.Image.open(self.path_fb, mode='r')
@@ -284,11 +269,8 @@ def preview_refresh(self):
     print(self.m_panel32.GetSize())
     self.Layout()
 
-import program
-import PIL
-import fc_modules as m2
-import ctypes
-import time
+
+
 class MainFrame(gui.MyFrame):
     #constructor    
     def __init__(self,parent):
@@ -418,7 +400,8 @@ class MainFrame(gui.MyFrame):
     def m_richText12OnLeftDown( self, event ):
         SwitchPanel(self,1,0) 
 	
-    #% flashbook events
+    #%% flashbook
+    # import screenshot #======================================================
     def m_btnScreenshotOnButtonClick( self, event ):
         import wx
         import win32clipboard
@@ -484,7 +467,6 @@ class MainFrame(gui.MyFrame):
         self.stayonpage = True
         SwitchPanel(self,1,0)
         
-        
     def m_bitmap4OnLeftDown( self, event ):
         self.panel4_pos = self.m_bitmap4.ScreenToClient(wx.GetMousePosition())
         self.SetCursor(wx.Cursor(wx.CURSOR_CROSS))
@@ -495,26 +477,19 @@ class MainFrame(gui.MyFrame):
         self.Update()
         self.Refresh()
         
-        
-    
-        
-        
-                
-        
     def m_dirPicker11OnDirChanged(self,event):
         self.m_bitmapScroll.SetWindowStyleFlag(wx.SIMPLE_BORDER)
         m.dirchanged(self,event)
         
-    # open Appdata folder in Windows #=========================================
     
-	# zoom in #=======================================================
+	# zoom in #================================================================
     def m_toolPlus11OnToolClicked( self, event ):
         m.zoomin(self,event)
 	
     def m_toolMin11OnToolClicked( self, event ):
         m.zoomout(self,event)
 	
-    # change page #=======================================================
+    # change page #============================================================
     def m_toolBack11OnToolClicked( self, event ):
         self.stayonpage = False
         m.previouspage(self,event)
@@ -545,10 +520,8 @@ class MainFrame(gui.MyFrame):
         self.drawborders = lf.GetValue()        
         self.pageimage = self.pageimagecopy # reset image
         f.ShowPage(self)
-    
-	#%
         
-	# bitmap # DRAW RECTANGLE WITH MOUSE, GET COORDINATES  
+	# draw borders #===========================================================
     def m_bitmapScrollOnLeftDown( self, event ):
         self.panel_pos = self.m_bitmapScroll.ScreenToClient(wx.GetMousePosition())
         self.mousepos = wx.GetMousePosition() # absolute position
@@ -557,18 +530,18 @@ class MainFrame(gui.MyFrame):
         
     def m_bitmapScrollOnLeftUp( self, event ):
         m.bitmapleftup(self,event)   
-	
+	# help menu #==============================================================
     def m_richText22OnLeftDown( self, event ):
         SwitchPanel(self,2,0) 
     
     
     
     #%% flashcard
+    # main program
     def m_filePicker21OnFileChanged( self, event ):
         m2.startprogram(self,event)
     
-    
-    #buttons
+    # button events
     def m_buttonCorrectOnButtonClick( self, event ):        
         m2.buttonCorrect(self)
     def m_bitmapScroll1OnLeftUp( self, event ):
@@ -584,6 +557,9 @@ class MainFrame(gui.MyFrame):
 	
     def m_bitmapScroll1OnMouseWheel( self, event ):
         m2.switchCard(self)
+        
+        
+        
     #%% print the notes
     def m_sliderPDFsizeOnScrollChanged(self,event):
         self.pdfmultiplier = float(self.m_sliderPDFsize.GetValue())/100
