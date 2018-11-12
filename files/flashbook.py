@@ -446,9 +446,9 @@ class MainFrame(gui.MyFrame):
                         SwitchPanel(self,4,None)
                         
                     else:
-                        ctypes.windll.user32.MessageBoxW(0, "There is no screenshot available\npress PrtScr again", "ErrorMessage", 1)
+                        ctypes.windll.user32.MessageBoxW(0, "There is no screenshot available\npress PrtScr again\nor press Alt+PrtScr to only copy an active window", "ErrorMessage", 1)
                 except:
-                    ctypes.windll.user32.MessageBoxW(0, "There is no screenshot available\npress PrtScr again", "ErrorMessage", 1)
+                    ctypes.windll.user32.MessageBoxW(0, "There is no screenshot available\npress PrtScr again\nor press Alt+PrtScr to only copy an active window", "ErrorMessage", 1)
             else:
                 ctypes.windll.user32.MessageBoxW(0, "Please open a book first", "ErrorMessage", 1)
         try:
