@@ -35,7 +35,9 @@ from termcolor import colored
 
 
 def run_flashbook(self):
-    print("Welcome to Flashbook , one moment ...")        
+    print("Welcome to Flashbook , one moment ...")     
+    self.m_bitmapScroll.SetBitmap(wx.Bitmap(wx.Image( 1,1 ))) # always empty bitmap, in case someone reruns the program
+    
     def initialize(self):
         os.chdir(self.dir0)
         datadir = os.getenv("LOCALAPPDATA")
