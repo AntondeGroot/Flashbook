@@ -287,6 +287,8 @@ class MainFrame(gui.MyFrame):
         self.FilePickEvent = True
         
         
+        
+        
         set_bitmapbuttons(self)
         # icon
         iconimage = wx.Icon(self.path_icon, type=wx.BITMAP_TYPE_ANY, desiredWidth=-1, desiredHeight=-1)
@@ -303,6 +305,7 @@ class MainFrame(gui.MyFrame):
         self.stayonpage = False
         self.stitchmode_v = True # stich vertical or horizontal
         self.m_dirPicker11.SetInitialDirectory(self.dir3)
+        self.m_dirPicker11.SetPath(self.dir3)
         self.m_bitmapScroll.SetWindowStyleFlag(False) # at first disable the border of the bitmap, otherwise you get a bordered empty bitmap. Enable the border only when there is a bitmap
         
         setup_sources(self)
@@ -480,6 +483,7 @@ class MainFrame(gui.MyFrame):
     def m_dirPicker11OnDirChanged(self,event):
         self.m_bitmapScroll.SetWindowStyleFlag(wx.SIMPLE_BORDER)
         m.dirchanged(self,event)
+        self.m_dirPicker11.SetPath(self.dir3)
         
     
 	# zoom in #================================================================
