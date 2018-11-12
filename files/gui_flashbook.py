@@ -42,10 +42,10 @@ class MyFrame ( wx.Frame ):
 		
 		self.m_menubar1 = wx.MenuBar( 0 )
 		self.m_menuOpen = wx.Menu()
-		self.m_menuItemFlashbook = wx.MenuItem( self.m_menuOpen, wx.ID_ANY, u"Open Flashbook folder", wx.EmptyString, wx.ITEM_NORMAL )
+		self.m_menuItemFlashbook = wx.MenuItem( self.m_menuOpen, wx.ID_ANY, u"Flashbook folder", wx.EmptyString, wx.ITEM_NORMAL )
 		self.m_menuOpen.Append( self.m_menuItemFlashbook )
 		
-		self.m_menuPDFfolder = wx.MenuItem( self.m_menuOpen, wx.ID_ANY, u"Open PDF-notes folder", wx.EmptyString, wx.ITEM_NORMAL )
+		self.m_menuPDFfolder = wx.MenuItem( self.m_menuOpen, wx.ID_ANY, u"PDF-notes folder", wx.EmptyString, wx.ITEM_NORMAL )
 		self.m_menuOpen.Append( self.m_menuPDFfolder )
 		
 		self.m_menuItemBackToMain = wx.MenuItem( self.m_menuOpen, wx.ID_ANY, u"Return to main menu", wx.EmptyString, wx.ITEM_NORMAL )
