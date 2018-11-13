@@ -57,6 +57,8 @@ When you open Flashcard and open a book for which you have taken notes - you'll 
 
 ![alt text](https://github.com/AntondeGroot/Flashbook/blob/master/readme%20images/fc.png)
 
-Your progress will be saved after each answer given. Althoug, the 'continue last session' overrides any other setting and uses the last used settings and score, continueing exactly where you left off.
+Your progress will be saved after each answer given. Although, the 'continue last session' overrides any other setting and uses the last used settings and score, continuing exactly where you left off.
 
 ![alt text](https://github.com/AntondeGroot/Flashbook/blob/master/readme%20images/fc2.png)
+
+Then you can either use your mouse or your arrow keys to: flip the card, indicate your answer is correct / wrong.
