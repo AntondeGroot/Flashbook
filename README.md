@@ -65,3 +65,5 @@ Then you can either use your mouse or your arrow keys to: flip the card, indicat
 
 ## Print
 
+
+![alt text](https://github.com/AntondeGroot/Flashbook/blob/master/readme%20images/print.png)
