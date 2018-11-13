@@ -65,5 +65,8 @@ Then you can either use your mouse or your arrow keys to: flip the card, indicat
 
 ## Print
 
+When you click on the 'print' button you get to the following preview window:
 
 ![alt text](https://github.com/AntondeGroot/Flashbook/blob/master/readme%20images/print.png)
+
+where you can modify it to your liking.
