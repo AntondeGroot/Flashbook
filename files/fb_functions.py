@@ -12,6 +12,9 @@ import math
 #matplotlib.use('Agg')
 import pylab
 import json
+import PIL
+import numpy as np
+from PIL import ImageOps
 #import matplotlib.backends.backend_agg as agg
 
 pylab.ioff() # make sure it is inactive, otherwise possible qwindows error    .... https://stackoverflow.com/questions/26970002/matplotlib-cant-suppress-figure-window
@@ -325,6 +328,31 @@ def CreateTextCard(self):
     raw_data = renderer.tostring_rgb()
     size = canvas.get_width_height()
     self.imagetext = PIL.Image.frombytes("RGB", size, raw_data, decoder_name='raw', )
+    # crop the LaTeX image further
+    border = 30
+    find = True
+    img = self.imagetext
+    imginv = ImageOps.invert(img)
+    
+    img_array = np.sum(np.sum(np.array(imginv),2),0) # look where something is not "white" in the x-axis
+    while find == True:
+        for i in range(len(img_array)):
+            print(i)
+            j = len(img_array) - i-1            
+            if find == True:
+                if img_array[j]!= 0:
+                    find = False
+                    var = j
+                if j == 0:
+                    find = False
+                    var = j
+    if var+border >  img.size[0]:
+        var = img.size[0]
+    else:
+        var = var+border
+    self.imagetext = img.crop((0,0,var,img.size[1]))
+    
+    
     
 
 def CombinePicText(self,directory):
