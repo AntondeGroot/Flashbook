@@ -15,4 +15,5 @@ You can take notes by simply selecting an area with your mouse, a rectangle will
 - In the ‘files’ subfolder you can define your own LaTeX macros
 -	LaTeX environments like matrices are not included
 
+# The program
 ![alt text](https://github.com/AntondeGroot/Flashbook/blob/master/readme%20images/main.png)
