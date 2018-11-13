@@ -34,6 +34,7 @@ You can also create a 'mozaic' by simply clicking on the arrow at the bottom of 
 
 There doesn't have to be a question card, for example when you just want to take notes. In that case once you entered your 'selection' or lack thereof again it will be made permanent. The borders will now be colored black.
 
-It is also possible to enter LaTeX code ![alt text](https://github.com/AntondeGroot/Flashbook/blob/master/readme%20images/fb_latex.png) which will be displayed as ![alt text](https://github.com/AntondeGroot/Flashbook/blob/master/readme%20images/fb_latex2.png) 
+It is also possible to enter LaTeX code ![alt text](https://github.com/AntondeGroot/Flashbook/blob/master/readme%20images/fb_latex.png) 
+which will be displayed as ![alt text](https://github.com/AntondeGroot/Flashbook/blob/master/readme%20images/fb_latex2.png) 
 ### Flashcard
 
