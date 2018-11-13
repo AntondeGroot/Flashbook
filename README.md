@@ -37,7 +37,6 @@ There doesn't have to be a question card, for example when you just want to take
 It is also possible to enter LaTeX code ![alt text](https://github.com/AntondeGroot/Flashbook/blob/master/readme%20images/fb_latex.png) 
 
 which will be displayed as 
-
 ![alt text](https://github.com/AntondeGroot/Flashbook/blob/master/readme%20images/fb_latex2.png)
 
 It's even possible to add your own LaTeX macros so that you can avoid typing long sequences of code.
