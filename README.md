@@ -30,3 +30,4 @@ You can also create a 'mozaic' by simply clicking on the arrow at the bottom of 
 
 ![alt text](https://github.com/AntondeGroot/Flashbook/blob/master/readme%20images/fb_selection_entered2.png)
 
+.
