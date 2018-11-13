@@ -409,11 +409,40 @@ class MainFrame(gui.MyFrame):
     #%% menu item events
     " menu item events "
     def m_toolStitchOnButtonClick( self, event ):
+        print("you pressed stitch")
         self.stitchmode_v =  not self.stitchmode_v
         if self.stitchmode_v == True:
             self.m_toolStitch.SetBitmap(wx.Bitmap(self.path_arrow2))
         else:
             self.m_toolStitch.SetBitmap(wx.Bitmap(self.path_arrow))
+        
+        # the following is used to create a mozaic of pictures. There is a question mode and an answer mode
+        # the pics are stored in a list, and when the element of a list is another list it means that particular list is ment to be stitched horizontally
+        # while all the other elements are stitched vertically
+        # all it does is switch [a,...,[x]] for [a,...,x] and back to [a,...,[x]] depending on whether the user has pushed a button to change the direction in which the notes should be stitched together.  
+        
+        if hasattr(self,'bookname') and self.bookname != '': # a book has been chosen
+            #stitch it vertically
+            if self.stitchmode_v == True:
+                #question mode
+                if (self.questionmode == True) and (len(self.pic_question) > 0) and (type(self.pic_question[-1]) is list) and (len(self.pic_question[-1])==1):
+                    self.pic_question[-1] = self.pic_question[-1][0]
+                    self.pic_question_dir[-1] = self.pic_question_dir[-1][0]
+                #answer mode
+                if (self.questionmode == False) and (len(self.pic_answer) > 0) and (type(self.pic_answer[-1]) is list) and (len(self.pic_answer[-1])==1):
+                    self.pic_answer[-1] = self.pic_answer[-1][0]
+                    self.pic_answer_dir[-1] = self.pic_answer_dir[-1][0]    
+            #stitch it horizontally
+            else:
+                #question mode
+                if (self.questionmode == True) and (len(self.pic_question) > 0) and (type(self.pic_question[-1]) is not list):
+                    self.pic_question[-1] = [self.pic_question[-1]]
+                    self.pic_question_dir[-1] = [self.pic_question_dir[-1]]
+                #answer mode
+                if (self.questionmode == False) and (len(self.pic_answer) > 0) and (type(self.pic_answer[-1]) is not list):
+                    self.pic_answer[-1] = [self.pic_answer[-1]]
+                    self.pic_answer_dir[-1] = [self.pic_answer_dir[-1]]
+                
             
     def m_menuItemFlashbookOnMenuSelection( self, event ):
         self.m_dirPicker11.SetInitialDirectory(self.dir3)
