@@ -17,5 +17,5 @@ You can take notes by simply selecting an area with your mouse, a rectangle will
 
 # The program
 ![alt text](https://github.com/AntondeGroot/Flashbook/blob/master/readme%20images/main.png)
-## Flashbook
+### Flashbook
 ![alt text](https://github.com/AntondeGroot/Flashbook/blob/master/readme%20images/fb.png)
