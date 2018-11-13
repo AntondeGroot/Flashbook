@@ -49,7 +49,7 @@ It's even possible to add your own LaTeX macros so that you can avoid typing lon
 
 will then give you:
 
-![alt text](https://github.com/AntondeGroot/Flashbook/blob/master/readme%20images/fb_latex5.png)
+![alt text](https://github.com/AntondeGroot/Flashbook/blob/master/readme%20images/fb_latex4.png)
 
 And finally, you can also add a printscreen you took. For example to add extra info you want to include form the internet.
 
