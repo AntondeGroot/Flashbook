@@ -62,3 +62,6 @@ Your progress will be saved after each answer given. Although, the 'continue las
 ![alt text](https://github.com/AntondeGroot/Flashbook/blob/master/readme%20images/fc2.png)
 
 Then you can either use your mouse or your arrow keys to: flip the card, indicate your answer is correct / wrong.
+
+## Print
+
