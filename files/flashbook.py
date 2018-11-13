@@ -401,7 +401,6 @@ class MainFrame(gui.MyFrame):
                 self.m_lineWqa.SetValue(str(self.QAline_thickness))
                 self.m_lineQA.SetValue(self.QAline_bool)
                 self.m_linePDF.SetValue(self.pdfline_bool)            
-                import program
                 thr2 = threading.Thread(target = print_preview, name = 'thread2', args = (self,event ))
                 thr2.run()
                 print(self.image)
@@ -409,7 +408,6 @@ class MainFrame(gui.MyFrame):
     #%% menu item events
     " menu item events "
     def m_toolStitchOnButtonClick( self, event ):
-        print("you pressed stitch")
         self.stitchmode_v =  not self.stitchmode_v
         if self.stitchmode_v == True:
             self.m_toolStitch.SetBitmap(wx.Bitmap(self.path_arrow2))
