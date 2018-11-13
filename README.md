@@ -20,7 +20,7 @@ You can take notes by simply selecting an area with your mouse, a rectangle will
 ## Flashbook
 ![alt text](https://github.com/AntondeGroot/Flashbook/blob/master/readme%20images/fb.png)
 
-You can then create your own Q&A cards by selecting areas with you mouse. 
+You can then create your own Q&A cards by selecting areas with you mouse. Once you let your left mouse button go, it will draw a box around your selection. Which can easily be undone by clicking your right mouse button.
 
 ![alt text](https://github.com/AntondeGroot/Flashbook/blob/master/readme%20images/fb_selection.png)
 
