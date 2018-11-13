@@ -15,7 +15,7 @@ You can take notes by simply selecting an area with your mouse, a rectangle will
 - In the ‘files’ subfolder you can define your own LaTeX macros
 -	LaTeX environments like matrices are not included
 
-# The program
+# The program explained
 
 The program will open with the following menu, allowing you to chose between one of the programs. You can always return to this menu once you opened one of the programs.
 
