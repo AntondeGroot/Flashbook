@@ -38,6 +38,15 @@ It is also possible to enter LaTeX code ![alt text](https://github.com/AntondeGr
 
 which will be displayed as 
 
-![alt text](https://github.com/AntondeGroot/Flashbook/blob/master/readme%20images/fb_latex2.png) 
+![alt text](https://github.com/AntondeGroot/Flashbook/blob/master/readme%20images/fb_latex2.png)
+
+It's even possible to add your own LaTeX macros so that you can avoid typing long sequences of code.
+
+![alt text](https://github.com/AntondeGroot/Flashbook/blob/master/readme%20images/fb_latex3.png)
+
+will then give you:
+
+![alt text](https://github.com/AntondeGroot/Flashbook/blob/master/readme%20images/fb_latex4.png)
+
 ### Flashcard
 
