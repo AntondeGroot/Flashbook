@@ -53,3 +53,10 @@ will then give you:
 
 ## Flashcard
 
+When you open Flashcard and open a book for which you have taken notes - you'll see a pop up window with the settings
+
+![alt text](https://github.com/AntondeGroot/Flashbook/blob/master/readme%20images/fc.png)
+
+Your progress will be saved after each answer given. Althoug, the 'continue last session' overrides any other setting and uses the last used settings and score, continueing exactly where you left off.
+
+![alt text](https://github.com/AntondeGroot/Flashbook/blob/master/readme%20images/fc2.png)
