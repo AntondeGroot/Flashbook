@@ -38,7 +38,8 @@ import print_functions as f3
 #from print_modules import notes2paper
 #--- for colored error messages ------------------------------------- debugging
 from termcolor import colored
-
+import win32clipboard
+from win32api import GetSystemMetrics
 
 
 
