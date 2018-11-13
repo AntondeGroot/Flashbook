@@ -17,7 +17,7 @@ You can take notes by simply selecting an area with your mouse, a rectangle will
 
 # The program
 ![alt text](https://github.com/AntondeGroot/Flashbook/blob/master/readme%20images/main.png)
-### Flashbook
+## Flashbook
 ![alt text](https://github.com/AntondeGroot/Flashbook/blob/master/readme%20images/fb.png)
 
 You can then create your own Q&A cards by selecting areas with you mouse. 
@@ -37,6 +37,7 @@ There doesn't have to be a question card, for example when you just want to take
 It is also possible to enter LaTeX code ![alt text](https://github.com/AntondeGroot/Flashbook/blob/master/readme%20images/fb_latex.png) 
 
 which will be displayed as 
+
 ![alt text](https://github.com/AntondeGroot/Flashbook/blob/master/readme%20images/fb_latex2.png)
 
 It's even possible to add your own LaTeX macros so that you can avoid typing long sequences of code.
@@ -47,5 +48,5 @@ will then give you:
 
 ![alt text](https://github.com/AntondeGroot/Flashbook/blob/master/readme%20images/fb_latex4.png)
 
-### Flashcard
+## Flashcard
 
