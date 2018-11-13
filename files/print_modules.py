@@ -13,11 +13,215 @@ import print_functions as f
 
 import json
 import re
-
+import wx
+import win32clipboard
+from win32api import GetSystemMetrics
+from PIL import Image
+import ctypes
 datadir = os.getenv("LOCALAPPDATA")
 dir0 = datadir + r"\FlashBook"
 # create settings folder for debugging
 
+def notes2paper(self):
+    #initiate
+    import print_functions as f
+    import bisect
+    import img2pdf
+    
+    N = 1.3
+    self.a4page_w  = round(1240*N*self.pdfmultiplier) # in pixels
+    self.a4page_h = round(1754*N*self.pdfmultiplier)
+    self.paper_h      = []
+    self.paper_h_list = []
+    datadir = os.getenv("LOCALAPPDATA")
+    dir0 = datadir+r"\FlashBook"
+    self.dir_t = dir0 + r"\temporary"
+    
+    ## create images
+    self.allimages = []
+    self.allimages_w = [] #list of widths
+    
+    for i in range(self.nr_questions):
+        self.image_q = PIL.Image.new('RGB', (0, 0),"white")
+        self.image_a = []
+        for mode in ['Question','Answer']: 
+            print(mode)
+            self.mode = mode
+            self.TextCard = False      
+            self.key = '{}{}'.format(self.mode[0],i)
+            try:          
+                print(self.key)
+                # try to create a TextCard
+                if self.key in self.textdictionary:
+                    print("textcard")
+                    try:
+                        f.CreateTextCard(self)
+                    except:
+                        print(colored("Error: could not create textcard","red"))
+                # if there is a textcard either combine them with a picture or display it on its own
+                if self.TextCard == True: 
+                    if self.key in self.picdictionary:
+                        try:
+                            f.CombinePicText(self)      
+                        except:
+                            pass
+                    else:
+                        self.image = self.imagetext                        
+                        if mode == 'Question':
+                            self.image_q = self.image
+                        else:
+                            self.image_a = self.image
+                else: #if there is no textcard only display the picture
+                    if self.key in self.picdictionary:
+                        try:
+                            self.image = PIL.Image.open(self.dir2+"\\"+self.bookname+"\\"+self.picdictionary[self.key])
+                        except:
+                            pass
+                        if mode == 'Question':
+                            self.image_q = self.image
+                        else:
+                            self.image_a = self.image
+                
+            except:
+                print(colored("Error: could not display card","red"))  
+        
+        #combine question and answer:
+        if self.image_a != []:
+            images = [self.image_q,self.image_a]
+            widths, heights = zip(*(i.size for i in images)) 
+            total_height = sum(heights)
+            max_width = max(widths)
+            if self.QAline_bool == True:
+                new_im = PIL.Image.new('RGB', (max_width, total_height+self.QAline_thickness), "white")
+                line = PIL.Image.new('RGB', (round(0.7*max_width), self.QAline_thickness), self.QAline_color)
+                #combine images to 1
+                new_im.paste(images[0], (0,0))
+                new_im.paste(line,(0,self.image_q.size[1]))
+                new_im.paste(images[1], (0,self.image_q.size[1]+self.QAline_thickness))
+            else:
+                new_im = PIL.Image.new('RGB', (max_width, total_height), "white")
+                #combine images to 1
+                new_im.paste(images[0], (0,0))
+                new_im.paste(images[1], (0,self.image_q.size[1]))
+            self.image = new_im
+            
+        else:
+            self.image = self.image_q
+        
+        
+        self.allimages.append(self.image)
+        self.allimages_w.append(self.image.size[0])
+    # sort images horizontally
+    A = np.cumsum(self.allimages_w)
+    C = []
+    while len(self.allimages_w) != 0:        
+        # cumsum the widths of images
+        # use bisect to look first instance where the cumsum is too large to fit on a page
+        # store those pages in a list separately, eliminate those from the search
+        # recalculate cumsum and repeat
+        index = bisect.bisect_left(A, self.a4page_w) 
+        if index != len(A):        
+            C.append(self.allimages[:index])
+            self.allimages = self.allimages[index:] 
+            self.allimages_w = self.allimages_w[index:] 
+            A = np.cumsum(self.allimages_w)
+        else:
+            C.append(self.allimages)
+            self.allimages_w = []
+    self.paper_h_list = C
+    
+    #for i in range(len(self.paper_h_list[0])):
+    #    self.paper_h_list[0][i].show()
+    
+    # combine pics horizontally
+    for i in range(len(self.paper_h_list)):
+        images = self.paper_h_list[i]
+        try:
+            widths, heights = zip(*(i.size for i in images)) 
+            max_height = max(heights)
+            total_width = sum(widths)
+            
+            new_im = PIL.Image.new('RGB', (total_width, max_height), "white")
+            #combine images to 1
+            x_offset = 0
+            for im in images:
+                new_im.paste(im, (x_offset,0))
+                x_offset += im.size[0]
+            self.image = new_im
+            new_im = add_border(self,new_im)
+            self.paper_h.append(new_im)
+        except: # if only one picture left
+            images = add_border(self,images)
+            self.paper_h.append(images)
+            
+    #self.paper_h[0].show()
+    
+    # sort images vertically
+    D = []
+    self.img_heights = []
+    for img in self.paper_h:
+        self.img_heights.append(img.size[1])
+    
+    A = np.cumsum(self.img_heights)
+    if self.printpreview == False:
+        while len(self.img_heights) != 0:        
+            index = bisect.bisect_left(A, self.a4page_h) #look for index where value is too large        
+            if index != len(A):        
+                D.append(self.paper_h[:index] )
+                self.paper_h = self.paper_h[index:] 
+                self.img_heights = self.img_heights[index:] 
+                A = np.cumsum(self.img_heights)
+                print(A)
+                print("\n")      
+            else:
+                D.append(self.paper_h)
+                self.img_heights = []
+    else:
+        index = bisect.bisect_left(A, self.a4page_h) #look for index where value is too large        
+        D.append(self.paper_h[:index] )
+               
+    self.paper_h = D
+    
+    
+    # combine vertical pictures per page
+    self.allimages_v = []
+    
+    for i in range(len(self.paper_h)):
+        images = self.paper_h[i]        
+        new_im = PIL.Image.new('RGB', (self.a4page_w, self.a4page_h), "white")        
+        y_offset = 0
+        try:
+            for im in images:
+                new_im.paste(im, (0,y_offset))
+                y_offset += im.size[1]
+            self.image = new_im
+            new_im = add_margins(self,new_im)
+            self.allimages_v.append(new_im)
+        except: #if images is not an iterable it gives an error, it contains only 1 image so just add
+            new_im.paste(images, (0,y_offset))
+            new_im = add_margins(self,new_im)
+            self.allimages_v.append(new_im)
+    
+    
+    
+    # imagelist is the list with all image filenames
+    imagelist = self.allimages_v
+    
+    i = 0
+    folder = []
+    if self.printpreview == False:
+        for image in imagelist:
+            
+            pathname = os.path.join(self.dir_t,"temporary{}.png".format(i))
+            folder.append(pathname)
+            image.save(pathname)
+            #image.show()
+            i += 1
+        filename = os.path.join(self.dirpdf,"{}.pdf".format(self.bookname))
+        with open(filename, "wb") as f:
+            f.write(img2pdf.convert([i for i in folder if i.endswith(".png")]))
+    else:
+        pass
 
 
 def dirchanged(self,event):
@@ -591,206 +795,7 @@ def add_margins(self,img):
     new_im.paste(img, (margin_pxs,margin_pxs))
     return new_im
     
-def notes2paper(self):
-    #initiate
-    import print_functions as f
-    import bisect
-    import img2pdf
-    
-    N = 1.3
-    self.a4page_w  = round(1240*N*self.pdfmultiplier) # in pixels
-    self.a4page_h = round(1754*N*self.pdfmultiplier)
-    self.paper_h      = []
-    self.paper_h_list = []
-    datadir = os.getenv("LOCALAPPDATA")
-    dir0 = datadir+r"\FlashBook"
-    self.dir_t = dir0 + r"\temporary"
-    
-    ## create images
-    self.allimages = []
-    self.allimages_w = [] #list of widths
-    
-    for i in range(self.nr_questions):
-        self.image_q = PIL.Image.new('RGB', (0, 0),"white")
-        self.image_a = []
-        for mode in ['Question','Answer']: 
-            print(mode)
-            self.mode = mode
-            self.TextCard = False      
-            self.key = '{}{}'.format(self.mode[0],i)
-            try:          
-                print(self.key)
-                # try to create a TextCard
-                if self.key in self.textdictionary:
-                    print("textcard")
-                    try:
-                        f.CreateTextCard(self)
-                    except:
-                        print(colored("Error: could not create textcard","red"))
-                # if there is a textcard either combine them with a picture or display it on its own
-                if self.TextCard == True: 
-                    if self.key in self.picdictionary:
-                        try:
-                            f.CombinePicText(self)      
-                        except:
-                            pass
-                    else:
-                        self.image = self.imagetext                        
-                        if mode == 'Question':
-                            self.image_q = self.image
-                        else:
-                            self.image_a = self.image
-                else: #if there is no textcard only display the picture
-                    if self.key in self.picdictionary:
-                        try:
-                            self.image = PIL.Image.open(self.dir2+"\\"+self.bookname+"\\"+self.picdictionary[self.key])
-                        except:
-                            pass
-                        if mode == 'Question':
-                            self.image_q = self.image
-                        else:
-                            self.image_a = self.image
-                
-            except:
-                print(colored("Error: could not display card","red"))  
-        
-        #combine question and answer:
-        if self.image_a != []:
-            images = [self.image_q,self.image_a]
-            widths, heights = zip(*(i.size for i in images)) 
-            total_height = sum(heights)
-            max_width = max(widths)
-            if self.QAline_bool == True:
-                new_im = PIL.Image.new('RGB', (max_width, total_height+self.QAline_thickness), "white")
-                line = PIL.Image.new('RGB', (round(0.7*max_width), self.QAline_thickness), self.QAline_color)
-                #combine images to 1
-                new_im.paste(images[0], (0,0))
-                new_im.paste(line,(0,self.image_q.size[1]))
-                new_im.paste(images[1], (0,self.image_q.size[1]+self.QAline_thickness))
-            else:
-                new_im = PIL.Image.new('RGB', (max_width, total_height), "white")
-                #combine images to 1
-                new_im.paste(images[0], (0,0))
-                new_im.paste(images[1], (0,self.image_q.size[1]))
-            self.image = new_im
-            
-        else:
-            self.image = self.image_q
-        
-        
-        self.allimages.append(self.image)
-        self.allimages_w.append(self.image.size[0])
-    # sort images horizontally
-    A = np.cumsum(self.allimages_w)
-    C = []
-    while len(self.allimages_w) != 0:        
-        # cumsum the widths of images
-        # use bisect to look first instance where the cumsum is too large to fit on a page
-        # store those pages in a list separately, eliminate those from the search
-        # recalculate cumsum and repeat
-        index = bisect.bisect_left(A, self.a4page_w) 
-        if index != len(A):        
-            C.append(self.allimages[:index])
-            self.allimages = self.allimages[index:] 
-            self.allimages_w = self.allimages_w[index:] 
-            A = np.cumsum(self.allimages_w)
-        else:
-            C.append(self.allimages)
-            self.allimages_w = []
-    self.paper_h_list = C
-    
-    #for i in range(len(self.paper_h_list[0])):
-    #    self.paper_h_list[0][i].show()
-    
-    # combine pics horizontally
-    for i in range(len(self.paper_h_list)):
-        images = self.paper_h_list[i]
-        try:
-            widths, heights = zip(*(i.size for i in images)) 
-            max_height = max(heights)
-            total_width = sum(widths)
-            
-            new_im = PIL.Image.new('RGB', (total_width, max_height), "white")
-            #combine images to 1
-            x_offset = 0
-            for im in images:
-                new_im.paste(im, (x_offset,0))
-                x_offset += im.size[0]
-            self.image = new_im
-            new_im = add_border(self,new_im)
-            self.paper_h.append(new_im)
-        except: # if only one picture left
-            images = add_border(self,images)
-            self.paper_h.append(images)
-            
-    #self.paper_h[0].show()
-    
-    # sort images vertically
-    D = []
-    self.img_heights = []
-    for img in self.paper_h:
-        self.img_heights.append(img.size[1])
-    
-    A = np.cumsum(self.img_heights)
-    if self.printpreview == False:
-        while len(self.img_heights) != 0:        
-            index = bisect.bisect_left(A, self.a4page_h) #look for index where value is too large        
-            if index != len(A):        
-                D.append(self.paper_h[:index] )
-                self.paper_h = self.paper_h[index:] 
-                self.img_heights = self.img_heights[index:] 
-                A = np.cumsum(self.img_heights)
-                print(A)
-                print("\n")      
-            else:
-                D.append(self.paper_h)
-                self.img_heights = []
-    else:
-        index = bisect.bisect_left(A, self.a4page_h) #look for index where value is too large        
-        D.append(self.paper_h[:index] )
-               
-    self.paper_h = D
-    
-    
-    # combine vertical pictures per page
-    self.allimages_v = []
-    
-    for i in range(len(self.paper_h)):
-        images = self.paper_h[i]        
-        new_im = PIL.Image.new('RGB', (self.a4page_w, self.a4page_h), "white")        
-        y_offset = 0
-        try:
-            for im in images:
-                new_im.paste(im, (0,y_offset))
-                y_offset += im.size[1]
-            self.image = new_im
-            new_im = add_margins(self,new_im)
-            self.allimages_v.append(new_im)
-        except: #if images is not an iterable it gives an error, it contains only 1 image so just add
-            new_im.paste(images, (0,y_offset))
-            new_im = add_margins(self,new_im)
-            self.allimages_v.append(new_im)
-    
-    
-    
-    # imagelist is the list with all image filenames
-    imagelist = self.allimages_v
-    
-    i = 0
-    folder = []
-    if self.printpreview == False:
-        for image in imagelist:
-            
-            pathname = os.path.join(self.dir_t,"temporary{}.png".format(i))
-            folder.append(pathname)
-            image.save(pathname)
-            #image.show()
-            i += 1
-        filename = os.path.join(self.dirpdf,"{}.pdf".format(self.bookname))
-        with open(filename, "wb") as f:
-            f.write(img2pdf.convert([i for i in folder if i.endswith(".png")]))
-    else:
-        pass
+
         
     
     
