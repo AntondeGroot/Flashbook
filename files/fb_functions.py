@@ -54,8 +54,6 @@ class Window2(wx.PopupWindow):
         self.m_bitmap123 = wx.StaticBitmap( panel, wx.ID_ANY, wx.NullBitmap,[border,border], wx.DefaultSize, 0 ) #displace image by width of border
         
         st = wx.StaticBitmap( panel, wx.ID_ANY, wx.NullBitmap, wx.DefaultPosition, wx.DefaultSize, 0 )
-        print(type(image))
-        #image = self.image
         
         
         width, height = image.size
