@@ -21,6 +21,7 @@ You can take notes by simply selecting an area with your mouse, a rectangle will
 ![alt text](https://github.com/AntondeGroot/Flashbook/blob/master/readme%20images/fb.png)
 
 You can then create your own Q&A cards by selecting areas with you mouse. Once you entered your selection a pop up window will appear, showing you your selection.
+
 ![alt text](https://github.com/AntondeGroot/Flashbook/blob/master/readme%20images/fb_selection.png)
 
 ![alt text](https://github.com/AntondeGroot/Flashbook/blob/master/readme%20images/fb_selection_entered.png)
