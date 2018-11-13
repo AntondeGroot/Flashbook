@@ -26,4 +26,7 @@ You can then create your own Q&A cards by selecting areas with you mouse. Once y
 
 ![alt text](https://github.com/AntondeGroot/Flashbook/blob/master/readme%20images/fb_selection_entered.png)
 
+You can also create a 'mozaic' by simply clicking on the arrow at the bottom of the page
+
+![alt text](https://github.com/AntondeGroot/Flashbook/blob/master/readme%20images/fb_selection_entered2.png)
 
