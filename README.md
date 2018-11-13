@@ -55,7 +55,7 @@ And finally, you can also add a printscreen you took. For example to add extra i
 
 ![alt text](https://github.com/AntondeGroot/Flashbook/blob/master/readme%20images/prtscr.png)
 
-you can first crop the image before it is imported. You can then select portions of it to form a Q&A card as if it were a regular bookpage.
+you can first crop the image before it is imported. You can then select portions of it to form a Q&A card as if it were a regular page.
 
 ## Flashcard
 
@@ -75,4 +75,4 @@ When you click on the 'print' button you get to the following preview window:
 
 ![alt text](https://github.com/AntondeGroot/Flashbook/blob/master/readme%20images/print.png)
 
-where you can modify it to your liking. You add lines between Q&A cards (if present) and between each horizontal row of cards. You can also change the color and thickness of these lines. If you press 'apply' a pdf will be made. The location of this can be opened via the menubar.
+where you can modify it to your liking. You add lines between Q&A cards (if present) and between each horizontal row of cards. You can also change the color and thickness of these lines. If you press 'apply' a pdf will be made. The location of this folder can be opened via the menubar.
