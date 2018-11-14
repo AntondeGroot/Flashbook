@@ -40,7 +40,7 @@ import print_functions as f3
 from termcolor import colored
 import win32clipboard
 from win32api import GetSystemMetrics
-
+from PIL import Image
 
 
 # when using Pyinstaller to get the .exe file: it will standard give an error that it is missing the module 'qwindows.dll'
@@ -185,7 +185,16 @@ def set_richtext(self):
     #self.txt.Newline()
     self.txt.WriteText("\n              ")
     self.txt.WriteImage(wx.Bitmap(image2))
-    self.txt.WriteText("  Indicates in which direction the notes are taken, you can use this to create a mozaic.\n         E.g. when a sentence ends on a differen line but you want it to appear as one line in your notes")
+    self.txt.WriteText("  Indicates in which direction the notes are taken, you can use this to create a mozaic.\n         E.g. when a sentence ends on a differen line but you want it to appear as one line in your notes\n         When the arrow point down, you paste a selection on another 'row'. If it points to the right it just puts it behind the last selection you made.")
+    self.txt.EndFontSize()
+    self.txt.BeginFontSize(16) 
+    self.txt.BeginBold()
+    self.txt.WriteText( "\n\n        N.B.\n")
+    self.txt.EndBold()
+    self.txt.EndFontSize()
+    self.txt.BeginFontSize(12)
+    self.txt.WriteText( "        Whenever you try to type something in the textbox and want to move the 'text cursor': make sure that the mouse is placed on the textbox.\n "
+                        "        Otherwise you'll switch pages when you try to move the 'text cursor' with the arrow keys. ")
     self.txt.EndFontSize()
     self.Layout()
     
@@ -519,8 +528,13 @@ class MainFrame(gui.MyFrame):
         except:
             pass
         
-        
-        
+    def m_textCtrl2OnEnterWindow( self, event ):
+        print("entered window")
+        m.RemoveKeyboardShortcuts(self)
+	
+    def m_textCtrl2OnLeaveWindow( self, event ):
+        m.SetKeyboardShortcuts(self)
+    
     def m_btnSelectOnButtonClick( self, event ):
         print("undo")
         if hasattr(self,"backupimage"):
