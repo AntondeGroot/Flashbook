@@ -42,10 +42,10 @@ class MyFrame ( wx.Frame ):
 		
 		self.m_menubar1 = wx.MenuBar( 0 )
 		self.m_menuOpen = wx.Menu()
-		self.m_menuItemFlashbook = wx.MenuItem( self.m_menuOpen, wx.ID_ANY, u"Flashbook folder", wx.EmptyString, wx.ITEM_NORMAL )
+		self.m_menuItemFlashbook = wx.MenuItem( self.m_menuOpen, wx.ID_ANY, u"Open Flashbook folder", wx.EmptyString, wx.ITEM_NORMAL )
 		self.m_menuOpen.Append( self.m_menuItemFlashbook )
 		
-		self.m_menuPDFfolder = wx.MenuItem( self.m_menuOpen, wx.ID_ANY, u"PDF-notes folder", wx.EmptyString, wx.ITEM_NORMAL )
+		self.m_menuPDFfolder = wx.MenuItem( self.m_menuOpen, wx.ID_ANY, u"Open PDF-notes folder", wx.EmptyString, wx.ITEM_NORMAL )
 		self.m_menuOpen.Append( self.m_menuPDFfolder )
 		
 		self.m_menuItemBackToMain = wx.MenuItem( self.m_menuOpen, wx.ID_ANY, u"Return to main menu", wx.EmptyString, wx.ITEM_NORMAL )
@@ -162,7 +162,7 @@ class MyFrame ( wx.Frame ):
 		bSizer2 = wx.BoxSizer( wx.VERTICAL )
 		
 		self.m_toolBar1 = wx.ToolBar( self.panel11, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TB_HORIZONTAL ) 
-		self.m_dirPicker11 = wx.DirPickerCtrl( self.m_toolBar1, wx.ID_ANY, wx.EmptyString, u"Select a folder", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_dirPicker11 = wx.DirPickerCtrl( self.m_toolBar1, wx.ID_ANY, wx.EmptyString, u"Select a folder", wx.DefaultPosition, wx.DefaultSize, wx.DIRP_DEFAULT_STYLE )
 		self.m_toolBar1.AddControl( self.m_dirPicker11 )
 		self.m_toolPlus11 = self.m_toolBar1.AddTool( wx.ID_ANY, u"plus", wx.Bitmap( path_add, wx.BITMAP_TYPE_ANY ), wx.NullBitmap, wx.ITEM_NORMAL, wx.EmptyString, wx.EmptyString, None ) 
 		
@@ -297,7 +297,7 @@ class MyFrame ( wx.Frame ):
 		bSizer21 = wx.BoxSizer( wx.VERTICAL )
 		
 		self.m_toolBar2 = wx.ToolBar( self.panel12, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TB_HORIZONTAL ) 
-		self.m_dirPicker12 = wx.DirPickerCtrl( self.m_toolBar2, wx.ID_ANY, wx.EmptyString, u"Select a folder", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_dirPicker12 = wx.DirPickerCtrl( self.m_toolBar2, wx.ID_ANY, wx.EmptyString, u"Select a folder", wx.DefaultPosition, wx.DefaultSize, wx.DIRP_DEFAULT_STYLE )
 		self.m_toolBar2.AddControl( self.m_dirPicker12 )
 		self.m_toolPlus12 = self.m_toolBar2.AddTool( wx.ID_ANY, u"plus", wx.Bitmap( path_add, wx.BITMAP_TYPE_ANY ), wx.NullBitmap, wx.ITEM_NORMAL, wx.EmptyString, wx.EmptyString, None ) 
 		
@@ -369,7 +369,7 @@ class MyFrame ( wx.Frame ):
 		self.m_toolBar3 = wx.ToolBar( self.panel21, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TB_HORIZONTAL ) 
 		self.m_filePicker21 = wx.FilePickerCtrl( self.m_toolBar3, wx.ID_ANY, wx.EmptyString, u"Select a file", u"*.tex*", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.m_toolBar3.AddControl( self.m_filePicker21 )
-		self.m_toolSwitch21 = self.m_toolBar3.AddTool( wx.ID_ANY, u"Switch", wx.Bitmap( path_switch, wx.BITMAP_TYPE_ANY ), wx.NullBitmap, wx.ITEM_NORMAL, u"shortcut: mouse scroll / arrow key up or down\nto switch between Question and Answer cards", wx.EmptyString, None ) 
+		self.m_toolSwitch21 = self.m_toolBar3.AddTool( wx.ID_ANY, u"Switch", wx.Bitmap( path_switch, wx.BITMAP_TYPE_ANY ), wx.NullBitmap, wx.ITEM_NORMAL, wx.EmptyString, wx.EmptyString, None ) 
 		
 		self.m_textCtrlMode = wx.TextCtrl( self.m_toolBar3, wx.ID_ANY, u"Question:", wx.DefaultPosition, wx.DefaultSize, wx.TE_READONLY|wx.NO_BORDER )
 		self.m_textCtrlMode.SetFont( wx.Font( 12, 70, 90, 92, False, wx.EmptyString ) )
@@ -728,6 +728,8 @@ class MyFrame ( wx.Frame ):
 		self.m_bitmapScroll.Bind( wx.EVT_MOUSEWHEEL, self.m_bitmapScrollOnMouseEvents )
 		self.m_bitmapScroll.Bind( wx.EVT_MOUSEWHEEL, self.m_bitmapScrollOnMouseWheel )
 		self.m_bitmapScroll.Bind( wx.EVT_RIGHT_DOWN, self.m_bitmapScrollOnRightDown )
+		self.m_textCtrl2.Bind( wx.EVT_ENTER_WINDOW, self.m_textCtrl2OnEnterWindow )
+		self.m_textCtrl2.Bind( wx.EVT_LEAVE_WINDOW, self.m_textCtrl2OnLeaveWindow )
 		self.m_enterselection.Bind( wx.EVT_BUTTON, self.m_enterselectionOnButtonClick )
 		self.m_toolStitch.Bind( wx.EVT_BUTTON, self.m_toolStitchOnButtonClick )
 		self.m_btnScreenshot.Bind( wx.EVT_BUTTON, self.m_btnScreenshotOnButtonClick )
@@ -862,6 +864,12 @@ class MyFrame ( wx.Frame ):
 		event.Skip()
 	
 	def m_bitmapScrollOnRightDown( self, event ):
+		event.Skip()
+	
+	def m_textCtrl2OnEnterWindow( self, event ):
+		event.Skip()
+	
+	def m_textCtrl2OnLeaveWindow( self, event ):
 		event.Skip()
 	
 	def m_enterselectionOnButtonClick( self, event ):
@@ -1016,7 +1024,7 @@ class MyFrame ( wx.Frame ):
 
 class MyDialog ( wx.Dialog ):
 	
-	def __init__( self, parent, data ):
+	def __init__( self, parent,data ):
 		wx.Dialog.__init__ ( self, parent, id = wx.ID_ANY, title = u"Settings", pos = wx.DefaultPosition, size = wx.Size( 349,250 ), style = wx.DEFAULT_DIALOG_STYLE )
 		
 		self.SetSizeHints( wx.DefaultSize, wx.Size( 350,250 ) )
@@ -1191,4 +1199,3 @@ class MyDialog2 ( wx.Dialog ):
 	def m_radioRandomOnRadioButton( self, event ):
 		event.Skip()
 	
-
