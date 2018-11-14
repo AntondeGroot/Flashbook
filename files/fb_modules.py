@@ -440,20 +440,7 @@ def switch_stitchmode(self): # switch the boolean to opposite
 
 def SetKeyboardShortcuts(self):
     
-    try:# look if Id's already exist
-        # combine functions with the id
-        self.Bind( wx.EVT_MENU, self.m_toolBack11OnToolClicked,       id = self.Id_leftkey  )
-        self.Bind( wx.EVT_MENU, self.m_toolNext11OnToolClicked,       id = self.Id_rightkey )
-        self.Bind( wx.EVT_MENU, self.m_enterselectionOnButtonClick, id = self.Id_enterkey )
-        self.Bind( wx.EVT_MENU, self.m_toolStitchOnButtonClick, id = self.Id_stitch )
-        # combine id with keyboard = now keyboard is connected to functions
-        entries = wx.AcceleratorTable([(wx.ACCEL_NORMAL,  wx.WXK_LEFT, self.Id_leftkey),
-                                      (wx.ACCEL_NORMAL,  wx.WXK_RIGHT, self.Id_rightkey),
-                                      (wx.ACCEL_NORMAL,  wx.WXK_RETURN, self.Id_enterkey),
-                                      (wx.ACCEL_NORMAL,  wx.WXK_HOME, self.Id_stitch ),
-                                      (wx.ACCEL_NORMAL,  wx.WXK_NUMPAD0, self.Id_stitch )])
-        self.SetAcceleratorTable(entries)
-    except:
+    try:
         # set keyboard short cuts: accelerator table        
         self.Id_leftkey   = wx.NewIdRef() 
         self.Id_rightkey  = wx.NewIdRef() 
@@ -471,16 +458,24 @@ def SetKeyboardShortcuts(self):
                                       (wx.ACCEL_NORMAL,  wx.WXK_HOME, self.Id_stitch ),
                                       (wx.ACCEL_NORMAL,  wx.WXK_NUMPAD0, self.Id_stitch )])
         self.SetAcceleratorTable(entries)
-
-def RemoveKeyboardShortcuts(self):
-    try:# look if Id's already exist
-        # combine functions with the id        
-        self.Unbind( wx.EVT_MENU, self.m_toolBack11OnToolClicked,       id = self.Id_leftkey  )
-        self.Unbind( wx.EVT_MENU, self.m_toolNext11OnToolClicked,       id = self.Id_rightkey )
-        self.Unbind( wx.EVT_MENU, self.m_enterselectionOnButtonClick, id = self.Id_enterkey )
-        # empty acceleratortable?
-        self.SetAcceleratorTable()
     except:
-        pass
+        print("Error: cannot set Accelerator Table")
+        
+
+def RemoveKeyboardShortcuts(self): 
+    try:
+        # remove the arrow keys as shortcut by setting the AcceleratorTable again, but without these keys. This overwrites all previous short cuts
+        # combine functions with the id 
+        self.Id_enterkey  = wx.NewIdRef()
+        self.Id_stitch    = wx.NewIdRef()      
+        self.Bind( wx.EVT_MENU, self.m_enterselectionOnButtonClick, id = self.Id_enterkey )
+        self.Bind( wx.EVT_MENU, self.m_toolStitchOnButtonClick, id = self.Id_stitch )
+        # combine id with keyboard = now keyboard is connected to functions
+        entries = wx.AcceleratorTable([(wx.ACCEL_NORMAL,  wx.WXK_RETURN, self.Id_enterkey),
+                                      (wx.ACCEL_NORMAL,  wx.WXK_HOME, self.Id_stitch ),
+                                      (wx.ACCEL_NORMAL,  wx.WXK_NUMPAD0, self.Id_stitch )])
+        self.SetAcceleratorTable(entries)
+    except:
+        print("Error: cannot unset Accelerator Table")
 
 
