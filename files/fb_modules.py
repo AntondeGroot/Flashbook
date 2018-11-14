@@ -230,88 +230,88 @@ def panel4_bitmapleftup(self,event):
 
    
 def selectionentered(self,event):
-    #try:
-    if self.questionmode == True:
-        # change mode to answer
-        self.usertext = self.m_textCtrl2.GetValue()
-        self.pdf_question = self.usertext
-        self.usertext = f.Text2Latex(self)
-        self.questionmode = False
-        self.m_textCtrl1.SetValue("Answer:")
-        self.m_textCtrl2.SetValue("")
-        
-        # check for [[1,2,3]]
-        if len(self.pic_question)>1:
-            f.CombinePics(self,self.pic_question_dir)
-            if type(self.pic_question[0]) is list:
-                self.pic_question[0] = self.pic_question[0][0]
-            self.pdf_question = str(self.pdf_question) + r" \pic{" + "{}".format(self.pic_question[0])+r"}"
-        else:       
-            print("only horizontal questions")
-            print(len(self.pic_question))
-            if len(self.pic_question) == 1:
+    if hasattr(self,'bookname') and self.bookname != '':
+        if self.questionmode == True:
+            # change mode to answer
+            self.usertext = self.m_textCtrl2.GetValue()
+            self.pdf_question = self.usertext
+            self.usertext = f.Text2Latex(self)
+            self.questionmode = False
+            self.m_textCtrl1.SetValue("Answer:")
+            self.m_textCtrl2.SetValue("")
+            
+            # check for [[1,2,3]]
+            if len(self.pic_question)>1:
+                f.CombinePics(self,self.pic_question_dir)
                 if type(self.pic_question[0]) is list:
-                    
-                    f.CombinePics(self,self.pic_question_dir)
-                else:
-                    print("is not a list")
+                    self.pic_question[0] = self.pic_question[0][0]
                 self.pdf_question = str(self.pdf_question) + r" \pic{" + "{}".format(self.pic_question[0])+r"}"
-        #try:                     
-        f.ShowInPopup(self,event,"Question")
-        #except:
-        #    pass
-         
-    else:
-        self.usertext = self.m_textCtrl2.GetValue()
-        self.pdf_answer = self.usertext
-        self.usertext = f.Text2Latex(self)
-        self.questionmode = True
-        self.m_textCtrl1.SetValue("Question:")
-        self.m_textCtrl2.SetValue("")
-        
-        # save everything!!------------------------------------------------------------------------------------------------------------
-        findic = self.dictionary
-        tempdic = self.tempdictionary
-        for key in list(tempdic):      # go over all keys
-            for value in tempdic[key]: # go over all values
-                if key in findic:      # if already exists: just add value
-                    findic[key].append(value)
-                else:                  # if not, add key and value, where key = pagenr and value is rectangle coordinates
-                    findic.update({key : [value]})
-        self.dictionary = findic
-        self.tempdictionary = {}
-        
-        # remove temporary borders
-        self.pageimage = self.pageimagecopy
-        f.ShowPage(self)
-        if self.stayonpage == False: # if screenshot mode
-            with open(self.PathBorders, 'w') as file:
-                    file.write(json.dumps(self.dictionary)) 
-        if len(self.pic_answer)>1:
-            f.CombinePics(self,self.pic_answer_dir)
-            if type(self.pic_answer[0]) is list:
-                self.pic_answer[0] = self.pic_answer[0][0]
-            self.pdf_answer = str(self.pdf_answer) + r" \pic{" + "{}".format(self.pic_answer[0])+r"}"
-        elif len(self.pic_answer) == 1:
-            if type(self.pic_answer[0]) is list:        
+            else:       
+                print("only horizontal questions")
+                print(len(self.pic_question))
+                if len(self.pic_question) == 1:
+                    if type(self.pic_question[0]) is list:
+                        
+                        f.CombinePics(self,self.pic_question_dir)
+                    else:
+                        print("is not a list")
+                    self.pdf_question = str(self.pdf_question) + r" \pic{" + "{}".format(self.pic_question[0])+r"}"
+            #try:                     
+            f.ShowInPopup(self,event,"Question")
+            #except:
+            #    pass
+             
+        else:
+            self.usertext = self.m_textCtrl2.GetValue()
+            self.pdf_answer = self.usertext
+            self.usertext = f.Text2Latex(self)
+            self.questionmode = True
+            self.m_textCtrl1.SetValue("Question:")
+            self.m_textCtrl2.SetValue("")
+            
+            # save everything!!------------------------------------------------------------------------------------------------------------
+            findic = self.dictionary
+            tempdic = self.tempdictionary
+            for key in list(tempdic):      # go over all keys
+                for value in tempdic[key]: # go over all values
+                    if key in findic:      # if already exists: just add value
+                        findic[key].append(value)
+                    else:                  # if not, add key and value, where key = pagenr and value is rectangle coordinates
+                        findic.update({key : [value]})
+            self.dictionary = findic
+            self.tempdictionary = {}
+            
+            # remove temporary borders
+            self.pageimage = self.pageimagecopy
+            f.ShowPage(self)
+            if self.stayonpage == False: # if screenshot mode
+                with open(self.PathBorders, 'w') as file:
+                        file.write(json.dumps(self.dictionary)) 
+            if len(self.pic_answer)>1:
                 f.CombinePics(self,self.pic_answer_dir)
-            else:
-                print("is not a list")                        
-            self.pdf_answer = str(self.pdf_answer) + r" \pic{" + "{}".format(self.pic_answer[0])+r"}"                        
-        
-        #try:   
-        f.ShowInPopup(self,event,"Answer")                    
+                if type(self.pic_answer[0]) is list:
+                    self.pic_answer[0] = self.pic_answer[0][0]
+                self.pdf_answer = str(self.pdf_answer) + r" \pic{" + "{}".format(self.pic_answer[0])+r"}"
+            elif len(self.pic_answer) == 1:
+                if type(self.pic_answer[0]) is list:        
+                    f.CombinePics(self,self.pic_answer_dir)
+                else:
+                    print("is not a list")                        
+                self.pdf_answer = str(self.pdf_answer) + r" \pic{" + "{}".format(self.pic_answer[0])+r"}"                        
+            
+            #try:   
+            f.ShowInPopup(self,event,"Answer")                    
+            #except:
+            #    pass
+            # save the user inputs in .tex file
+            if len(self.pdf_question)!=0:
+                with open(os.path.join(self.dir1, self.bookname +'.tex'), 'a') as output: # the mode "a" appends to the file    
+                    output.write(r"\quiz{" + str(self.pdf_question) + "}")
+                    output.write(r"\ans{"  + str(self.pdf_answer)   + "}"+"\n")
+            #reset all
+            f.ResetQuestions(self)
         #except:
-        #    pass
-        # save the user inputs in .tex file
-        if len(self.pdf_question)!=0:
-            with open(os.path.join(self.dir1, self.bookname +'.tex'), 'a') as output: # the mode "a" appends to the file    
-                output.write(r"\quiz{" + str(self.pdf_question) + "}")
-                output.write(r"\ans{"  + str(self.pdf_answer)   + "}"+"\n")
-        #reset all
-        f.ResetQuestions(self)
-    #except:
-    #    print(colored("Error: cannot enter selection",'red'))
+        #    print(colored("Error: cannot enter selection",'red'))
         
 def mousewheel(self,event):
     scrollWin = self.m_scrolledWindow1
