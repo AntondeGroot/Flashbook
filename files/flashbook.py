@@ -78,7 +78,7 @@ def settings_get(self):
         settings   = json.load(file)
         debug_var  = settings['debugmode']
         self.pdfmultiplier     = settings['pdfmultiplier'] 
-        print(f"settins = {settings}")
+        #print(f"settings = {settings}")
         self.QAline_thickness  = settings['QAline_thickness']
         self.pdfline_thickness = settings['pdfline_thickness']
         self.QAline_color      = tuple(settings['QAline_color'])
