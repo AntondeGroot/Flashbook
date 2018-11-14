@@ -17,7 +17,61 @@ datadir = os.getenv("LOCALAPPDATA")
 dir0 = datadir + r"\FlashBook"
 # create settings folder for debugging
 
-
+def set_richtext(self):
+    self.txt = self.m_richText12
+    self.txt.BeginBold()
+    self.txt.BeginFontSize(16)
+    self.txt.WriteText("  Getting Started                                                       ")
+    self.txt.EndFontSize()
+    self.txt.EndBold()
+    self.txt.WriteText("                                                                                 (left click to close window)\n")
+    self.txt.BeginFontSize(12)
+    self.txt.WriteText("        This will allow you to make flashcards out of the notes you take.\n")
+    self.txt.WriteText("        1) Convert a pdf to jpg files, using a free online webpage of your choise\n"
+                      "        2) Click in the menu 'open/Flashbook folder' to open the correct Windows folder\n"
+                      "        3) Place all the pictures in a map named after the book or course in said folder\n"
+                      '        4) Then click on "Browse" in the menubar and open the book that you would like to read\n\n' )
+    self.txt.EndFontSize()
+    self.txt.BeginBold()
+    self.txt.BeginFontSize(16)
+    self.txt.WriteText("  Taking Notes:\n")
+    self.txt.EndFontSize()
+    self.txt.EndBold()
+    
+    imagepath = os.path.join(self.dir7,"mouseicon.png")
+    image = PIL.Image.open(imagepath, mode='r').convert('RGB')
+    image2 = wx.Image( image.size)
+    image2.SetData( image.tobytes() )
+    self.txt.WriteImage(wx.Bitmap(image2))
+    self.txt.Newline()
+    
+    self.txt.BeginFontSize(12)   
+    self.txt.WriteText( "        1) You can type a Question and an Answer in the textbox at the bottom, this is LaTeX compatible if you include $$\n"
+                        "        2) you can take multiple selections across pages, all the rectangles you draw will be combined into 1 Question and 1 Answer card\n"
+                        "        3) Only when you confirm your selection during the Answer mode will everything be saved\n"
+                        "        4) You switch modes when you confirm your selection\n"
+                        "        5) 'Reset selection' resets both Question and Answer cards\n")
+    
+    imagepath = os.path.join(self.dir7,"arrowhelp.png")
+    image = PIL.Image.open(imagepath, mode='r').convert('RGB')
+    image2 = wx.Image( image.size)
+    image2.SetData( image.tobytes() )
+    
+    #self.txt.Newline()
+    self.txt.WriteText("\n              ")
+    self.txt.WriteImage(wx.Bitmap(image2))
+    self.txt.WriteText("  Indicates in which direction the notes are taken, you can use this to create a mozaic.\n         E.g. when a sentence ends on a differen line but you want it to appear as one line in your notes\n         When the arrow point down, you paste a selection on another 'row'. If it points to the right it just puts it behind the last selection you made.")
+    self.txt.EndFontSize()
+    self.txt.BeginFontSize(16) 
+    self.txt.BeginBold()
+    self.txt.WriteText( "\n\n        N.B.\n")
+    self.txt.EndBold()
+    self.txt.EndFontSize()
+    self.txt.BeginFontSize(12)
+    self.txt.WriteText( "        Whenever you try to type something in the textbox and want to move the 'text cursor': make sure that the mouse is placed on the textbox.\n "
+                        "        Otherwise you'll switch pages when you try to move the 'text cursor' with the arrow keys. ")
+    self.txt.EndFontSize()
+    self.Layout()
 
 def dirchanged(self,event):
     # for scrolling: only remember current and last position, append and pop, if the numbers repeat [0,0] or [X,X] then you know you've reached either the beginning or the end of the window: then flip page
