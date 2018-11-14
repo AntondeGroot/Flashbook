@@ -317,6 +317,82 @@ def run_print(self,event):
     ini3.initializeparameters(self)                  
     ## LOAD ALL DATA ==========================================================
     m3.startprogram(self,event)
-        
+      
+    
+def SwitchPanel(self,n,m):
+    if n == 0:
+        self.panel0.Show()
+        self.panel1.Hide()
+        self.panel2.Hide()
+        self.panel3.Hide()
+        self.panel4.Hide()
+        self.Layout() # force refresh of windows
+    elif n == 1:
+        self.panel0.Hide()
+        self.panel1.Show()
+        self.panel2.Hide()
+        self.panel3.Hide()
+        self.panel4.Hide()
+        if m == 0:
+            self.panel11.Show()
+            self.panel12.Hide()
+        else:
+            self.panel11.Hide()
+            self.panel12.Show()
+        self.Layout() # force refresh of windows
+    elif n == 2:
+        self.panel0.Hide()
+        self.panel1.Hide()
+        self.panel2.Show()
+        self.panel3.Hide()
+        self.panel4.Hide()
+        if m == 0:
+            self.panel21.Show()
+            self.panel22.Hide()
+        else:
+            self.panel21.Hide()
+            self.panel22.Show()
+        self.Layout() # force refresh of windows
+    elif n ==3:
+        self.panel0.Hide()
+        self.panel1.Hide()
+        self.panel2.Hide()
+        self.panel3.Show()
+        self.panel4.Hide()
+        self.Layout()
+    elif n ==4:
+        self.panel0.Hide()
+        self.panel1.Hide()
+        self.panel2.Hide()
+        self.panel3.Hide()
+        self.panel4.Show()
+        self.Layout()
 
 
+def set_bitmapbuttons(self):
+    image = PIL.Image.open(self.path_fb, mode='r')
+    image = image.resize((105, 105), PIL.Image.ANTIALIAS) 
+    image2 = wx.Image( image.size)
+    image2.SetData( image.tobytes() )
+    self.m_OpenFlashbook.SetBitmap(wx.Bitmap(image2))
+    
+    image = PIL.Image.open(self.path_fc, mode='r')
+    image = image.resize((105, 105), PIL.Image.ANTIALIAS) 
+    image2 = wx.Image( image.size)
+    image2.SetData( image.tobytes() )
+    self.m_OpenFlashcard.SetBitmap(wx.Bitmap(image2))
+    
+    image = PIL.Image.open(self.path_pr, mode='r')
+    image = image.resize((105, 105), PIL.Image.ANTIALIAS) 
+    image2 = wx.Image( image.size)
+    image2.SetData( image.tobytes() )
+    self.m_OpenPrint.SetBitmap(wx.Bitmap(image2))
+    
+    # stich
+    
+    image = PIL.Image.open(self.path_arrow, mode='r')
+    image = image.resize((32, 32))     
+    image2 = wx.Image( image.size)
+    image2.SetData( image.tobytes() )
+    self.m_toolStitch.SetBitmap(wx.Bitmap(self.path_arrow2))
+    #
