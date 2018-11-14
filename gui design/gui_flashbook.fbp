@@ -144,7 +144,7 @@
                         <property name="help"></property>
                         <property name="id">wxID_ANY</property>
                         <property name="kind">wxITEM_NORMAL</property>
-                        <property name="label">Open Flashbook folder</property>
+                        <property name="label">Flashbook folder</property>
                         <property name="name">m_menuItemFlashbook</property>
                         <property name="permission">none</property>
                         <property name="shortcut"></property>
@@ -159,7 +159,7 @@
                         <property name="help"></property>
                         <property name="id">wxID_ANY</property>
                         <property name="kind">wxITEM_NORMAL</property>
-                        <property name="label">Open PDF-notes folder</property>
+                        <property name="label">PDF-notes folder</property>
                         <property name="name">m_menuPDFfolder</property>
                         <property name="permission">none</property>
                         <property name="shortcut"></property>
