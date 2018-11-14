@@ -42,10 +42,10 @@ class MyFrame ( wx.Frame ):
 		
 		self.m_menubar1 = wx.MenuBar( 0 )
 		self.m_menuOpen = wx.Menu()
-		self.m_menuItemFlashbook = wx.MenuItem( self.m_menuOpen, wx.ID_ANY, u"Open Flashbook folder", wx.EmptyString, wx.ITEM_NORMAL )
+		self.m_menuItemFlashbook = wx.MenuItem( self.m_menuOpen, wx.ID_ANY, u"Flashbook folder", wx.EmptyString, wx.ITEM_NORMAL )
 		self.m_menuOpen.Append( self.m_menuItemFlashbook )
 		
-		self.m_menuPDFfolder = wx.MenuItem( self.m_menuOpen, wx.ID_ANY, u"Open PDF-notes folder", wx.EmptyString, wx.ITEM_NORMAL )
+		self.m_menuPDFfolder = wx.MenuItem( self.m_menuOpen, wx.ID_ANY, u"PDF-notes folder", wx.EmptyString, wx.ITEM_NORMAL )
 		self.m_menuOpen.Append( self.m_menuPDFfolder )
 		
 		self.m_menuItemBackToMain = wx.MenuItem( self.m_menuOpen, wx.ID_ANY, u"Return to main menu", wx.EmptyString, wx.ITEM_NORMAL )
@@ -1024,7 +1024,7 @@ class MyFrame ( wx.Frame ):
 
 class MyDialog ( wx.Dialog ):
 	
-	def __init__( self, parent,data ):
+	def __init__( self, parent, data ):
 		wx.Dialog.__init__ ( self, parent, id = wx.ID_ANY, title = u"Settings", pos = wx.DefaultPosition, size = wx.Size( 349,250 ), style = wx.DEFAULT_DIALOG_STYLE )
 		
 		self.SetSizeHints( wx.DefaultSize, wx.Size( 350,250 ) )
