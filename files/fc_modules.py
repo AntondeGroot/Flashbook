@@ -39,9 +39,8 @@ def buttonCorrect(self):
     if self.index > (self.nr_questions-1): 
         self.index = (self.nr_questions-1)
         f2.RemoveStats(self)
-        ctypes.windll.user32.MessageBoxW(0, "Your score {}%".format(round(float(self.score)/self.nr_questions*100,1)), "Result", 1)
-        self.runprogram = False
-    
+        ctypes.windll.user32.MessageBoxW(0, "Your score is: {}%".format(round(float(self.score)/self.nr_questions*100,1)), "Result", 1)     
+        self.runprogram = False 
     self.m_Score21.SetValue("{} %".format(round(float(self.score)/self.nr_questions*100,1)))     
     self.m_CurrentPage21.SetValue("{}".format(self.index+1))
     # update stats
@@ -52,7 +51,11 @@ def buttonCorrect(self):
     if self.runprogram == True: 
         f2.displaycard(self)
         f2.SwitchBitmap(self)
-
+    if self.runprogram == False:
+        self.m_Score21.SetValue("")     
+        self.m_CurrentPage21.SetValue("")
+        self.m_TotalPages21.SetValue("")
+        
 def buttonWrong(self):
     matplotlib.pyplot.close('all') # otherwise too many pyplot figures will be opened -> memory
     f2.clearbitmap(self)
@@ -66,7 +69,6 @@ def buttonWrong(self):
         self.runprogram = False
     if self.score > self.nr_questions+1:
         self.score = self.nr_questions
-
     self.m_Score21.SetValue("{} %".format(round(float(self.score)/self.nr_questions*100,1)))      
     self.m_CurrentPage21.SetValue(str(self.index+1))
     
@@ -79,8 +81,11 @@ def buttonWrong(self):
         f2.displaycard(self)
         f2.SwitchBitmap(self)
     f2.SetScrollbars(self)
-    
-    
+    if self.runprogram == False:
+        self.m_Score21.SetValue("")     
+        self.m_CurrentPage21.SetValue("")
+        self.m_TotalPages21.SetValue("")
+        
 def switchCard(self):
     #matplotlib.pyplot.close('all') # otherwise too many pyplot figures will be opened -> memory
     f2.clearbitmap(self)
