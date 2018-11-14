@@ -10,7 +10,6 @@ import PIL
 import wx
 import os
 import print_functions as f
-
 import json
 import re
 import wx
@@ -18,10 +17,87 @@ import win32clipboard
 from win32api import GetSystemMetrics
 from PIL import Image
 import ctypes
+import program
 datadir = os.getenv("LOCALAPPDATA")
 dir0 = datadir + r"\FlashBook"
 # create settings folder for debugging
 
+def import_screenshot(self,event):
+    win32clipboard.OpenClipboard()
+    print(f"book = {self.bookname}")
+    if hasattr(self,"bookname"):
+        if self.bookname != '':
+            try:
+                if win32clipboard.IsClipboardFormatAvailable(win32clipboard.CF_DIB):# Device Independent Bitmap
+                    print("PrtScr available")
+                    data = win32clipboard.GetClipboardData(win32clipboard.CF_DIB)
+                    win32clipboard.CloseClipboard()
+                    ### convert bytes to PIL Image
+                    try:                            # since I regularly work with 2 monitors: check if the processing makes sense for 2 monitors, else chose 1 monitor.
+                        img = Image.frombytes('RGBA', (int(GetSystemMetrics(0))*2, int(GetSystemMetrics(1))), data)
+                        # the bytestream from win32 is from a Device Independent Bitmap, i.e.'RGBquad', meaning that it is not RGBA but BGRA coded:
+                        b,g,r,a = img.split() 
+                        image = Image.merge("RGB", (r, g, b))
+                        image = image.rotate(180) # image is otherwise flipped and rotated
+                        image = image.transpose(Image.FLIP_LEFT_RIGHT)
+                        image.save(os.path.join(self.dir4,"screenshot.png"))
+                        ### back to wxBitmap
+                        data = image.tobytes()
+                        image3 = wx.Bitmap().FromBuffer(GetSystemMetrics(0)*2,GetSystemMetrics(1),data)
+                    except:
+                        img = Image.frombytes('RGBA', (int(GetSystemMetrics(0)), int(GetSystemMetrics(1))), data)
+                        # the bytestream from win32 is from a Device Independent Bitmap, i.e.'RGBquad', meaning that it is not RGBA but BGRA coded:
+                        b,g,r,a = img.split() 
+                        image = Image.merge("RGB", (r, g, b))
+                        image = image.rotate(180) # image is otherwise flipped and rotated
+                        image = image.transpose(Image.FLIP_LEFT_RIGHT)
+                        image.save(os.path.join(self.dir4,"screenshot.png"))
+                        ### back to wxBitmap
+                        data = image.tobytes()
+                        image3 = wx.Bitmap().FromBuffer(GetSystemMetrics(0),GetSystemMetrics(1),data)
+                    self.backupimage = image3
+                    self.m_bitmap4.SetBitmap(image3)
+                    program.SwitchPanel(self,4,None)
+                    
+                else:
+                    ctypes.windll.user32.MessageBoxW(0, "There is no screenshot available\npress PrtScr again\nor press Alt+PrtScr to only copy an active window", "ErrorMessage", 1)
+            except:
+                ctypes.windll.user32.MessageBoxW(0, "There is no screenshot available\npress PrtScr again\nor press Alt+PrtScr to only copy an active window", "ErrorMessage", 1)
+        else:
+            ctypes.windll.user32.MessageBoxW(0, "Please open a book first", "ErrorMessage", 1)
+    try:
+        win32clipboard.CloseClipboard()
+    except:
+        pass
+
+
+
+
+def print_preview(self,event): 
+    program.run_print(self, event)
+    #resize        
+    panelwidth = round(float(self.m_panel32.GetSize()[1])/1754.0*1240.0)
+    panelheight = self.m_panel32.GetSize()[1]
+    self.allimages_v = self.allimages_v[0].resize((panelwidth, panelheight), PIL.Image.ANTIALIAS)
+    
+    image2 = wx.Image( self.allimages_v.size)
+    image2.SetData( self.allimages_v.tobytes() )
+    bitmapimage = wx.Bitmap(image2)
+    self.m_bitmap3.SetBitmap(bitmapimage)
+    print(self.m_panel32.GetSize())
+    self.Layout()
+def preview_refresh(self):
+    
+    notes2paper(self)
+    panelwidth = round(float(self.m_panel32.GetSize()[1])/1754.0*1240.0)
+    panelheight = self.m_panel32.GetSize()[1]
+    self.allimages_v = self.allimages_v[0].resize((panelwidth, panelheight), PIL.Image.ANTIALIAS) 
+    image2 = wx.Image( self.allimages_v.size)
+    image2.SetData( self.allimages_v.tobytes() )
+    bitmapimage = wx.Bitmap(image2)
+    self.m_bitmap3.SetBitmap(bitmapimage)
+    print(self.m_panel32.GetSize())
+    self.Layout()
 def notes2paper(self):
     #initiate
     import print_functions as f
