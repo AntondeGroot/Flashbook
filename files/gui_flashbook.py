@@ -162,7 +162,7 @@ class MyFrame ( wx.Frame ):
 		bSizer2 = wx.BoxSizer( wx.VERTICAL )
 		
 		self.m_toolBar1 = wx.ToolBar( self.panel11, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TB_HORIZONTAL ) 
-		self.m_dirPicker11 = wx.DirPickerCtrl( self.m_toolBar1, wx.ID_ANY, wx.EmptyString, u"Select a folder", wx.DefaultPosition, wx.DefaultSize, wx.DIRP_DEFAULT_STYLE )
+		self.m_dirPicker11 = wx.DirPickerCtrl( self.m_toolBar1, wx.ID_ANY, wx.EmptyString, u"Select a folder", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.m_toolBar1.AddControl( self.m_dirPicker11 )
 		self.m_toolPlus11 = self.m_toolBar1.AddTool( wx.ID_ANY, u"plus", wx.Bitmap( path_add, wx.BITMAP_TYPE_ANY ), wx.NullBitmap, wx.ITEM_NORMAL, wx.EmptyString, wx.EmptyString, None ) 
 		
@@ -253,13 +253,13 @@ class MyFrame ( wx.Frame ):
 		bSizer3.Add( self.m_textCtrl2, 0, wx.ALL, 5 )
 		
 		self.m_enterselection = wx.Button( self.panel11, wx.ID_ANY, u"Enter Selection", wx.DefaultPosition, wx.DefaultSize, 0 )
-		self.m_enterselection.SetToolTipString( u"shortcut: middle mouse button" )
+		self.m_enterselection.SetToolTip( u"shortcut: middle mouse button" )
 		
 		bSizer3.Add( self.m_enterselection, 0, wx.ALL, 5 )
 		
 		self.m_toolStitch = wx.BitmapButton( self.panel11, wx.ID_ANY, wx.NullBitmap, wx.DefaultPosition, wx.Size( 27,27 ), wx.BU_AUTODRAW )
 		self.m_toolStitch.SetDefault() 
-		self.m_toolStitch.SetToolTipString( u"shortcut: numpad 0 / Home\ndirection in which notes are taken\ncan be used to create a mozaic" )
+		self.m_toolStitch.SetToolTip( u"shortcut: numpad 0 / Home\ndirection in which notes are taken\ncan be used to create a mozaic" )
 		
 		bSizer3.Add( self.m_toolStitch, 0, wx.ALL, 5 )
 		
@@ -267,7 +267,7 @@ class MyFrame ( wx.Frame ):
 		self.m_staticText32.Wrap( -1 )
 		self.m_staticText32.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), 70, 90, 92, False, wx.EmptyString ) )
 		self.m_staticText32.SetForegroundColour( wx.SystemSettings.GetColour( wx.SYS_COLOUR_HIGHLIGHT ) )
-		self.m_staticText32.SetToolTipString( u"V is for vertical mode.\nH is for horizontal mode\nin case you want to select multiple sentences." )
+		self.m_staticText32.SetToolTip( u"V is for vertical mode.\nH is for horizontal mode\nin case you want to select multiple sentences." )
 		
 		bSizer3.Add( self.m_staticText32, 0, wx.ALL, 10 )
 		
@@ -278,7 +278,7 @@ class MyFrame ( wx.Frame ):
 		bSizer3.Add( self.m_btnScreenshot, 0, wx.ALL, 5 )
 		
 		self.m_resetselection = wx.Button( self.panel11, wx.ID_ANY, u"Reset Selection", wx.DefaultPosition, wx.DefaultSize, 0 )
-		self.m_resetselection.SetToolTipString( u"shortcut: right mouse button" )
+		self.m_resetselection.SetToolTip( u"shortcut: right mouse button" )
 		
 		bSizer3.Add( self.m_resetselection, 0, wx.ALL, 5 )
 		
@@ -297,7 +297,7 @@ class MyFrame ( wx.Frame ):
 		bSizer21 = wx.BoxSizer( wx.VERTICAL )
 		
 		self.m_toolBar2 = wx.ToolBar( self.panel12, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TB_HORIZONTAL ) 
-		self.m_dirPicker12 = wx.DirPickerCtrl( self.m_toolBar2, wx.ID_ANY, wx.EmptyString, u"Select a folder", wx.DefaultPosition, wx.DefaultSize, wx.DIRP_DEFAULT_STYLE )
+		self.m_dirPicker12 = wx.DirPickerCtrl( self.m_toolBar2, wx.ID_ANY, wx.EmptyString, u"Select a folder", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.m_toolBar2.AddControl( self.m_dirPicker12 )
 		self.m_toolPlus12 = self.m_toolBar2.AddTool( wx.ID_ANY, u"plus", wx.Bitmap( path_add, wx.BITMAP_TYPE_ANY ), wx.NullBitmap, wx.ITEM_NORMAL, wx.EmptyString, wx.EmptyString, None ) 
 		
@@ -344,7 +344,7 @@ class MyFrame ( wx.Frame ):
 		bSizer21.Add( self.m_staticline21, 0, wx.ALL|wx.EXPAND, 3 )
 		
 		self.m_richText12 = wx.richtext.RichTextCtrl( self.panel12, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0|wx.VSCROLL|wx.HSCROLL|wx.NO_BORDER|wx.WANTS_CHARS )
-		bSizer21.Add( self.m_richText12, 1, wx.EXPAND |wx.ALL, 5 )
+		bSizer21.Add( self.m_richText12, 1, wx.EXPAND |wx.ALL, 10 )
 		
 		
 		self.panel12.SetSizer( bSizer21 )
@@ -424,12 +424,12 @@ class MyFrame ( wx.Frame ):
 		bSizer31 = wx.BoxSizer( wx.HORIZONTAL )
 		
 		self.m_buttonCorrect = wx.Button( self.panel21, wx.ID_ANY, u"Correct", wx.DefaultPosition, wx.DefaultSize, 0 )
-		self.m_buttonCorrect.SetToolTipString( u"shortcut: left mouse button / left arrow key" )
+		self.m_buttonCorrect.SetToolTip( u"shortcut: left mouse button / left arrow key" )
 		
 		bSizer31.Add( self.m_buttonCorrect, 1, wx.ALL|wx.EXPAND|wx.RIGHT, 5 )
 		
 		self.m_buttonWrong = wx.Button( self.panel21, wx.ID_ANY, u"Wrong", wx.DefaultPosition, wx.DefaultSize, 0 )
-		self.m_buttonWrong.SetToolTipString( u"shortcut: right mouse click / right arrow key" )
+		self.m_buttonWrong.SetToolTip( u"shortcut: right mouse click / right arrow key" )
 		
 		bSizer31.Add( self.m_buttonWrong, 1, wx.ALL|wx.EXPAND|wx.LEFT, 5 )
 		
@@ -448,7 +448,7 @@ class MyFrame ( wx.Frame ):
 		bSizer22 = wx.BoxSizer( wx.VERTICAL )
 		
 		self.m_richText22 = wx.richtext.RichTextCtrl( self.panel22, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0|wx.VSCROLL|wx.HSCROLL|wx.NO_BORDER|wx.WANTS_CHARS )
-		bSizer22.Add( self.m_richText22, 1, wx.EXPAND |wx.ALL, 0 )
+		bSizer22.Add( self.m_richText22, 1, wx.EXPAND |wx.ALL, 15 )
 		
 		
 		self.panel22.SetSizer( bSizer22 )
@@ -1199,3 +1199,4 @@ class MyDialog2 ( wx.Dialog ):
 	def m_radioRandomOnRadioButton( self, event ):
 		event.Skip()
 	
+
