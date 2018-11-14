@@ -24,7 +24,7 @@ import wx._html
 import gui_flashbook as gui
 import ctypes # pop up messages
 #------------------------------------------------------------------- modules
-import program 
+import program as p
 import fb_initialization as ini 
 import fc_initialization as ini2 
 import print_initialization as ini3
@@ -142,92 +142,9 @@ def initialize(self):
             print("- {}".format(name))
         print("")
     print("=========================================================================================")
-def set_richtext(self):
-    self.txt = self.m_richText12
-    self.txt.BeginBold()
-    self.txt.BeginFontSize(16)
-    self.txt.WriteText("  Getting Started                                                       ")
-    self.txt.EndFontSize()
-    self.txt.EndBold()
-    self.txt.WriteText("                                                                                 (left click to close window)\n")
-    self.txt.BeginFontSize(12)
-    self.txt.WriteText("        This will allow you to make flashcards out of the notes you take.\n")
-    self.txt.WriteText("        1) Convert a pdf to jpg files, using a free online webpage of your choise\n"
-                      "        2) Click in the menu 'open/Flashbook folder' to open the correct Windows folder\n"
-                      "        3) Place all the pictures in a map named after the book or course in said folder\n"
-                      '        4) Then click on "Browse" in the menubar and open the book that you would like to read\n\n' )
-    self.txt.EndFontSize()
-    self.txt.BeginBold()
-    self.txt.BeginFontSize(16)
-    self.txt.WriteText("  Taking Notes:\n")
-    self.txt.EndFontSize()
-    self.txt.EndBold()
-    
-    imagepath = os.path.join(self.dir7,"mouseicon.png")
-    image = PIL.Image.open(imagepath, mode='r').convert('RGB')
-    image2 = wx.Image( image.size)
-    image2.SetData( image.tobytes() )
-    self.txt.WriteImage(wx.Bitmap(image2))
-    self.txt.Newline()
-    
-    self.txt.BeginFontSize(12)   
-    self.txt.WriteText( "        1) You can type a Question and an Answer in the textbox at the bottom, this is LaTeX compatible if you include $$\n"
-                        "        2) you can take multiple selections across pages, all the rectangles you draw will be combined into 1 Question and 1 Answer card\n"
-                        "        3) Only when you confirm your selection during the Answer mode will everything be saved\n"
-                        "        4) You switch modes when you confirm your selection\n"
-                        "        5) 'Reset selection' resets both Question and Answer cards\n")
-    
-    imagepath = os.path.join(self.dir7,"arrowhelp.png")
-    image = PIL.Image.open(imagepath, mode='r').convert('RGB')
-    image2 = wx.Image( image.size)
-    image2.SetData( image.tobytes() )
-    
-    #self.txt.Newline()
-    self.txt.WriteText("\n              ")
-    self.txt.WriteImage(wx.Bitmap(image2))
-    self.txt.WriteText("  Indicates in which direction the notes are taken, you can use this to create a mozaic.\n         E.g. when a sentence ends on a differen line but you want it to appear as one line in your notes\n         When the arrow point down, you paste a selection on another 'row'. If it points to the right it just puts it behind the last selection you made.")
-    self.txt.EndFontSize()
-    self.txt.BeginFontSize(16) 
-    self.txt.BeginBold()
-    self.txt.WriteText( "\n\n        N.B.\n")
-    self.txt.EndBold()
-    self.txt.EndFontSize()
-    self.txt.BeginFontSize(12)
-    self.txt.WriteText( "        Whenever you try to type something in the textbox and want to move the 'text cursor': make sure that the mouse is placed on the textbox.\n "
-                        "        Otherwise you'll switch pages when you try to move the 'text cursor' with the arrow keys. ")
-    self.txt.EndFontSize()
-    self.Layout()
-    
-def set_richtext2(self):
-    self.txt2 = self.m_richText22
-    self.txt2.BeginBold()
-    self.txt2.EndBold()
-    self.txt2.WriteText("                                                                                                                                                                  (left click to close window)\n")
 
-    self.txt2.EndFontSize()
-    self.txt2.BeginBold()
-    self.txt2.BeginFontSize(16)
-    self.txt2.WriteText("  Using FlashCard:\n")
-    self.txt2.EndFontSize()
-    self.txt2.EndBold()
-    imagepath = os.path.join(self.dir7,"mouseicon2.png")
-    image = PIL.Image.open(imagepath, mode='r').convert('RGB')
-    image2 = wx.Image( image.size)
-    image2.SetData( image.tobytes() )
-    self.txt2.WriteImage(wx.Bitmap(image2))
-    imagepath = os.path.join(self.dir7,"arrowkeys.png")
-    image = PIL.Image.open(imagepath, mode='r').convert('RGB')
-    image2 = wx.Image( image.size)
-    image2.SetData( image.tobytes() )
-    self.txt2.WriteImage(wx.Bitmap(image2))        
-    self.txt2.BeginFontSize(12)
-    self.txt2.WriteText('\n        1) open with "browse" a file with the bookname you want to study\n' 
-                       "        2) a pop-up window will appear with settings, the settings will be implemented if you close the window.\n"
-                       "        3) the total number of questions = 'multiplier' x 'nr questions', in case you want test a subject multiple times \n"
-                       "        4) your progress is saved so that you can stop any time you want and continue later on.\n" 
-                       "        5) be sure to hold your cursor over the image when you use the mouse short cuts")
-    self.txt2.EndFontSize()
-    self.Layout()    
+    
+ 
 
 def settings_create(self):
     if not os.path.exists(self.dirsettings+r"\settings.txt"):   
@@ -236,113 +153,6 @@ def settings_create(self):
 def settings_set(self):
     with open(self.dirsettings+r"\settings.txt", 'w') as file:
         file.write(json.dumps({'debugmode' : 0, 'pdfmultiplier': self.pdfmultiplier,'QAline_thickness' : self.QAline_thickness, 'pdfline_thickness': self.pdfline_thickness, 'QAline_color' : self.QAline_color, 'pdfline_color' : self.pdfline_color, 'QAline_bool': self.QAline_bool,'pdfline_bool': self.pdfline_bool}))       
-
-def SwitchPanel(self,n,m):
-    if n == 0:
-        self.panel0.Show()
-        self.panel1.Hide()
-        self.panel2.Hide()
-        self.panel3.Hide()
-        self.panel4.Hide()
-        self.Layout() # force refresh of windows
-    elif n == 1:
-        self.panel0.Hide()
-        self.panel1.Show()
-        self.panel2.Hide()
-        self.panel3.Hide()
-        self.panel4.Hide()
-        if m == 0:
-            self.panel11.Show()
-            self.panel12.Hide()
-        else:
-            self.panel11.Hide()
-            self.panel12.Show()
-        self.Layout() # force refresh of windows
-    elif n == 2:
-        self.panel0.Hide()
-        self.panel1.Hide()
-        self.panel2.Show()
-        self.panel3.Hide()
-        self.panel4.Hide()
-        if m == 0:
-            self.panel21.Show()
-            self.panel22.Hide()
-        else:
-            self.panel21.Hide()
-            self.panel22.Show()
-        self.Layout() # force refresh of windows
-    elif n ==3:
-        self.panel0.Hide()
-        self.panel1.Hide()
-        self.panel2.Hide()
-        self.panel3.Show()
-        self.panel4.Hide()
-        self.Layout()
-    elif n ==4:
-        self.panel0.Hide()
-        self.panel1.Hide()
-        self.panel2.Hide()
-        self.panel3.Hide()
-        self.panel4.Show()
-        self.Layout()
-        
-
-
-
-def set_bitmapbuttons(self):
-    image = PIL.Image.open(self.path_fb, mode='r')
-    image = image.resize((105, 105), PIL.Image.ANTIALIAS) 
-    image2 = wx.Image( image.size)
-    image2.SetData( image.tobytes() )
-    self.m_OpenFlashbook.SetBitmap(wx.Bitmap(image2))
-    
-    image = PIL.Image.open(self.path_fc, mode='r')
-    image = image.resize((105, 105), PIL.Image.ANTIALIAS) 
-    image2 = wx.Image( image.size)
-    image2.SetData( image.tobytes() )
-    self.m_OpenFlashcard.SetBitmap(wx.Bitmap(image2))
-    
-    image = PIL.Image.open(self.path_pr, mode='r')
-    image = image.resize((105, 105), PIL.Image.ANTIALIAS) 
-    image2 = wx.Image( image.size)
-    image2.SetData( image.tobytes() )
-    self.m_OpenPrint.SetBitmap(wx.Bitmap(image2))
-    
-    # stich
-    
-    image = PIL.Image.open(self.path_arrow, mode='r')
-    image = image.resize((32, 32))     
-    image2 = wx.Image( image.size)
-    image2.SetData( image.tobytes() )
-    self.m_toolStitch.SetBitmap(wx.Bitmap(self.path_arrow2))
-    #
-    
-    
-def print_preview(self,event): 
-    program.run_print(self, event)
-    #resize        
-    panelwidth = round(float(self.m_panel32.GetSize()[1])/1754.0*1240.0)
-    panelheight = self.m_panel32.GetSize()[1]
-    self.allimages_v = self.allimages_v[0].resize((panelwidth, panelheight), PIL.Image.ANTIALIAS)
-    
-    image2 = wx.Image( self.allimages_v.size)
-    image2.SetData( self.allimages_v.tobytes() )
-    bitmapimage = wx.Bitmap(image2)
-    self.m_bitmap3.SetBitmap(bitmapimage)
-    print(self.m_panel32.GetSize())
-    self.Layout()
-def preview_refresh(self):
-    
-    m3.notes2paper(self)
-    panelwidth = round(float(self.m_panel32.GetSize()[1])/1754.0*1240.0)
-    panelheight = self.m_panel32.GetSize()[1]
-    self.allimages_v = self.allimages_v[0].resize((panelwidth, panelheight), PIL.Image.ANTIALIAS) 
-    image2 = wx.Image( self.allimages_v.size)
-    image2.SetData( self.allimages_v.tobytes() )
-    bitmapimage = wx.Bitmap(image2)
-    self.m_bitmap3.SetBitmap(bitmapimage)
-    print(self.m_panel32.GetSize())
-    self.Layout()
 
 """
 ###############################################################################
@@ -359,19 +169,19 @@ class MainFrame(gui.MyFrame):
         #initialize parent class
         gui.MyFrame.__init__(self,parent)
         
-        set_richtext(self)  # text for help
-        set_richtext2(self) # text for help     
+        m.set_richtext(self)  # text for help
+        m2.set_richtext2(self) # text for help     
         self.Maximize(True) # open the app window maximized
         thr3 = threading.Thread(target = initialize, name = 'threadINI', args = (self, ))
         thr3.run()
         
         self.stitchmode_v = True
         self.FilePickEvent = True 
-        set_bitmapbuttons(self)
+        p.set_bitmapbuttons(self)
         # icon
         iconimage = wx.Icon(self.path_icon, type=wx.BITMAP_TYPE_ANY, desiredWidth=-1, desiredHeight=-1)
         self.SetIcon(iconimage)
-        SwitchPanel(self,0,0)
+        p.SwitchPanel(self,0,0)
         self.printpreview = True
         
     #%% Panel selection
@@ -385,21 +195,21 @@ class MainFrame(gui.MyFrame):
         # otherwise you get a bordered empty bitmap. Enable the border only when there is a bitmap
         self.m_bitmapScroll.SetWindowStyleFlag(False) 
         setup_sources(self)
-        SwitchPanel(self,1,0)      
+        p.SwitchPanel(self,1,0)      
         m.SetKeyboardShortcuts(self)
-        program.run_flashbook(self)
+        p.run_flashbook(self)
         
     def m_OpenFlashcardOnButtonClick( self, event ):
-        SwitchPanel(self,2,0)
-        program.run_flashcard(self)
+        p.SwitchPanel(self,2,0)
+        p.run_flashcard(self)
         
     def m_OpenPrintOnButtonClick(self,event):
-        thr1 = threading.Thread(target = SwitchPanel, name = 'thread1', args = (self,3,None ))
+        thr1 = threading.Thread(target = p.SwitchPanel, name = 'thread1', args = (self,3,None ))
         thr1.run()
         with wx.FileDialog(self, "Choose which file to print", wildcard="*.tex",style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST) as fileDialog:
             fileDialog.SetPath(self.dir1+'\.')
             if fileDialog.ShowModal() == wx.ID_CANCEL:
-                SwitchPanel(self,0,0) 
+                p.SwitchPanel(self,0,0) 
                 return     # the user changed their mind
             else:
                 self.fileDialog = fileDialog
@@ -411,7 +221,7 @@ class MainFrame(gui.MyFrame):
                 self.m_lineWqa.SetValue(str(self.QAline_thickness))
                 self.m_lineQA.SetValue(self.QAline_bool)
                 self.m_linePDF.SetValue(self.pdfline_bool)            
-                thr2 = threading.Thread(target = print_preview, name = 'thread2', args = (self,event ))
+                thr2 = threading.Thread(target = m3.print_preview, name = 'thread2', args = (self,event ))
                 thr2.run()
                 print(self.image)
                 
@@ -457,7 +267,7 @@ class MainFrame(gui.MyFrame):
         os.system("explorer {}".format(self.dir3)) 
 	
     def m_menuItemBackToMainOnMenuSelection( self, event ):
-        SwitchPanel(self,0,0)  
+        p.SwitchPanel(self,0,0)  
         
     def m_menuPDFfolderOnMenuSelection( self, event ):
         os.system("explorer {}".format(self.dirpdf)) 
@@ -475,58 +285,13 @@ class MainFrame(gui.MyFrame):
             self.Layout()
             
     def m_richText12OnLeftDown( self, event ):
-        SwitchPanel(self,1,0) 
+        p.SwitchPanel(self,1,0) 
 	
     #%% flashbook
     " flashbook "
     # import screenshot #
     def m_btnScreenshotOnButtonClick( self, event ):
-        win32clipboard.OpenClipboard()
-        print(f"book = {self.bookname}")
-        if hasattr(self,"bookname"):
-            if self.bookname != '':
-                try:
-                    if win32clipboard.IsClipboardFormatAvailable(win32clipboard.CF_DIB):# Device Independent Bitmap
-                        print("PrtScr available")
-                        data = win32clipboard.GetClipboardData(win32clipboard.CF_DIB)
-                        win32clipboard.CloseClipboard()
-                        ### convert bytes to PIL Image
-                        try:                            # since I regularly work with 2 monitors: check if the processing makes sense for 2 monitors, else chose 1 monitor.
-                            img = Image.frombytes('RGBA', (int(GetSystemMetrics(0))*2, int(GetSystemMetrics(1))), data)
-                            # the bytestream from win32 is from a Device Independent Bitmap, i.e.'RGBquad', meaning that it is not RGBA but BGRA coded:
-                            b,g,r,a = img.split() 
-                            image = Image.merge("RGB", (r, g, b))
-                            image = image.rotate(180) # image is otherwise flipped and rotated
-                            image = image.transpose(Image.FLIP_LEFT_RIGHT)
-                            image.save(os.path.join(self.dir4,"screenshot.png"))
-                            ### back to wxBitmap
-                            data = image.tobytes()
-                            image3 = wx.Bitmap().FromBuffer(GetSystemMetrics(0)*2,GetSystemMetrics(1),data)
-                        except:
-                            img = Image.frombytes('RGBA', (int(GetSystemMetrics(0)), int(GetSystemMetrics(1))), data)
-                            # the bytestream from win32 is from a Device Independent Bitmap, i.e.'RGBquad', meaning that it is not RGBA but BGRA coded:
-                            b,g,r,a = img.split() 
-                            image = Image.merge("RGB", (r, g, b))
-                            image = image.rotate(180) # image is otherwise flipped and rotated
-                            image = image.transpose(Image.FLIP_LEFT_RIGHT)
-                            image.save(os.path.join(self.dir4,"screenshot.png"))
-                            ### back to wxBitmap
-                            data = image.tobytes()
-                            image3 = wx.Bitmap().FromBuffer(GetSystemMetrics(0),GetSystemMetrics(1),data)
-                        self.backupimage = image3
-                        self.m_bitmap4.SetBitmap(image3)
-                        SwitchPanel(self,4,None)
-                        
-                    else:
-                        ctypes.windll.user32.MessageBoxW(0, "There is no screenshot available\npress PrtScr again\nor press Alt+PrtScr to only copy an active window", "ErrorMessage", 1)
-                except:
-                    ctypes.windll.user32.MessageBoxW(0, "There is no screenshot available\npress PrtScr again\nor press Alt+PrtScr to only copy an active window", "ErrorMessage", 1)
-            else:
-                ctypes.windll.user32.MessageBoxW(0, "Please open a book first", "ErrorMessage", 1)
-        try:
-            win32clipboard.CloseClipboard()
-        except:
-            pass
+        m3.import_screenshot(self,event)
         
     def m_textCtrl2OnEnterWindow( self, event ):
         print("entered window")
@@ -544,7 +309,7 @@ class MainFrame(gui.MyFrame):
     
     def m_btnImportScreenshotOnButtonClick( self, event ):
         self.stayonpage = True
-        SwitchPanel(self,1,0)
+        p.SwitchPanel(self,1,0)
         
     def m_bitmap4OnLeftDown( self, event ):
         self.panel4_pos = self.m_bitmap4.ScreenToClient(wx.GetMousePosition())
@@ -612,7 +377,7 @@ class MainFrame(gui.MyFrame):
         m.bitmapleftup(self,event)   
 	# help menu #==============================================================
     def m_richText22OnLeftDown( self, event ):
-        SwitchPanel(self,2,0) 
+        p.SwitchPanel(self,2,0) 
     
     
     
@@ -643,41 +408,41 @@ class MainFrame(gui.MyFrame):
     def m_sliderPDFsizeOnScrollChanged(self,event):
         self.pdfmultiplier = float(self.m_sliderPDFsize.GetValue())/100
         settings_set(self)
-        preview_refresh(self)
+        m3.preview_refresh(self)
     
     def m_lineQAOnCheckBox( self, event ):
         self.FilePickEvent = False
         self.QAline_bool = self.m_lineQA.GetValue()
         settings_set(self)
-        preview_refresh(self)
+        m3.preview_refresh(self)
         
     def m_linePDFOnCheckBox( self, event ):
         self.FilePickEvent = False
         self.pdfline_bool = self.m_linePDF.GetValue()
         settings_set(self)
-        preview_refresh(self)
+        m3.preview_refresh(self)
     
     def m_colorQAlineOnColourChanged( self, event ):
         self.FilePickEvent = False
         RGB = self.m_colorQAline.GetColour()
         self.QAline_color  = (RGB.Red(),RGB.Green(),RGB.Blue())    
         settings_set(self)
-        preview_refresh(self)
+        m3.preview_refresh(self)
         
     def m_colorPDFlineOnColourChanged( self, event ):
         self.FilePickEvent = False
         RGB = self.m_colorPDFline.GetColour()
         self.pdfline_color  = (RGB.Red(),RGB.Green(),RGB.Blue())    
         settings_set(self)
-        preview_refresh(self)
+        m3.preview_refresh(self)
         
         
     def m_PrintFinalOnButtonClick( self, event ):
         self.printpreview = False
         self.FilePickEvent = False
-        preview_refresh(self)
+        m3.preview_refresh(self)
         self.printpreview = True
-        SwitchPanel(self,0,0)
+        p.SwitchPanel(self,0,0)
         ctypes.windll.user32.MessageBoxW(0, " your pdf has been created\n open in the menubar: `Open/Open PDF-notes Folder` to\n open the folder in Windows explorer ", "Message", 1)
     def m_lineWpdfOnText( self, event ):
         try:
@@ -686,7 +451,7 @@ class MainFrame(gui.MyFrame):
             if int(self.m_lineWpdf.GetValue()) >= 0:
                 self.pdfline_thickness = int(self.m_lineWpdf.GetValue())
                 settings_set(self)
-                preview_refresh(self)
+                m3.preview_refresh(self)
         except:
             print("Error: invalid entry")
     def m_lineWqaOnText( self, event ):
@@ -696,7 +461,7 @@ class MainFrame(gui.MyFrame):
             if int(self.m_lineWqa.GetValue()) >= 0:
                 self.QAline_thickness = int(self.m_lineWqa.GetValue())
                 settings_set(self)
-                preview_refresh(self)
+                m3.preview_refresh(self)
         except:
             print("Error: invalid entry")
         
