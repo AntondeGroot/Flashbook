@@ -14,7 +14,8 @@ org = [
        '.AddLabelTool','.AddTool',
        '.AppendItem','.Append',
        '.SetSizeHintsSz','.SetSizeHints',
-       '50, 1, 100','data, 1, data'
+       '50, 1, 100','data, 1, data',
+       'SetToolTipString','SetToolTip'
        ]
 a = []
 for i in read:  
