@@ -344,7 +344,7 @@ class MyFrame ( wx.Frame ):
 		bSizer21.Add( self.m_staticline21, 0, wx.ALL|wx.EXPAND, 3 )
 		
 		self.m_richText12 = wx.richtext.RichTextCtrl( self.panel12, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0|wx.VSCROLL|wx.HSCROLL|wx.NO_BORDER|wx.WANTS_CHARS )
-		bSizer21.Add( self.m_richText12, 1, wx.EXPAND |wx.ALL, 10 )
+		bSizer21.Add( self.m_richText12, 1, wx.EXPAND |wx.ALL, 15 )
 		
 		
 		self.panel12.SetSizer( bSizer21 )
