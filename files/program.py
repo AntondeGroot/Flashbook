@@ -321,6 +321,7 @@ def run_print(self,event):
     
 def SwitchPanel(self,n,m):
     if n == 0:
+        self.m_menuHelp.Enable(False)
         self.panel0.Show()
         self.panel1.Hide()
         self.panel2.Hide()
@@ -328,6 +329,7 @@ def SwitchPanel(self,n,m):
         self.panel4.Hide()
         self.Layout() # force refresh of windows
     elif n == 1:
+        self.m_menuHelp.Enable(True)
         self.panel0.Hide()
         self.panel1.Show()
         self.panel2.Hide()
@@ -341,6 +343,7 @@ def SwitchPanel(self,n,m):
             self.panel12.Show()
         self.Layout() # force refresh of windows
     elif n == 2:
+        self.m_menuHelp.Enable(True)
         self.panel0.Hide()
         self.panel1.Hide()
         self.panel2.Show()
@@ -354,6 +357,7 @@ def SwitchPanel(self,n,m):
             self.panel22.Show()
         self.Layout() # force refresh of windows
     elif n ==3:
+        self.m_menuHelp.Enable(False)
         self.panel0.Hide()
         self.panel1.Hide()
         self.panel2.Hide()
@@ -361,6 +365,7 @@ def SwitchPanel(self,n,m):
         self.panel4.Hide()
         self.Layout()
     elif n ==4:
+        self.m_menuHelp.Enable(True)
         self.panel0.Hide()
         self.panel1.Hide()
         self.panel2.Hide()
