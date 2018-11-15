@@ -167,8 +167,7 @@ class MainFrame(gui.MyFrame):
         setup_sources(self)
         
         #initialize parent class
-        gui.MyFrame.__init__(self,parent)
-        
+        gui.MyFrame.__init__(self,parent)        
         m.set_richtext(self)  # text for help
         m2.set_richtext2(self) # text for help     
         self.Maximize(True) # open the app window maximized
