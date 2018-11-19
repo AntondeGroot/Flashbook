@@ -2,7 +2,7 @@
 
 1. download all the files in the `files` folder
 1. go in command prompt to the relevant folder
-1. create a .spec file by typing: `pyi-makespec flashbook.py --icon=book.ico`
+1. create a .spec file by typing: `pyi-makespec --noconsole flashbook.py --icon=book.ico`
 1. then add to the created .spec file:
 ```
 import sys
@@ -11,7 +11,7 @@ block_cipher = None
 ```
 at the beginning of the file
 
-4. run pyinstaller `pyinstaller flashbook.spec`  
+4. run pyinstaller `pyinstaller flashbook.spec` 
 
 --------------------------------
 ## Errors: 
