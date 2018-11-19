@@ -12,7 +12,6 @@ block_cipher = None
 at the beginning of the file
 
 4. run pyinstaller `pyinstaller flashbook.spec`  
-5. do the same for the flashcard files
 
 --------------------------------
 ## Errors: 
