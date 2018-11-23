@@ -284,8 +284,9 @@ def panel4_bitmapleftup(self,event):
 
    
 def selectionentered(self,event):
-    try:
-        if hasattr(self,'bookname') and self.bookname != '':
+    
+    if hasattr(self,'bookname') and self.bookname != '':
+        if self.m_textCtrl2.GetValue() != '' or len(self.pic_question)>0:
             if self.questionmode == True:
                 # change mode to answer
                 self.usertext = self.m_textCtrl2.GetValue()
@@ -367,8 +368,6 @@ def selectionentered(self,event):
                 f.ResetQuestions(self)
             #except:
             #    print(colored("Error: cannot enter selection",'red'))
-    except:
-        print("Error: you cannot enter your selection (fb_modules)")
         
 def mousewheel(self,event):
     scrollWin = self.m_scrolledWindow1
