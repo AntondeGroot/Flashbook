@@ -23,7 +23,7 @@ The program will open with the following menu, allowing you to chose between one
 ## Flashbook
 ![alt text](https://github.com/AntondeGroot/Flashbook/blob/master/readme%20images/fb.png)
 
-You can then create your own Q&A cards by selecting areas with you mouse. Once you let your left mouse button go, it will draw a box around your selection. Which can easily be undone by clicking your right mouse button.
+Open a book by pressing on the `browse` button. You can then create your own Q&A cards by selecting areas with you mouse. It will draw a box around your selection. Which can easily be undone by clicking your right mouse button.
 
 ![alt text](https://github.com/AntondeGroot/Flashbook/blob/master/readme%20images/fb_selection.png)
 
