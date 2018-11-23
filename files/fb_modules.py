@@ -516,18 +516,24 @@ def SetKeyboardShortcuts(self):
         print("Error: cannot set Accelerator Table")
         
 
-def RemoveKeyboardShortcuts(self): 
+def RemoveKeyboardShortcuts(self,index): 
     try:
         # remove the arrow keys as shortcut by setting the AcceleratorTable again, but without these keys. This overwrites all previous short cuts
         # combine functions with the id 
         self.Id_enterkey  = wx.NewIdRef()
-        self.Id_stitch    = wx.NewIdRef()      
-        self.Bind( wx.EVT_MENU, self.m_enterselectionOnButtonClick, id = self.Id_enterkey )
-        self.Bind( wx.EVT_MENU, self.m_toolStitchOnButtonClick, id = self.Id_stitch )
-        # combine id with keyboard = now keyboard is connected to functions
-        entries = wx.AcceleratorTable([(wx.ACCEL_NORMAL,  wx.WXK_RETURN, self.Id_enterkey),
-                                      (wx.ACCEL_NORMAL,  wx.WXK_HOME, self.Id_stitch ),
-                                      (wx.ACCEL_NORMAL,  wx.WXK_NUMPAD0, self.Id_stitch )])
+        self.Id_stitch    = wx.NewIdRef()
+        if index == 0:
+            self.Bind( wx.EVT_MENU, self.m_enterselectionOnButtonClick, id = self.Id_enterkey )
+            self.Bind( wx.EVT_MENU, self.m_toolStitchOnButtonClick, id = self.Id_stitch )
+            # combine id with keyboard = now keyboard is connected to functions
+            entries = wx.AcceleratorTable([(wx.ACCEL_NORMAL,  wx.WXK_RETURN, self.Id_enterkey),
+                                          (wx.ACCEL_NORMAL,  wx.WXK_HOME, self.Id_stitch ),
+                                          (wx.ACCEL_NORMAL,  wx.WXK_NUMPAD0, self.Id_stitch )])
+        if index == 1:
+            self.Bind( wx.EVT_MENU, self.m_toolStitchOnButtonClick, id = self.Id_stitch )
+            # combine id with keyboard = now keyboard is connected to functions
+            entries = wx.AcceleratorTable([(wx.ACCEL_NORMAL,  wx.WXK_HOME, self.Id_stitch ),
+                                          (wx.ACCEL_NORMAL,  wx.WXK_NUMPAD0, self.Id_stitch )])
         self.SetAcceleratorTable(entries)
     except:
         print("Error: cannot unset Accelerator Table")
