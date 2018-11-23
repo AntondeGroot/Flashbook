@@ -1445,7 +1445,7 @@
                                                     <property name="resize">Resizable</property>
                                                     <property name="show">1</property>
                                                     <property name="size"></property>
-                                                    <property name="style">wxDIRP_DEFAULT_STYLE</property>
+                                                    <property name="style"></property>
                                                     <property name="subclass">; </property>
                                                     <property name="toolbar_pane">0</property>
                                                     <property name="tooltip"></property>
@@ -1789,12 +1789,12 @@
                                                     <property name="window_name"></property>
                                                     <property name="window_style"></property>
                                                     <event name="OnChar"></event>
-                                                    <event name="OnEnterWindow"></event>
+                                                    <event name="OnEnterWindow">m_CurrentPage11OnEnterWindow</event>
                                                     <event name="OnEraseBackground"></event>
-                                                    <event name="OnKeyDown">m_CurrentPage11OnKeyDown</event>
+                                                    <event name="OnKeyDown"></event>
                                                     <event name="OnKeyUp">m_CurrentPage11OnKeyUp</event>
                                                     <event name="OnKillFocus"></event>
-                                                    <event name="OnLeaveWindow"></event>
+                                                    <event name="OnLeaveWindow">m_CurrentPage11OnLeaveWindow</event>
                                                     <event name="OnLeftDClick"></event>
                                                     <event name="OnLeftDown"></event>
                                                     <event name="OnLeftUp"></event>
@@ -1810,7 +1810,7 @@
                                                     <event name="OnRightUp"></event>
                                                     <event name="OnSetFocus"></event>
                                                     <event name="OnSize"></event>
-                                                    <event name="OnText">m_CurrentPage11OnText</event>
+                                                    <event name="OnText"></event>
                                                     <event name="OnTextEnter"></event>
                                                     <event name="OnTextMaxLen"></event>
                                                     <event name="OnTextURL"></event>
@@ -3729,7 +3729,7 @@
                                                     <property name="resize">Resizable</property>
                                                     <property name="show">1</property>
                                                     <property name="size"></property>
-                                                    <property name="style">wxDIRP_DEFAULT_STYLE</property>
+                                                    <property name="style"></property>
                                                     <property name="subclass">; </property>
                                                     <property name="toolbar_pane">0</property>
                                                     <property name="tooltip"></property>
