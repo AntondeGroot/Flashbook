@@ -162,12 +162,12 @@ def settings_set(self):
 
 class MainFrame(gui.MyFrame):
     #constructor    
-    def __init__(self,parent):
+    def __init__(self,parent): 
         initialize(self)
         setup_sources(self)
         
         #initialize parent class
-        gui.MyFrame.__init__(self,parent)        
+        gui.MyFrame.__init__(self,parent,None) #added superfluous argument, so that WXpython.py can easily add the Dialog Windows (which require an extra argument)         
         m.set_richtext(self)  # text for help
         m2.set_richtext2(self) # text for help     
         self.Maximize(True) # open the app window maximized
@@ -294,7 +294,7 @@ class MainFrame(gui.MyFrame):
         
     def m_textCtrl2OnEnterWindow( self, event ):
         print("entered window")
-        m.RemoveKeyboardShortcuts(self)
+        m.RemoveKeyboardShortcuts(self,0)
 	
     def m_textCtrl2OnLeaveWindow( self, event ):
         m.SetKeyboardShortcuts(self)
@@ -342,8 +342,19 @@ class MainFrame(gui.MyFrame):
         self.stayonpage = False
         m.nextpage(self,event)
 	
-    def m_CurrentPage11OnKeyUp( self, event ):
+    
+    def m_CurrentPage11OnEnterWindow( self, event ):
+        m.RemoveKeyboardShortcuts(self,1)
+        
+    def m_CurrentPage11OnLeaveWindow( self, event ):
+        m.SetKeyboardShortcuts(self)
+        try:
+            self.currentpage = int(self.m_CurrentPage11.GetValue())
+        except:
+            self.currentpage = 1
         m.switchpage(self,event)
+        
+        
     
     def m_bitmapScrollOnMouseWheel( self, event ):
         m.mousewheel(self,event)
