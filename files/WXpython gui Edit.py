@@ -15,7 +15,8 @@ org = [
        '.AppendItem','.Append',
        '.SetSizeHintsSz','.SetSizeHints',
        '50, 1, 100','data, 1, data',
-       'SetToolTipString','SetToolTip'
+       'SetToolTipString','SetToolTip',
+       'def __init__( self, parent )','def __init__( self, parent, data )'
        ]
 a = []
 for i in read:  
