@@ -35,7 +35,7 @@ import wx.richtext
 
 class MyFrame ( wx.Frame ):
 	
-	def __init__( self, parent ):
+	def __init__( self, parent, data ):
 		wx.Frame.__init__ ( self, parent, id = wx.ID_ANY, title = u"FlashBook", pos = wx.DefaultPosition, size = wx.Size( -1,-1 ), style = wx.DEFAULT_FRAME_STYLE|wx.TAB_TRAVERSAL )
 		
 		self.SetSizeHints( wx.DefaultSize, wx.DefaultSize )
@@ -344,7 +344,7 @@ class MyFrame ( wx.Frame ):
 		bSizer21.Add( self.m_staticline21, 0, wx.ALL|wx.EXPAND, 3 )
 		
 		self.m_richText12 = wx.richtext.RichTextCtrl( self.panel12, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0|wx.VSCROLL|wx.HSCROLL|wx.NO_BORDER|wx.WANTS_CHARS )
-		bSizer21.Add( self.m_richText12, 1, wx.EXPAND |wx.ALL, 15 )
+		bSizer21.Add( self.m_richText12, 1, wx.EXPAND |wx.ALL, 5 )
 		
 		
 		self.panel12.SetSizer( bSizer21 )
@@ -448,7 +448,7 @@ class MyFrame ( wx.Frame ):
 		bSizer22 = wx.BoxSizer( wx.VERTICAL )
 		
 		self.m_richText22 = wx.richtext.RichTextCtrl( self.panel22, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0|wx.VSCROLL|wx.HSCROLL|wx.NO_BORDER|wx.WANTS_CHARS )
-		bSizer22.Add( self.m_richText22, 1, wx.EXPAND |wx.ALL, 15 )
+		bSizer22.Add( self.m_richText22, 1, wx.EXPAND |wx.ALL, 0 )
 		
 		
 		self.panel22.SetSizer( bSizer22 )
@@ -705,9 +705,9 @@ class MyFrame ( wx.Frame ):
 		self.Bind( wx.EVT_TOOL, self.m_toolMin11OnToolClicked, id = self.m_toolMin11.GetId() )
 		self.Bind( wx.EVT_TOOL, self.m_toolBack11OnToolClicked, id = self.m_toolBack11.GetId() )
 		self.Bind( wx.EVT_TOOL, self.m_toolNext11OnToolClicked, id = self.m_toolNext11.GetId() )
-		self.m_CurrentPage11.Bind( wx.EVT_KEY_DOWN, self.m_CurrentPage11OnKeyDown )
+		self.m_CurrentPage11.Bind( wx.EVT_ENTER_WINDOW, self.m_CurrentPage11OnEnterWindow )
 		self.m_CurrentPage11.Bind( wx.EVT_KEY_UP, self.m_CurrentPage11OnKeyUp )
-		self.m_CurrentPage11.Bind( wx.EVT_TEXT, self.m_CurrentPage11OnText )
+		self.m_CurrentPage11.Bind( wx.EVT_LEAVE_WINDOW, self.m_CurrentPage11OnLeaveWindow )
 		self.m_checkBox11.Bind( wx.EVT_CHECKBOX, self.m_checkBox11OnCheckBox )
 		self.m_checkBoxCursor11.Bind( wx.EVT_CHECKBOX, self.m_checkBoxCursor11OnCheckBox )
 		self.m_bitmapScroll.Bind( wx.EVT_LEFT_DOWN, self.m_bitmapScrollOnLeftDown )
@@ -833,13 +833,13 @@ class MyFrame ( wx.Frame ):
 	def m_toolNext11OnToolClicked( self, event ):
 		event.Skip()
 	
-	def m_CurrentPage11OnKeyDown( self, event ):
+	def m_CurrentPage11OnEnterWindow( self, event ):
 		event.Skip()
 	
 	def m_CurrentPage11OnKeyUp( self, event ):
 		event.Skip()
 	
-	def m_CurrentPage11OnText( self, event ):
+	def m_CurrentPage11OnLeaveWindow( self, event ):
 		event.Skip()
 	
 	def m_checkBox11OnCheckBox( self, event ):
