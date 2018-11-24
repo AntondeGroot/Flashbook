@@ -8,7 +8,7 @@ try:
     del app
 except:
     pass
-print("Welcome to Flashbook , one moment ...")
+
 #------------------------------------------------------------------- general
 import os
 import json
@@ -56,7 +56,7 @@ try:
 except:
     print("no qwindows.dll module found  (#2)")
             
-#% path to resources: to circumvent needing a spec. file when you use Pyinstaller 
+#% path to resources: 
 def setup_sources(self):
     self.datadir = os.getenv("LOCALAPPDATA")
     self.dir0 = self.datadir+r"\FlashBook"
@@ -91,7 +91,17 @@ def settings_get(self):
         else:
             self.debugmode = True
             print("debugging is enabled")
-    
+            
+def settings_create(self):
+    if not os.path.exists(self.dirsettings+r"\settings.txt"):   
+        with open(self.dirsettings+r"\settings.txt", 'w') as file:
+            file.write(json.dumps({'debugmode' : 0,'pdfmultiplier': 1.0, 'QAline_thickness' : 1, 'pdfline_thickness' : 5, 
+                                   'QAline_color' : (0,0,0), 'pdfline_color' : (18,5,250), 'QAline_bool': True,'pdfline_bool': True }))       
+            
+def settings_set(self):
+    with open(self.dirsettings+r"\settings.txt", 'w') as file:
+        file.write(json.dumps({'debugmode' : 0, 'pdfmultiplier': self.pdfmultiplier,'QAline_thickness' : self.QAline_thickness, 'pdfline_thickness': self.pdfline_thickness, 
+                               'QAline_color' : self.QAline_color, 'pdfline_color' : self.pdfline_color, 'QAline_bool': self.QAline_bool,'pdfline_bool': self.pdfline_bool}))           
 
 #%%
 def initialize(self):
@@ -126,10 +136,9 @@ def initialize(self):
     #%%
     
     arr = os.listdir(self.dir3)
-    for i in range(len(arr)):
-        if ('.jpg' not in arr[i]) and ('.png' not in arr[i]):
-           #print(arr[i])
-           folders.append(arr[i])
+    for filename in arr:
+        if ('.jpg' not in filename) and ('.png' not in filename):
+           folders.append(filename)
     self.nr_books = len(folders)
     folders.sort() 
     
@@ -146,13 +155,7 @@ def initialize(self):
     
  
 
-def settings_create(self):
-    if not os.path.exists(self.dirsettings+r"\settings.txt"):   
-        with open(self.dirsettings+r"\settings.txt", 'w') as file:
-            file.write(json.dumps({'debugmode' : 0,'pdfmultiplier': 1.0, 'QAline_thickness' : 1, 'pdfline_thickness' : 5, 'QAline_color' : (0,0,0), 'pdfline_color' : (18,5,250), 'QAline_bool': True,'pdfline_bool': True }))       
-def settings_set(self):
-    with open(self.dirsettings+r"\settings.txt", 'w') as file:
-        file.write(json.dumps({'debugmode' : 0, 'pdfmultiplier': self.pdfmultiplier,'QAline_thickness' : self.QAline_thickness, 'pdfline_thickness': self.pdfline_thickness, 'QAline_color' : self.QAline_color, 'pdfline_color' : self.pdfline_color, 'QAline_bool': self.QAline_bool,'pdfline_bool': self.pdfline_bool}))       
+
 
 """
 ###############################################################################
