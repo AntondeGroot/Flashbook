@@ -428,18 +428,25 @@ def switchpage(self,event):
     self.Layout()
 def nextpage(self,event):
     try:
-        if not self.currentpage > self.nr_pics-1:
-            self.currentpage = self.currentpage+1
+        if self.currentpage == 'prtscr':
+            self.currentpage = self.currentpage_backup
+            print(f" page is now{self.currentpage}")
+        else:
+            if not self.currentpage > self.nr_pics-1:
+                self.currentpage = self.currentpage+1
         f.LoadPage(self)
         f.ShowPage(self)
         f.SetScrollbars(self)
     except:
         print(colored("Error: can't click on next",'red'))
     self.Layout()
-def previouspage(self,event):
+def previouspage(self,event):    
     try:
-        if not self.currentpage == 1:
-            self.currentpage = self.currentpage-1    
+        if self.currentpage == 'prtscr':
+            self.currentpage = self.currentpage_backup
+        else:
+            if not self.currentpage == 1:
+                self.currentpage = self.currentpage-1    
         f.LoadPage(self)
         f.ShowPage(self)
         f.SetScrollbars(self)            
