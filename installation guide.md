@@ -1,6 +1,15 @@
 #### minimum size executable using pyinstaller
 [link, see Esperluette's answer to themself](https://stackoverflow.com/questions/48629486/how-can-i-create-the-minimum-size-executable-with-pyinstaller)
 
+basically: (in Windows)
+- download the latest python.exe. Install and select 'Add Python to path'
+- in cmd: `python3 -m venv flashbook-env` 
+- then: `flashbook-env\Scripts\activate.bat`
+- then use: `python -m pip install nameofmodule` for the following modules:
+`numpy, wxpython, pillow, termcolor, pybase64, pypiwin32, matplotlib`
+
+
+
 ## Installation
 
 1. download all the files in the `files` folder
