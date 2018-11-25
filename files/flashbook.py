@@ -293,6 +293,8 @@ class MainFrame(gui.MyFrame):
     " flashbook "
     # import screenshot #
     def m_btnScreenshotOnButtonClick( self, event ):
+        self.currentpage_backup = self.currentpage
+        self.currentpage = 'prtscr'
         m3.import_screenshot(self,event)
         
     def m_textCtrl2OnEnterWindow( self, event ):
@@ -303,7 +305,6 @@ class MainFrame(gui.MyFrame):
         m.SetKeyboardShortcuts(self)
     
     def m_btnSelectOnButtonClick( self, event ):
-        print("undo")
         if hasattr(self,"backupimage"):
             image3 = self.backupimage
             self.m_bitmap4.SetBitmap(image3)
