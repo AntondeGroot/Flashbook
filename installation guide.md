@@ -10,8 +10,9 @@ basically: (in Windows)
 - then use: `python -m pip install numpy wxpython pillow termcolor pybase64 pypiwin32 matplotlib` to install all packages.
 
 documentation:
-[Stackoverflow: see Esperluette's answer to themself](https://stackoverflow.com/questions/48629486/how-can-i-create-the-minimum-size-executable-with-pyinstaller)
-[Python docs on venv](https://docs.python.org/3/tutorial/venv.html)
+
+- [Stackoverflow: see Esperluette's answer to themself](https://stackoverflow.com/questions/48629486/how-can-i-create-the-minimum-size-executable-with-pyinstaller)
+- [Python docs on venv](https://docs.python.org/3/tutorial/venv.html)
 
 
 
