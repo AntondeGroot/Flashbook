@@ -1,5 +1,6 @@
 #### minimum size executable using pyinstaller
 When you use python from Anaconda the executable will be around 800MB
+
 But if you use the instructions below it will be around 90MB in size.
 
 basically: (in Windows)
