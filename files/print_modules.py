@@ -657,31 +657,9 @@ def LoadFlashCards(self):
                self.textdictionary.update({'A{}'.format(i): self.answers2[i]})
     except:
         print(colored("Error: couldn't pick file",'red'))
-    
-               
+          
     notes2paper(self)
     
-    #self.allimages.show()
-    """
-    while self.allimages != []:
-        
-        
-        images = [self.imagetext,imagepic]
-        
-        widths, heights = zip(*(i.size for i in images))
-        total_height = sum(heights)
-        max_width = max(widths)
-        new_im = PIL.Image.new('RGB', (max_width, total_height), "white")
-        #combine images to 1
-        x_offset = 0
-        for im in images:
-            new_im.paste(im, (0,x_offset))
-            x_offset += im.size[1]
-        self.image = new_im
-    """
-    
-
-
 def ShowPage(self):
     if self.debugmode:
         print("f=showpage")
@@ -693,11 +671,6 @@ def ShowPage(self):
     except:        
         print(colored("Error: cannot show image","red"))
         
-        
-        
-
-
-    
 def resetselection(self,event):
     #  remove all temporary pictures taken
     if len (self.pic_answer_dir)>0:
@@ -721,6 +694,7 @@ def resetselection(self,event):
     # update drawn borders
     f.LoadPage(self)
     f.ShowPage(self)
+    
 def switchpage(self,event):
     try:
         pagenumber = int(event.GetEventObject().GetValue())
@@ -734,6 +708,7 @@ def switchpage(self,event):
         f.ShowPage(self)
     except:
         print(colored("Error: invalid page number",'red'))
+        
 def nextpage(self,event):
     try:
         if self.currentpage > self.nr_pics-1:
@@ -745,6 +720,7 @@ def nextpage(self,event):
         f.SetScrollbars(self)
     except:
         print(colored("Error: can't click on next",'red'))
+        
 def previouspage(self,event):
     try:
         if self.currentpage == 1:
@@ -765,6 +741,7 @@ def setcursor(self,event):
         self.SetCursor(wx.Cursor(wx.CURSOR_CROSS))
     else:
         self.SetCursor(wx.Cursor(wx.CURSOR_ARROW))
+        
 def zoomout(self,event):
     try:
         self.zoom += 0.1
@@ -775,6 +752,7 @@ def zoomout(self,event):
         self.m_textZoom.SetValue("{}%".format(value))
     except:
         print(colored("Error: cannot zoom",'red'))
+        
 def zoomin(self,event):
     try:
         if self.zoom == 0.1:
@@ -790,6 +768,7 @@ def zoomin(self,event):
         #self.m_panel1.Update()
     except:
         print(colored("Error: cannot zoom",'red'))
+        
 def SetKeyboardShortcuts(self):
     try:# look if Id's already exist
         # combine functions with the id
@@ -850,10 +829,6 @@ def SwitchBitmap(self): # checks if there is an answer card, if not changes mode
         
         print(colored("Error: could not switch bitmap #1","red"))
 
-def drawborder(self,img):
-    np.array(img)
-
-#%%
 def add_border(self,img):
     if self.pdfline_bool == True:
         new_im = PIL.Image.new("RGB", (self.a4page_w,img.size[1]+self.pdfline_thickness),"white")    
@@ -864,21 +839,14 @@ def add_border(self,img):
         return new_im
     else:
         return img
+    
 def add_margins(self,img):
     margin = 0.05
     margin_pxs = round(margin * self.a4page_w)
     new_im = PIL.Image.new("RGB", (self.a4page_w+2*margin_pxs,self.a4page_h+2*margin_pxs),"white")    
     new_im.paste(img, (margin_pxs,margin_pxs))
     return new_im
-    
 
-        
-    
-    
-    
-
-    
-    
 # main program that does all the preprocessing
 def startprogram(self,event): 
     self.runprogram   = True
@@ -933,12 +901,7 @@ def startprogram(self,event):
     self.nr_questions = self.nr_cards
     self.chrono = True
     self.multiplier = 1
-            
     
-    # if you want to use all cards twice or 1.5 times for the quiz: then exclude invalid selections of this multiplier
-    
-    
-        
     # display nr of questions and current index of questions            
     LoadFlashCards(self)
     print(self.allimages)  
