@@ -244,6 +244,8 @@ def ShowPage(self): # no error
         self.m_bitmapScroll.SetBitmap(wx.Bitmap(image2))
         self.Layout()
         with open(os.path.join(self.temp_dir, self.bookname +'.txt'), 'w') as output:   
+            if self.currentpage == 'prtscr' and hasattr(self,'currentpage_backup'):
+                self.currentpage = self.currentpage_backup
             output.write("{}".format(self.currentpage))
     except:
         print(colored("Error: cannot show page",'red'))
