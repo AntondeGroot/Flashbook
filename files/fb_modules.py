@@ -428,9 +428,7 @@ def switchpage(self,event):
     self.Layout()
 def nextpage(self,event):
     try:
-        if self.currentpage > self.nr_pics-1:
-            self.currentpage = self.currentpage
-        else:
+        if not self.currentpage > self.nr_pics-1:
             self.currentpage = self.currentpage+1
         f.LoadPage(self)
         f.ShowPage(self)
@@ -440,9 +438,7 @@ def nextpage(self,event):
     self.Layout()
 def previouspage(self,event):
     try:
-        if self.currentpage == 1:
-            self.currentpage = self.currentpage
-        else:
+        if not self.currentpage == 1:
             self.currentpage = self.currentpage-1    
         f.LoadPage(self)
         f.ShowPage(self)
