@@ -7,8 +7,7 @@ basically: (in Windows)
 - download the latest python.exe. Install and select 'Add Python to path'
 - in cmd: `python -m venv flashbook-env` 
 - then: `flashbook-env\Scripts\activate.bat`
-- then use: `python -m pip install nameofmodule` for the following modules:
-`numpy, wxpython, pillow, termcolor, pybase64, pypiwin32, matplotlib`
+- then use: `python -m pip install numpy wxpython pillow termcolor pybase64 pypiwin32 matplotlib` to install all packages.
 
 documentation:
 [Stackoverflow: see Esperluette's answer to themself](https://stackoverflow.com/questions/48629486/how-can-i-create-the-minimum-size-executable-with-pyinstaller)
