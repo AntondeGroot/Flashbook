@@ -1,5 +1,5 @@
-#### minimum size of pyinstaller
-[link, ](https://stackoverflow.com/questions/48629486/how-can-i-create-the-minimum-size-executable-with-pyinstaller)
+#### minimum size executable using pyinstaller
+[link, see Esperluette's answer to themself](https://stackoverflow.com/questions/48629486/how-can-i-create-the-minimum-size-executable-with-pyinstaller)
 
 ## Installation
 
