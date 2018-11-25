@@ -1,12 +1,17 @@
 #### minimum size executable using pyinstaller
-[link, see Esperluette's answer to themself](https://stackoverflow.com/questions/48629486/how-can-i-create-the-minimum-size-executable-with-pyinstaller)
+When you use python from Anaconda the executable will be around 800MB
+But if you use the instructions below it will be around 90MB in size.
 
 basically: (in Windows)
 - download the latest python.exe. Install and select 'Add Python to path'
-- in cmd: `python3 -m venv flashbook-env` 
+- in cmd: `python -m venv flashbook-env` 
 - then: `flashbook-env\Scripts\activate.bat`
 - then use: `python -m pip install nameofmodule` for the following modules:
 `numpy, wxpython, pillow, termcolor, pybase64, pypiwin32, matplotlib`
+
+documentation:
+[Stackoverflow: see Esperluette's answer to themself](https://stackoverflow.com/questions/48629486/how-can-i-create-the-minimum-size-executable-with-pyinstaller)
+[Python docs on venv](https://docs.python.org/3/tutorial/venv.html)
 
 
 
