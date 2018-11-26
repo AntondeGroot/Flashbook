@@ -18,6 +18,10 @@ from win32api import GetSystemMetrics
 from PIL import Image
 import ctypes
 import program
+import bisect
+import img2pdf
+
+
 datadir = os.getenv("LOCALAPPDATA")
 dir0 = datadir + r"\FlashBook"
 # create settings folder for debugging
@@ -100,9 +104,8 @@ def preview_refresh(self):
     self.Layout()
 def notes2paper(self):
     #initiate
-    import print_functions as f
-    import bisect
-    import img2pdf
+    
+    
     
     N = 1.3
     self.a4page_w  = round(1240*N*self.pdfmultiplier) # in pixels
