@@ -196,12 +196,18 @@ def notes2paper(self):
         # store those pages in a list separately, eliminate those from the search
         # recalculate cumsum and repeat
         index = bisect.bisect_left(A, self.a4page_w) 
-        if index != len(A):        
+        if index ==0 and len(A)!=0: #image is too wide
+            im = self.allimages[0]
+            C.append(im)
+            self.allimages = self.allimages[1:] 
+            self.allimages_w = self.allimages_w[1:] 
+            A = np.cumsum(self.allimages_w)  
+        elif index != len(A):        #image is not too wide
             C.append(self.allimages[:index])
             self.allimages = self.allimages[index:] 
             self.allimages_w = self.allimages_w[index:] 
             A = np.cumsum(self.allimages_w)
-        else:
+        elif index == len(A): # image is not too wide AND last in list
             C.append(self.allimages)
             self.allimages_w = []
     self.paper_h_list = C
@@ -214,6 +220,7 @@ def notes2paper(self):
         images = self.paper_h_list[i]
         try:
             widths, heights = zip(*(i.size for i in images)) 
+            
             max_height = max(heights)
             total_width = sum(widths)
             
@@ -227,6 +234,10 @@ def notes2paper(self):
             new_im = add_border(self,new_im)
             self.paper_h.append(new_im)
         except: # if only one picture left
+            print(images.size)
+            if images.size[0] > self.a4page_w:
+                w,h = images.size
+                images = images.resize((self.a4page_w,int(h*self.a4page_w/w)))
             images = add_border(self,images)
             self.paper_h.append(images)
             
