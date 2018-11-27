@@ -592,6 +592,20 @@ class MyFrame ( wx.Frame ):
 		
 		bSizer23.Add( self.m_sliderPDFsize, 0, wx.ALL, 0 )
 		
+		bSizer351 = wx.BoxSizer( wx.HORIZONTAL )
+		
+		self.m_staticText36 = wx.StaticText( self.m_panel31, wx.ID_ANY, u"Number of pages", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_staticText36.Wrap( -1 )
+		bSizer351.Add( self.m_staticText36, 0, wx.ALL, 5 )
+		
+		self.m_TotalPDFPages = wx.TextCtrl( self.m_panel31, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, wx.TE_READONLY )
+		self.m_TotalPDFPages.SetMaxSize( wx.Size( 30,-1 ) )
+		
+		bSizer351.Add( self.m_TotalPDFPages, 0, wx.ALL, 5 )
+		
+		
+		bSizer23.Add( bSizer351, 0, wx.EXPAND, 5 )
+		
 		self.m_PrintFinal = wx.Button( self.m_panel31, wx.ID_ANY, u"Apply", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.m_PrintFinal.SetFont( wx.Font( 10, 70, 90, 90, False, wx.EmptyString ) )
 		self.m_PrintFinal.SetMinSize( wx.Size( 275,-1 ) )
