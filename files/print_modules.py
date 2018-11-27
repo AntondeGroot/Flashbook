@@ -263,7 +263,7 @@ def notes2paper(self):
             else:
                 D.append(self.paper_h)
                 self.img_heights = []
-    else:
+    else: # only look for 1st page (currently not in use)
         index = bisect.bisect_left(A, self.a4page_h) #look for index where value is too large        
         D.append(self.paper_h[:index] )
                
@@ -309,7 +309,8 @@ def notes2paper(self):
             f.write(img2pdf.convert([i for i in folder if i.endswith(".png")]))
     else:
         pass
-    self.m_TotalPDFPages.SetValue(str(len(imagelist)))
+    self.m_TotalPDFPages.SetValue(str(''))
+    self.m_TotalPDFPages.SetValue(str(len(self.allimages_v)))
 
 def dirchanged(self,event):
     # for scrolling: only remember current and last position, append and pop, if the numbers repeat [0,0] or [X,X] then you know you've reached either the beginning or the end of the window: then flip page
