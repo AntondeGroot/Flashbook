@@ -452,12 +452,14 @@ class MainFrame(gui.MyFrame):
         
         
     def m_PrintFinalOnButtonClick( self, event ):
+        self.printsuccessful = False
         self.printpreview = False
         self.FilePickEvent = False
         m3.preview_refresh(self)
-        self.printpreview = True
-        p.SwitchPanel(self,0,0)
-        ctypes.windll.user32.MessageBoxW(0, " your pdf has been created\n open in the menubar: `Open/Open PDF-notes Folder` to\n open the folder in Windows explorer ", "Message", 1)
+        if self.printsuccessful == True:
+            self.printpreview = True
+            p.SwitchPanel(self,0,0)
+            ctypes.windll.user32.MessageBoxW(0, " your pdf has been created\n open in the menubar: `Open/Open PDF-notes Folder` to\n open the folder in Windows explorer ", "Message", 1)
     def m_lineWpdfOnText( self, event ):
         try:
             int(self.m_lineWpdf.GetValue())
