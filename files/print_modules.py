@@ -305,8 +305,11 @@ def notes2paper(self):
             #image.show()
             i += 1
         filename = os.path.join(self.dirpdf,"{}.pdf".format(self.bookname))
-        with open(filename, "wb") as f:
-            f.write(img2pdf.convert([i for i in folder if i.endswith(".png")]))
+        try:
+            with open(filename, "wb") as f:
+                f.write(img2pdf.convert([i for i in folder if i.endswith(".png")]))
+        except:
+            ctypes.windll.user32.MessageBoxW(0, "If you have the PDF opened in another file, close it and try it again.", "Warning", 1)
     else:
         pass
     self.m_TotalPDFPages.SetValue(str(''))
