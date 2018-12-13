@@ -41,7 +41,7 @@ from termcolor import colored
 import win32clipboard
 from win32api import GetSystemMetrics
 from PIL import Image
-
+import wmi # for IPaddress
 
 # when using Pyinstaller to get the .exe file: it will standard give an error that it is missing the module 'qwindows.dll'
 # since the .exe created by --onefile takes ages to start, i won't be using that option and then module can be found in the folder below
@@ -114,14 +114,30 @@ def initialize(self):
     self.dir4 = dir0 + r"\temporary"
     self.dir5 = dir0 + r"\borders"
     self.dir6 = dir0 + r"\resources"
+    self.dirIP = dir0 + r"\IPadresses"
     self.dirpdf = dir0 + r"\PDF folder"
     self.dirsettings = dir0 + r"\settings"
     self.temp_dir = self.dir4
     self.statsdir = os.path.join(self.dirsettings, 'data_sessions.json')
     
     folders = []
-    dirs = [dir0,self.dir1,self.dir2,self.dir3,self.dir4,self.dir5,self.dir6,self.dirpdf,self.dirsettings]
+    dirs = [dir0,self.dir1,self.dir2,self.dir3,self.dir4,self.dir5,self.dir6,self.dirpdf,self.dirsettings,self.dirIP]
+    try:
+        if not os.path.exists(os.path.join(self.dirIP,'IPadresses.txt')):
+            
+            
     
+            wmi_obj = wmi.WMI()
+            wmi_sql = "select IPAddress,DefaultIPGateway from Win32_NetworkAdapterConfiguration where IPEnabled = True"
+            wmi_out = wmi_obj.query(wmi_sql)[0] #only 1 query
+            
+            
+            myIP = wmi_out.IPAddress[0]
+            with open(os.path.join(self.dirIP,'IPadresses.txt'),'w') as f:
+                f.write(myIP)
+                f.close()
+    except:
+        print("Error: could not access internet?")
     print("=========================================================================================")
     print("\nThe files will be saved to the following directory: {}\n".format(dir0))
     for item in dirs:
@@ -492,5 +508,3 @@ def runapp():
 # initialize a thread
 thr_main = threading.Thread(target = runapp, name = 'mainthread',args = ())
 thr_main.run()
-
-
