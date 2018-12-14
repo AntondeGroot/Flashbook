@@ -138,7 +138,6 @@ def initialize(self):
            
             with open(os.path.join(self.dirIP,'IPadresses.txt'),'w') as f:
                 f.write(json.dumps({'IP1' : myIP,'IP2': ""})) 
-                
                 f.close()
     except:
         print("Error: could not access internet?")
@@ -226,6 +225,7 @@ class MainFrame(gui.MyFrame):
         p.run_flashcard(self)
     def m_OpenTransferOnButtonClick(self,event):
         p.SwitchPanel(self,5,0)
+        p.run_transfer(self,event)
         
     def m_OpenPrintOnButtonClick(self,event):
         thr1 = threading.Thread(target = p.SwitchPanel, name = 'thread1', args = (self,3,None ))
@@ -415,8 +415,18 @@ class MainFrame(gui.MyFrame):
     def m_richText22OnLeftDown( self, event ):
         p.SwitchPanel(self,2,0) 
     
-    
-    
+    #%% transfer
+    def m_txtMyIPOnKeyUp( self, event ):
+        self.IP1 = self.m_txtMyIP.GetValue()
+        with open(os.path.join(self.dirIP,'IPadresses.txt'),'w') as f:
+            f.write(json.dumps({'IP1' : self.IP1,'IP2': self.IP2})) 
+            f.close()
+            
+    def m_txtTargetIPOnKeyUp( self, event ):
+        self.IP2 = self.m_txtTargetIP.GetValue()
+        with open(os.path.join(self.dirIP,'IPadresses.txt'),'w') as f:
+            f.write(json.dumps({'IP1' : self.IP1,'IP2': self.IP2})) 
+            f.close()
     #%% flashcard
     " flashcard "
     # main program
