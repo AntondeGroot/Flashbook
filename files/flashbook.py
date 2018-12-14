@@ -68,6 +68,7 @@ def setup_sources(self):
     self.path_icon = os.path.join(self.dir7,"open-book1.png")
     self.path_fb = os.path.join(self.dir7,"flashbook.png")
     self.path_fc = os.path.join(self.dir7,"flashcard.png")
+    self.path_wifi = os.path.join(self.dir7,"wifi.png")
     self.path_pr = os.path.join(self.dir7,"print.png")
     self.path_arrow = os.path.join(self.dir7,"arrow.png")
     self.path_arrow2 = os.path.join(self.dir7,"arrow2.png")
