@@ -194,7 +194,7 @@ import wmi
 # source https://stackoverflow.com/questions/17667903/python-socket-receive-large-amount-of-data
 
 
-def start_client(dirlist,dirappendlist = '',HostIP):
+def start_client(dirlist,dirappendlist = '',HostIP = '127.0.0.1'):
     
     modelist = []
     for di in dirlist:
