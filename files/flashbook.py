@@ -43,7 +43,8 @@ import win32clipboard
 from win32api import GetSystemMetrics
 from PIL import Image
 import wmi # for IPaddress
-
+import sys
+sys.setrecursionlimit(5000)
 # when using Pyinstaller to get the .exe file: it will standard give an error that it is missing the module 'qwindows.dll'
 # since the .exe created by --onefile takes ages to start, i won't be using that option and then module can be found in the folder below
 # it is resolved by simply copying the qwindows.dll module next to the .exe file
