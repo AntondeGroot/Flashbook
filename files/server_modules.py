@@ -2,8 +2,7 @@
 
 
 # sources: https://stackoverflow.com/questions/17667903/python-socket-receive-large-amount-of-data
-def start_server(self):
-    #!/usr/bin/env python3
+
 
 
 # sources: https://stackoverflow.com/questions/17667903/python-socket-receive-large-amount-of-data
