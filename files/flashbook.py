@@ -32,6 +32,7 @@ import resources
 import fb_modules    as m
 import fc_modules    as m2
 import print_modules as m3
+import server_modules as server
 import fb_functions    as f
 import fc_functions    as f2
 import print_functions as f3
@@ -225,7 +226,7 @@ class MainFrame(gui.MyFrame):
         p.run_flashcard(self)
     def m_OpenTransferOnButtonClick(self,event):
         p.SwitchPanel(self,5,0)
-        p.run_transfer(self,event)
+        p.get_IP(self,event)
         
     def m_OpenPrintOnButtonClick(self,event):
         thr1 = threading.Thread(target = p.SwitchPanel, name = 'thread1', args = (self,3,None ))
@@ -427,6 +428,11 @@ class MainFrame(gui.MyFrame):
         with open(os.path.join(self.dirIP,'IPadresses.txt'),'w') as f:
             f.write(json.dumps({'IP1' : self.IP1,'IP2': self.IP2})) 
             f.close()
+    def m_buttonTransferOnButtonClick(self,event):
+        Client = self.m_radioClient.GetValue()
+        p.run_transfer(self,event,Client)
+            
+        
     #%% flashcard
     " flashcard "
     # main program
