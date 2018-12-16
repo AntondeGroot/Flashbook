@@ -16,7 +16,8 @@ import wmi
 # Directory settings
 import os
 
-
+datadir = os.getenv("LOCALAPPDATA")
+dir0 = datadir+r"\testtransfer"
 #%% The server
 import socket
 import struct
