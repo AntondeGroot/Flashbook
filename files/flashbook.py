@@ -227,6 +227,8 @@ class MainFrame(gui.MyFrame):
     def m_OpenTransferOnButtonClick(self,event):
         p.SwitchPanel(self,5,0)
         p.get_IP(self,event)
+        client = self.m_radioClient.GetValue() #boolean
+        p.run_transfer(self,event,client)
         
     def m_OpenPrintOnButtonClick(self,event):
         thr1 = threading.Thread(target = p.SwitchPanel, name = 'thread1', args = (self,3,None ))
