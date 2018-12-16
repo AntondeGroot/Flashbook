@@ -311,7 +311,7 @@ def start_client(dirlist,dirappendlist = '',HostIP = '127.0.0.1'):
                         
                         print("Data received from server")
             
-            print(' received' ,repr(data))
+                print(' received' ,repr(data))
     else:
         ctypes.windll.user32.MessageBoxW(0, "Error: mismatch of length of directory list to be transfered", "Message", 1)
     
