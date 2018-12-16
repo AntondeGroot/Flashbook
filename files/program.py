@@ -268,8 +268,11 @@ def run_transfer(self,event,client):
     
     # both Client as Host use the same 'IP2' because IP2 is the IP address the device is trying to connect to.
     startdir = os.path.join(os.getenv("LOCALAPPDATA") ,"testtransfer")
-    if client: #start client                
+    if client: #start client   
         dirlist = os.listdir(startdir)
+        if self.m_checkBoxBook.GetValue() == True: # anton
+            dirlist = [x for x in dirlist if "books" not in x]
+            
         dirappendlist = ["books","pics","resources"] # directories that should not be overwritten but appended when new files are added
         HostIP = self.IP2
         server.start_client(dirlist,dirappendlist,HostIP)        
