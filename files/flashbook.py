@@ -523,13 +523,10 @@ class MainFrame(gui.MyFrame):
             print("Error: invalid entry")
         
 # start the application
-def runapp():
-    app = wx.App(False) 
-    frame = MainFrame(None)
-    frame.Show(True)
-    app.MainLoop()
-    del app
-    
-# initialize a thread
-thr_main = threading.Thread(target = runapp, name = 'mainthread',args = ())
-thr_main.run()
+app = wx.App(False) 
+frame = MainFrame(None)
+frame.Show(True)
+app.MainLoop()
+del app
+
+
