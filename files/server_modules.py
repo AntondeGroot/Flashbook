@@ -26,15 +26,10 @@ import datetime as dt
 
 
 
-def start_server(basedirectory,ClientIP):
-    wmi_obj = wmi.WMI()
-    wmi_sql = "select IPAddress,DefaultIPGateway from Win32_NetworkAdapterConfiguration where IPEnabled = True"
-    wmi_out = wmi_obj.query(wmi_sql)
-    for dev in wmi_out:
-        print("IPv4Address:", dev.IPAddress[0], "DefaultIPGateway:", dev.DefaultIPGateway[0])
-    print("IPv4Address:\t", dev.IPAddress[0])
+def start_server(basedirectory,ClientIP,HostIP):
     
-    HOST = dev.IPAddress[0]
+    
+    HOST = HostIP
     PORT = 65432        # Port to listen on (non-privileged ports are > 1023)
     
     mode = [] 
@@ -241,14 +236,6 @@ def start_client(dirlist,dirappendlist = '',HostIP = '127.0.0.1'):
                 for name in dirs:
                     print(os.path.join(root,name))
             
-            #%% Get IP address
-            
-            wmi_obj = wmi.WMI()
-            wmi_sql = "select IPAddress,DefaultIPGateway from Win32_NetworkAdapterConfiguration where IPEnabled=TRUE"
-            wmi_out = wmi_obj.query( wmi_sql )
-            
-            for dev in wmi_out:
-                print("IPv4Address:", dev.IPAddress[0], "DefaultIPGateway:", dev.DefaultIPGateway[0])
                 
             
             #%% Start the Client
