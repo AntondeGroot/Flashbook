@@ -727,42 +727,45 @@ class MyFrame ( wx.Frame ):
 		
 		bSizer44 = wx.BoxSizer( wx.VERTICAL )
 		
+		self.panel51 = wx.Panel( self.panel5, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TAB_TRAVERSAL )
+		bSizer441 = wx.BoxSizer( wx.HORIZONTAL )
 		
-		bSizer44.Add( ( 100, 100), 0, wx.EXPAND, 5 )
 		
-		bSizer321 = wx.BoxSizer( wx.HORIZONTAL )
+		bSizer441.Add( ( 100, 0), 0, wx.EXPAND, 5 )
+		
+		bSizer321 = wx.BoxSizer( wx.VERTICAL )
 		
 		
 		bSizer321.Add( ( 100, 100), 0, wx.EXPAND, 5 )
 		
-		self.m_panel181 = wx.Panel( self.panel5, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TAB_TRAVERSAL )
-		bSizer48 = wx.BoxSizer( wx.HORIZONTAL )
+		self.m_panel181 = wx.Panel( self.panel51, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TAB_TRAVERSAL )
+		bSizer48 = wx.BoxSizer( wx.VERTICAL )
 		
 		fgSizer1 = wx.FlexGridSizer( 0, 2, 0, 0 )
 		fgSizer1.SetFlexibleDirection( wx.HORIZONTAL )
 		fgSizer1.SetNonFlexibleGrowMode( wx.FLEX_GROWMODE_SPECIFIED )
 		
-		self.m_staticText39 = wx.StaticText( self.m_panel181, wx.ID_ANY, u"My current IP  :", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_staticText39 = wx.StaticText( self.m_panel181, wx.ID_ANY, u"My IP ", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.m_staticText39.Wrap( -1 )
-		self.m_staticText39.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), 76, 90, 90, False, wx.EmptyString ) )
+		self.m_staticText39.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
 		
 		fgSizer1.Add( self.m_staticText39, 0, wx.ALL, 5 )
 		
 		self.m_txtMyIP = wx.TextCtrl( self.m_panel181, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
 		fgSizer1.Add( self.m_txtMyIP, 0, wx.ALL, 5 )
 		
-		self.m_staticText40 = wx.StaticText( self.m_panel181, wx.ID_ANY, u"Target IP :", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_staticText40 = wx.StaticText( self.m_panel181, wx.ID_ANY, u"Target IP", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.m_staticText40.Wrap( -1 )
-		self.m_staticText40.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), 76, 90, 90, False, wx.EmptyString ) )
+		self.m_staticText40.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
 		
 		fgSizer1.Add( self.m_staticText40, 0, wx.ALL, 5 )
 		
 		self.m_txtTargetIP = wx.TextCtrl( self.m_panel181, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
 		fgSizer1.Add( self.m_txtTargetIP, 0, wx.ALL, 5 )
 		
-		self.m_staticText411 = wx.StaticText( self.m_panel181, wx.ID_ANY, u"Client:", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_staticText411 = wx.StaticText( self.m_panel181, wx.ID_ANY, u"Client", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.m_staticText411.Wrap( -1 )
-		self.m_staticText411.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), 76, 90, 90, False, wx.EmptyString ) )
+		self.m_staticText411.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
 		
 		fgSizer1.Add( self.m_staticText411, 0, wx.ALL, 5 )
 		
@@ -770,18 +773,18 @@ class MyFrame ( wx.Frame ):
 		self.m_radioClient.SetValue( True ) 
 		fgSizer1.Add( self.m_radioClient, 0, wx.ALL, 5 )
 		
-		self.m_staticText42 = wx.StaticText( self.m_panel181, wx.ID_ANY, u"Server:", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_staticText42 = wx.StaticText( self.m_panel181, wx.ID_ANY, u"Server", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.m_staticText42.Wrap( -1 )
-		self.m_staticText42.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), 76, 90, 90, False, wx.EmptyString ) )
+		self.m_staticText42.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
 		
 		fgSizer1.Add( self.m_staticText42, 0, wx.ALL, 5 )
 		
 		self.m_radioServer = wx.RadioButton( self.m_panel181, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
 		fgSizer1.Add( self.m_radioServer, 0, wx.ALL, 5 )
 		
-		self.m_staticText43 = wx.StaticText( self.m_panel181, wx.ID_ANY, u"Transfer Books ?", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_staticText43 = wx.StaticText( self.m_panel181, wx.ID_ANY, u"Transfer Books", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.m_staticText43.Wrap( -1 )
-		self.m_staticText43.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), 76, 90, 90, False, wx.EmptyString ) )
+		self.m_staticText43.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
 		
 		fgSizer1.Add( self.m_staticText43, 0, wx.ALL, 5 )
 		
@@ -792,7 +795,25 @@ class MyFrame ( wx.Frame ):
 		bSizer48.Add( fgSizer1, 0, wx.EXPAND, 5 )
 		
 		
-		bSizer48.Add( ( 500, 0), 0, wx.EXPAND, 5 )
+		bSizer48.Add( ( 0, 25), 0, wx.EXPAND, 5 )
+		
+		self.m_staticline7 = wx.StaticLine( self.m_panel181, wx.ID_ANY, wx.DefaultPosition, wx.Size( -1,1 ), wx.LI_HORIZONTAL )
+		self.m_staticline7.SetMaxSize( wx.Size( 500,-1 ) )
+		
+		bSizer48.Add( self.m_staticline7, 0, wx.EXPAND |wx.ALL, 5 )
+		
+		bSizer47 = wx.BoxSizer( wx.HORIZONTAL )
+		
+		self.m_buttonTransfer = wx.Button( self.m_panel181, wx.ID_ANY, u"Transfer", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_buttonTransfer.SetFont( wx.Font( 9, 74, 90, 90, False, "Arial" ) )
+		
+		bSizer47.Add( self.m_buttonTransfer, 0, wx.ALL, 5 )
+		
+		self.m_txtStatus = wx.TextCtrl( self.m_panel181, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.Size( 400,-1 ), wx.TE_READONLY )
+		bSizer47.Add( self.m_txtStatus, 0, wx.ALL, 5 )
+		
+		
+		bSizer48.Add( bSizer47, 1, wx.EXPAND, 0 )
 		
 		
 		self.m_panel181.SetSizer( bSizer48 )
@@ -804,27 +825,36 @@ class MyFrame ( wx.Frame ):
 		bSizer321.Add( ( 0, 0), 1, wx.EXPAND, 5 )
 		
 		
-		bSizer44.Add( bSizer321, 1, wx.EXPAND, 5 )
-		
-		bSizer47 = wx.BoxSizer( wx.HORIZONTAL )
+		bSizer441.Add( bSizer321, 1, wx.EXPAND, 5 )
 		
 		
-		bSizer47.Add( ( 100, 200), 0, wx.EXPAND, 5 )
+		self.panel51.SetSizer( bSizer441 )
+		self.panel51.Layout()
+		bSizer441.Fit( self.panel51 )
+		bSizer44.Add( self.panel51, 1, wx.EXPAND |wx.ALL, 5 )
 		
-		self.m_buttonTransfer = wx.Button( self.panel5, wx.ID_ANY, u"Transfer", wx.DefaultPosition, wx.DefaultSize, 0 )
-		bSizer47.Add( self.m_buttonTransfer, 0, wx.ALL, 5 )
+		self.panel52 = wx.Panel( self.panel5, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TAB_TRAVERSAL )
+		bSizer461 = wx.BoxSizer( wx.VERTICAL )
 		
-		self.m_txtStatus = wx.TextCtrl( self.panel5, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.Size( 400,-1 ), wx.TE_READONLY )
-		bSizer47.Add( self.m_txtStatus, 0, wx.ALL, 5 )
+		self.m_txtHelpSync = wx.richtext.RichTextCtrl( self.panel52, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0|wx.VSCROLL|wx.HSCROLL|wx.NO_BORDER|wx.WANTS_CHARS )
+		bSizer461.Add( self.m_txtHelpSync, 1, wx.EXPAND |wx.ALL, 5 )
 		
 		
-		bSizer44.Add( bSizer47, 1, wx.EXPAND, 5 )
+		self.panel52.SetSizer( bSizer461 )
+		self.panel52.Layout()
+		bSizer461.Fit( self.panel52 )
+		bSizer44.Add( self.panel52, 1, wx.EXPAND |wx.ALL, 5 )
 		
 		
 		self.panel5.SetSizer( bSizer44 )
 		self.panel5.Layout()
 		bSizer44.Fit( self.panel5 )
 		bSizer7.Add( self.panel5, 1, wx.EXPAND |wx.ALL, 0 )
+		
+		bSizer41 = wx.BoxSizer( wx.VERTICAL )
+		
+		
+		bSizer7.Add( bSizer41, 1, wx.EXPAND, 5 )
 		
 		
 		self.SetSizer( bSizer7 )
@@ -936,6 +966,7 @@ class MyFrame ( wx.Frame ):
 		self.m_txtMyIP.Bind( wx.EVT_KEY_UP, self.m_txtMyIPOnKeyUp )
 		self.m_txtTargetIP.Bind( wx.EVT_KEY_UP, self.m_txtTargetIPOnKeyUp )
 		self.m_buttonTransfer.Bind( wx.EVT_BUTTON, self.m_buttonTransferOnButtonClick )
+		self.m_txtHelpSync.Bind( wx.EVT_LEFT_DOWN, self.m_txtHelpSyncOnLeftDown )
 	
 	def __del__( self ):
 		pass
@@ -1172,6 +1203,9 @@ class MyFrame ( wx.Frame ):
 		event.Skip()
 	
 	def m_buttonTransferOnButtonClick( self, event ):
+		event.Skip()
+	
+	def m_txtHelpSyncOnLeftDown( self, event ):
 		event.Skip()
 	
 
