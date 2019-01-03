@@ -249,10 +249,10 @@ def CombinePics(self,directory):
         x_offset += im.size[1]
     new_im.save(directory[0])
     #only save first picture (combined pic) the rest will be removed.
-    for p in range(len(directory)):
-        if p!=0:
+    for i,item in enumerate(directory):
+        if i!=0:
             try:
-                os.remove(directory[p])
+                os.remove(item)
             except:
                 pass
 def CreateTextCard(self):
@@ -280,9 +280,8 @@ def CombinePicText_h(self):
     
     self.allimages_h = []
     
-    for i in range(len(self.allimages)):
-        images = self.allimages[i]
-    
+    for i,images in enumerate(self.allimages):    
+        
         widths, heights = zip(*(i.size for i in images))
         
         max_height = max(heights)
@@ -303,9 +302,7 @@ def CombinePicText_v(self):
     
     self.allimages_v = []
     
-    for i in range(len(self.allimages)):
-        images = self.allimages[i]
-        
+    for i,images in enumerate(self.allimages):   
         
         new_im = PIL.Image.new('RGB', (self.a4page_w, self.a4page_h), "white")
         #combine images to 1
@@ -407,8 +404,8 @@ def Text2Latex(self):
     newcommand_line_lst = file1.readlines()
     
     index = []
-    for i in range(len(newcommand_line_lst)):
-        if "###" in newcommand_line_lst[i]:
+    for i,commandline in enumerate(newcommand_line_lst):
+        if "###" in commandline:
             index = i+1
     # remove the lines that precede the ###     
     newcommand_line_lst[:index]=[]
