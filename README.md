@@ -23,7 +23,7 @@ You can take notes by simply selecting an area with your mouse, a rectangle will
 
 The program will open with the following menu, allowing you to chose between one of the programs. You can always return to this menu once you opened one of the programs.
 
-![alt text](https://github.com/AntondeGroot/Flashbook/blob/master/readme%20images/main1.png)
+![alt text](https://github.com/AntondeGroot/Flashbook/blob/master/readme%20images/main.png)
 ## Flashbook
 ![alt text](https://github.com/AntondeGroot/Flashbook/blob/master/readme%20images/fb.png)
 
