@@ -393,7 +393,7 @@ def set_richtext(self):
 def initialize(self,event): 
     
     
-    self.basedir = os.path.join(os.getenv("LOCALAPPDATA") ,"testtransfer")
+    self.basedir = os.path.join(os.getenv("LOCALAPPDATA") ,"FlashBook")
     self.dirIP = self.basedir + r"\IPadresses"
     
     if not os.path.exists(self.dirIP):
