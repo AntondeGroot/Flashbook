@@ -24,6 +24,8 @@ import resources
 import fb_modules    as m
 import fc_modules    as m2
 import print_modules as m3
+import sync_modules  as m4
+import server_modules  as server
 import fb_functions    as f
 import fc_functions    as f2
 import print_functions as f3
@@ -254,8 +256,18 @@ def run_flashcard(self):
     def m_filePickerOnFileChanged( self, event ): 
         # main program, does all of the preprocessing
         m2.startprogram(self,event)
-        
 
+def get_IP(self,event):
+    with open(os.path.join(self.dirIP,'IPadresses.txt'),'r') as file:
+        data = json.load(file)
+        self.IP1 = data['IP1']
+        self.IP2 = data['IP2']
+    self.m_txtMyIP.SetValue(self.IP1)
+    self.m_txtTargetIP.SetValue(self.IP2)
+
+    
+
+    
 def run_print(self,event):                
     
     
@@ -327,6 +339,7 @@ def SwitchPanel(self,n,m):
         self.panel2.Hide()
         self.panel3.Hide()
         self.panel4.Hide()
+        self.panel5.Hide()
         self.Layout() # force refresh of windows
     elif n == 1:
         self.m_menuHelp.Enable(True)
@@ -335,6 +348,7 @@ def SwitchPanel(self,n,m):
         self.panel2.Hide()
         self.panel3.Hide()
         self.panel4.Hide()
+        self.panel5.Hide()
         if m == 0:
             self.panel11.Show()
             self.panel12.Hide()
@@ -349,6 +363,7 @@ def SwitchPanel(self,n,m):
         self.panel2.Show()
         self.panel3.Hide()
         self.panel4.Hide()
+        self.panel5.Hide()
         if m == 0:
             self.panel21.Show()
             self.panel22.Hide()
@@ -363,16 +378,33 @@ def SwitchPanel(self,n,m):
         self.panel2.Hide()
         self.panel3.Show()
         self.panel4.Hide()
+        self.panel5.Hide()
         self.Layout()
-    elif n ==4:
+    elif n == 4:
         self.m_menuHelp.Enable(True)
         self.panel0.Hide()
         self.panel1.Hide()
         self.panel2.Hide()
         self.panel3.Hide()
         self.panel4.Show()
+        self.panel5.Hide()
         self.Layout()
-
+    elif n == 5:
+        self.m_menuHelp.Enable(True)
+        self.panel0.Hide()
+        self.panel1.Hide()
+        self.panel2.Hide()
+        self.panel3.Hide()
+        self.panel4.Hide()
+        self.panel5.Show()
+        if m == 0:
+            self.panel51.Show()
+            self.panel52.Hide()
+        else:
+            self.panel51.Hide()
+            self.panel52.Show()
+            
+        self.Layout()
 
 def set_bitmapbuttons(self):
     image = PIL.Image.open(self.path_fb, mode='r')
@@ -393,6 +425,11 @@ def set_bitmapbuttons(self):
     image2.SetData( image.tobytes() )
     self.m_OpenPrint.SetBitmap(wx.Bitmap(image2))
     
+    image = PIL.Image.open(self.path_wifi, mode='r')
+    image = image.resize((105, 105), PIL.Image.ANTIALIAS) 
+    image2 = wx.Image( image.size)
+    image2.SetData( image.tobytes() )
+    self.m_OpenTransfer.SetBitmap(wx.Bitmap(image2))
     # stich
     
     image = PIL.Image.open(self.path_arrow, mode='r')

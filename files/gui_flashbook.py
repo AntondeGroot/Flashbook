@@ -33,6 +33,8 @@ import wx.richtext
 ## Class MyFrame
 ###########################################################################
 
+
+
 class MyFrame ( wx.Frame ):
 	
 	def __init__( self, parent, data ):
@@ -140,6 +142,27 @@ class MyFrame ( wx.Frame ):
 		self.m_OpenPrint = wx.BitmapButton( self.panel0, wx.ID_ANY, wx.NullBitmap, wx.DefaultPosition, wx.Size( 110,110 ), wx.BU_AUTODRAW )
 		self.m_OpenPrint.SetDefault() 
 		gSizer1.Add( self.m_OpenPrint, 0, wx.ALL, 0 )
+		
+		bSizer352 = wx.BoxSizer( wx.VERTICAL )
+		
+		self.m_staticText112 = wx.StaticText( self.panel0, wx.ID_ANY, u"Synchronize", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_staticText112.Wrap( -1 )
+		self.m_staticText112.SetFont( wx.Font( 20, 70, 90, 92, False, wx.EmptyString ) )
+		
+		bSizer352.Add( self.m_staticText112, 0, wx.ALL, 0 )
+		
+		self.m_staticText1111 = wx.StaticText( self.panel0, wx.ID_ANY, u"Connect two devices: e.g. your Desktop and Laptop\nand transfer the files between them.", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_staticText1111.Wrap( -1 )
+		self.m_staticText1111.SetFont( wx.Font( 10, 70, 90, 90, False, wx.EmptyString ) )
+		
+		bSizer352.Add( self.m_staticText1111, 0, wx.ALL, 0 )
+		
+		
+		gSizer1.Add( bSizer352, 1, wx.EXPAND, 5 )
+		
+		self.m_OpenTransfer = wx.BitmapButton( self.panel0, wx.ID_ANY, wx.NullBitmap, wx.DefaultPosition, wx.Size( 110,110 ), wx.BU_AUTODRAW )
+		self.m_OpenTransfer.SetDefault() 
+		gSizer1.Add( self.m_OpenTransfer, 0, wx.ALL, 0 )
 		
 		
 		bSizer71.Add( gSizer1, 0, 0, 5 )
@@ -699,6 +722,140 @@ class MyFrame ( wx.Frame ):
 		bSizer32.Fit( self.panel4 )
 		bSizer7.Add( self.panel4, 1, wx.EXPAND |wx.ALL, 0 )
 		
+		self.panel5 = wx.Panel( self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TAB_TRAVERSAL )
+		self.panel5.SetBackgroundColour( wx.Colour( 254, 240, 231 ) )
+		
+		bSizer44 = wx.BoxSizer( wx.VERTICAL )
+		
+		self.panel51 = wx.Panel( self.panel5, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TAB_TRAVERSAL )
+		bSizer441 = wx.BoxSizer( wx.HORIZONTAL )
+		
+		
+		bSizer441.Add( ( 100, 0), 0, wx.EXPAND, 5 )
+		
+		bSizer321 = wx.BoxSizer( wx.VERTICAL )
+		
+		
+		bSizer321.Add( ( 100, 100), 0, wx.EXPAND, 5 )
+		
+		self.m_panel181 = wx.Panel( self.panel51, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TAB_TRAVERSAL )
+		bSizer48 = wx.BoxSizer( wx.VERTICAL )
+		
+		fgSizer1 = wx.FlexGridSizer( 0, 2, 0, 0 )
+		fgSizer1.SetFlexibleDirection( wx.HORIZONTAL )
+		fgSizer1.SetNonFlexibleGrowMode( wx.FLEX_GROWMODE_SPECIFIED )
+		
+		self.m_staticText39 = wx.StaticText( self.m_panel181, wx.ID_ANY, u"My IP ", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_staticText39.Wrap( -1 )
+		self.m_staticText39.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
+		
+		fgSizer1.Add( self.m_staticText39, 0, wx.ALL, 5 )
+		
+		self.m_txtMyIP = wx.TextCtrl( self.m_panel181, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
+		fgSizer1.Add( self.m_txtMyIP, 0, wx.ALL, 5 )
+		
+		self.m_staticText40 = wx.StaticText( self.m_panel181, wx.ID_ANY, u"Target IP", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_staticText40.Wrap( -1 )
+		self.m_staticText40.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
+		
+		fgSizer1.Add( self.m_staticText40, 0, wx.ALL, 5 )
+		
+		self.m_txtTargetIP = wx.TextCtrl( self.m_panel181, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
+		fgSizer1.Add( self.m_txtTargetIP, 0, wx.ALL, 5 )
+		
+		self.m_staticText411 = wx.StaticText( self.m_panel181, wx.ID_ANY, u"Client", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_staticText411.Wrap( -1 )
+		self.m_staticText411.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
+		
+		fgSizer1.Add( self.m_staticText411, 0, wx.ALL, 5 )
+		
+		self.m_radioClient = wx.RadioButton( self.m_panel181, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_radioClient.SetValue( True ) 
+		fgSizer1.Add( self.m_radioClient, 0, wx.ALL, 5 )
+		
+		self.m_staticText42 = wx.StaticText( self.m_panel181, wx.ID_ANY, u"Server", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_staticText42.Wrap( -1 )
+		self.m_staticText42.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
+		
+		fgSizer1.Add( self.m_staticText42, 0, wx.ALL, 5 )
+		
+		self.m_radioServer = wx.RadioButton( self.m_panel181, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
+		fgSizer1.Add( self.m_radioServer, 0, wx.ALL, 5 )
+		
+		self.m_staticText43 = wx.StaticText( self.m_panel181, wx.ID_ANY, u"Transfer Books", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_staticText43.Wrap( -1 )
+		self.m_staticText43.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
+		
+		fgSizer1.Add( self.m_staticText43, 0, wx.ALL, 5 )
+		
+		self.m_checkBoxBook = wx.CheckBox( self.m_panel181, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
+		fgSizer1.Add( self.m_checkBoxBook, 0, wx.ALL, 5 )
+		
+		
+		bSizer48.Add( fgSizer1, 0, wx.EXPAND, 5 )
+		
+		
+		bSizer48.Add( ( 0, 25), 0, wx.EXPAND, 5 )
+		
+		self.m_staticline7 = wx.StaticLine( self.m_panel181, wx.ID_ANY, wx.DefaultPosition, wx.Size( -1,1 ), wx.LI_HORIZONTAL )
+		self.m_staticline7.SetMaxSize( wx.Size( 500,-1 ) )
+		
+		bSizer48.Add( self.m_staticline7, 0, wx.EXPAND |wx.ALL, 5 )
+		
+		bSizer47 = wx.BoxSizer( wx.HORIZONTAL )
+		
+		self.m_buttonTransfer = wx.Button( self.m_panel181, wx.ID_ANY, u"Transfer", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_buttonTransfer.SetFont( wx.Font( 9, 74, 90, 90, False, "Arial" ) )
+		
+		bSizer47.Add( self.m_buttonTransfer, 0, wx.ALL, 5 )
+		
+		self.m_txtStatus = wx.TextCtrl( self.m_panel181, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.Size( 400,-1 ), wx.TE_READONLY )
+		bSizer47.Add( self.m_txtStatus, 0, wx.ALL, 5 )
+		
+		
+		bSizer48.Add( bSizer47, 1, wx.EXPAND, 0 )
+		
+		
+		self.m_panel181.SetSizer( bSizer48 )
+		self.m_panel181.Layout()
+		bSizer48.Fit( self.m_panel181 )
+		bSizer321.Add( self.m_panel181, 1, wx.EXPAND |wx.ALL, 0 )
+		
+		
+		bSizer321.Add( ( 0, 0), 1, wx.EXPAND, 5 )
+		
+		
+		bSizer441.Add( bSizer321, 1, wx.EXPAND, 5 )
+		
+		
+		self.panel51.SetSizer( bSizer441 )
+		self.panel51.Layout()
+		bSizer441.Fit( self.panel51 )
+		bSizer44.Add( self.panel51, 1, wx.EXPAND |wx.ALL, 5 )
+		
+		self.panel52 = wx.Panel( self.panel5, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TAB_TRAVERSAL )
+		bSizer461 = wx.BoxSizer( wx.VERTICAL )
+		
+		self.m_txtHelpSync = wx.richtext.RichTextCtrl( self.panel52, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0|wx.VSCROLL|wx.HSCROLL|wx.NO_BORDER|wx.WANTS_CHARS )
+		bSizer461.Add( self.m_txtHelpSync, 1, wx.EXPAND |wx.ALL, 5 )
+		
+		
+		self.panel52.SetSizer( bSizer461 )
+		self.panel52.Layout()
+		bSizer461.Fit( self.panel52 )
+		bSizer44.Add( self.panel52, 1, wx.EXPAND |wx.ALL, 5 )
+		
+		
+		self.panel5.SetSizer( bSizer44 )
+		self.panel5.Layout()
+		bSizer44.Fit( self.panel5 )
+		bSizer7.Add( self.panel5, 1, wx.EXPAND |wx.ALL, 0 )
+		
+		bSizer41 = wx.BoxSizer( wx.VERTICAL )
+		
+		
+		bSizer7.Add( bSizer41, 1, wx.EXPAND, 5 )
+		
 		
 		self.SetSizer( bSizer7 )
 		self.Layout()
@@ -714,6 +871,7 @@ class MyFrame ( wx.Frame ):
 		self.m_OpenFlashbook.Bind( wx.EVT_BUTTON, self.m_OpenFlashbookOnButtonClick )
 		self.m_OpenFlashcard.Bind( wx.EVT_BUTTON, self.m_OpenFlashcardOnButtonClick )
 		self.m_OpenPrint.Bind( wx.EVT_BUTTON, self.m_OpenPrintOnButtonClick )
+		self.m_OpenTransfer.Bind( wx.EVT_BUTTON, self.m_OpenTransferOnButtonClick )
 		self.m_dirPicker11.Bind( wx.EVT_DIRPICKER_CHANGED, self.m_dirPicker11OnDirChanged )
 		self.Bind( wx.EVT_TOOL, self.m_toolPlus11OnToolClicked, id = self.m_toolPlus11.GetId() )
 		self.Bind( wx.EVT_TOOL, self.m_toolMin11OnToolClicked, id = self.m_toolMin11.GetId() )
@@ -805,6 +963,10 @@ class MyFrame ( wx.Frame ):
 		self.m_bitmap4.Bind( wx.EVT_LEFT_UP, self.m_bitmap4OnLeftUp )
 		self.m_btnSelect.Bind( wx.EVT_BUTTON, self.m_btnSelectOnButtonClick )
 		self.m_btnImportScreenshot.Bind( wx.EVT_BUTTON, self.m_btnImportScreenshotOnButtonClick )
+		self.m_txtMyIP.Bind( wx.EVT_KEY_UP, self.m_txtMyIPOnKeyUp )
+		self.m_txtTargetIP.Bind( wx.EVT_KEY_UP, self.m_txtTargetIPOnKeyUp )
+		self.m_buttonTransfer.Bind( wx.EVT_BUTTON, self.m_buttonTransferOnButtonClick )
+		self.m_txtHelpSync.Bind( wx.EVT_LEFT_DOWN, self.m_txtHelpSyncOnLeftDown )
 	
 	def __del__( self ):
 		pass
@@ -830,6 +992,9 @@ class MyFrame ( wx.Frame ):
 		event.Skip()
 	
 	def m_OpenPrintOnButtonClick( self, event ):
+		event.Skip()
+	
+	def m_OpenTransferOnButtonClick( self, event ):
 		event.Skip()
 	
 	def m_dirPicker11OnDirChanged( self, event ):
@@ -1029,6 +1194,18 @@ class MyFrame ( wx.Frame ):
 		event.Skip()
 	
 	def m_btnImportScreenshotOnButtonClick( self, event ):
+		event.Skip()
+	
+	def m_txtMyIPOnKeyUp( self, event ):
+		event.Skip()
+	
+	def m_txtTargetIPOnKeyUp( self, event ):
+		event.Skip()
+	
+	def m_buttonTransferOnButtonClick( self, event ):
+		event.Skip()
+	
+	def m_txtHelpSyncOnLeftDown( self, event ):
 		event.Skip()
 	
 

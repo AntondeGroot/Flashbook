@@ -32,6 +32,8 @@ import resources
 import fb_modules    as m
 import fc_modules    as m2
 import print_modules as m3
+import sync_modules  as m4
+import server_modules as server
 import fb_functions    as f
 import fc_functions    as f2
 import print_functions as f3
@@ -42,7 +44,8 @@ import win32clipboard
 from win32api import GetSystemMetrics
 from PIL import Image
 import wmi # for IPaddress
-
+import sys
+sys.setrecursionlimit(5000)
 # when using Pyinstaller to get the .exe file: it will standard give an error that it is missing the module 'qwindows.dll'
 # since the .exe created by --onefile takes ages to start, i won't be using that option and then module can be found in the folder below
 # it is resolved by simply copying the qwindows.dll module next to the .exe file
@@ -68,6 +71,7 @@ def setup_sources(self):
     self.path_icon = os.path.join(self.dir7,"open-book1.png")
     self.path_fb = os.path.join(self.dir7,"flashbook.png")
     self.path_fc = os.path.join(self.dir7,"flashcard.png")
+    self.path_wifi = os.path.join(self.dir7,"wifi.png")
     self.path_pr = os.path.join(self.dir7,"print.png")
     self.path_arrow = os.path.join(self.dir7,"arrow.png")
     self.path_arrow2 = os.path.join(self.dir7,"arrow2.png")
@@ -133,8 +137,10 @@ def initialize(self):
             
             
             myIP = wmi_out.IPAddress[0]
+            
+           
             with open(os.path.join(self.dirIP,'IPadresses.txt'),'w') as f:
-                f.write(myIP)
+                f.write(json.dumps({'IP1' : myIP,'IP2': ""})) 
                 f.close()
     except:
         print("Error: could not access internet?")
@@ -220,6 +226,13 @@ class MainFrame(gui.MyFrame):
     def m_OpenFlashcardOnButtonClick( self, event ):
         p.SwitchPanel(self,2,0)
         p.run_flashcard(self)
+    def m_OpenTransferOnButtonClick(self,event):
+        p.SwitchPanel(self,5,0)
+        p.get_IP(self,event)
+        #client = self.m_radioClient.GetValue() #boolean
+        #p.run_transfer(self,event,client)
+        m4.set_richtext(self)
+        m4.initialize(self,event)
         
     def m_OpenPrintOnButtonClick(self,event):
         thr1 = threading.Thread(target = p.SwitchPanel, name = 'thread1', args = (self,3,None ))
@@ -294,17 +307,16 @@ class MainFrame(gui.MyFrame):
         if self.panel0.IsShown():
             pass
         if self.panel1.IsShown():
-            self.panel11.Hide()
-            self.panel12.Show()
-            self.Layout()
+            p.SwitchPanel(self,1,1) 
         if self.panel2.IsShown():
-            self.panel21.Hide()
-            self.panel22.Show()
-            self.Layout()
+            p.SwitchPanel(self,2,1) 
+        if self.panel5.IsShown():
+            p.SwitchPanel(self,5,1) 
             
     def m_richText12OnLeftDown( self, event ):
         p.SwitchPanel(self,1,0) 
-	
+    def m_txtHelpSyncOnLeftDown(self,event):
+        p.SwitchPanel(self,5,0) 
     #%% flashbook
     " flashbook "
     # import screenshot #
@@ -409,8 +421,38 @@ class MainFrame(gui.MyFrame):
     def m_richText22OnLeftDown( self, event ):
         p.SwitchPanel(self,2,0) 
     
-    
-    
+    #%% transfer
+    def m_txtMyIPOnKeyUp( self, event ):
+        self.IP1 = self.m_txtMyIP.GetValue()
+        with open(os.path.join(self.dirIP,'IPadresses.txt'),'w') as f:
+            f.write(json.dumps({'IP1' : self.IP1,'IP2': self.IP2})) 
+            f.close()        
+    def m_txtTargetIPOnKeyUp( self, event ):
+        self.IP2 = self.m_txtTargetIP.GetValue()
+        with open(os.path.join(self.dirIP,'IPadresses.txt'),'w') as f:
+            f.write(json.dumps({'IP1' : self.IP1,'IP2': self.IP2})) 
+            f.close()
+    def m_buttonTransferOnButtonClick(self,event):
+        Client = self.m_radioClient.GetValue()
+        if Client:
+            HOST = self.IP2
+            print(f"HOST IS {HOST}")
+            print("start client")
+            self.m_txtStatus.SetValue("starting client")
+            t_sync = lambda self,mode,HOST :threading.Thread(target=m4.SyncDevices,args=(self,mode,HOST)).start()
+            t_sync(self,1,HOST)
+            
+            
+        else:
+            HOST = self.IP1
+            print(f"HOST IS {HOST}")
+            print("start server")
+            self.m_txtStatus.SetValue("starting server")
+            t_sync = lambda self,mode,HOST :threading.Thread(target=m4.SyncDevices,args=(self,mode,HOST)).start()
+            t_sync(self,0,HOST)
+            
+            
+        
     #%% flashcard
     " flashcard "
     # main program
@@ -498,13 +540,10 @@ class MainFrame(gui.MyFrame):
             print("Error: invalid entry")
         
 # start the application
-def runapp():
-    app = wx.App(False) 
-    frame = MainFrame(None)
-    frame.Show(True)
-    app.MainLoop()
-    del app
-    
-# initialize a thread
-thr_main = threading.Thread(target = runapp, name = 'mainthread',args = ())
-thr_main.run()
+app = wx.App(False) 
+frame = MainFrame(None)
+frame.Show(True)
+app.MainLoop()
+del app
+
+

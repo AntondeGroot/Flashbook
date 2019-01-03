@@ -7,7 +7,7 @@ basically: (in Windows)
 - download the latest python.exe. Install and select 'Add Python to path'
 - in cmd: `python -m venv flashbook-env` 
 - then: `flashbook-env\Scripts\activate.bat`
-- then use: `python -m pip install img2pdf matplotlib numpy pillow pybase64 pypiwin32 termcolor wxpython` to install all packages.
+- then use: `python -m pip install img2pdf matplotlib numpy pillow pybase64 pypiwin32 termcolor wmi wxpython` to install all packages.
 
 documentation:
 
@@ -21,14 +21,6 @@ documentation:
 1. download all the files in the `files` folder
 1. go in command prompt to the relevant folder
 1. create a .spec file by typing: `pyi-makespec --noconsole flashbook.py --icon=book.ico`
-1. then add to the created .spec file:
-```
-import sys
-sys.setrecursionlimit(5000)
-block_cipher = None
-```
-at the beginning of the file
-
 4. run pyinstaller `pyinstaller flashbook.spec` 
 
 --------------------------------

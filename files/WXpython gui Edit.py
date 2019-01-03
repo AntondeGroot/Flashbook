@@ -8,9 +8,9 @@ read = f.readlines()
 # every first item will be replaced by the one following it.
 org = [
        ".AddSpacer",'.Add',
-       r'u"C:\\Users\\Anton\\.spyder-py3\\Flashbook Flashcard\\Final\\Flashbook-master\\gui design\\path_min"','path_min',
-       r'u"C:\\Users\\Anton\\.spyder-py3\\Flashbook Flashcard\\Final\\Flashbook-master\\gui design\\path_add"','path_add',
-       r'u"C:\\Users\\Anton\\.spyder-py3\\Flashbook Flashcard\\Final\\Flashbook-master\\gui design\\path_switch"','path_switch',
+       r'u"D:\\Anton\\Documents\\path_min"','path_min',
+       r'u"D:\\Anton\\Documents\\path_add"','path_add',
+       r'u"D:\\Anton\\Documents\\path_switch"','path_switch',
        '.AddLabelTool','.AddTool',
        '.AppendItem','.Append',
        '.SetSizeHintsSz','.SetSizeHints',
