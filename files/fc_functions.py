@@ -379,9 +379,8 @@ def LoadFlashCards(self):
     newcommand_line_lst = file1.readlines()
     # start reading after "###" because I defined that as the end of the notes
     index = []
-    for i in range(len(newcommand_line_lst)):
-        cond = "###" in newcommand_line_lst[i]
-        if cond == True:
+    for i,commandline in enumerate(newcommand_line_lst):
+        if "###" in commandline:
             index = i+1
     # remove the lines that precede the ### for user explanation on how to use newcommand        
     if "{}".format(index).isdigit() == True:
@@ -501,11 +500,12 @@ def LoadFlashCards(self):
     # reformat QnA
     self.questions2 = []
     self.answers2 = []
-    for i in range(len(self.questions)):
-        self.questions2.append(self.questions[i].strip())
-        self.answers2.append(self.answers[i].strip())
+    for i,question in enumerate(self.questions):
+        answer = self.answers[i]
+        self.questions2.append(question.strip())
+        self.answers2.append(answer.strip())
     # save questions and answers in dictionaries
-    for i in range(len(self.questions)):
+    for i,item in enumerate(self.questions):
         if self.questions2[i] != '':
             self.textdictionary.update({'Q{}'.format(i): self.questions2[i]})
         if self.answers2[i] != '':
