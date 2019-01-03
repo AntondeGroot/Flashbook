@@ -187,9 +187,9 @@ class MyFrame ( wx.Frame ):
 		self.m_toolBar1 = wx.ToolBar( self.panel11, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TB_HORIZONTAL ) 
 		self.m_dirPicker11 = wx.DirPickerCtrl( self.m_toolBar1, wx.ID_ANY, wx.EmptyString, u"Select a folder", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.m_toolBar1.AddControl( self.m_dirPicker11 )
-		self.m_toolPlus11 = self.m_toolBar1.AddTool( wx.ID_ANY, u"plus", wx.Bitmap( u"D:\\Anton\\Documents\\path_add", wx.BITMAP_TYPE_ANY ), wx.NullBitmap, wx.ITEM_NORMAL, wx.EmptyString, wx.EmptyString, None ) 
+		self.m_toolPlus11 = self.m_toolBar1.AddTool( wx.ID_ANY, u"plus", wx.Bitmap( path_add, wx.BITMAP_TYPE_ANY ), wx.NullBitmap, wx.ITEM_NORMAL, wx.EmptyString, wx.EmptyString, None ) 
 		
-		self.m_toolMin11 = self.m_toolBar1.AddTool( wx.ID_ANY, u"min", wx.Bitmap( u"D:\\Anton\\Documents\\path_min", wx.BITMAP_TYPE_ANY ), wx.NullBitmap, wx.ITEM_NORMAL, wx.EmptyString, wx.EmptyString, None ) 
+		self.m_toolMin11 = self.m_toolBar1.AddTool( wx.ID_ANY, u"min", wx.Bitmap( path_min, wx.BITMAP_TYPE_ANY ), wx.NullBitmap, wx.ITEM_NORMAL, wx.EmptyString, wx.EmptyString, None ) 
 		
 		self.m_Zoom11 = wx.TextCtrl( self.m_toolBar1, wx.ID_ANY, u"100%", wx.DefaultPosition, wx.Size( 40,-1 ), wx.TE_READONLY|wx.NO_BORDER )
 		self.m_toolBar1.AddControl( self.m_Zoom11 )
@@ -322,9 +322,9 @@ class MyFrame ( wx.Frame ):
 		self.m_toolBar2 = wx.ToolBar( self.panel12, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TB_HORIZONTAL ) 
 		self.m_dirPicker12 = wx.DirPickerCtrl( self.m_toolBar2, wx.ID_ANY, wx.EmptyString, u"Select a folder", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.m_toolBar2.AddControl( self.m_dirPicker12 )
-		self.m_toolPlus12 = self.m_toolBar2.AddTool( wx.ID_ANY, u"plus", wx.Bitmap( u"D:\\Anton\\Documents\\path_add", wx.BITMAP_TYPE_ANY ), wx.NullBitmap, wx.ITEM_NORMAL, wx.EmptyString, wx.EmptyString, None ) 
+		self.m_toolPlus12 = self.m_toolBar2.AddTool( wx.ID_ANY, u"plus", wx.Bitmap( path_add, wx.BITMAP_TYPE_ANY ), wx.NullBitmap, wx.ITEM_NORMAL, wx.EmptyString, wx.EmptyString, None ) 
 		
-		self.m_toolMin12 = self.m_toolBar2.AddTool( wx.ID_ANY, u"min", wx.Bitmap( u"D:\\Anton\\Documents\\path_min", wx.BITMAP_TYPE_ANY ), wx.NullBitmap, wx.ITEM_NORMAL, wx.EmptyString, wx.EmptyString, None ) 
+		self.m_toolMin12 = self.m_toolBar2.AddTool( wx.ID_ANY, u"min", wx.Bitmap( path_min, wx.BITMAP_TYPE_ANY ), wx.NullBitmap, wx.ITEM_NORMAL, wx.EmptyString, wx.EmptyString, None ) 
 		
 		self.m_Zoom12 = wx.TextCtrl( self.m_toolBar2, wx.ID_ANY, u"100%", wx.DefaultPosition, wx.Size( 40,-1 ), wx.TE_READONLY|wx.NO_BORDER )
 		self.m_toolBar2.AddControl( self.m_Zoom12 )
@@ -392,7 +392,7 @@ class MyFrame ( wx.Frame ):
 		self.m_toolBar3 = wx.ToolBar( self.panel21, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TB_HORIZONTAL ) 
 		self.m_filePicker21 = wx.FilePickerCtrl( self.m_toolBar3, wx.ID_ANY, wx.EmptyString, u"Select a file", u"*.tex*", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.m_toolBar3.AddControl( self.m_filePicker21 )
-		self.m_toolSwitch21 = self.m_toolBar3.AddTool( wx.ID_ANY, u"Switch", wx.Bitmap( u"D:\\Anton\\Documents\\path_switch", wx.BITMAP_TYPE_ANY ), wx.NullBitmap, wx.ITEM_NORMAL, wx.EmptyString, wx.EmptyString, None ) 
+		self.m_toolSwitch21 = self.m_toolBar3.AddTool( wx.ID_ANY, u"Switch", wx.Bitmap( path_switch, wx.BITMAP_TYPE_ANY ), wx.NullBitmap, wx.ITEM_NORMAL, wx.EmptyString, wx.EmptyString, None ) 
 		
 		self.m_textCtrlMode = wx.TextCtrl( self.m_toolBar3, wx.ID_ANY, u"Question:", wx.DefaultPosition, wx.DefaultSize, wx.TE_READONLY|wx.NO_BORDER )
 		self.m_textCtrlMode.SetFont( wx.Font( 12, 70, 90, 92, False, wx.EmptyString ) )
@@ -418,9 +418,9 @@ class MyFrame ( wx.Frame ):
 		self.m_Score21.SetMaxSize( wx.Size( 20,-1 ) )
 		
 		self.m_toolBar3.AddControl( self.m_Score21 )
-		self.m_toolPlus21 = self.m_toolBar3.AddTool( wx.ID_ANY, u"plus", wx.Bitmap( u"D:\\Anton\\Documents\\path_add", wx.BITMAP_TYPE_ANY ), wx.NullBitmap, wx.ITEM_NORMAL, wx.EmptyString, wx.EmptyString, None ) 
+		self.m_toolPlus21 = self.m_toolBar3.AddTool( wx.ID_ANY, u"plus", wx.Bitmap( path_add, wx.BITMAP_TYPE_ANY ), wx.NullBitmap, wx.ITEM_NORMAL, wx.EmptyString, wx.EmptyString, None ) 
 		
-		self.m_toolMin21 = self.m_toolBar3.AddTool( wx.ID_ANY, u"min", wx.Bitmap( u"D:\\Anton\\Documents\\path_min", wx.BITMAP_TYPE_ANY ), wx.NullBitmap, wx.ITEM_NORMAL, wx.EmptyString, wx.EmptyString, None ) 
+		self.m_toolMin21 = self.m_toolBar3.AddTool( wx.ID_ANY, u"min", wx.Bitmap( path_min, wx.BITMAP_TYPE_ANY ), wx.NullBitmap, wx.ITEM_NORMAL, wx.EmptyString, wx.EmptyString, None ) 
 		
 		self.m_Zoom21 = wx.TextCtrl( self.m_toolBar3, wx.ID_ANY, u"100%", wx.DefaultPosition, wx.Size( 40,-1 ), wx.TE_READONLY|wx.NO_BORDER )
 		self.m_toolBar3.AddControl( self.m_Zoom21 )
