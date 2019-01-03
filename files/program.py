@@ -25,7 +25,6 @@ import fb_modules    as m
 import fc_modules    as m2
 import print_modules as m3
 import sync_modules  as m4
-import server_modules  as server
 import fb_functions    as f
 import fc_functions    as f2
 import print_functions as f3
@@ -87,10 +86,9 @@ def run_flashbook(self):
         #%%
         
         arr = os.listdir(self.dir3)
-        for i in range(len(arr)):
-            if ('.jpg' not in arr[i]) and ('.png' not in arr[i]):
-               #print(arr[i])
-               folders.append(arr[i])
+        for i,item in enumerate(arr):
+            if ('.jpg' not in item) and ('.png' not in item):
+               folders.append(item)
         self.nr_books = len(folders)
         folders.sort() 
         
@@ -171,9 +169,9 @@ def run_flashcard(self):
         arr = os.listdir(self.dir3) 
         booklist = []
         
-        for i in range(len(arr)): # make sure the user didn't accidentally put pictures in the 'booksfolder' but in a folder in 'booksfolder'
-            if ('.jpg' not in arr[i]) and ('.png' not in arr[i]):
-               booklist.append(arr[i])
+        for i,item in enumerate(arr): # make sure the user didn't accidentally put pictures in the 'booksfolder' but in a folder in 'booksfolder'
+            if ('.jpg' not in item) and ('.png' not in item):
+               booklist.append(item)
         booklist.sort() 
         if len(booklist) == 0:
             print(colored("No books were found in directory: {}\n 1) please type '%localappdata%' in windows explorer \n 2) find Flashbook and place a folder containing jpg files of the pdf in the".format(self.dir3)+ r"'\books' directory"+"\n","red"))
@@ -290,10 +288,9 @@ def run_print(self,event):
         #%%
         
         arr = os.listdir(self.dir3)
-        for i in range(len(arr)):
-            if ('.jpg' not in arr[i]) and ('.png' not in arr[i]):
-               #print(arr[i])
-               folders.append(arr[i])
+        for i,item in enumerate(arr):
+            if ('.jpg' not in item) and ('.png' not in item):
+               folders.append(item)
         self.nr_books = len(folders)
         folders.sort() 
         
