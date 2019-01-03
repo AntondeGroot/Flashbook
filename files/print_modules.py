@@ -573,8 +573,7 @@ def LoadFlashCards(self):
         # start reading after "###" because I defined that as the end of the notes
         index = []
         for i,commandline in enumerate(newcommand_line_lst):
-            cond = "###" in commandline
-            if cond == True:
+            if "###" in commandline:
                 index = i+1
         # remove the lines that precede the ### for user explanation on how to use newcommand        
         if "{}".format(index).isdigit() == True:
