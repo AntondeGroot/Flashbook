@@ -32,6 +32,7 @@ import resources
 import fb_modules    as m
 import fc_modules    as m2
 import print_modules as m3
+import sync_modules  as m4
 import server_modules as server
 import fb_functions    as f
 import fc_functions    as f2
@@ -228,8 +229,10 @@ class MainFrame(gui.MyFrame):
     def m_OpenTransferOnButtonClick(self,event):
         p.SwitchPanel(self,5,0)
         p.get_IP(self,event)
-        client = self.m_radioClient.GetValue() #boolean
-        p.run_transfer(self,event,client)
+        #client = self.m_radioClient.GetValue() #boolean
+        #p.run_transfer(self,event,client)
+        m4.set_richtext(self)
+        m4.initialize(self,event)
         
     def m_OpenPrintOnButtonClick(self,event):
         thr1 = threading.Thread(target = p.SwitchPanel, name = 'thread1', args = (self,3,None ))
@@ -304,17 +307,16 @@ class MainFrame(gui.MyFrame):
         if self.panel0.IsShown():
             pass
         if self.panel1.IsShown():
-            self.panel11.Hide()
-            self.panel12.Show()
-            self.Layout()
+            p.SwitchPanel(self,1,1) 
         if self.panel2.IsShown():
-            self.panel21.Hide()
-            self.panel22.Show()
-            self.Layout()
+            p.SwitchPanel(self,2,1) 
+        if self.panel5.IsShown():
+            p.SwitchPanel(self,5,1) 
             
     def m_richText12OnLeftDown( self, event ):
         p.SwitchPanel(self,1,0) 
-	
+    def m_txtHelpSyncOnLeftDown(self,event):
+        p.SwitchPanel(self,5,0) 
     #%% flashbook
     " flashbook "
     # import screenshot #
@@ -424,8 +426,7 @@ class MainFrame(gui.MyFrame):
         self.IP1 = self.m_txtMyIP.GetValue()
         with open(os.path.join(self.dirIP,'IPadresses.txt'),'w') as f:
             f.write(json.dumps({'IP1' : self.IP1,'IP2': self.IP2})) 
-            f.close()
-            
+            f.close()        
     def m_txtTargetIPOnKeyUp( self, event ):
         self.IP2 = self.m_txtTargetIP.GetValue()
         with open(os.path.join(self.dirIP,'IPadresses.txt'),'w') as f:
@@ -433,7 +434,23 @@ class MainFrame(gui.MyFrame):
             f.close()
     def m_buttonTransferOnButtonClick(self,event):
         Client = self.m_radioClient.GetValue()
-        p.run_transfer(self,event,Client)
+        if Client:
+            HOST = self.IP2
+            print(f"HOST IS {HOST}")
+            print("start client")
+            self.m_txtStatus.SetValue("starting client")
+            t_sync = lambda self,mode,HOST :threading.Thread(target=m4.SyncDevices,args=(self,mode,HOST)).start()
+            t_sync(self,1,HOST)
+            
+            
+        else:
+            HOST = self.IP1
+            print(f"HOST IS {HOST}")
+            print("start server")
+            self.m_txtStatus.SetValue("starting server")
+            t_sync = lambda self,mode,HOST :threading.Thread(target=m4.SyncDevices,args=(self,mode,HOST)).start()
+            t_sync(self,0,HOST)
+            
             
         
     #%% flashcard
