@@ -281,10 +281,10 @@ def CombinePics(self,directory):
                 x_offset += img.size[0]
             new_im.save(im[0])
             print(len(im))
-            for p in range(len(im)):
+            for p,img in enumerate(im):
                 if p!=0:
                     try:
-                        os.remove(im[p])
+                        os.remove(img)
                     except:
                         pass
             directory[i] = im[0]
@@ -304,10 +304,10 @@ def CombinePics(self,directory):
         x_offset += im.size[1]
     new_im.save(directory[0])
     #only save first picture (combined pic) the rest will be removed.
-    for p in range(len(directory)):
+    for p,path in enumerate(directory):
         if p!=0:
             try:
-                os.remove(directory[p])
+                os.remove(path)
             except:
                 pass
             
@@ -338,7 +338,7 @@ def CreateTextCard(self):
     
     img_array = np.sum(np.sum(np.array(imginv),2),0) # look where something is not "white" in the x-axis
     while find == True:
-        for i in range(len(img_array)):
+        for i in range(len(img_array)): # 
             print(i)
             j = len(img_array) - i-1            
             if find == True:
@@ -443,8 +443,8 @@ def Text2Latex(self):
     newcommand_line_lst = file1.readlines()
     
     index = []
-    for i in range(len(newcommand_line_lst)):
-        if "###" in newcommand_line_lst[i]:
+    for i,commandline in enumerate(newcommand_line_lst):
+        if "###" in commandline:
             index = i+1
     # remove the lines that precede the ###     
     newcommand_line_lst[:index]=[]
