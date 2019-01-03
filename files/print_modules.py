@@ -3,7 +3,6 @@
 Created on Fri Sep 14 13:26:43 2018
 @author: Anton
 """
-from random import randint
 from termcolor import colored
 import numpy as np
 import PIL
@@ -12,7 +11,6 @@ import os
 import print_functions as f
 import json
 import re
-import wx
 import win32clipboard
 from win32api import GetSystemMetrics
 from PIL import Image
@@ -212,12 +210,10 @@ def notes2paper(self):
             self.allimages_w = []
     self.paper_h_list = C
     
-    #for i in range(len(self.paper_h_list[0])):
-    #    self.paper_h_list[0][i].show()
+    
     
     # combine pics horizontally
-    for i in range(len(self.paper_h_list)):
-        images = self.paper_h_list[i]
+    for i,images in enumerate(self.paper_h_list):
         try:
             widths, heights = zip(*(i.size for i in images)) 
             
@@ -273,8 +269,7 @@ def notes2paper(self):
     # combine vertical pictures per page
     self.allimages_v = []
     
-    for i in range(len(self.paper_h)):
-        images = self.paper_h[i]        
+    for i,images in enumerate(self.paper_h):
         new_im = PIL.Image.new('RGB', (self.a4page_w, self.a4page_h), "white")        
         y_offset = 0
         try:
@@ -339,7 +334,7 @@ def dirchanged(self,event):
             #count = 0
             picname = picnames[i]
             while TF == True:
-                for j in range(len(picname)):
+                for j in range(len(picname)): # can't simply use enumerate, we need to work backwards
                     
                     k=len(picname)-j-1
                     
@@ -577,8 +572,8 @@ def LoadFlashCards(self):
         newcommand_line_lst = file1.readlines()
         # start reading after "###" because I defined that as the end of the notes
         index = []
-        for i in range(len(newcommand_line_lst)):
-            cond = "###" in newcommand_line_lst[i]
+        for i,commandline in enumerate(newcommand_line_lst):
+            cond = "###" in commandline
             if cond == True:
                 index = i+1
         # remove the lines that precede the ### for user explanation on how to use newcommand        
@@ -663,11 +658,12 @@ def LoadFlashCards(self):
         # reformat QnA
         self.questions2 = []
         self.answers2 = []
-        for i in range(len(self.questions)):
-            self.questions2.append(self.questions[i].strip())
-            self.answers2.append(self.answers[i].strip())
+        for i,question in enumerate(self.questions):
+            answer = self.answers[i]
+            self.questions2.append(question.strip())
+            self.answers2.append(answer.strip())
         # save questions and answers in dictionaries
-        for i in range(len(self.questions)):
+        for i,question in enumerate(self.questions):
             if self.questions2[i] != '':
                 self.textdictionary.update({'Q{}'.format(i): self.questions2[i]})
             if self.answers2[i] != '':
