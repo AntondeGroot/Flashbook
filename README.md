@@ -1,4 +1,4 @@
-Topics applied: TCP networks / SQL queries / win32
+Topics applied: TCP networks / SQL queries / win32 / OOP / multithreading / 
 
 # Flashbook 
 
