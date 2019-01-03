@@ -24,7 +24,8 @@ import resources
 import fb_modules    as m
 import fc_modules    as m2
 import print_modules as m3
-import server_modules as server
+import sync_modules  as m4
+import server_modules  as server
 import fb_functions    as f
 import fc_functions    as f2
 import print_functions as f3
@@ -263,33 +264,9 @@ def get_IP(self,event):
         self.IP2 = data['IP2']
     self.m_txtMyIP.SetValue(self.IP1)
     self.m_txtTargetIP.SetValue(self.IP2)
-import wmi
-def run_transfer(self,event,client):    
-    wmi_obj = wmi.WMI()
-    wmi_sql = "select IPAddress,DefaultIPGateway from Win32_NetworkAdapterConfiguration where IPEnabled = True"
-    wmi_out = wmi_obj.query(wmi_sql)
-    for dev in wmi_out:
-        print("IPv4Address:", dev.IPAddress[0], "DefaultIPGateway:", dev.DefaultIPGateway[0])
-    print("IPv4Address:\t", dev.IPAddress[0])
-    CurrentIP = dev.IPAddress[0]
+
     
-    # both Client as Host use the same 'IP2' because IP2 is the IP address the device is trying to connect to.
-    startdir = os.path.join(os.getenv("LOCALAPPDATA") ,"testtransfer")
-    if client: #start client   
-        dirlist = os.listdir(startdir)
-        if self.m_checkBoxBook.GetValue() == True: # anton
-            dirlist = [x for x in dirlist if "books" not in x]
-            
-        dirappendlist = ["books","pics","resources"] # directories that should not be overwritten but appended when new files are added
-        HostIP = self.IP2
-        #server.start_client(dirlist,dirappendlist,HostIP)    
-        t_client = lambda HOST,PORT,HostIP :threading.Thread(target=server.start_client,args=(dirlist,dirappendlist,HostIP) ).start()
-        t_client(dirlist,dirappendlist,HostIP) 
-    else: #start server
-        ClientIP = self.IP2
-        #server.start_server(startdir,ClientIP)
-        t_server = lambda HOST,PORT,CurrentIP :threading.Thread(target=server.start_server,args=(startdir,ClientIP,CurrentIP)).start()
-        t_server(startdir,ClientIP,CurrentIP)
+
     
 def run_print(self,event):                
     
@@ -420,6 +397,13 @@ def SwitchPanel(self,n,m):
         self.panel3.Hide()
         self.panel4.Hide()
         self.panel5.Show()
+        if m == 0:
+            self.panel51.Show()
+            self.panel52.Hide()
+        else:
+            self.panel51.Hide()
+            self.panel52.Show()
+            
         self.Layout()
 
 def set_bitmapbuttons(self):
