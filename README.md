@@ -1,3 +1,5 @@
+Topics applied: TCP networks / SQL queries / win32
+
 # Flashbook 
 
 GUI that:
