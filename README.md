@@ -2,13 +2,15 @@ Topics applied: TCP networks / minor SQL queries / win32 processes / OOP / multi
 
 # Flashbook : PDF reader & study tool
 
-GUI that:
+The program can do the following:
 
   1) facilitate taking notes of PDFs of study books
 
   2) a flash card program to study them.
   
   3) print the notes you took as a A4 pdf
+  
+  4) sync multiple devices
   
 I created this GUI to ease the arduous task of reading (physics) study books, make notes of important formulas and then to study them. Flashbook requires that you convert a PDF to jpg files and put them in the corresponding `%localappdata%/Flashbook/books` folder. This folder can be opened in the menubar of the program.
 
