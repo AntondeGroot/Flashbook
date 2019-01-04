@@ -21,6 +21,7 @@ You can take notes by simply selecting an area with your mouse, a rectangle will
 - Perhaps use SQLite for data, currently everything is stored as .tex, .txt, .json files in %localappdata%. Although, now it is easy to alter questions by opening .tex files in Wordpad or TeXnicCenter.
 - Add option to convert pdf to jpg files. This will speed up the syncing of books between devices.
 - Customizable colors for Flashbook's 
+- Clean up code: make it PEP-8 compliant, add clear docstrings to the functions.
 
 # The program explained
 
