@@ -4,13 +4,13 @@ Topics applied: TCP networks / minor SQL queries / win32 processes / OOP / multi
 
 The program can do the following:
 
-  1) facilitate taking notes of PDFs of study books
+  1) Take notes while you read PDFs of study books.
 
-  2) a flash card program to study them.
+  2) Flash card program to study your notes.
   
-  3) print the notes you took as a A4 pdf
+  3) Print the notes you took as a PDF.
   
-  4) sync multiple devices
+  4) Synchronize multiple devices.
   
 I created this GUI to ease the arduous task of reading (physics) study books, make notes of important formulas and then to study them. Flashbook requires that you convert a PDF to jpg files and put them in the corresponding `%localappdata%/Flashbook/books` folder. This folder can be opened in the menubar of the program.
 
