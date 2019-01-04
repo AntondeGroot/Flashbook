@@ -1,6 +1,6 @@
 Topics applied: TCP networks / minor SQL queries / win32 processes / OOP / multithreading / JSON / 
 
-# Flashbook : PDF reader / study tool
+# Flashbook : PDF reader & study tool
 
 GUI that:
 
