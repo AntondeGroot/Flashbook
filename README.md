@@ -15,15 +15,7 @@ Topics applied: TCP networks / minor SQL queries / win32 processes / OOP / multi
 I created this GUI to ease the arduous task of reading physics study books that contain a lot of formulas and long derivations of said formulas. I wanted to take notes of important formulas and then afterwards study them. Flashbook requires that you convert a PDF to jpg files and put them in the corresponding `%localappdata%/Flashbook/books` folder. This folder can be opened in the menubar of the program.
 
 You can take notes by simply selecting an area with your mouse, a rectangle will be drawn, you can do this multiple times and they will be combined to a single question or answer card. In addition to this you can type an additional question or answer in a textbox that will be combined with the selected areas. In this textbox you can include regular text but also LaTeX code, e.g. `$\partial\beta$` to show `∂β`. In addition you can also add LaTeX macros so that you can almost ask any (mathematical) question.
-### NB
-- In the ‘files’ subfolder you can define your own LaTeX macros
--	LaTeX environments like matrices are not included
 
-### TODO
-- Perhaps use SQLite for data, currently everything is stored as .tex, .txt, .json files in %localappdata%. Although, now it is easy to alter questions by opening .tex files in Wordpad or TeXnicCenter.
-- Add option to convert pdf to jpg files. This will speed up the syncing of books between devices.
-- Customizable colors for Flashbook's 
-- Clean up code: make it PEP-8 compliant, add clear docstrings to the functions, perhaps move more code from modules to functions in order to make the modules clearer and shorter.
 
 # The program explained
 
@@ -92,3 +84,15 @@ where you can modify it to your liking. You add lines between Q&A cards (if pres
 You can also sync two devices. It will automatically display the IP address of the device the app is running on. Then you only need to add the other device's IP address. Right now it can only be used on a local wifi network. Synching books is optional as it can be a very slow process since it needs to transfer hundreds of jpg files. I plan to add a PDF -> jpg converter so that this transfer will be much faster. (laptop <-> PC is not a commutative process one direction may take 45 minutes while the other only takes 3 minutes)
 
 ![alt text](https://github.com/AntondeGroot/Flashbook/blob/master/readme%20images/sync.png)
+
+
+
+### NB
+- In the ‘files’ subfolder you can define your own LaTeX macros
+-	LaTeX environments like matrices are not included
+
+### TODO
+- Perhaps use SQLite for data, currently everything is stored as .tex, .txt, .json files in %localappdata%. Although, now it is easy to alter questions by opening .tex files in Wordpad or TeXnicCenter.
+- Add option to convert pdf to jpg files. This will speed up the syncing of books between devices.
+- Customizable colors for Flashbook's 
+- Clean up code: make it PEP-8 compliant, add clear docstrings to the functions, perhaps move more code from modules to functions in order to make the modules clearer and shorter.
