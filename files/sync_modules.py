@@ -65,7 +65,7 @@ def recvall(sock, n):
 
 
 
-def sendmessage(HOST,PORT,TransferBooks,self):
+def sendmessage(HOST,PORT,self):
     
     dirlist = os.listdir(self.basedir)
     appendDir = ["books","pics","resources"] # dont overwrite
@@ -73,8 +73,8 @@ def sendmessage(HOST,PORT,TransferBooks,self):
     print(f"send message {dirlist}")
     
     # Does the user want to transfer books?
-    if TransferBooks == False:
-        dirlist = [x for x in dirlist if x != "books"]
+    
+    dirlist = [x for x in dirlist if x != "books"]
     dirlist = [x for x in dirlist if x not in excludeDir]
     def Socket_send(HOST,PORT,message):
         with socket.socket(socket.AF_INET,socket.SOCK_STREAM) as s:
