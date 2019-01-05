@@ -55,7 +55,6 @@ def run_flashbook(self):
         self.dir4 = dir0 + r"\temporary"
         self.dir5 = dir0 + r"\borders"
         self.dir6 = dir0 + r"\resources"
-        self.dir3 = dir0 + r"\books"
         self.temp_dir = self.dir4
         
         # create settings folder for debugging
