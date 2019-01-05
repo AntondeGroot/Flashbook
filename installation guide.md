@@ -7,7 +7,7 @@ basically: (in Windows)
 - download the latest python.exe. Install and select 'Add Python to path'
 - in cmd: `python -m venv flashbook-env` 
 - then: `flashbook-env\Scripts\activate.bat`
-- then use: `python -m pip install img2pdf matplotlib numpy pillow pybase64 pypiwin32 termcolor wmi wxpython` to install all packages.
+- then use: `python -m pip install img2pdf matplotlib numpy pdf2image pillow pybase64 pypiwin32 termcolor wmi wxpython` to install all packages.
 
 documentation:
 
