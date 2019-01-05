@@ -215,8 +215,8 @@ class MainFrame(gui.MyFrame):
     def m_OpenFlashbookOnButtonClick( self, event ):
         self.stayonpage = False
         self.stitchmode_v = True # stich vertical or horizontal
-        self.m_dirPicker11.SetInitialDirectory(self.dir3)
-        self.m_dirPicker11.SetPath(self.dir3)
+        self.m_filePicker11.SetInitialDirectory(self.dirpdfbook+'\.')
+        self.m_filePicker11.SetPath(self.dirpdfbook+'\.')
         # at first disable the border of the bitmap, 
         # otherwise you get a bordered empty bitmap. Enable the border only when there is a bitmap
         self.m_bitmapScroll.SetWindowStyleFlag(False) 
@@ -296,7 +296,7 @@ class MainFrame(gui.MyFrame):
                 
             
     def m_menuItemFlashbookOnMenuSelection( self, event ):
-        self.m_dirPicker11.SetInitialDirectory(self.dirpdfbook)
+        self.m_filePicker11.SetInitialDirectory(self.dirpdfbook)
         os.system("explorer {}".format(self.dirpdfbook)) 
 	
     def m_menuItemBackToMainOnMenuSelection( self, event ):
@@ -354,10 +354,9 @@ class MainFrame(gui.MyFrame):
         self.Update()
         self.Refresh()
         
-    def m_dirPicker11OnDirChanged(self,event):
+    def m_filePicker11OnFileChanged(self,event):
         self.m_bitmapScroll.SetWindowStyleFlag(wx.SIMPLE_BORDER)
-        m.dirchanged(self,event)
-        self.m_dirPicker11.SetPath(self.dir3)
+        m.dirchanged(self,event)        
         
     
 	# zoom in #================================================================
