@@ -83,7 +83,7 @@ where you can modify it to your liking. You add lines between Q&A cards (if pres
 
 You can also sync two devices. It will automatically display the IP address of the device the app is running on. Then you only need to add the other device's IP address. Right now it can only be used on a local wifi network. Synching books is optional as it can be a very slow process since it needs to transfer hundreds of jpg files. I plan to add a PDF -> jpg converter so that this transfer will be much faster. (laptop <-> PC is not a commutative process one direction may take 45 minutes while the other only takes 3 minutes)
 
-![alt text](https://github.com/AntondeGroot/Flashbook/blob/master/readme%20images/sync.png)
+![alt text](https://github.com/AntondeGroot/Flashbook/blob/master/readme%20images/sync_gui.png)
 
 
 
