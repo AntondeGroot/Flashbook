@@ -33,6 +33,7 @@ import fb_modules    as m
 import fc_modules    as m2
 import print_modules as m3
 import sync_modules  as m4
+import pdf_modules   as m5
 import fb_functions    as f
 import fc_functions    as f2
 import print_functions as f3
@@ -119,12 +120,13 @@ def initialize(self):
     self.dir6 = dir0 + r"\resources"
     self.dirIP = dir0 + r"\IPadresses"
     self.dirpdf = dir0 + r"\PDF folder"
+    self.dirpdfbook = dir0 + r"\PDF books"
     self.dirsettings = dir0 + r"\settings"
     self.temp_dir = self.dir4
     self.statsdir = os.path.join(self.dirsettings, 'data_sessions.json')
     
     folders = []
-    dirs = [dir0,self.dir1,self.dir2,self.dir3,self.dir4,self.dir5,self.dir6,self.dirpdf,self.dirsettings,self.dirIP]
+    dirs = [dir0,self.dir1,self.dir2,self.dir3,self.dir4,self.dir5,self.dir6,self.dirpdf,self.dirsettings,self.dirIP,self.dirpdfbook]
     try:
         if not os.path.exists(os.path.join(self.dirIP,'IPadresses.txt')):
             
@@ -151,7 +153,8 @@ def initialize(self):
     # create settings folder for debugging
     settings_create(self)
     settings_get(self)
-     
+    t_pdf = lambda self : threading.Thread(target = m5.ConvertPDF_to_JPG , args=(self, )).start()
+    t_pdf(self) 
     # unpacks png images used in the gui
     resources.resourceimages(self.dir6,self.dir1) 
     #%%
