@@ -2,6 +2,7 @@ Topics applied: TCP networks / minor SQL queries / win32 processes / OOP / multi
 
 # Flashbook : PDF reader & study tool
 
+
 **The program can do the following:**
 
   1) Take notes while you read PDFs of study books.
