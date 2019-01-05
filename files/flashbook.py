@@ -153,6 +153,7 @@ def initialize(self):
     # create settings folder for debugging
     settings_create(self)
     settings_get(self)
+    # convert pdf of books to jpg
     t_pdf = lambda self : threading.Thread(target = m5.ConvertPDF_to_JPG , args=(self, )).start()
     t_pdf(self) 
     # unpacks png images used in the gui
@@ -167,8 +168,7 @@ def initialize(self):
     folders.sort() 
     
     if len(folders) == 0:
-        ctypes.windll.user32.MessageBoxW(0, f"Welcome new user \n\nNo books were found in directory {self.dir3} \nGo to the menubar of the app:  `Open/Flashbook folder`\nPLace a new folder there named after a book containing jpg files", "Welcome to Flashbook", 1)
-        print("No books were found in directory: {}\n 1) please type '%localappdata%' in windows explorer\n 2) find Flashbook and place a folder containing jpg files of the pdf in the".format(self.dir3)+ r"'\books' directory"+"\n")
+        ctypes.windll.user32.MessageBoxW(0, f"Welcome new user \n\nNo PDFs were found in directory {self.dirpdfbook} \nGo to the menubar of the app:  `Open/Flashbook folder`\nPlace a PDF file there.", "Welcome to Flashbook", 1)
     else:
         print("the following books were found:")
         for name in folders:
