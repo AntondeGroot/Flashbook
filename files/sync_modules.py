@@ -331,9 +331,7 @@ def listen(HOST,PORT,self):
     
     
        
-def SyncDevices(self,mode,HOST):
-    TransferBooks = self.m_checkBoxBook.GetValue()    
-        
+def SyncDevices(self,mode,HOST):        
     
     #%%
     #try:# first establish an internetconnection
@@ -352,11 +350,11 @@ def SyncDevices(self,mode,HOST):
         time.sleep(2)
         self.m_txtStatus.SetValue("starting client")
         HOST = self.IP2
-        sendmessage(HOST,PORT,TransferBooks,self)
+        sendmessage(HOST,PORT,self)
     elif mode == 1:# first start client, then afterwards server but make sure it starts before a new client is stqarted
         HOST = self.IP2
         self.m_txtStatus.SetValue("starting client")
-        sendmessage(HOST,PORT,TransferBooks,self)
+        sendmessage(HOST,PORT,self)
         self.m_txtStatus.SetValue("finished client")
         time.sleep(0.1)
         self.m_txtStatus.SetValue("starting server")
