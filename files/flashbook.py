@@ -296,8 +296,8 @@ class MainFrame(gui.MyFrame):
                 
             
     def m_menuItemFlashbookOnMenuSelection( self, event ):
-        self.m_dirPicker11.SetInitialDirectory(self.dir3)
-        os.system("explorer {}".format(self.dir3)) 
+        self.m_dirPicker11.SetInitialDirectory(self.dirpdfbook)
+        os.system("explorer {}".format(self.dirpdfbook)) 
 	
     def m_menuItemBackToMainOnMenuSelection( self, event ):
         p.SwitchPanel(self,0,0)  
