@@ -81,7 +81,7 @@ where you can modify it to your liking. You add lines between Q&A cards (if pres
 
 ## Synchronizing Devices
 
-You can also sync two devices. It will automatically display the IP address of the device the app is running on. Then you only need to add the other device's IP address. Right now it can only be used on a local wifi network. Synching books is optional as it can be a very slow process since it needs to transfer hundreds of jpg files. I plan to add a PDF -> jpg converter so that this transfer will be much faster. (laptop <-> PC is not a commutative process one direction may take 45 minutes while the other only takes 3 minutes)
+You can also sync two devices. It will automatically display the IP address of the device the app is running on. Then you only need to add the other device's IP address. Right now it can only be used on a local wifi network. 
 
 ![alt text](https://github.com/AntondeGroot/Flashbook/blob/pdf2image/readme%20images/sync_gui.png)
 
@@ -93,6 +93,5 @@ You can also sync two devices. It will automatically display the IP address of t
 
 ### TODO
 - Perhaps use SQLite for data, currently everything is stored as .tex, .txt, .json files in %localappdata%. Although, now it is easy to alter questions by opening .tex files in Wordpad or TeXnicCenter.
-- Add option to convert pdf to jpg files. This will speed up the syncing of books between devices.
 - Customizable colors for Flashbook's 
 - Clean up code: make it PEP-8 compliant, add clear docstrings to the functions, perhaps move more code from modules to functions in order to make the modules clearer and shorter.
