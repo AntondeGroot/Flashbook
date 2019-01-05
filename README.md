@@ -94,5 +94,5 @@ You can also sync two devices. It will automatically display the IP address of t
 
 ### TODO
 - Perhaps use SQLite for data, currently everything is stored as .tex, .txt, .json files in %localappdata%. Although, now it is easy to alter questions by opening .tex files in Wordpad or TeXnicCenter.
-- Customizable colors for Flashbook's 
+- Customizable colors for Flashbook: the user should be able to choose the color of the temporary and permanent borders.  
 - Clean up code: make it PEP-8 compliant, add clear docstrings to the functions, perhaps move more code from modules to functions in order to make the modules clearer and shorter.
