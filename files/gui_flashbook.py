@@ -782,15 +782,6 @@ class MyFrame ( wx.Frame ):
 		self.m_radioServer = wx.RadioButton( self.m_panel181, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
 		fgSizer1.Add( self.m_radioServer, 0, wx.ALL, 5 )
 		
-		self.m_staticText43 = wx.StaticText( self.m_panel181, wx.ID_ANY, u"Transfer Books", wx.DefaultPosition, wx.DefaultSize, 0 )
-		self.m_staticText43.Wrap( -1 )
-		self.m_staticText43.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
-		
-		fgSizer1.Add( self.m_staticText43, 0, wx.ALL, 5 )
-		
-		self.m_checkBoxBook = wx.CheckBox( self.m_panel181, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
-		fgSizer1.Add( self.m_checkBoxBook, 0, wx.ALL, 5 )
-		
 		
 		bSizer48.Add( fgSizer1, 0, wx.EXPAND, 5 )
 		
