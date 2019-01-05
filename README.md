@@ -35,7 +35,7 @@ Once you entered your selection a pop up window will appear, showing you your se
 ![alt text](https://github.com/AntondeGroot/Flashbook/blob/pdf2image/readme%20images/fb_selection_entered.png)
 
 
-You can also create a 'mozaic' by simply clicking on the arrow at the bottom of the page. The direction the arrow is pointing is the direction in which the notes are stitched together. Mind you, not all in the same direction. When the arrow points down it just goes to a new 'row'.
+You can also create a 'mozaic' by simply clicking on the arrow at the bottom of the page. The direction the arrow is pointing is the direction in which the new selection gets stitched to the last selection. When the arrow points down it just goes to a new 'row', when it points to the right it adds it to the same row.
 
 ![alt text](https://github.com/AntondeGroot/Flashbook/blob/pdf2image/readme%20images/fb_selection_entered2.png)
 
