@@ -38,7 +38,7 @@ Once you entered your selection a pop up window will appear, showing you your se
 
 You can also create a 'mozaic' by simply clicking on the arrow at the bottom of the page. The direction the arrow is pointing is the direction in which the new selection gets stitched to the last selection. When the arrow points down it just goes to a new 'row', when it points to the right it adds it to the same row.
 
-![alt text](https://github.com/AntondeGroot/Flashbook/blob/master/readme%20images/fb_selection_entered2.png)
+![alt text](https://github.com/AntondeGroot/Flashbook/blob/master/readme%20images/fb_selection_entered2.pg)
 
 There doesn't have to be an answer card, for example when you just want to take notes. In that case once you entered your 'selection' or lack thereof, it will be made permanent. The borders will now be colored black.
 
