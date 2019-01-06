@@ -22,7 +22,6 @@ def ConvertPDF_to_JPG(self):
     
     for i, item in enumerate(arr_pdf):
         pdfname = item[:-4]
-        print(pdfname, len(pdfname))
         
         origin_dir = os.path.join(self.dirpdfbook, item)
         target_dir = os.path.join(self.dir3, pdfname)
