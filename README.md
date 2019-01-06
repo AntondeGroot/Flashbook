@@ -1,6 +1,7 @@
-Topics applied: TCP networks / minor SQL queries / win32 processes / OOP / multithreading / JSON / 
+Topics applied: TCP networks / WMI SQL queries / win32 processes / OOP / multithreading / JSON / 
 
 # Flashbook : PDF reader & study tool
+
 
 **The program can do the following:**
 
@@ -12,9 +13,9 @@ Topics applied: TCP networks / minor SQL queries / win32 processes / OOP / multi
   
   4) Synchronize multiple devices.
   
-I created this GUI to ease the arduous task of reading physics study books that contain a lot of formulas and long derivations of said formulas. I wanted to take notes of important formulas and then afterwards study them. Flashbook requires that you convert a PDF to jpg files and put them in the corresponding `%localappdata%/Flashbook/books` folder. This folder can be opened in the menubar of the program.
+I created this GUI to ease the arduous task of reading physics study books that contain a lot of formulas and long derivations of said formulas. I wanted to take notes of important formulas and then afterwards study them. You can put a PDF in the `%localappdata%/Flashbook/PDF books` folder. This folder can be opened in the menubar of the program.
 
-You can take notes by simply selecting an area with your mouse, a rectangle will be drawn, you can do this multiple times and they will be combined to a single question or answer card. In addition to this you can type an additional question or answer in a textbox that will be combined with the selected areas. In this textbox you can include regular text but also LaTeX code, e.g. `$\partial\beta$` to show `∂β`. In addition you can also add LaTeX macros so that you can almost ask any (mathematical) question.
+You can take notes by simply selecting an area with your mouse, a rectangle will be drawn, you can do this multiple times and they will be combined to a single question or answer card. In addition to this you can type an additional question or answer in a textbox that will be combined with the selected areas. In this textbox you can include regular text but also LaTeX code, e.g. `$\partial\beta$` to show `∂β`. In addition you can also add LaTeX macros so that you can ask almost any (mathematical) question.
 
 
 # The program explained
@@ -31,28 +32,25 @@ Open a book by pressing on the `browse` button. You can then create your own Q&A
 
 Once you entered your selection a pop up window will appear, showing you your selection. The pop up will disappear once you move with your cursor over it.
 
-![alt text](https://github.com/AntondeGroot/Flashbook/blob/master/readme%20images/fb_selection_entered.png)
+![alt text](https://github.com/AntondeGroot/Flashbook/blob/pdf2image/readme%20images/fb_selection_entered.png)
 
-You can also create a 'mozaic' by simply clicking on the arrow at the bottom of the page. The direction the arrow is pointing is the direction in which the notes are stitched together. Mind you, not all in the same direction. When the arrow points down it just goes to a new 'row'.
 
-![alt text](https://github.com/AntondeGroot/Flashbook/blob/master/readme%20images/fb_selection_entered2.png)
+You can also create a 'mozaic' by simply clicking on the arrow at the bottom of the page. The direction the arrow is pointing is the direction in which the new selection gets stitched to the last selection. When the arrow points down it just goes to a new 'row', when it points to the right it adds it to the same row.
+
+![alt text](https://github.com/AntondeGroot/Flashbook/blob/pdf2image/readme%20images/fb_selection_entered2.png)
 
 There doesn't have to be an answer card, for example when you just want to take notes. In that case once you entered your 'selection' or lack thereof, it will be made permanent. The borders will now be colored black.
 
-It is also possible to enter LaTeX code ![alt text](https://github.com/AntondeGroot/Flashbook/blob/master/readme%20images/fb_latex.png) 
+## Flashbook: LaTeX
+It is also possible to enter LaTeX code 
 
-which will be displayed as 
-
-![alt text](https://github.com/AntondeGroot/Flashbook/blob/master/readme%20images/fb_latex2.png)
+![alt text](https://github.com/AntondeGroot/Flashbook/blob/master/readme%20images/fb_latex2.png) ![alt text](https://github.com/AntondeGroot/Flashbook/blob/master/readme%20images/fb_latex.png) 
 
 It's even possible to add your own LaTeX macros so that you can avoid typing long sequences of code.
 
-![alt text](https://github.com/AntondeGroot/Flashbook/blob/master/readme%20images/fb_latex3.png)
+![alt text](https://github.com/AntondeGroot/Flashbook/blob/master/readme%20images/fb_latex4.png) ![alt text](https://github.com/AntondeGroot/Flashbook/blob/master/readme%20images/fb_latex3.png) 
 
-will then give you:
-
-![alt text](https://github.com/AntondeGroot/Flashbook/blob/master/readme%20images/fb_latex4.png)
-
+## Flashbook: add webpage screenshots
 And finally, you can also add a printscreen you took. For example to add extra info you want to include from the internet.
 
 ![alt text](https://github.com/AntondeGroot/Flashbook/blob/master/readme%20images/prtscr.png)
@@ -81,9 +79,9 @@ where you can modify it to your liking. You add lines between Q&A cards (if pres
 
 ## Synchronizing Devices
 
-You can also sync two devices. It will automatically display the IP address of the device the app is running on. Then you only need to add the other device's IP address. Right now it can only be used on a local wifi network. Synching books is optional as it can be a very slow process since it needs to transfer hundreds of jpg files. I plan to add a PDF -> jpg converter so that this transfer will be much faster. (laptop <-> PC is not a commutative process one direction may take 45 minutes while the other only takes 3 minutes)
+You can also sync two devices. It will automatically display the IP address of the device the app is running on. Then you only need to add the other device's IP address. Right now it can only be used on a local wifi network. 
 
-![alt text](https://github.com/AntondeGroot/Flashbook/blob/master/readme%20images/sync.png)
+![alt text](https://github.com/AntondeGroot/Flashbook/blob/pdf2image/readme%20images/sync_gui.png)
 
 
 
@@ -93,6 +91,8 @@ You can also sync two devices. It will automatically display the IP address of t
 
 ### TODO
 - Perhaps use SQLite for data, currently everything is stored as .tex, .txt, .json files in %localappdata%. Although, now it is easy to alter questions by opening .tex files in Wordpad or TeXnicCenter.
-- Add option to convert pdf to jpg files. This will speed up the syncing of books between devices.
-- Customizable colors for Flashbook's 
+- Customizable colors for Flashbook: the user should be able to choose the color of the temporary and permanent borders.  
 - Clean up code: make it PEP-8 compliant, add clear docstrings to the functions, perhaps move more code from modules to functions in order to make the modules clearer and shorter.
+- Add ability to refresh books
+- Add ability to combine multiple PDFs for additional information / if a course consists of multiple PDFs: syllabus, book, assignments ...
+- Add ability to change a flashcard while you are rehersing: "change current card" which then shows the user input text / the ability to delete the card.

@@ -33,6 +33,7 @@ import fb_modules    as m
 import fc_modules    as m2
 import print_modules as m3
 import sync_modules  as m4
+import pdf_modules   as m5
 import fb_functions    as f
 import fc_functions    as f2
 import print_functions as f3
@@ -119,12 +120,13 @@ def initialize(self):
     self.dir6 = dir0 + r"\resources"
     self.dirIP = dir0 + r"\IPadresses"
     self.dirpdf = dir0 + r"\PDF folder"
+    self.dirpdfbook = dir0 + r"\PDF books"
     self.dirsettings = dir0 + r"\settings"
     self.temp_dir = self.dir4
     self.statsdir = os.path.join(self.dirsettings, 'data_sessions.json')
     
     folders = []
-    dirs = [dir0,self.dir1,self.dir2,self.dir3,self.dir4,self.dir5,self.dir6,self.dirpdf,self.dirsettings,self.dirIP]
+    dirs = [dir0,self.dir1,self.dir2,self.dir3,self.dir4,self.dir5,self.dir6,self.dirpdf,self.dirsettings,self.dirIP,self.dirpdfbook]
     try:
         if not os.path.exists(os.path.join(self.dirIP,'IPadresses.txt')):
             
@@ -151,7 +153,9 @@ def initialize(self):
     # create settings folder for debugging
     settings_create(self)
     settings_get(self)
-     
+    # convert pdf of books to jpg
+    t_pdf = lambda self : threading.Thread(target = m5.ConvertPDF_to_JPG , args=(self, )).start()
+    t_pdf(self) 
     # unpacks png images used in the gui
     resources.resourceimages(self.dir6,self.dir1) 
     #%%
@@ -164,8 +168,7 @@ def initialize(self):
     folders.sort() 
     
     if len(folders) == 0:
-        ctypes.windll.user32.MessageBoxW(0, f"Welcome new user \n\nNo books were found in directory {self.dir3} \nGo to the menubar of the app:  `Open/Flashbook folder`\nPLace a new folder there named after a book containing jpg files", "Welcome to Flashbook", 1)
-        print("No books were found in directory: {}\n 1) please type '%localappdata%' in windows explorer\n 2) find Flashbook and place a folder containing jpg files of the pdf in the".format(self.dir3)+ r"'\books' directory"+"\n")
+        ctypes.windll.user32.MessageBoxW(0, f"Welcome new user \n\nNo PDFs were found in directory {self.dirpdfbook} \nGo to the menubar of the app:  `Open/Flashbook folder`\nPlace a PDF file there.", "Welcome to Flashbook", 1)
     else:
         print("the following books were found:")
         for name in folders:
@@ -212,8 +215,8 @@ class MainFrame(gui.MyFrame):
     def m_OpenFlashbookOnButtonClick( self, event ):
         self.stayonpage = False
         self.stitchmode_v = True # stich vertical or horizontal
-        self.m_dirPicker11.SetInitialDirectory(self.dir3)
-        self.m_dirPicker11.SetPath(self.dir3)
+        self.m_filePicker11.SetInitialDirectory(self.dirpdfbook+'\.')
+        self.m_filePicker11.SetPath(self.dirpdfbook+'\.')
         # at first disable the border of the bitmap, 
         # otherwise you get a bordered empty bitmap. Enable the border only when there is a bitmap
         self.m_bitmapScroll.SetWindowStyleFlag(False) 
@@ -293,8 +296,8 @@ class MainFrame(gui.MyFrame):
                 
             
     def m_menuItemFlashbookOnMenuSelection( self, event ):
-        self.m_dirPicker11.SetInitialDirectory(self.dir3)
-        os.system("explorer {}".format(self.dir3)) 
+        self.m_filePicker11.SetInitialDirectory(self.dirpdfbook)
+        os.system("explorer {}".format(self.dirpdfbook)) 
 	
     def m_menuItemBackToMainOnMenuSelection( self, event ):
         p.SwitchPanel(self,0,0)  
@@ -351,10 +354,9 @@ class MainFrame(gui.MyFrame):
         self.Update()
         self.Refresh()
         
-    def m_dirPicker11OnDirChanged(self,event):
+    def m_filePicker11OnFileChanged(self,event):
         self.m_bitmapScroll.SetWindowStyleFlag(wx.SIMPLE_BORDER)
-        m.dirchanged(self,event)
-        self.m_dirPicker11.SetPath(self.dir3)
+        m.dirchanged(self,event)        
         
     
 	# zoom in #================================================================
