@@ -32,7 +32,7 @@ def ConvertPDF_to_JPG(self):
         try:
             os.listdir(target_dir)
         except:
-            ctypes.windll.user32.MessageBoxW(0, f'The file "{pdfname}.pdf" probably has a space in its name: "name .pdf".\nPlease remove this space.\nError in os.Listdir', "Error", 1)            
+            ctypes.windll.user32.MessageBoxW(0, f'The file "{pdfname}.pdf" probably has a space in its name between the name and the ".pdf" extension.\nPlease remove this space.\nOtherwise it is a different error in os.Listdir', "Error", 1)            
         try:
             if os.listdir(target_dir) == []:
                 #The method convert_from_path will work for a lot of pdfs                 #
