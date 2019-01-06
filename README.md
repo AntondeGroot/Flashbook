@@ -13,7 +13,7 @@ Topics applied: TCP networks / WMI SQL queries / win32 processes / OOP / multith
   
   4) Synchronize multiple devices.
   
-I created this GUI to ease the arduous task of reading physics study books that contain a lot of formulas and long derivations of said formulas. I wanted to take notes of important formulas and then afterwards study them. Flashbook requires that you convert a PDF to jpg files and put them in the corresponding `%localappdata%/Flashbook/books` folder. This folder can be opened in the menubar of the program.
+I created this GUI to ease the arduous task of reading physics study books that contain a lot of formulas and long derivations of said formulas. I wanted to take notes of important formulas and then afterwards study them. You can put a PDF in the `%localappdata%/Flashbook/PDF books` folder. This folder can be opened in the menubar of the program.
 
 You can take notes by simply selecting an area with your mouse, a rectangle will be drawn, you can do this multiple times and they will be combined to a single question or answer card. In addition to this you can type an additional question or answer in a textbox that will be combined with the selected areas. In this textbox you can include regular text but also LaTeX code, e.g. `$\partial\beta$` to show `∂β`. In addition you can also add LaTeX macros so that you can almost ask any (mathematical) question.
 
@@ -93,3 +93,4 @@ You can also sync two devices. It will automatically display the IP address of t
 - Perhaps use SQLite for data, currently everything is stored as .tex, .txt, .json files in %localappdata%. Although, now it is easy to alter questions by opening .tex files in Wordpad or TeXnicCenter.
 - Customizable colors for Flashbook: the user should be able to choose the color of the temporary and permanent borders.  
 - Clean up code: make it PEP-8 compliant, add clear docstrings to the functions, perhaps move more code from modules to functions in order to make the modules clearer and shorter.
+- Add ability to refresh books
