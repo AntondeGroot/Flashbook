@@ -16,7 +16,9 @@ org = [
        '.SetSizeHintsSz','.SetSizeHints',
        '50, 1, 100','data, 1, data',
        'SetToolTipString','SetToolTip',
-       'def __init__( self, parent )','def __init__( self, parent, data )'
+       'def __init__( self, parent )','def __init__( self, parent, data )',
+       'wx.ArtProvider.GetBitmap( wx.ART_HELP_FOLDER,  )','data[0]',
+       'wx.ArtProvider.GetBitmap( wx.ART_REDO,  )','data[1]'
        ]
 a = []
 for i in read:  
