@@ -75,6 +75,8 @@ def setup_sources(self):
     self.path_pr = os.path.join(self.dir7,"print.png")
     self.path_arrow = os.path.join(self.dir7,"arrow.png")
     self.path_arrow2 = os.path.join(self.dir7,"arrow2.png")
+    self.path_convert = os.path.join(self.dir7,"convert.png")
+    self.path_folder = os.path.join(self.dir7,"folder.png")
 #%% settings   
 def settings_get(self):
 
@@ -194,7 +196,8 @@ class MainFrame(gui.MyFrame):
         setup_sources(self)
         
         #initialize parent class
-        gui.MyFrame.__init__(self,parent,None) #added superfluous argument, so that WXpython.py can easily add the Dialog Windows (which require an extra argument)         
+        icons = [wx.Bitmap(self.path_folder) , wx.Bitmap(self.path_convert) ]
+        gui.MyFrame.__init__(self,parent,icons) #added superfluous argument, so that WXpython.py can easily add the Dialog Windows (which require an extra argument)         
         m.set_richtext(self)  # text for help
         m2.set_richtext2(self) # text for help     
         self.Maximize(True) # open the app window maximized
