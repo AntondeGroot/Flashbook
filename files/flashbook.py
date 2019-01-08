@@ -112,7 +112,6 @@ def settings_set(self):
 
 #%%
 def initialize(self):
-    
     datadir = os.getenv("LOCALAPPDATA")
     dir0 = datadir+r"\FlashBook"
     self.dir0 = dir0
@@ -128,7 +127,6 @@ def initialize(self):
     self.dirsettings = dir0 + r"\settings"
     self.temp_dir = self.dir4
     self.statsdir = os.path.join(self.dirsettings, 'data_sessions.json')
-    
     
     dirs = [dir0,self.dir1,self.dir2,self.dir3,self.dir4,self.dir5,self.dir6,self.dirpdf,self.dirsettings,self.dirIP,self.dirpdfbook]
     try:
@@ -157,8 +155,6 @@ def initialize(self):
     # create settings folder for debugging
     settings_create(self)
     settings_get(self)
-    # convert pdf of books to jpg
-    
     # unpacks png images used in the gui
     resources.resourceimages(self.dir6,self.dir1) 
     #%%
@@ -175,13 +171,14 @@ def checkBooks(self):
     folders.sort() 
     
     if len(folders) == 0:
-        ctypes.windll.user32.MessageBoxW(0, f"Welcome new user \n\nNo jpgs of books were found in directory {self.dir3} \nGo to the menubar of the app:  `Open/Book PDF folder`\nPlace a PDF file there and click on Convert\n\nIf the conversion fails: you need to use an online PDF converter\nAll image manipulations are done to jpgs", "Welcome to Flashbook", 1)
+        ctypes.windll.user32.MessageBoxW(0, f"Welcome new user \n\nNo jpgs of books were found in directory {self.dir3} \nGo to the menubar of the app:  `Open/Book PDF folder`\nPlace a PDF file there and click on Convert\n\nIf the conversion fails: you need to use an online PDF converter\nAll image manipulations are done to jpgs files", "Welcome to Flashbook", 1)
     else:
         print("the following books were found:")
         for name in folders:
             print("- {}".format(name))
         print("")
     print("=========================================================================================")
+
 
     
  
@@ -209,9 +206,6 @@ class MainFrame(gui.MyFrame):
         t_ini = lambda self : threading.Thread(target = checkBooks , args=(self, )).start()
         t_ini(self) 
         
-        #thr3 = threading.Thread(target = initialize, name = 'threadINI', args = (self, ))
-        #thr3.run()
-        
         self.stitchmode_v = True
         self.FilePickEvent = True 
         p.set_bitmapbuttons(self)
@@ -226,8 +220,8 @@ class MainFrame(gui.MyFrame):
     def m_OpenFlashbookOnButtonClick( self, event ):
         self.stayonpage = False
         self.stitchmode_v = True # stich vertical or horizontal
-        self.m_filePicker11.SetInitialDirectory(self.dirpdfbook+'\.')
-        self.m_filePicker11.SetPath(self.dirpdfbook+'\.')
+        self.m_dirPicker11.SetInitialDirectory(self.dir3)
+        self.m_dirPicker11.SetPath(self.dir3)
         # at first disable the border of the bitmap, 
         # otherwise you get a bordered empty bitmap. Enable the border only when there is a bitmap
         self.m_bitmapScroll.SetWindowStyleFlag(False) 
@@ -307,13 +301,11 @@ class MainFrame(gui.MyFrame):
                 
             
     def m_menuItemFlashbookOnMenuSelection( self, event ):
-        self.m_filePicker11.SetInitialDirectory(self.dirpdfbook)
         os.system("explorer {}".format(self.dirpdfbook)) 
-    def m_menuItemJPGOnMenuSelection( self, event ):
-        os.system("explorer {}".format(self.dir3)) 	
-        
+	
     def m_menuItemBackToMainOnMenuSelection( self, event ):
         p.SwitchPanel(self,0,0)  
+        
     def m_menuItemConvertOnMenuSelection( self, event ):
         t_pdf = lambda self : threading.Thread(target = m5.ConvertPDF_to_JPG , args=(self, )).start()
         t_pdf(self) 
@@ -371,7 +363,8 @@ class MainFrame(gui.MyFrame):
         self.Update()
         self.Refresh()
         
-    def m_filePicker11OnFileChanged(self,event):
+    def m_dirPicker11OnDirChanged( self, event ):
+        print("dir has changed")
         self.m_bitmapScroll.SetWindowStyleFlag(wx.SIMPLE_BORDER)
         m.dirchanged(self,event)        
         
