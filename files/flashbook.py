@@ -171,7 +171,7 @@ def checkBooks(self):
     folders.sort() 
     
     if len(folders) == 0:
-        ctypes.windll.user32.MessageBoxW(0, f"Welcome new user \n\nNo jpgs of books were found in directory {self.dir3} \nGo to the menubar of the app:  `Open/Book PDF folder`\nPlace a PDF file there and click on Convert\n\nIf the conversion fails: you need to use an online PDF converter\nAll image manipulations are done to jpgs files", "Welcome to Flashbook", 1)
+        ctypes.windll.user32.MessageBoxW(0, f"Welcome new user \n\nNo jpgs of books were found in directory {self.dir3} \nGo to the menubar of the app:  `Open/Book PDF folder`\nPlace a PDF file there and click on Convert\n\nIf the conversion fails: you need to use an online PDF converter\nAll image manipulations are done to jpg files", "Welcome to Flashbook", 1)
     else:
         print("the following books were found:")
         for name in folders:
