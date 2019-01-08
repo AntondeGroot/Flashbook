@@ -74,6 +74,7 @@ def set_richtext(self):
     self.Layout()
 
 def dirchanged(self,event):
+    print("hallo fb mod")
     # for scrolling: only remember current and last position, append and pop, if the numbers repeat [0,0] or [X,X] then you know you've reached either the beginning or the end of the window: then flip page
     self.scrollpos = [42,1337] 
     #   INITIALIZE: ACQUIRE ALL INFO NECESSARY
@@ -82,7 +83,7 @@ def dirchanged(self,event):
     #try:
     path = event.GetPath() 
     # - keep track of "nrlist" which is a 4 digit nr 18-> "0018" so that it is easily sorted in other programs
-    path = os.path.join(self.dir3,os.path.basename(path)[:-4])
+    #path = os.path.join(self.dir3,os.path.basename(path)[:-4])
     print(f"\nThe chosen path is {path}\n")
     nrlist = []
     arr = os.listdir(path) #
