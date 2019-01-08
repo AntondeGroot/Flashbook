@@ -11,7 +11,7 @@ from pdf2image import convert_from_bytes
 import ctypes
 
 def ConvertPDF_to_JPG(self):
-    
+    ctypes.windll.user32.MessageBoxW(0, f'The PDF -> JPG conversion has started./nIt may take ~6 minutes per book and it is RAM heavy./nYou may need an online converter if this causes trouble.', "Message", 1)            
     #First checks all of the books have been converted# 
     #datadir = os.getenv("LOCALAPPDATA")
     #dir0 = datadir+r"\FlashBook"
@@ -21,11 +21,12 @@ def ConvertPDF_to_JPG(self):
     arr_pdf = [f for f in os.listdir(self.dirpdfbook) if '.pdf' in f]
     
     for i, item in enumerate(arr_pdf):
+        #t_pdf = lambda self,i,item : threading.Thread(target = convertbook , args=(self,i,item )).start()
+        #t_pdf(self,i,item) 
         pdfname = item[:-4]
-        
         origin_dir = os.path.join(self.dirpdfbook, item)
         target_dir = os.path.join(self.dir3, pdfname)
-        
+        print(f"name = {pdfname}")
         if not os.path.exists(target_dir):
             os.makedirs(target_dir)        
         
@@ -39,15 +40,16 @@ def ConvertPDF_to_JPG(self):
                 #Yet when this method fails convert_from_bytes might convert pdfs that    #
                 #couldn't be converted with from_path, if both methods don't work the user#
                 #is informed to use an online-converter instead.                          #
-                pages = convert_from_path(item, 170)
+                pages = convert_from_path(origin_dir, 170)
                 if pages == []:
                     pages = convert_from_bytes(open(origin_dir, 'rb').read())
                     
-                if pages != []:
+                if pages == []:
                     ctypes.windll.user32.MessageBoxW(0, f'The file "{pdfname}.pdf" could not be converted to jpg.\nPlease use an online pdf converter instead.\nThen place the jpg files in a map folder named after the book in {self.dir3}', "Warning", 1)            
                     
                 if pages != []:
                     i = 1
+                    ctypes.windll.user32.MessageBoxW(0, f'{item} has been converted and is being saved', "Message", 1)    
                     for page in pages:
                         filename = os.path.join(target_dir, pdfname)
                         nr = "0"*(4-len(f"{i}"))+f"{i}"
@@ -55,3 +57,4 @@ def ConvertPDF_to_JPG(self):
                         i += 1
         except:
             pass
+
