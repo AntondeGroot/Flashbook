@@ -55,6 +55,7 @@ def ConvertPDF_to_JPG(self):
                         nr = "0"*(4-len(f"{i}"))+f"{i}"
                         page.save(f'{filename}{nr}.jpg', 'JPEG')
                         i += 1
+            ctypes.windll.user32.MessageBoxW(0, f'Finished converting PDF to JPG', "Message", 1)   
         except:
             pass
 
