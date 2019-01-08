@@ -14,6 +14,7 @@ import os
 import json
 import shutil
 import PIL
+import time
 #-------------------------------------------------------------------- gui
 import threading
 import wx
@@ -127,7 +128,6 @@ def initialize(self):
     self.temp_dir = self.dir4
     self.statsdir = os.path.join(self.dirsettings, 'data_sessions.json')
     
-    folders = []
     dirs = [dir0,self.dir1,self.dir2,self.dir3,self.dir4,self.dir5,self.dir6,self.dirpdf,self.dirsettings,self.dirIP,self.dirpdfbook]
     try:
         if not os.path.exists(os.path.join(self.dirIP,'IPadresses.txt')):
@@ -155,13 +155,14 @@ def initialize(self):
     # create settings folder for debugging
     settings_create(self)
     settings_get(self)
-    # convert pdf of books to jpg
-    t_pdf = lambda self : threading.Thread(target = m5.ConvertPDF_to_JPG , args=(self, )).start()
-    t_pdf(self) 
     # unpacks png images used in the gui
     resources.resourceimages(self.dir6,self.dir1) 
     #%%
+
+def checkBooks(self):   
     
+    time.sleep(2)
+    folders = []
     arr = os.listdir(self.dir3)
     for filename in arr:
         if ('.jpg' not in filename) and ('.png' not in filename):
@@ -170,13 +171,14 @@ def initialize(self):
     folders.sort() 
     
     if len(folders) == 0:
-        ctypes.windll.user32.MessageBoxW(0, f"Welcome new user \n\nNo PDFs were found in directory {self.dirpdfbook} \nGo to the menubar of the app:  `Open/Flashbook folder`\nPlace a PDF file there.", "Welcome to Flashbook", 1)
+        ctypes.windll.user32.MessageBoxW(0, f"Welcome new user \n\nNo jpgs of books were found in directory {self.dir3} \nGo to the menubar of the app:  `Open/Book PDF folder`\nPlace a PDF file there and click on Convert\n\nIf the conversion fails: you need to use an online PDF converter\nAll image manipulations are done to jpgs files", "Welcome to Flashbook", 1)
     else:
         print("the following books were found:")
         for name in folders:
             print("- {}".format(name))
         print("")
     print("=========================================================================================")
+
 
     
  
@@ -201,8 +203,8 @@ class MainFrame(gui.MyFrame):
         m.set_richtext(self)  # text for help
         m2.set_richtext2(self) # text for help     
         self.Maximize(True) # open the app window maximized
-        thr3 = threading.Thread(target = initialize, name = 'threadINI', args = (self, ))
-        thr3.run()
+        t_ini = lambda self : threading.Thread(target = checkBooks , args=(self, )).start()
+        t_ini(self) 
         
         self.stitchmode_v = True
         self.FilePickEvent = True 
@@ -304,6 +306,11 @@ class MainFrame(gui.MyFrame):
 	
     def m_menuItemBackToMainOnMenuSelection( self, event ):
         p.SwitchPanel(self,0,0)  
+        
+    def m_menuItemConvertOnMenuSelection( self, event ):
+        t_pdf = lambda self : threading.Thread(target = m5.ConvertPDF_to_JPG , args=(self, )).start()
+        t_pdf(self) 
+        print("converting")
         
     def m_menuPDFfolderOnMenuSelection( self, event ):
         os.system("explorer {}".format(self.dirpdf)) 
