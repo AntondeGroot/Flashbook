@@ -48,6 +48,10 @@ class MyFrame ( wx.Frame ):
 		self.m_menuItemFlashbook.SetBitmap( data[0] )
 		self.m_menuOpen.Append( self.m_menuItemFlashbook )
 		
+		self.m_menuItemJPG = wx.MenuItem( self.m_menuOpen, wx.ID_ANY, u"Book JPG folder", wx.EmptyString, wx.ITEM_NORMAL )
+		self.m_menuItemJPG.SetBitmap( data[0] )
+		self.m_menuOpen.Append( self.m_menuItemJPG )
+		
 		self.m_menuItemConvert = wx.MenuItem( self.m_menuOpen, wx.ID_ANY, u"Convert Books", wx.EmptyString, wx.ITEM_NORMAL )
 		self.m_menuItemConvert.SetBitmap( data[1] )
 		self.m_menuOpen.Append( self.m_menuItemConvert )
@@ -866,6 +870,7 @@ class MyFrame ( wx.Frame ):
 		
 		# Connect Events
 		self.Bind( wx.EVT_MENU, self.m_menuItemFlashbookOnMenuSelection, id = self.m_menuItemFlashbook.GetId() )
+		self.Bind( wx.EVT_MENU, self.m_menuItemJPGOnMenuSelection, id = self.m_menuItemJPG.GetId() )
 		self.Bind( wx.EVT_MENU, self.m_menuItemConvertOnMenuSelection, id = self.m_menuItemConvert.GetId() )
 		self.Bind( wx.EVT_MENU, self.m_menuPDFfolderOnMenuSelection, id = self.m_menuPDFfolder.GetId() )
 		self.Bind( wx.EVT_MENU, self.m_menuItemBackToMainOnMenuSelection, id = self.m_menuItemBackToMain.GetId() )
@@ -976,6 +981,9 @@ class MyFrame ( wx.Frame ):
 	
 	# Virtual event handlers, overide them in your derived class
 	def m_menuItemFlashbookOnMenuSelection( self, event ):
+		event.Skip()
+	
+	def m_menuItemJPGOnMenuSelection( self, event ):
 		event.Skip()
 	
 	def m_menuItemConvertOnMenuSelection( self, event ):
