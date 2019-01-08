@@ -11,7 +11,7 @@ from pdf2image import convert_from_bytes
 import ctypes
 
 def ConvertPDF_to_JPG(self):
-    ctypes.windll.user32.MessageBoxW(0, f'The PDF -> JPG conversion has started./nIt may take ~6 minutes per book and it is RAM heavy./nYou may need an online converter if this causes trouble.', "Message", 1)            
+    ctypes.windll.user32.MessageBoxW(0, f'The PDF -> JPG conversion has started.\nIt may take ~6 minutes per book and it is RAM heavy.\nYou may need an online converter if this causes trouble.', "Message", 1)            
     #First checks all of the books have been converted# 
     #datadir = os.getenv("LOCALAPPDATA")
     #dir0 = datadir+r"\FlashBook"
