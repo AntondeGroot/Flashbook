@@ -153,6 +153,21 @@
                         <event name="OnUpdateUI"></event>
                     </object>
                     <object class="wxMenuItem" expanded="1">
+                        <property name="bitmap">Load From Art Provider; wxART_HELP_FOLDER; </property>
+                        <property name="checked">0</property>
+                        <property name="enabled">1</property>
+                        <property name="help"></property>
+                        <property name="id">wxID_ANY</property>
+                        <property name="kind">wxITEM_NORMAL</property>
+                        <property name="label">Book JPG folder</property>
+                        <property name="name">m_menuItemJPG</property>
+                        <property name="permission">none</property>
+                        <property name="shortcut"></property>
+                        <property name="unchecked_bitmap"></property>
+                        <event name="OnMenuSelection">m_menuItemJPGOnMenuSelection</event>
+                        <event name="OnUpdateUI"></event>
+                    </object>
+                    <object class="wxMenuItem" expanded="1">
                         <property name="bitmap">Load From Art Provider; wxART_REDO; </property>
                         <property name="checked">1</property>
                         <property name="enabled">1</property>
