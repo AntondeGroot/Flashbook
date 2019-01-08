@@ -1707,7 +1707,7 @@
                                                 <event name="OnSetFocus"></event>
                                                 <event name="OnSize"></event>
                                                 <event name="OnUpdateUI"></event>
-                                                <object class="wxFilePickerCtrl" expanded="1">
+                                                <object class="wxDirPickerCtrl" expanded="1">
                                                     <property name="BottomDockable">1</property>
                                                     <property name="LeftDockable">1</property>
                                                     <property name="RightDockable">1</property>
@@ -1738,12 +1738,12 @@
                                                     <property name="max_size"></property>
                                                     <property name="maximize_button">0</property>
                                                     <property name="maximum_size"></property>
-                                                    <property name="message">Pick a book</property>
+                                                    <property name="message">Select a folder</property>
                                                     <property name="min_size"></property>
                                                     <property name="minimize_button">0</property>
                                                     <property name="minimum_size"></property>
                                                     <property name="moveable">1</property>
-                                                    <property name="name">m_filePicker11</property>
+                                                    <property name="name">m_dirPicker11</property>
                                                     <property name="pane_border">1</property>
                                                     <property name="pane_position"></property>
                                                     <property name="pane_size"></property>
@@ -1762,14 +1762,13 @@
                                                     <property name="validator_type">wxDefaultValidator</property>
                                                     <property name="validator_variable"></property>
                                                     <property name="value"></property>
-                                                    <property name="wildcard">*.pdf*</property>
                                                     <property name="window_extra_style"></property>
                                                     <property name="window_name"></property>
                                                     <property name="window_style"></property>
                                                     <event name="OnChar"></event>
+                                                    <event name="OnDirChanged">m_dirPicker11OnDirChanged</event>
                                                     <event name="OnEnterWindow"></event>
                                                     <event name="OnEraseBackground"></event>
-                                                    <event name="OnFileChanged">m_filePicker11OnFileChanged</event>
                                                     <event name="OnKeyDown"></event>
                                                     <event name="OnKeyUp"></event>
                                                     <event name="OnKillFocus"></event>
