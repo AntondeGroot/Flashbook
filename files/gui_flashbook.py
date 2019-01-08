@@ -199,8 +199,8 @@ class MyFrame ( wx.Frame ):
 		bSizer2 = wx.BoxSizer( wx.VERTICAL )
 		
 		self.m_toolBar1 = wx.ToolBar( self.panel11, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TB_HORIZONTAL ) 
-		self.m_filePicker11 = wx.FilePickerCtrl( self.m_toolBar1, wx.ID_ANY, wx.EmptyString, u"Pick a book", u"*.pdf*", wx.DefaultPosition, wx.DefaultSize, 0 )
-		self.m_toolBar1.AddControl( self.m_filePicker11 )
+		self.m_dirPicker11 = wx.DirPickerCtrl( self.m_toolBar1, wx.ID_ANY, wx.EmptyString, u"Select a folder", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_toolBar1.AddControl( self.m_dirPicker11 )
 		self.m_toolPlus11 = self.m_toolBar1.AddTool( wx.ID_ANY, u"plus", wx.Bitmap( path_add, wx.BITMAP_TYPE_ANY ), wx.NullBitmap, wx.ITEM_NORMAL, wx.EmptyString, wx.EmptyString, None ) 
 		
 		self.m_toolMin11 = self.m_toolBar1.AddTool( wx.ID_ANY, u"min", wx.Bitmap( path_min, wx.BITMAP_TYPE_ANY ), wx.NullBitmap, wx.ITEM_NORMAL, wx.EmptyString, wx.EmptyString, None ) 
@@ -879,7 +879,7 @@ class MyFrame ( wx.Frame ):
 		self.m_OpenFlashcard.Bind( wx.EVT_BUTTON, self.m_OpenFlashcardOnButtonClick )
 		self.m_OpenPrint.Bind( wx.EVT_BUTTON, self.m_OpenPrintOnButtonClick )
 		self.m_OpenTransfer.Bind( wx.EVT_BUTTON, self.m_OpenTransferOnButtonClick )
-		self.m_filePicker11.Bind( wx.EVT_FILEPICKER_CHANGED, self.m_filePicker11OnFileChanged )
+		self.m_dirPicker11.Bind( wx.EVT_DIRPICKER_CHANGED, self.m_dirPicker11OnDirChanged )
 		self.Bind( wx.EVT_TOOL, self.m_toolPlus11OnToolClicked, id = self.m_toolPlus11.GetId() )
 		self.Bind( wx.EVT_TOOL, self.m_toolMin11OnToolClicked, id = self.m_toolMin11.GetId() )
 		self.Bind( wx.EVT_TOOL, self.m_toolBack11OnToolClicked, id = self.m_toolBack11.GetId() )
@@ -1010,7 +1010,7 @@ class MyFrame ( wx.Frame ):
 	def m_OpenTransferOnButtonClick( self, event ):
 		event.Skip()
 	
-	def m_filePicker11OnFileChanged( self, event ):
+	def m_dirPicker11OnDirChanged( self, event ):
 		event.Skip()
 	
 	def m_toolPlus11OnToolClicked( self, event ):
