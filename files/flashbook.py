@@ -302,7 +302,10 @@ class MainFrame(gui.MyFrame):
             
     def m_menuItemFlashbookOnMenuSelection( self, event ):
         os.system("explorer {}".format(self.dirpdfbook)) 
-	
+        
+    def m_menuItemJPGOnMenuSelection( self, event ):
+        os.system("explorer {}".format(self.dir3)) 
+        
     def m_menuItemBackToMainOnMenuSelection( self, event ):
         p.SwitchPanel(self,0,0)  
         
