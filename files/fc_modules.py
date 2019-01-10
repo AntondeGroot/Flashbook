@@ -26,36 +26,6 @@ import gui_flashbook as gui
 
 
 
-def set_richtext2(self):
-    self.txt2 = self.m_richText22
-    self.txt2.BeginBold()
-    self.txt2.EndBold()
-    self.txt2.WriteText("                                                                                                                                                                  (left click to close window)\n")
-
-    self.txt2.EndFontSize()
-    self.txt2.BeginBold()
-    self.txt2.BeginFontSize(16)
-    self.txt2.WriteText("  Using FlashCard:\n")
-    self.txt2.EndFontSize()
-    self.txt2.EndBold()
-    imagepath = os.path.join(self.dir7,"mouseicon2.png")
-    image = PIL.Image.open(imagepath, mode='r').convert('RGB')
-    image2 = wx.Image( image.size)
-    image2.SetData( image.tobytes() )
-    self.txt2.WriteImage(wx.Bitmap(image2))
-    imagepath = os.path.join(self.dir7,"arrowkeys.png")
-    image = PIL.Image.open(imagepath, mode='r').convert('RGB')
-    image2 = wx.Image( image.size)
-    image2.SetData( image.tobytes() )
-    self.txt2.WriteImage(wx.Bitmap(image2))        
-    self.txt2.BeginFontSize(12)
-    self.txt2.WriteText('\n        1) open with "browse" a file with the bookname you want to study\n' 
-                       "        2) a pop-up window will appear with settings, the settings will be implemented if you close the window.\n"
-                       "        3) the total number of questions = 'multiplier' x 'nr questions', in case you want test a subject multiple times \n"
-                       "        4) your progress is saved so that you can stop any time you want and continue later on.\n" 
-                       "        5) be sure to hold your cursor over the image when you use the mouse short cuts")
-    self.txt2.EndFontSize()
-    self.Layout()   
 
 
 

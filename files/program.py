@@ -40,9 +40,7 @@ def run_flashbook(self):
     print("Welcome to Flashbook , one moment ...")     
     self.m_bitmapScroll.SetBitmap(wx.Bitmap(wx.Image( 1,1 ))) # always empty bitmap, in case someone reruns the program
     self.m_CurrentPage11.SetValue('')
-    self.m_CurrentPage12.SetValue('')
     self.m_TotalPages11.SetValue('')
-    self.m_TotalPages12.SetValue('')
     
     def initialize(self):
         os.chdir(self.dir0)
@@ -326,56 +324,202 @@ def run_print(self,event):
     ini3.initializeparameters(self)                  
     ## LOAD ALL DATA ==========================================================
     m3.startprogram(self,event)
-      
+
+def set_richtext(self):
+    #richtext for General tab
+    self.txt2 = self.m_richText1
+    self.txt2.BeginBold()
+    self.txt2.EndBold()
+    self.txt2.EndFontSize()
+    self.txt2.BeginBold()
+    self.txt2.BeginFontSize(16)
+    self.txt2.WriteText("  How to use this program:")
+    self.txt2.EndFontSize()
+    self.txt2.EndBold()
+    self.txt2.WriteText("\t"*32+"(left click to close window)\n")
+    self.txt2.BeginBold()
+    self.txt2.BeginFontSize(12)
+    self.txt2.WriteText("\n\tFlashbook:")
+    self.txt2.EndFontSize()
+    self.txt2.EndBold()
+    self.txt2.WriteText("\tYou can convert a PDF to JPG and use it to take notes while you read. \n")
+    self.txt2.BeginBold()
+    self.txt2.BeginFontSize(12)
+    self.txt2.WriteText("\tFlashcard:")
+    self.txt2.EndFontSize()
+    self.txt2.EndBold()
+    self.txt2.WriteText("\tStudy the notes you took, you can stop anytime and continue later on.\n")
+    self.txt2.BeginBold()
+    self.txt2.BeginFontSize(12)
+    self.txt2.WriteText("\tPrint:")
+    self.txt2.EndFontSize()
+    self.txt2.EndBold()
+    self.txt2.WriteText("\t\tAll the notes you took are converted to a PDF. Multiple cards are placed side by side, you can then adjust a parameter while looking at the number of pages so you can fine tune the file.\n")
+    self.txt2.BeginBold()
+    self.txt2.BeginFontSize(12)
+    self.txt2.WriteText("\tSync:")
+    self.txt2.EndFontSize()
+    self.txt2.EndBold()
+    self.txt2.WriteText("\t\tYou can synchronize two devices as long as they are on the same network e.g. your laptop and desktop using your local wifi network.\n")
     
-def SwitchPanel(self,n,m):
+    
+    
+    self.txt2.EndFontSize()
+    self.Layout()   
+    
+    # richtext for Flashbook
+    self.txt = self.m_richText2
+    self.txt.BeginBold()
+    self.txt.BeginFontSize(16)
+    self.txt.WriteText("  Using Flashbook")
+    self.txt.EndFontSize()
+    self.txt.EndBold()
+    self.txt.WriteText("\t"*32+"(left click to close window)\n")
+    self.txt.BeginFontSize(12)
+    self.txt.WriteText("\tThis will allow you to make flashcards while reading a book.\n")
+    self.txt.WriteText(
+                      "\t1) Click in the menubar 'open/Book PDF folder' to open the correct Windows folders.\n"
+                        "\t2) Place the PDFs you would like to read there.\n"
+                        '\t3) Convert the PDFs to JPG files using the in-program PDF converter by clicking on "Convert Books" in the menubar.\n'
+                      "\t4) All image operations are performed on JPG files, if the conversion fails:\n"
+            "\t\t- Place all the pictures in a map named after the book in the folder you get from 'open/Book JPG folder'\n"
+                      '\t5) Then click on "Browse" in the menubar and open the book that you would like to read\n\n' )
+    self.txt.EndFontSize()
+    self.txt.BeginBold()
+    self.txt.BeginFontSize(16)
+    self.txt.WriteText("  Taking Notes:\n")
+    self.txt.EndFontSize()
+    self.txt.EndBold()    
+    imagepath = os.path.join(self.dir7,"mouseicon.png")
+    image = PIL.Image.open(imagepath, mode='r').convert('RGB')
+    image2 = wx.Image( image.size)
+    image2.SetData( image.tobytes() )
+    self.txt.WriteImage(wx.Bitmap(image2))
+    self.txt.Newline()    
+    self.txt.BeginFontSize(12)   
+    self.txt.WriteText( "        1) You can type a Question and an Answer in the textbox at the bottom, this is LaTeX compatible if you include $$\n"
+                        "        2) you can take multiple selections across pages, all the rectangles you draw will be combined into 1 Question and 1 Answer card\n"
+                        "        3) Only when you confirm your selection during the Answer mode will everything be saved\n"
+                        "        4) You switch modes when you confirm your selection\n"
+                        "        5) 'Reset selection' resets both Question and Answer cards\n")
+    
+    imagepath = os.path.join(self.dir7,"arrowhelp.png")
+    image = PIL.Image.open(imagepath, mode='r').convert('RGB')
+    image2 = wx.Image( image.size)
+    image2.SetData( image.tobytes() )
+    self.txt.WriteText("\n              ")
+    self.txt.WriteImage(wx.Bitmap(image2))
+    self.txt.WriteText("  Indicates in which direction the notes are taken, you can use this to create a mozaic.\n         E.g. when a sentence ends on a differen line but you want it to appear as one line in your notes\n         When the arrow point down, you paste a selection on another 'row'. If it points to the right it just puts it behind the last selection you made.")
+    self.txt.EndFontSize()
+    self.txt.BeginFontSize(16) 
+    self.txt.BeginBold()
+    self.txt.WriteText( "\n\n        N.B.\n")
+    self.txt.EndBold()
+    self.txt.EndFontSize()
+    self.txt.BeginFontSize(12)
+    self.txt.WriteText( "        Whenever you try to type something in the textbox and want to move the 'text cursor': make sure that the mouse is placed on the textbox.\n "
+                        "        Otherwise you'll switch pages when you try to move the 'text cursor' with the arrow keys. ")
+    self.txt.EndFontSize()
+    self.Layout()      
+    
+    # richtext for Flashcard
+    self.txt2 = self.m_richText3
+    self.txt2.BeginBold()
+    self.txt2.EndBold()
+    self.txt2.EndFontSize()
+    self.txt2.BeginBold()
+    self.txt2.BeginFontSize(16)
+    self.txt2.WriteText("  Using Flashcard:")
+    self.txt2.EndFontSize()
+    self.txt2.EndBold()
+    self.txt2.WriteText("\t"*32+"(left click to close window)\n")
+    imagepath = os.path.join(self.dir7,"mouseicon2.png")
+    image = PIL.Image.open(imagepath, mode='r').convert('RGB')
+    image2 = wx.Image( image.size)
+    image2.SetData( image.tobytes() )
+    self.txt2.WriteImage(wx.Bitmap(image2))
+    imagepath = os.path.join(self.dir7,"arrowkeys.png")
+    image = PIL.Image.open(imagepath, mode='r').convert('RGB')
+    image2 = wx.Image( image.size)
+    image2.SetData( image.tobytes() )
+    self.txt2.WriteImage(wx.Bitmap(image2))        
+    self.txt2.BeginFontSize(12)
+    self.txt2.WriteText('\n\t1) Open a subject you want to study by pressing on "browse".\n' 
+                       "\t2) A pop-up window will appear with settings, the settings will be implemented if you close the window and the Flashcard program will start.\n"
+                        "\t3) If you want to continue a previous session it will supersede all other settings and only use the settings you used last time.\n"
+                       "\t4) The total number of questions = 'multiplier' x 'nr questions', in case you want test a subject multiple times.\n"
+                       "\t5) Your progress is saved so that you can stop at any time and continue later.\n" 
+                       "\t6) Be sure to hold your cursor over the image when you use the mouse short cuts.")
+    self.txt2.EndFontSize()
+    self.Layout()   
+    
+    #richtext for synchronize
+    self.txt = self.m_richText4
+    self.txt.BeginFontSize(16)
+    self.txt.BeginBold()
+    self.txt.WriteText("  How to synchronize devices")
+    
+    self.txt.EndBold()
+    self.txt.EndFontSize()
+    self.txt2.BeginFontSize(12)
+    self.txt.WriteText("\t"*29+"(left click to close window)\n")
+    
+    
+    self.txt.WriteText("\t 1) First assign one device the role as 'server' and click on 'transfer'\n"
+                       "\t 2) Then select on the other device 'client' and click 'transfer'.\n" 
+                       "\t 3) It is important that you start the server before the client.\n"
+                       "\t 4) This will start the process where the 'client' starts sending data to the 'server'.\n"
+                       "\t 5) After the transfer is complete the roles are reversed automatically.\n"
+                       "\t 6) This makes sure both devices contain all the data.\n"    
+                       "\t 7) When all data has been transferred you can safely continue using Flashbook.")
+    self.txt.EndFontSize()
+    self.Layout()
+    
+    
+    
+    
+def SwitchPanel(self,n):
     if n == 0:
-        self.m_menuHelp.Enable(False)
+        self.m_menuHelp.Enable(True)
         self.panel0.Show()
         self.panel1.Hide()
         self.panel2.Hide()
         self.panel3.Hide()
         self.panel4.Hide()
         self.panel5.Hide()
+        self.panelHelp.Hide()
         self.Layout() # force refresh of windows
     elif n == 1:
         self.m_menuHelp.Enable(True)
         self.panel0.Hide()
         self.panel1.Show()
+        self.panel11.Show()
         self.panel2.Hide()
         self.panel3.Hide()
         self.panel4.Hide()
         self.panel5.Hide()
-        if m == 0:
-            self.panel11.Show()
-            self.panel12.Hide()
-        else:
-            self.panel11.Hide()
-            self.panel12.Show()
+        self.panelHelp.Hide()            
         self.Layout() # force refresh of windows
     elif n == 2:
         self.m_menuHelp.Enable(True)
         self.panel0.Hide()
         self.panel1.Hide()
         self.panel2.Show()
+        self.panel21.Show()
         self.panel3.Hide()
         self.panel4.Hide()
         self.panel5.Hide()
-        if m == 0:
-            self.panel21.Show()
-            self.panel22.Hide()
-        else:
-            self.panel21.Hide()
-            self.panel22.Show()
+        self.panelHelp.Hide()
         self.Layout() # force refresh of windows
     elif n ==3:
-        self.m_menuHelp.Enable(False)
+        self.m_menuHelp.Enable(True)
         self.panel0.Hide()
         self.panel1.Hide()
         self.panel2.Hide()
         self.panel3.Show()
         self.panel4.Hide()
         self.panel5.Hide()
+        self.panelHelp.Hide()
         self.Layout()
     elif n == 4:
         self.m_menuHelp.Enable(True)
@@ -385,6 +529,7 @@ def SwitchPanel(self,n,m):
         self.panel3.Hide()
         self.panel4.Show()
         self.panel5.Hide()
+        self.panelHelp.Hide()
         self.Layout()
     elif n == 5:
         self.m_menuHelp.Enable(True)
@@ -394,15 +539,20 @@ def SwitchPanel(self,n,m):
         self.panel3.Hide()
         self.panel4.Hide()
         self.panel5.Show()
-        if m == 0:
-            self.panel51.Show()
-            self.panel52.Hide()
-        else:
-            self.panel51.Hide()
-            self.panel52.Show()
-            
+        self.panel51.Show()
+        self.panelHelp.Hide()
         self.Layout()
-
+    elif n == 6:
+        self.m_menuHelp.Enable(True)
+        self.panel0.Hide()
+        self.panel1.Hide()
+        self.panel2.Hide()
+        self.panel3.Hide()
+        self.panel4.Hide()
+        self.panel5.Hide()
+        self.panelHelp.Show()            
+        self.Layout()
+        
 def set_bitmapbuttons(self):
     image = PIL.Image.open(self.path_fb, mode='r')
     image = image.resize((105, 105), PIL.Image.ANTIALIAS) 

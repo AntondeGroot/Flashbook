@@ -17,61 +17,7 @@ datadir = os.getenv("LOCALAPPDATA")
 dir0 = datadir + r"\FlashBook"
 # create settings folder for debugging
 
-def set_richtext(self):
-    self.txt = self.m_richText12
-    self.txt.BeginBold()
-    self.txt.BeginFontSize(16)
-    self.txt.WriteText("  Getting Started                                                       ")
-    self.txt.EndFontSize()
-    self.txt.EndBold()
-    self.txt.WriteText("                                                                                 (left click to close window)\n")
-    self.txt.BeginFontSize(12)
-    self.txt.WriteText("        This will allow you to make flashcards out of the notes you take.\n")
-    self.txt.WriteText("        1) Convert a pdf to jpg files, using a free online webpage of your choise\n"
-                      "        2) Click in the menu 'open/Flashbook folder' to open the correct Windows folder\n"
-                      "        3) Place all the pictures in a map named after the book or course in said folder\n"
-                      '        4) Then click on "Browse" in the menubar and open the book that you would like to read\n\n' )
-    self.txt.EndFontSize()
-    self.txt.BeginBold()
-    self.txt.BeginFontSize(16)
-    self.txt.WriteText("  Taking Notes:\n")
-    self.txt.EndFontSize()
-    self.txt.EndBold()
-    
-    imagepath = os.path.join(self.dir7,"mouseicon.png")
-    image = PIL.Image.open(imagepath, mode='r').convert('RGB')
-    image2 = wx.Image( image.size)
-    image2.SetData( image.tobytes() )
-    self.txt.WriteImage(wx.Bitmap(image2))
-    self.txt.Newline()
-    
-    self.txt.BeginFontSize(12)   
-    self.txt.WriteText( "        1) You can type a Question and an Answer in the textbox at the bottom, this is LaTeX compatible if you include $$\n"
-                        "        2) you can take multiple selections across pages, all the rectangles you draw will be combined into 1 Question and 1 Answer card\n"
-                        "        3) Only when you confirm your selection during the Answer mode will everything be saved\n"
-                        "        4) You switch modes when you confirm your selection\n"
-                        "        5) 'Reset selection' resets both Question and Answer cards\n")
-    
-    imagepath = os.path.join(self.dir7,"arrowhelp.png")
-    image = PIL.Image.open(imagepath, mode='r').convert('RGB')
-    image2 = wx.Image( image.size)
-    image2.SetData( image.tobytes() )
-    
-    #self.txt.Newline()
-    self.txt.WriteText("\n              ")
-    self.txt.WriteImage(wx.Bitmap(image2))
-    self.txt.WriteText("  Indicates in which direction the notes are taken, you can use this to create a mozaic.\n         E.g. when a sentence ends on a differen line but you want it to appear as one line in your notes\n         When the arrow point down, you paste a selection on another 'row'. If it points to the right it just puts it behind the last selection you made.")
-    self.txt.EndFontSize()
-    self.txt.BeginFontSize(16) 
-    self.txt.BeginBold()
-    self.txt.WriteText( "\n\n        N.B.\n")
-    self.txt.EndBold()
-    self.txt.EndFontSize()
-    self.txt.BeginFontSize(12)
-    self.txt.WriteText( "        Whenever you try to type something in the textbox and want to move the 'text cursor': make sure that the mouse is placed on the textbox.\n "
-                        "        Otherwise you'll switch pages when you try to move the 'text cursor' with the arrow keys. ")
-    self.txt.EndFontSize()
-    self.Layout()
+
 
 def dirchanged(self,event):
     print("hallo fb mod")
@@ -371,6 +317,57 @@ def selectionentered(self,event):
                 f.ResetQuestions(self)
             #except:
             #    print(colored("Error: cannot enter selection",'red'))
+
+def arrowscroll(self,event,direction):
+    
+    scrollWin = self.m_scrolledWindow1
+    if direction == 'down':    
+        newpos = scrollWin.GetScrollPos(1)+1
+        print(f"scrollpos = {scrollWin.GetScrollPageSize(1),newpos,scrollWin.GetScrollPixelsPerUnit()}" )
+    elif direction == 'up':     
+        newpos = scrollWin.GetScrollPos(1)-1
+        print(f"scrollpos = {scrollWin.GetScrollPageSize(1),newpos,scrollWin.GetScrollPixelsPerUnit()}" )
+    # change scrollbar    
+    scrollWin.SetScrollPos(wx.VERTICAL,newpos,False) #orientation, value, refresh?
+    scrollWin.Scroll(newpos,scrollWin.GetScrollPos(1))    
+    # check if you should go to the next/previous page
+    
+    self.scrollpos.append(scrollWin.GetScrollPos(0))
+    self.scrollpos.pop(0)
+    
+    if self.scrollpos[0] == self.scrollpos[1]: # you've reached either the beginning or end of the document
+        if self.scrollpos[0] == 0:             # beginning
+            if direction == 'up':
+                self.scrollpos = [42,1337]     # make it a little more difficult to scroll back once you scrolled a page
+                self.m_toolBack11OnToolClicked(self)
+                scrollWin.SetScrollPos(wx.VERTICAL,scrollWin.GetScrollPos(1)+150,False) #orientation, value, refresh?  # 150 is overkill, but it means the new page starts definitely at the bottom of the scroll bar
+                scrollWin.Scroll(scrollWin.GetScrollPos(1)+150,scrollWin.GetScrollPos(1))
+        else:                                  # end of page
+            if direction == 'down':
+                self.scrollpos = [42,1337] 
+                self.m_toolNext11OnToolClicked(self)
+    event.Skip()                               # necessary to use other functions after this one is used
+    
+    
+    #self.scrollpos.append(_posvalue_)
+    #self.scrollpos.pop(0)
+    #if self.debugmode:
+    #print(f"scroll pos = {self.scrollpos}, {_posvalue_}")
+    """
+    if self.scrollpos[0] == self.scrollpos[1]: # you've reached either the beginning or end of the document
+        if self.scrollpos[0] == 0:             # beginning
+            if self.WheelRot > 0:
+                self.scrollpos = [42,1337]     # make it a little more difficult to scroll back once you scrolled a page
+                self.m_toolBack11OnToolClicked(self)
+        else:                                  # end of page
+            if self.WheelRot < 0:
+                self.scrollpos = [42,1337] 
+                self.m_toolNext11OnToolClicked(self)
+    """
+    self.Layout()
+    event.Skip()                               # necessary to use other functions after this one is used
+     
+    
         
 def mousewheel(self,event):
     scrollWin = self.m_scrolledWindow1
@@ -384,6 +381,8 @@ def mousewheel(self,event):
             if self.WheelRot > 0:
                 self.scrollpos = [42,1337]     # make it a little more difficult to scroll back once you scrolled a page
                 self.m_toolBack11OnToolClicked(self)
+                scrollWin.SetScrollPos(wx.VERTICAL,scrollWin.GetScrollPos(1)+150,False) #orientation, value, refresh? # 150 is overkill, but it means the new page starts definitely at the bottom of the scroll bar
+                scrollWin.Scroll(scrollWin.GetScrollPos(1)+150,scrollWin.GetScrollPos(1))
         else:                                  # end of page
             if self.WheelRot < 0:
                 self.scrollpos = [42,1337] 
@@ -502,26 +501,34 @@ def switch_stitchmode(self): # switch the boolean to opposite
 
 def SetKeyboardShortcuts(self):
     
-    try:
-        # set keyboard short cuts: accelerator table        
-        self.Id_leftkey   = wx.NewIdRef() 
-        self.Id_rightkey  = wx.NewIdRef() 
-        self.Id_enterkey  = wx.NewIdRef()
-        self.Id_stitch    = wx.NewIdRef()
-        # combine functions with the id
-        self.Bind( wx.EVT_MENU, self.m_toolBack11OnToolClicked,       id = self.Id_leftkey  )
-        self.Bind( wx.EVT_MENU, self.m_toolNext11OnToolClicked,       id = self.Id_rightkey )
-        self.Bind( wx.EVT_MENU, self.m_enterselectionOnButtonClick, id = self.Id_enterkey )
-        self.Bind( wx.EVT_MENU, self.m_toolStitchOnButtonClick, id = self.Id_stitch )
-        # combine id with keyboard = now keyboard is connected to functions
-        entries = wx.AcceleratorTable([(wx.ACCEL_NORMAL,  wx.WXK_LEFT, self.Id_leftkey),
-                                      (wx.ACCEL_NORMAL,  wx.WXK_RIGHT, self.Id_rightkey ),
-                                      (wx.ACCEL_NORMAL,  wx.WXK_RETURN, self.Id_enterkey ),
-                                      (wx.ACCEL_NORMAL,  wx.WXK_HOME, self.Id_stitch ),
-                                      (wx.ACCEL_NORMAL,  wx.WXK_NUMPAD0, self.Id_stitch )])
-        self.SetAcceleratorTable(entries)
-    except:
-        print("Error: cannot set Accelerator Table")
+    #try:
+    # set keyboard short cuts: accelerator table        
+    self.Id_leftkey   = wx.NewIdRef() 
+    self.Id_rightkey  = wx.NewIdRef() 
+    self.Id_upkey     = wx.NewIdRef() 
+    self.Id_downkey     = wx.NewIdRef() 
+    self.Id_enterkey  = wx.NewIdRef()
+    self.Id_stitch    = wx.NewIdRef()
+    
+    # combine functions with the id
+    self.Bind( wx.EVT_MENU, self.m_toolBack11OnToolClicked,       id = self.Id_leftkey  )
+    self.Bind( wx.EVT_MENU, self.m_toolNext11OnToolClicked,       id = self.Id_rightkey )
+    self.Bind( wx.EVT_MENU, self.m_enterselectionOnButtonClick, id = self.Id_enterkey )
+    self.Bind( wx.EVT_MENU, self.m_toolStitchOnButtonClick, id = self.Id_stitch )
+    self.Bind(wx.EVT_MENU,  self.m_toolUPOnToolClicked,    id = self.Id_upkey)
+    self.Bind(wx.EVT_MENU,  self.m_toolDOWNOnToolClicked,    id = self.Id_downkey)
+    
+    # combine id with keyboard = now keyboard is connected to functions
+    entries = wx.AcceleratorTable([(wx.ACCEL_NORMAL,  wx.WXK_LEFT, self.Id_leftkey),
+                                  (wx.ACCEL_NORMAL,  wx.WXK_RIGHT, self.Id_rightkey ),
+                                  (wx.ACCEL_NORMAL,  wx.WXK_RETURN, self.Id_enterkey ),
+                                  (wx.ACCEL_NORMAL, wx.WXK_UP, self.Id_upkey),
+                                  (wx.ACCEL_NORMAL, wx.WXK_DOWN, self.Id_downkey),
+                                  (wx.ACCEL_NORMAL,  wx.WXK_HOME, self.Id_stitch ),
+                                  (wx.ACCEL_NORMAL,  wx.WXK_NUMPAD0, self.Id_stitch )])
+    self.SetAcceleratorTable(entries)
+    #except:
+    #    print("Error: cannot set Accelerator Table")
         
 
 def RemoveKeyboardShortcuts(self,index): 

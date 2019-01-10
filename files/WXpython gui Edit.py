@@ -18,7 +18,11 @@ org = [
        'SetToolTipString','SetToolTip',
        'def __init__( self, parent )','def __init__( self, parent, data )',
        'wx.ArtProvider.GetBitmap( wx.ART_HELP_FOLDER,  )','data[0]',
-       'wx.ArtProvider.GetBitmap( wx.ART_REDO,  )','data[1]'
+       'wx.ArtProvider.GetBitmap( wx.ART_REDO,  )','data[1]',
+       'self.m_notebook.AddPage( self.m_panel40, u"a page", True )','self.m_notebook.AddPage( self.m_panel40, u"General", False )',
+       'self.m_notebook.AddPage( self.m_panel41, u"a page", False )','self.m_notebook.AddPage( self.m_panel41, u"Flashbook", False )',
+       'self.m_notebook.AddPage( self.m_panel42, u"a page", False )','self.m_notebook.AddPage( self.m_panel42, u"Flashcard", False )',
+       'self.m_notebook.AddPage( self.m_panel43, u"a page", False )','self.m_notebook.AddPage( self.m_panel43, u"Synchronize", False )'
        ]
 a = []
 for i in read:  
