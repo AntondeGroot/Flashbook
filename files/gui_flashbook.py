@@ -35,6 +35,23 @@ import wx.richtext
 
 
 
+# -*- coding: utf-8 -*- 
+
+###########################################################################
+## Python code generated with wxFormBuilder (version Jun 17 2015)
+## http://www.wxformbuilder.org/
+##
+## PLEASE DO "NOT" EDIT THIS FILE!
+###########################################################################
+
+import wx
+import wx.xrc
+import wx.richtext
+
+###########################################################################
+## Class MyFrame
+###########################################################################
+
 class MyFrame ( wx.Frame ):
 	
 	def __init__( self, parent, data ):
@@ -65,6 +82,7 @@ class MyFrame ( wx.Frame ):
 		self.m_menuOpen.AppendSeparator()
 		
 		self.m_menuItemBackToMain = wx.MenuItem( self.m_menuOpen, wx.ID_ANY, u"Return to main menu", wx.EmptyString, wx.ITEM_NORMAL )
+		self.m_menuItemBackToMain.SetBitmap( wx.ArtProvider.GetBitmap( wx.ART_GO_HOME,  ) )
 		self.m_menuOpen.Append( self.m_menuItemBackToMain )
 		
 		self.m_menubar1.Append( self.m_menuOpen, u"Open" ) 
@@ -227,6 +245,10 @@ class MyFrame ( wx.Frame ):
 		self.m_TotalPages11.SetMaxSize( wx.Size( 20,-1 ) )
 		
 		self.m_toolBar1.AddControl( self.m_TotalPages11 )
+		self.m_toolUP = self.m_toolBar1.AddTool( wx.ID_ANY, u"tool", wx.ArtProvider.GetBitmap( wx.ART_GO_UP,  ), wx.NullBitmap, wx.ITEM_NORMAL, wx.EmptyString, wx.EmptyString, None ) 
+		
+		self.m_toolDOWN = self.m_toolBar1.AddTool( wx.ID_ANY, u"tool", wx.ArtProvider.GetBitmap( wx.ART_GO_DOWN,  ), wx.NullBitmap, wx.ITEM_NORMAL, wx.EmptyString, wx.EmptyString, None ) 
+		
 		self.m_TotalPage = wx.StaticText( self.m_toolBar1, wx.ID_ANY, u"      Show Selections  ", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.m_TotalPage.Wrap( -1 )
 		self.m_toolBar1.AddControl( self.m_TotalPage )
@@ -328,67 +350,6 @@ class MyFrame ( wx.Frame ):
 		bSizer2.Fit( self.panel11 )
 		bSizer8.Add( self.panel11, 1, wx.EXPAND |wx.ALL, 0 )
 		
-		self.panel12 = wx.Panel( self.panel1, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TAB_TRAVERSAL )
-		self.panel12.SetBackgroundColour( wx.Colour( 254, 240, 231 ) )
-		
-		bSizer21 = wx.BoxSizer( wx.VERTICAL )
-		
-		self.m_toolBar2 = wx.ToolBar( self.panel12, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TB_HORIZONTAL ) 
-		self.m_filePicker12 = wx.FilePickerCtrl( self.m_toolBar2, wx.ID_ANY, wx.EmptyString, u"Select a file", u"*.tex*", wx.DefaultPosition, wx.DefaultSize, 0 )
-		self.m_toolBar2.AddControl( self.m_filePicker12 )
-		self.m_toolPlus12 = self.m_toolBar2.AddTool( wx.ID_ANY, u"plus", wx.Bitmap( path_add, wx.BITMAP_TYPE_ANY ), wx.NullBitmap, wx.ITEM_NORMAL, wx.EmptyString, wx.EmptyString, None ) 
-		
-		self.m_toolMin12 = self.m_toolBar2.AddTool( wx.ID_ANY, u"min", wx.Bitmap( path_min, wx.BITMAP_TYPE_ANY ), wx.NullBitmap, wx.ITEM_NORMAL, wx.EmptyString, wx.EmptyString, None ) 
-		
-		self.m_Zoom12 = wx.TextCtrl( self.m_toolBar2, wx.ID_ANY, u"100%", wx.DefaultPosition, wx.Size( 40,-1 ), wx.TE_READONLY|wx.NO_BORDER )
-		self.m_toolBar2.AddControl( self.m_Zoom12 )
-		self.m_toolBack12 = self.m_toolBar2.AddTool( wx.ID_ANY, u"tool", wx.ArtProvider.GetBitmap( wx.ART_GO_BACK,  ), wx.NullBitmap, wx.ITEM_NORMAL, wx.EmptyString, wx.EmptyString, None ) 
-		
-		self.m_toolNext12 = self.m_toolBar2.AddTool( wx.ID_ANY, u"tool", wx.ArtProvider.GetBitmap( wx.ART_GO_FORWARD,  ), wx.NullBitmap, wx.ITEM_NORMAL, wx.EmptyString, wx.EmptyString, None ) 
-		
-		self.m_staticText31 = wx.StaticText( self.m_toolBar2, wx.ID_ANY, u"Page: ", wx.DefaultPosition, wx.DefaultSize, 0 )
-		self.m_staticText31.Wrap( -1 )
-		self.m_toolBar2.AddControl( self.m_staticText31 )
-		self.m_CurrentPage12 = wx.TextCtrl( self.m_toolBar2, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.Size( 40,-1 ), wx.TE_CENTRE )
-		self.m_CurrentPage12.SetMinSize( wx.Size( 10,-1 ) )
-		self.m_CurrentPage12.SetMaxSize( wx.Size( 10,-1 ) )
-		
-		self.m_toolBar2.AddControl( self.m_CurrentPage12 )
-		self.m_staticText61 = wx.StaticText( self.m_toolBar2, wx.ID_ANY, u" of ", wx.DefaultPosition, wx.DefaultSize, 0 )
-		self.m_staticText61.Wrap( -1 )
-		self.m_toolBar2.AddControl( self.m_staticText61 )
-		self.m_TotalPages12 = wx.TextCtrl( self.m_toolBar2, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.Size( 40,-1 ), wx.TE_READONLY|wx.NO_BORDER )
-		self.m_TotalPages12.SetMinSize( wx.Size( 20,-1 ) )
-		self.m_TotalPages12.SetMaxSize( wx.Size( 20,-1 ) )
-		
-		self.m_toolBar2.AddControl( self.m_TotalPages12 )
-		self.m_staticText41 = wx.StaticText( self.m_toolBar2, wx.ID_ANY, u"      Show Selections  ", wx.DefaultPosition, wx.DefaultSize, 0 )
-		self.m_staticText41.Wrap( -1 )
-		self.m_toolBar2.AddControl( self.m_staticText41 )
-		self.m_checkBox12 = wx.CheckBox( self.m_toolBar2, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
-		self.m_checkBox12.SetValue(True) 
-		self.m_toolBar2.AddControl( self.m_checkBox12 )
-		self.m_staticText51 = wx.StaticText( self.m_toolBar2, wx.ID_ANY, u"      Cross-hair cursor   ", wx.DefaultPosition, wx.Size( -1,-1 ), 0 )
-		self.m_staticText51.Wrap( -1 )
-		self.m_toolBar2.AddControl( self.m_staticText51 )
-		self.m_checkBoxCursor12 = wx.CheckBox( self.m_toolBar2, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.Size( -1,-1 ), 0 )
-		self.m_toolBar2.AddControl( self.m_checkBoxCursor12 )
-		self.m_toolBar2.Realize() 
-		
-		bSizer21.Add( self.m_toolBar2, 0, wx.ALIGN_CENTER|wx.EXPAND, 5 )
-		
-		self.m_staticline21 = wx.StaticLine( self.panel12, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.LI_HORIZONTAL )
-		bSizer21.Add( self.m_staticline21, 0, wx.ALL|wx.EXPAND, 3 )
-		
-		self.m_richText12 = wx.richtext.RichTextCtrl( self.panel12, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0|wx.VSCROLL|wx.HSCROLL|wx.NO_BORDER|wx.WANTS_CHARS )
-		bSizer21.Add( self.m_richText12, 1, wx.EXPAND |wx.ALL, 5 )
-		
-		
-		self.panel12.SetSizer( bSizer21 )
-		self.panel12.Layout()
-		bSizer21.Fit( self.panel12 )
-		bSizer8.Add( self.panel12, 1, wx.EXPAND |wx.ALL, 0 )
-		
 		
 		self.panel1.SetSizer( bSizer8 )
 		self.panel1.Layout()
@@ -478,20 +439,6 @@ class MyFrame ( wx.Frame ):
 		self.panel21.Layout()
 		bSizer211.Fit( self.panel21 )
 		bSizer81.Add( self.panel21, 1, wx.EXPAND |wx.ALL, 0 )
-		
-		self.panel22 = wx.Panel( self.panel2, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TAB_TRAVERSAL )
-		self.panel22.SetBackgroundColour( wx.Colour( 254, 240, 231 ) )
-		
-		bSizer22 = wx.BoxSizer( wx.VERTICAL )
-		
-		self.m_richText22 = wx.richtext.RichTextCtrl( self.panel22, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0|wx.VSCROLL|wx.HSCROLL|wx.NO_BORDER|wx.WANTS_CHARS )
-		bSizer22.Add( self.m_richText22, 1, wx.EXPAND |wx.ALL, 0 )
-		
-		
-		self.panel22.SetSizer( bSizer22 )
-		self.panel22.Layout()
-		bSizer22.Fit( self.panel22 )
-		bSizer81.Add( self.panel22, 1, wx.EXPAND |wx.ALL, 0 )
 		
 		
 		self.panel2.SetSizer( bSizer81 )
@@ -838,23 +785,74 @@ class MyFrame ( wx.Frame ):
 		bSizer441.Fit( self.panel51 )
 		bSizer44.Add( self.panel51, 1, wx.EXPAND |wx.ALL, 5 )
 		
-		self.panel52 = wx.Panel( self.panel5, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TAB_TRAVERSAL )
-		bSizer461 = wx.BoxSizer( wx.VERTICAL )
-		
-		self.m_txtHelpSync = wx.richtext.RichTextCtrl( self.panel52, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0|wx.VSCROLL|wx.HSCROLL|wx.NO_BORDER|wx.WANTS_CHARS )
-		bSizer461.Add( self.m_txtHelpSync, 1, wx.EXPAND |wx.ALL, 5 )
-		
-		
-		self.panel52.SetSizer( bSizer461 )
-		self.panel52.Layout()
-		bSizer461.Fit( self.panel52 )
-		bSizer44.Add( self.panel52, 1, wx.EXPAND |wx.ALL, 5 )
-		
 		
 		self.panel5.SetSizer( bSizer44 )
 		self.panel5.Layout()
 		bSizer44.Fit( self.panel5 )
 		bSizer7.Add( self.panel5, 1, wx.EXPAND |wx.ALL, 0 )
+		
+		self.panelHelp = wx.Panel( self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TAB_TRAVERSAL )
+		self.panelHelp.SetBackgroundColour( wx.Colour( 254, 240, 231 ) )
+		
+		bSizer442 = wx.BoxSizer( wx.VERTICAL )
+		
+		self.m_notebook = wx.Notebook( self.panelHelp, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_notebook.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), 70, 90, 90, False, "Verdana" ) )
+		
+		self.m_panel40 = wx.Panel( self.m_notebook, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TAB_TRAVERSAL )
+		self.m_panel40.SetBackgroundColour( wx.SystemSettings.GetColour( wx.SYS_COLOUR_BTNHIGHLIGHT ) )
+		
+		bSizer62 = wx.BoxSizer( wx.VERTICAL )
+		
+		self.m_richText1 = wx.richtext.RichTextCtrl( self.m_panel40, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0|wx.VSCROLL|wx.HSCROLL|wx.NO_BORDER|wx.WANTS_CHARS )
+		bSizer62.Add( self.m_richText1, 1, wx.EXPAND |wx.ALL, 0 )
+		
+		
+		self.m_panel40.SetSizer( bSizer62 )
+		self.m_panel40.Layout()
+		bSizer62.Fit( self.m_panel40 )
+		self.m_notebook.AddPage( self.m_panel40, u"General", False )
+		self.m_panel41 = wx.Panel( self.m_notebook, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TAB_TRAVERSAL )
+		bSizer63 = wx.BoxSizer( wx.VERTICAL )
+		
+		self.m_richText2 = wx.richtext.RichTextCtrl( self.m_panel41, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0|wx.VSCROLL|wx.HSCROLL|wx.NO_BORDER|wx.WANTS_CHARS )
+		bSizer63.Add( self.m_richText2, 1, wx.EXPAND |wx.ALL, 0 )
+		
+		
+		self.m_panel41.SetSizer( bSizer63 )
+		self.m_panel41.Layout()
+		bSizer63.Fit( self.m_panel41 )
+		self.m_notebook.AddPage( self.m_panel41, u"Flashbook", False )
+		self.m_panel42 = wx.Panel( self.m_notebook, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TAB_TRAVERSAL )
+		bSizer64 = wx.BoxSizer( wx.VERTICAL )
+		
+		self.m_richText3 = wx.richtext.RichTextCtrl( self.m_panel42, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0|wx.VSCROLL|wx.HSCROLL|wx.NO_BORDER|wx.WANTS_CHARS )
+		bSizer64.Add( self.m_richText3, 1, wx.EXPAND |wx.ALL, 0 )
+		
+		
+		self.m_panel42.SetSizer( bSizer64 )
+		self.m_panel42.Layout()
+		bSizer64.Fit( self.m_panel42 )
+		self.m_notebook.AddPage( self.m_panel42, u"Flashcard", False )
+		self.m_panel43 = wx.Panel( self.m_notebook, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TAB_TRAVERSAL )
+		bSizer65 = wx.BoxSizer( wx.VERTICAL )
+		
+		self.m_richText4 = wx.richtext.RichTextCtrl( self.m_panel43, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0|wx.VSCROLL|wx.HSCROLL|wx.NO_BORDER|wx.WANTS_CHARS )
+		bSizer65.Add( self.m_richText4, 1, wx.EXPAND |wx.ALL, 0 )
+		
+		
+		self.m_panel43.SetSizer( bSizer65 )
+		self.m_panel43.Layout()
+		bSizer65.Fit( self.m_panel43 )
+		self.m_notebook.AddPage( self.m_panel43, u"Synchronize", False )
+		
+		bSizer442.Add( self.m_notebook, 1, wx.EXPAND |wx.ALL, 5 )
+		
+		
+		self.panelHelp.SetSizer( bSizer442 )
+		self.panelHelp.Layout()
+		bSizer442.Fit( self.panelHelp )
+		bSizer7.Add( self.panelHelp, 1, wx.EXPAND |wx.ALL, 0 )
 		
 		bSizer41 = wx.BoxSizer( wx.VERTICAL )
 		
@@ -887,6 +885,8 @@ class MyFrame ( wx.Frame ):
 		self.m_CurrentPage11.Bind( wx.EVT_ENTER_WINDOW, self.m_CurrentPage11OnEnterWindow )
 		self.m_CurrentPage11.Bind( wx.EVT_KEY_UP, self.m_CurrentPage11OnKeyUp )
 		self.m_CurrentPage11.Bind( wx.EVT_LEAVE_WINDOW, self.m_CurrentPage11OnLeaveWindow )
+		self.Bind( wx.EVT_TOOL, self.m_toolUPOnToolClicked, id = self.m_toolUP.GetId() )
+		self.Bind( wx.EVT_TOOL, self.m_toolDOWNOnToolClicked, id = self.m_toolDOWN.GetId() )
 		self.m_checkBox11.Bind( wx.EVT_CHECKBOX, self.m_checkBox11OnCheckBox )
 		self.m_checkBoxCursor11.Bind( wx.EVT_CHECKBOX, self.m_checkBoxCursor11OnCheckBox )
 		self.m_bitmapScroll.Bind( wx.EVT_LEFT_DOWN, self.m_bitmapScrollOnLeftDown )
@@ -913,17 +913,6 @@ class MyFrame ( wx.Frame ):
 		self.m_toolStitch.Bind( wx.EVT_BUTTON, self.m_toolStitchOnButtonClick )
 		self.m_btnScreenshot.Bind( wx.EVT_BUTTON, self.m_btnScreenshotOnButtonClick )
 		self.m_resetselection.Bind( wx.EVT_BUTTON, self.m_resetselectionOnButtonClick )
-		self.m_filePicker12.Bind( wx.EVT_FILEPICKER_CHANGED, self.m_filePicker12OnFileChanged )
-		self.Bind( wx.EVT_TOOL, self.m_toolPlus12OnToolClicked, id = self.m_toolPlus12.GetId() )
-		self.Bind( wx.EVT_TOOL, self.m_toolMin12OnToolClicked, id = self.m_toolMin12.GetId() )
-		self.Bind( wx.EVT_TOOL, self.m_toolBack12OnToolClicked, id = self.m_toolBack12.GetId() )
-		self.Bind( wx.EVT_TOOL, self.m_toolNext12OnToolClicked, id = self.m_toolNext12.GetId() )
-		self.m_CurrentPage12.Bind( wx.EVT_KEY_DOWN, self.m_CurrentPage2OnKeyDown )
-		self.m_CurrentPage12.Bind( wx.EVT_KEY_UP, self.m_CurrentPage2OnKeyUp )
-		self.m_CurrentPage12.Bind( wx.EVT_TEXT, self.m_CurrentPage12OnText )
-		self.m_checkBox12.Bind( wx.EVT_CHECKBOX, self.m_checkBox12OnCheckBox )
-		self.m_checkBoxCursor12.Bind( wx.EVT_CHECKBOX, self.m_checkBoxCursor12OnCheckBox )
-		self.m_richText12.Bind( wx.EVT_LEFT_DOWN, self.m_richText12OnLeftDown )
 		self.m_filePicker21.Bind( wx.EVT_FILEPICKER_CHANGED, self.m_filePicker21OnFileChanged )
 		self.Bind( wx.EVT_TOOL, self.m_toolSwitch21OnToolClicked, id = self.m_toolSwitch21.GetId() )
 		self.m_CurrentPage21.Bind( wx.EVT_KEY_DOWN, self.m_CurrentPage21OnKeyDown )
@@ -952,7 +941,6 @@ class MyFrame ( wx.Frame ):
 		self.m_bitmapScroll1.Bind( wx.EVT_RIGHT_UP, self.m_bitmapScroll1OnRightUp )
 		self.m_buttonCorrect.Bind( wx.EVT_BUTTON, self.m_buttonCorrectOnButtonClick )
 		self.m_buttonWrong.Bind( wx.EVT_BUTTON, self.m_buttonWrongOnButtonClick )
-		self.m_richText22.Bind( wx.EVT_LEFT_DOWN, self.m_richText22OnLeftDown )
 		self.m_lineQA.Bind( wx.EVT_CHECKBOX, self.m_lineQAOnCheckBox )
 		self.m_lineQA.Bind( wx.EVT_LEFT_UP, self.m_lineQAOnLeftUp )
 		self.m_lineWqa.Bind( wx.EVT_TEXT, self.m_lineWqaOnText )
@@ -973,7 +961,10 @@ class MyFrame ( wx.Frame ):
 		self.m_txtMyIP.Bind( wx.EVT_KEY_UP, self.m_txtMyIPOnKeyUp )
 		self.m_txtTargetIP.Bind( wx.EVT_KEY_UP, self.m_txtTargetIPOnKeyUp )
 		self.m_buttonTransfer.Bind( wx.EVT_BUTTON, self.m_buttonTransferOnButtonClick )
-		self.m_txtHelpSync.Bind( wx.EVT_LEFT_DOWN, self.m_txtHelpSyncOnLeftDown )
+		self.m_richText1.Bind( wx.EVT_LEFT_DOWN, self.m_richText1OnLeftDown )
+		self.m_richText2.Bind( wx.EVT_LEFT_DOWN, self.m_richText2OnLeftDown )
+		self.m_richText3.Bind( wx.EVT_LEFT_DOWN, self.m_richText3OnLeftDown )
+		self.m_richText4.Bind( wx.EVT_LEFT_DOWN, self.m_richText4OnLeftDown )
 	
 	def __del__( self ):
 		pass
@@ -1034,6 +1025,12 @@ class MyFrame ( wx.Frame ):
 	def m_CurrentPage11OnLeaveWindow( self, event ):
 		event.Skip()
 	
+	def m_toolUPOnToolClicked( self, event ):
+		event.Skip()
+	
+	def m_toolDOWNOnToolClicked( self, event ):
+		event.Skip()
+	
 	def m_checkBox11OnCheckBox( self, event ):
 		event.Skip()
 	
@@ -1074,39 +1071,6 @@ class MyFrame ( wx.Frame ):
 		event.Skip()
 	
 	def m_resetselectionOnButtonClick( self, event ):
-		event.Skip()
-	
-	def m_filePicker12OnFileChanged( self, event ):
-		event.Skip()
-	
-	def m_toolPlus12OnToolClicked( self, event ):
-		event.Skip()
-	
-	def m_toolMin12OnToolClicked( self, event ):
-		event.Skip()
-	
-	def m_toolBack12OnToolClicked( self, event ):
-		event.Skip()
-	
-	def m_toolNext12OnToolClicked( self, event ):
-		event.Skip()
-	
-	def m_CurrentPage2OnKeyDown( self, event ):
-		event.Skip()
-	
-	def m_CurrentPage2OnKeyUp( self, event ):
-		event.Skip()
-	
-	def m_CurrentPage12OnText( self, event ):
-		event.Skip()
-	
-	def m_checkBox12OnCheckBox( self, event ):
-		event.Skip()
-	
-	def m_checkBoxCursor12OnCheckBox( self, event ):
-		event.Skip()
-	
-	def m_richText12OnLeftDown( self, event ):
 		event.Skip()
 	
 	def m_filePicker21OnFileChanged( self, event ):
@@ -1153,9 +1117,6 @@ class MyFrame ( wx.Frame ):
 		event.Skip()
 	
 	def m_buttonWrongOnButtonClick( self, event ):
-		event.Skip()
-	
-	def m_richText22OnLeftDown( self, event ):
 		event.Skip()
 	
 	def m_lineQAOnCheckBox( self, event ):
@@ -1218,7 +1179,16 @@ class MyFrame ( wx.Frame ):
 	def m_buttonTransferOnButtonClick( self, event ):
 		event.Skip()
 	
-	def m_txtHelpSyncOnLeftDown( self, event ):
+	def m_richText1OnLeftDown( self, event ):
+		event.Skip()
+	
+	def m_richText2OnLeftDown( self, event ):
+		event.Skip()
+	
+	def m_richText3OnLeftDown( self, event ):
+		event.Skip()
+	
+	def m_richText4OnLeftDown( self, event ):
 		event.Skip()
 	
 
