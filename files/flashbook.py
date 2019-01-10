@@ -196,12 +196,9 @@ class MainFrame(gui.MyFrame):
     def __init__(self,parent): 
         initialize(self)
         setup_sources(self)
-        
         #initialize parent class
         icons = [wx.Bitmap(self.path_folder) , wx.Bitmap(self.path_convert) ]
-        gui.MyFrame.__init__(self,parent,icons) #added superfluous argument, so that WXpython.py can easily add the Dialog Windows (which require an extra argument)         
-        m.set_richtext(self)  # text for help
-        m2.set_richtext2(self) # text for help     
+        gui.MyFrame.__init__(self,parent,icons) #added extra argument, so that WXpython.py can easily add the Dialog Windows (which require an extra argument), which is now used to add extra icons to the menubar             
         self.Maximize(True) # open the app window maximized
         t_ini = lambda self : threading.Thread(target = checkBooks , args=(self, )).start()
         t_ini(self) 
@@ -209,11 +206,14 @@ class MainFrame(gui.MyFrame):
         self.stitchmode_v = True
         self.FilePickEvent = True 
         p.set_bitmapbuttons(self)
+        p.set_richtext(self)
         # icon
         iconimage = wx.Icon(self.path_icon, type=wx.BITMAP_TYPE_ANY, desiredWidth=-1, desiredHeight=-1)
         self.SetIcon(iconimage)
-        p.SwitchPanel(self,0,0)
+        p.SwitchPanel(self,0)
         self.printpreview = True
+        
+        
         
     #%% Panel selection
     " Panel selection "
@@ -226,28 +226,27 @@ class MainFrame(gui.MyFrame):
         # otherwise you get a bordered empty bitmap. Enable the border only when there is a bitmap
         self.m_bitmapScroll.SetWindowStyleFlag(False) 
         setup_sources(self)
-        p.SwitchPanel(self,1,0)      
+        p.SwitchPanel(self,1)      
         m.SetKeyboardShortcuts(self)
         p.run_flashbook(self)
         
     def m_OpenFlashcardOnButtonClick( self, event ):
-        p.SwitchPanel(self,2,0)
+        p.SwitchPanel(self,2)
         p.run_flashcard(self)
     def m_OpenTransferOnButtonClick(self,event):
-        p.SwitchPanel(self,5,0)
+        p.SwitchPanel(self,5)
         p.get_IP(self,event)
         #client = self.m_radioClient.GetValue() #boolean
         #p.run_transfer(self,event,client)
-        m4.set_richtext(self)
         m4.initialize(self,event)
         
     def m_OpenPrintOnButtonClick(self,event):
-        thr1 = threading.Thread(target = p.SwitchPanel, name = 'thread1', args = (self,3,None ))
+        thr1 = threading.Thread(target = p.SwitchPanel, name = 'thread1', args = (self,3 ))
         thr1.run()
         with wx.FileDialog(self, "Choose which file to print", wildcard="*.tex",style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST) as fileDialog:
             fileDialog.SetPath(self.dir1+'\.')
             if fileDialog.ShowModal() == wx.ID_CANCEL:
-                p.SwitchPanel(self,0,0) 
+                p.SwitchPanel(self,0) 
                 return     # the user changed their mind
             else:
                 self.fileDialog = fileDialog
@@ -307,7 +306,7 @@ class MainFrame(gui.MyFrame):
         os.system("explorer {}".format(self.dir3)) 
         
     def m_menuItemBackToMainOnMenuSelection( self, event ):
-        p.SwitchPanel(self,0,0)  
+        p.SwitchPanel(self,0)  
         
     def m_menuItemConvertOnMenuSelection( self, event ):
         t_pdf = lambda self : threading.Thread(target = m5.ConvertPDF_to_JPG , args=(self, )).start()
@@ -317,20 +316,25 @@ class MainFrame(gui.MyFrame):
     def m_menuPDFfolderOnMenuSelection( self, event ):
         os.system("explorer {}".format(self.dirpdf)) 
     def m_menuHelpOnMenuSelection( self, event ):
-        print("panel 0 is : {}".format(self.panel0.IsShown()))
         if self.panel0.IsShown():
-            pass
-        if self.panel1.IsShown():
-            p.SwitchPanel(self,1,1) 
-        if self.panel2.IsShown():
-            p.SwitchPanel(self,2,1) 
-        if self.panel5.IsShown():
-            p.SwitchPanel(self,5,1) 
+            self.lastpage = 0
+        elif self.panel1.IsShown():
+            self.lastpage = 1
+        elif self.panel2.IsShown():
+            self.lastpage = 2
+        elif self.panel3.IsShown():
+            self.lastpage = 3    
+        elif self.panel4.IsShown():
+            self.lastpage = 4
+        elif self.panel5.IsShown():
+            self.lastpage = 5
+        print(f"panel was : {self.lastpage}")
+        p.SwitchPanel(self,6)
             
     def m_richText12OnLeftDown( self, event ):
-        p.SwitchPanel(self,1,0) 
+        p.SwitchPanel(self,1) 
     def m_txtHelpSyncOnLeftDown(self,event):
-        p.SwitchPanel(self,5,0) 
+        p.SwitchPanel(self,5) 
     #%% flashbook
     " flashbook "
     # import screenshot #
@@ -354,7 +358,7 @@ class MainFrame(gui.MyFrame):
     
     def m_btnImportScreenshotOnButtonClick( self, event ):
         self.stayonpage = True
-        p.SwitchPanel(self,1,0)
+        p.SwitchPanel(self,1)
         
     def m_bitmap4OnLeftDown( self, event ):
         self.panel4_pos = self.m_bitmap4.ScreenToClient(wx.GetMousePosition())
@@ -387,7 +391,16 @@ class MainFrame(gui.MyFrame):
     def m_toolNext11OnToolClicked( self, event ):
         self.stayonpage = False
         m.nextpage(self,event)
-	
+    def m_toolUPOnToolClicked( self, event ):
+        m.arrowscroll(self,event,'up')
+            
+    def m_toolDOWNOnToolClicked( self, event ):
+        m.arrowscroll(self,event,'down')        
+    
+    
+    
+    
+    
     
     def m_CurrentPage11OnEnterWindow( self, event ):
         m.RemoveKeyboardShortcuts(self,1)
@@ -399,8 +412,7 @@ class MainFrame(gui.MyFrame):
         except:
             self.currentpage = 1
         m.switchpage(self,event)
-        
-        
+    
     
     def m_bitmapScrollOnMouseWheel( self, event ):
         m.mousewheel(self,event)
@@ -433,7 +445,7 @@ class MainFrame(gui.MyFrame):
         m.bitmapleftup(self,event)   
 	# help menu #==============================================================
     def m_richText22OnLeftDown( self, event ):
-        p.SwitchPanel(self,2,0) 
+        p.SwitchPanel(self,2) 
     
     #%% transfer
     def m_txtMyIPOnKeyUp( self, event ):
@@ -530,7 +542,7 @@ class MainFrame(gui.MyFrame):
         m3.preview_refresh(self)
         if self.printsuccessful == True:
             self.printpreview = True
-            p.SwitchPanel(self,0,0)
+            p.SwitchPanel(self,0)
             ctypes.windll.user32.MessageBoxW(0, " your pdf has been created\n open in the menubar: `Open/Open PDF-notes Folder` to\n open the folder in Windows explorer ", "Message", 1)
     def m_lineWpdfOnText( self, event ):
         try:
@@ -552,7 +564,16 @@ class MainFrame(gui.MyFrame):
                 m3.preview_refresh(self)
         except:
             print("Error: invalid entry")
-        
+    #%% Help menu
+    def m_richText1OnLeftDown(self,event):
+        p.SwitchPanel(self,self.lastpage)
+    def m_richText2OnLeftDown(self,event):
+        p.SwitchPanel(self,self.lastpage)
+    def m_richText3OnLeftDown(self,event):
+        p.SwitchPanel(self,self.lastpage)
+    def m_richText4OnLeftDown(self,event):
+        p.SwitchPanel(self,self.lastpage)
+    
 # start the application
 app = wx.App(False) 
 frame = MainFrame(None)
