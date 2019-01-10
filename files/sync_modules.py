@@ -368,25 +368,7 @@ def SyncDevices(self,mode,HOST):
     
 
 	
-def set_richtext(self):    
-    self.txt = self.m_txtHelpSync
-    self.txt.BeginBold()
-    self.txt.BeginFontSize(12)
-    self.txt.WriteText("\t  How to synchronize devices                                                       \n\n")
-    self.txt.EndFontSize()
-    self.txt.EndBold()
-    self.txt.WriteText("\t 1) First assign one device the role as 'server' and click on 'transfer'\n"
-                       "\t 2) Then select on the other device 'client' and click 'transfer'.\n" 
-                       "\t 3) It is important that you start the server before the client.\n"
-                       "\t 4) This will start the process where the 'client' starts sending data to the 'server'.\n"
-                       "\t 5) After the transfer is complete the roles are reversed automatically.\n"
-                       "\t 6) This makes sure both devices contain all the data.\n"    
-                       "\t 7) When all data has been transferred you can safely close the apps or continue using Flashbook.")
-    self.txt.BeginBold()
-    self.txt.WriteText("\n\n\t Warning")
-    self.txt.EndBold()
-    self.txt.WriteText("\n\t Transferring books may be very slow! Sending books from laptop to desktop took about 3 minutes, whereas the other way round took 45 minutes because my laptop was slow to process the incoming data!")
-    self.Layout()
+
 
 def initialize(self,event): 
     
