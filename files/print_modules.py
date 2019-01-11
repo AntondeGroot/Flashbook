@@ -3,66 +3,67 @@
 Created on Fri Sep 14 13:26:43 2018
 @author: Anton
 """
-from termcolor import colored
-import numpy as np
-import PIL
-import wx
-import os
-import print_functions as f
+import bisect
+import ctypes
+import img2pdf
 import json
+import numpy as np
+import os
+from PIL import Image
+import PIL
+import print_functions as f
+import program
 import re
+from termcolor import colored
 import win32clipboard
 from win32api import GetSystemMetrics
-from PIL import Image
-import ctypes
-import program
-datadir = os.getenv("LOCALAPPDATA")
-dir0 = datadir + r"\FlashBook"
-# create settings folder for debugging
+import wx
+
+
+#ctypes:
+ICON_EXCLAIM=0x30
+ICON_STOP = 0x10
+MessageBox = ctypes.windll.user32.MessageBoxW
+#win32api: total width of all monitors
+SM_CXVIRTUALSCREEN = 78 
 
 def import_screenshot(self,event):
+    """Import a screenshot, it takes multiple monitors into account. 
+    The bytestream from win32 is from a Device Independent Bitmap, i.e.'RGBquad', meaning that it is not RGBA but BGRA coded.
+    The image is also flipped and rotated."""
+    
+    ScrWidth, ScrHeight = GetSystemMetrics(SM_CXVIRTUALSCREEN),GetSystemMetrics(1)
     win32clipboard.OpenClipboard()
-    print(f"book = {self.bookname}")
+    
     if hasattr(self,"bookname"):
         if self.bookname != '':
             try:
                 if win32clipboard.IsClipboardFormatAvailable(win32clipboard.CF_DIB):# Device Independent Bitmap
-                    print("PrtScr available")
+                    #PrtScr available
                     data = win32clipboard.GetClipboardData(win32clipboard.CF_DIB)
-                    win32clipboard.CloseClipboard()
-                    ### convert bytes to PIL Image
-                    try:                            # since I regularly work with 2 monitors: check if the processing makes sense for 2 monitors, else chose 1 monitor.
-                        img = Image.frombytes('RGBA', (int(GetSystemMetrics(0))*2, int(GetSystemMetrics(1))), data)
-                        # the bytestream from win32 is from a Device Independent Bitmap, i.e.'RGBquad', meaning that it is not RGBA but BGRA coded:
-                        b,g,r,a = img.split() 
-                        image = Image.merge("RGB", (r, g, b))
-                        image = image.rotate(180) # image is otherwise flipped and rotated
-                        image = image.transpose(Image.FLIP_LEFT_RIGHT)
-                        image.save(os.path.join(self.dir4,"screenshot.png"))
-                        ### back to wxBitmap
-                        data = image.tobytes()
-                        image3 = wx.Bitmap().FromBuffer(GetSystemMetrics(0)*2,GetSystemMetrics(1),data)
-                    except:
-                        img = Image.frombytes('RGBA', (int(GetSystemMetrics(0)), int(GetSystemMetrics(1))), data)
-                        # the bytestream from win32 is from a Device Independent Bitmap, i.e.'RGBquad', meaning that it is not RGBA but BGRA coded:
-                        b,g,r,a = img.split() 
-                        image = Image.merge("RGB", (r, g, b))
-                        image = image.rotate(180) # image is otherwise flipped and rotated
-                        image = image.transpose(Image.FLIP_LEFT_RIGHT)
-                        image.save(os.path.join(self.dir4,"screenshot.png"))
-                        ### back to wxBitmap
-                        data = image.tobytes()
-                        image3 = wx.Bitmap().FromBuffer(GetSystemMetrics(0),GetSystemMetrics(1),data)
+                    win32clipboard.CloseClipboard()                
+                    
+                    #convert bytes to PIL Image
+                    img = Image.frombytes('RGBA', (ScrWidth,ScrHeight), data)
+                    b,g,r,a = img.split() 
+                    image = Image.merge("RGB", (r, g, b))
+                    image = image.rotate(180)
+                    image = image.transpose(Image.FLIP_LEFT_RIGHT)
+                    image.save(os.path.join(self.dir4,"screenshot.png"))
+                    #convert back to wxBitmap
+                    data = image.tobytes()
+                    image3 = wx.Bitmap().FromBuffer(ScrWidth,ScrHeight,data)
+                        
                     self.backupimage = image3
                     self.m_bitmap4.SetBitmap(image3)
-                    program.SwitchPanel(self,4,None)
+                    program.SwitchPanel(self,4)
                     
                 else:
-                    ctypes.windll.user32.MessageBoxW(0, "There is no screenshot available\npress PrtScr again\nor press Alt+PrtScr to only copy an active window", "ErrorMessage", 1)
+                    MessageBox(0, "There is no screenshot available\npress PrtScr again\nor press Alt+PrtScr to only copy an active window", "Error", ICON_EXCLAIM)
             except:
-                ctypes.windll.user32.MessageBoxW(0, "There is no screenshot available\npress PrtScr again\nor press Alt+PrtScr to only copy an active window", "ErrorMessage", 1)
+                MessageBox(0, "There is no screenshot available\npress PrtScr again\nor press Alt+PrtScr to only copy an active window", "Error", ICON_EXCLAIM)
         else:
-            ctypes.windll.user32.MessageBoxW(0, "Please open a book first", "ErrorMessage", 1)
+            MessageBox(0, "Please open a book first", "Error", ICON_EXCLAIM)
     try:
         win32clipboard.CloseClipboard()
     except:
@@ -73,47 +74,43 @@ def import_screenshot(self,event):
 
 def print_preview(self,event): 
     program.run_print(self, event)
-    #resize        
-    panelwidth = round(float(self.m_panel32.GetSize()[1])/1754.0*1240.0)
-    panelheight = self.m_panel32.GetSize()[1]
-    self.allimages_v = self.allimages_v[0].resize((panelwidth, panelheight), PIL.Image.ANTIALIAS)
-    
+    #resize to A4 format
+    _,PanelHeight = self.m_panel32.GetSize()
+    PanelWidth = round(float(PanelHeight)/1754.0*1240.0)
+    #only select first page and display it on the bitmap
+    self.allimages_v = self.allimages_v[0].resize((PanelWidth, PanelHeight), PIL.Image.ANTIALIAS)
     image2 = wx.Image( self.allimages_v.size)
     image2.SetData( self.allimages_v.tobytes() )
     bitmapimage = wx.Bitmap(image2)
     self.m_bitmap3.SetBitmap(bitmapimage)
-    print(self.m_panel32.GetSize())
     self.Layout()
+    
 def preview_refresh(self):
-    
     notes2paper(self)
-    panelwidth = round(float(self.m_panel32.GetSize()[1])/1754.0*1240.0)
-    panelheight = self.m_panel32.GetSize()[1]
-    self.allimages_v = self.allimages_v[0].resize((panelwidth, panelheight), PIL.Image.ANTIALIAS) 
+    _,PanelHeight = self.m_panel32.GetSize()
+    PanelWidth = round(float(PanelHeight)/1754.0*1240.0)
+    #only select first page and display it on the bitmap
+    self.allimages_v = self.allimages_v[0].resize((PanelWidth, PanelHeight), PIL.Image.ANTIALIAS) 
     image2 = wx.Image( self.allimages_v.size)
     image2.SetData( self.allimages_v.tobytes() )
     bitmapimage = wx.Bitmap(image2)
     self.m_bitmap3.SetBitmap(bitmapimage)
     print(self.m_panel32.GetSize())
     self.Layout()
-def notes2paper(self):
-    #initiate
-    import print_functions as f
-    import bisect
-    import img2pdf
     
+def notes2paper(self):
+    
+    import print_functions as f
     N = 1.3
     self.a4page_w  = round(1240*N*self.pdfmultiplier) # in pixels
     self.a4page_h = round(1754*N*self.pdfmultiplier)
     self.paper_h      = []
     self.paper_h_list = []
-    datadir = os.getenv("LOCALAPPDATA")
-    dir0 = datadir+r"\FlashBook"
-    self.dir_t = dir0 + r"\temporary"
-    
+    #target directory
+    self.dir_t = os.path.join(os.getenv("LOCALAPPDATA"),"FlashBook","temporary")
     ## create images
     self.allimages = []
-    self.allimages_w = [] #list of widths
+    self.allimages_w = [] #widths
     
     for i in range(self.nr_questions):
         self.image_q = PIL.Image.new('RGB', (0, 0),"white")
@@ -155,7 +152,6 @@ def notes2paper(self):
                             self.image_q = self.image
                         else:
                             self.image_a = self.image
-                
             except:
                 print(colored("Error: could not display card","red"))  
         
@@ -189,22 +185,26 @@ def notes2paper(self):
     A = np.cumsum(self.allimages_w)
     C = []
     while len(self.allimages_w) != 0:        
-        # cumsum the widths of images
-        # use bisect to look first instance where the cumsum is too large to fit on a page
-        # store those pages in a list separately, eliminate those from the search
-        # recalculate cumsum and repeat
+        """Method:
+        Cumsum the widths of images.
+        Use bisect to look first instance where the cumsum is too large to fit on a page.
+        Store those pages in a list separately, eliminate those from the search.
+        Recalculate cumsum and repeat."""
+        
         index = bisect.bisect_left(A, self.a4page_w) 
-        if index ==0 and len(A)!=0: #image is too wide
+        if index == 0 and len(A) != 0: #image is too wide
             im = self.allimages[0]
             C.append(im)
             self.allimages = self.allimages[1:] 
             self.allimages_w = self.allimages_w[1:] 
             A = np.cumsum(self.allimages_w)  
-        elif index != len(A):        #image is not too wide
+            
+        elif index != len(A): #image is not too wide
             C.append(self.allimages[:index])
             self.allimages = self.allimages[index:] 
             self.allimages_w = self.allimages_w[index:] 
             A = np.cumsum(self.allimages_w)
+            
         elif index == len(A): # image is not too wide AND last in list
             C.append(self.allimages)
             self.allimages_w = []
@@ -237,8 +237,7 @@ def notes2paper(self):
             images = add_border(self,images)
             self.paper_h.append(images)
             
-    #self.paper_h[0].show()
-    
+    #self.paper_h[0].show()    
     # sort images vertically
     D = []
     self.img_heights = []
@@ -264,7 +263,6 @@ def notes2paper(self):
         D.append(self.paper_h[:index] )
                
     self.paper_h = D
-    
     
     # combine vertical pictures per page
     self.allimages_v = []
@@ -306,7 +304,7 @@ def notes2paper(self):
             self.printsuccessful = True
         except:
             self.printsuccessful = False
-            ctypes.windll.user32.MessageBoxW(0, "If you have the PDF opened in another file, close it and try it again.", "Warning", 1)
+            MessageBox(0, "If you have the PDF opened in another file, close it and try it again.", "Warning", ICON_EXCLAIM)
     else:
         pass
     self.m_TotalPDFPages.SetValue(str(''))
@@ -425,6 +423,12 @@ def dirchanged(self,event):
 
 
 def find_hook(hookpos,string):    
+    """Method:
+    Count
+        { == +1 
+        } == -1
+    When the count == 0 you are done.
+    """
     k = 0
     hookcount = 0
     condition = True
@@ -503,8 +507,7 @@ def find_arguments(hookpos,sentence,defined_command,nr_arguments):
 
 
 def replace_allcommands(defined_command,LaTeX_command,Question,nr_arg):    
-    #if self.debugmode:
-    #    print("f=replace allcommands")
+    
     length_c = len(defined_command) 
     # check if the command can be found in Q&A
     FindCommand = (defined_command in Question)
@@ -873,7 +876,7 @@ def startprogram(self,event):
     
     self.questions   = []
     self.answers     = []
-    self.questions2 = []
+    self.questions2  = []
     
     f.SetScrollbars(self)
     
