@@ -204,6 +204,8 @@ class MainFrame(gui.MyFrame):
     def __init__(self,parent): 
         initialize(self)
         setup_sources(self)
+        
+        
         #initialize parent class
         icons = [wx.Bitmap(self.path_folder) , wx.Bitmap(self.path_convert) ]
         gui.MyFrame.__init__(self,parent,icons) #added extra argument, so that WXpython.py can easily add the Dialog Windows (which require an extra argument), which is now used to add extra icons to the menubar             
@@ -502,7 +504,7 @@ class MainFrame(gui.MyFrame):
     
     def m_buttonWrongOnButtonClick( self, event ):
         m2.buttonWrong(self)
-    def m_bitmapScroll1OnRightUp( self, event ):# anton , dit nog over kopieren van wxformbiulder
+    def m_bitmapScroll1OnRightUp( self, event ):
         m2.buttonCorrect(self)    
 	
     def m_toolSwitch21OnToolClicked( self, event ):
