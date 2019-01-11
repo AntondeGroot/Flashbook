@@ -321,7 +321,6 @@ def arrowscroll(self,event,direction):
             if direction == 'down':
                 self.scrollpos = [42,1337] 
                 self.m_toolNext11OnToolClicked(self)
-    self.Layout()
     event.Skip()                               # necessary to use other functions after this one is used
      
     
@@ -403,7 +402,7 @@ def nextpage(self,event):
         f.SetScrollbars(self)
     except:
         print(colored("Error: can't click on next",'red'))
-    self.Layout()
+
 def previouspage(self,event):    
     try:
         if self.currentpage == 'prtscr':
@@ -416,7 +415,7 @@ def previouspage(self,event):
         f.SetScrollbars(self)            
     except:
         print(colored("Error: can't click on back",'red'))
-    self.Layout()
+
 def setcursor(self,event):
     lf = event.GetEventObject()
     cursor = lf.GetValue()
