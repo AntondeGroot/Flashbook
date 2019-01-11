@@ -68,7 +68,7 @@ def run_flashbook(self):
         folders = []
         dirs = [dir0,self.dir1,self.dir2,self.dir3,self.dir4,self.dir5,self.dir6]
         
-        print("=========================================================================================")
+        print("="*90)
         print(f"\nThe files will be saved to the following directory: {dir0}\n")
         for item in dirs:
             if not os.path.exists(item):
@@ -92,7 +92,7 @@ def run_flashbook(self):
             for name in folders:
                 print(f"- {name}")
             print("")
-        print("=========================================================================================")   
+        print("="*90)   
     ##
     self.stayonpage = False
     self.resetselection = False
@@ -124,7 +124,7 @@ def run_flashcard(self):
         
         
         dirs = [dir0,self.dir1,self.dir2,self.dir3,self.dir4,self.dir5,self.dir6]        
-        print("=========================================================================================")
+        print("="*90)
         print("\nThe files will be saved to the following directory: {}\n".format(dir0))
         
         for item in dirs:
@@ -164,7 +164,7 @@ def run_flashcard(self):
             for name in booklist:
                 print("- {}".format(name))
             print("")
-        print("=========================================================================================")
+        print("="*90)
         
     
     #%%
@@ -239,7 +239,7 @@ def run_print(self,event):
     def initialize(self):         
         folders = []
         dirs = [self.dir0,self.dir1,self.dir2,self.dir3,self.dir4,self.dir5,self.dir6]       
-        print("=========================================================================================")
+        print("="*90)
         print("\nThe files will be saved to the following directory: {}\n".format(self.dir0))
         for item in dirs:
             if not os.path.exists(item):
@@ -261,7 +261,7 @@ def run_print(self,event):
             for name in folders:
                 print(f"- {name}")
             print("")
-        print("=========================================================================================")
+        print("="*90)
     
     
     """MAINFRAME"""
@@ -279,7 +279,7 @@ def run_print(self,event):
     
     #
     ini3.initializeparameters(self)                  
-    ## LOAD ALL DATA ==========================================================
+    ## LOAD ALL DATA 
     m3.startprogram(self,event)
 
 def set_richtext(self):
