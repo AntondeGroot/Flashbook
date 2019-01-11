@@ -428,80 +428,33 @@ def set_richtext(self):
     self.Layout()
     
 def SwitchPanel(self,n):
+    self.m_menuHelp.Enable(True)
+    self.panel0.Hide()
+    self.panel1.Hide()
+    self.panel2.Hide()
+    self.panel3.Hide()
+    self.panel4.Hide()
+    self.panel5.Hide()
+    self.panelHelp.Hide()
     if n == 0:
-        self.m_menuHelp.Enable(True)
-        self.panel0.Show()
-        self.panel1.Hide()
-        self.panel2.Hide()
-        self.panel3.Hide()
-        self.panel4.Hide()
-        self.panel5.Hide()
-        self.panelHelp.Hide()
-        self.Layout() # force refresh of windows
+        self.panel0.Show()        
     elif n == 1:
-        self.m_menuHelp.Enable(True)
-        self.panel0.Hide()
         self.panel1.Show()
-        self.panel11.Show()
-        self.panel2.Hide()
-        self.panel3.Hide()
-        self.panel4.Hide()
-        self.panel5.Hide()
-        self.panelHelp.Hide()            
-        self.Layout() # force refresh of windows
+        #self.panel11.Show()
     elif n == 2:
-        self.m_menuHelp.Enable(True)
-        self.panel0.Hide()
-        self.panel1.Hide()
         self.panel2.Show()
-        self.panel21.Show()
-        self.panel3.Hide()
-        self.panel4.Hide()
-        self.panel5.Hide()
-        self.panelHelp.Hide()
-        self.Layout() # force refresh of windows
+        #self.panel21.Show()
     elif n ==3:
-        self.m_menuHelp.Enable(True)
-        self.panel0.Hide()
-        self.panel1.Hide()
-        self.panel2.Hide()
         self.panel3.Show()
-        self.panel4.Hide()
-        self.panel5.Hide()
-        self.panelHelp.Hide()
-        self.Layout()
     elif n == 4:
-        self.m_menuHelp.Enable(True)
-        self.panel0.Hide()
-        self.panel1.Hide()
-        self.panel2.Hide()
-        self.panel3.Hide()
         self.panel4.Show()
-        self.panel5.Hide()
-        self.panelHelp.Hide()
-        self.Layout()
     elif n == 5:
-        self.m_menuHelp.Enable(True)
-        self.panel0.Hide()
-        self.panel1.Hide()
-        self.panel2.Hide()
-        self.panel3.Hide()
-        self.panel4.Hide()
         self.panel5.Show()
-        self.panel51.Show()
-        self.panelHelp.Hide()
-        self.Layout()
+        #self.panel51.Show()
     elif n == 6:
-        self.m_menuHelp.Enable(True)
-        self.panel0.Hide()
-        self.panel1.Hide()
-        self.panel2.Hide()
-        self.panel3.Hide()
-        self.panel4.Hide()
-        self.panel5.Hide()
-        self.panelHelp.Show()            
-        self.Layout()
-        
+        self.panelHelp.Show()         
+    self.Layout() # force refresh of windows
+    
 def set_bitmapbuttons(self):
     
     def Img2Bitmap(path,size):    
