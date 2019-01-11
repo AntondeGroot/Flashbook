@@ -13,6 +13,7 @@ except:
 import os
 import json
 import shutil
+import subprocess 
 import PIL
 import time
 #-------------------------------------------------------------------- gui
@@ -306,11 +307,11 @@ class MainFrame(gui.MyFrame):
                     self.pic_answer_dir[-1] = [self.pic_answer_dir[-1]]
                 
             
-    def m_menuItemFlashbookOnMenuSelection( self, event ):
-        os.system("explorer {}".format(self.dirpdfbook)) 
+    def m_menuItemFlashbookOnMenuSelection( self, event ):        
+        subprocess.Popen(f"explorer {self.dirpdfbook}")
         
     def m_menuItemJPGOnMenuSelection( self, event ):
-        os.system("explorer {}".format(self.dir3)) 
+        subprocess.Popen(f"explorer {self.dir3}")
         
     def m_menuItemBackToMainOnMenuSelection( self, event ):
         p.SwitchPanel(self,0)  
@@ -321,7 +322,8 @@ class MainFrame(gui.MyFrame):
         print("converting")
         
     def m_menuPDFfolderOnMenuSelection( self, event ):
-        os.system("explorer {}".format(self.dirpdf)) 
+        subprocess.Popen(f"explorer {self.dirpdf}")
+        
     def m_menuHelpOnMenuSelection( self, event ):
         if self.panel0.IsShown():
             self.lastpage = 0
