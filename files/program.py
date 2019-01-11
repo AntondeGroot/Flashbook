@@ -95,7 +95,7 @@ def run_flashbook(self):
         else:
             print("the following books were found:")
             for name in folders:
-                print("- {}".format(name))
+                print(f"- {name}")
             print("")
         print("=========================================================================================")
     
@@ -244,9 +244,6 @@ def run_flashcard(self):
     def m_toolSwitchOnToolClicked( self, event ):
         m2.switchCard(self)
         
-    def m_menuItemFlashbookOnMenuSelection( self, event ):
-        os.system("explorer {}".format(self.dir3)) 
-        
     def m_filePickerOnFileChanged( self, event ): 
         # main program, does all of the preprocessing
         m2.startprogram(self,event)
@@ -265,24 +262,17 @@ def get_IP(self,event):
 def run_print(self,event):                
     
     
-    def initialize(self):
-        
-        
-                    
+    def initialize(self):         
         folders = []
-        dirs = [self.dir0,self.dir1,self.dir2,self.dir3,self.dir4,self.dir5,self.dir6]
-        
+        dirs = [self.dir0,self.dir1,self.dir2,self.dir3,self.dir4,self.dir5,self.dir6]       
         print("=========================================================================================")
         print("\nThe files will be saved to the following directory: {}\n".format(self.dir0))
         for item in dirs:
             if not os.path.exists(item):
                 os.makedirs(item)
-        
-         
         # unpacks png images used in the gui
         resources.resourceimages(self.dir6,self.dir1) 
         #%%
-        
         arr = os.listdir(self.dir3)
         for i,item in enumerate(arr):
             if ('.jpg' not in item) and ('.png' not in item):
@@ -295,7 +285,7 @@ def run_print(self,event):
         else:
             print("the following books were found:")
             for name in folders:
-                print("- {}".format(name))
+                print(f"- {name}")
             print("")
         print("=========================================================================================")
     
