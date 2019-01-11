@@ -47,6 +47,13 @@ from PIL import Image
 import wmi # for IPaddress
 import sys
 sys.setrecursionlimit(5000)
+
+#ctypes:
+ICON_EXCLAIM=0x30
+ICON_STOP = 0x10
+MB_ICONINFORMATION = 0x00000040
+MessageBox = ctypes.windll.user32.MessageBoxW
+
 # when using Pyinstaller to get the .exe file: it will standard give an error that it is missing the module 'qwindows.dll'
 # since the .exe created by --onefile takes ages to start, i won't be using that option and then module can be found in the folder below
 # it is resolved by simply copying the qwindows.dll module next to the .exe file
@@ -148,7 +155,7 @@ def initialize(self):
     except:
         print("Error: could not access internet?")
     print("=========================================================================================")
-    print("\nThe files will be saved to the following directory: {}\n".format(dir0))
+    print(f"\nThe files will be saved to the following directory: {dir0}\n")
     for item in dirs:
         if not os.path.exists(item):
             os.makedirs(item)
@@ -171,7 +178,7 @@ def checkBooks(self):
     folders.sort() 
     
     if len(folders) == 0:
-        ctypes.windll.user32.MessageBoxW(0, f"Welcome new user \n\nNo jpgs of books were found in directory {self.dir3} \nGo to the menubar of the app:  `Open/Book PDF folder`\nPlace a PDF file there and click on Convert\n\nIf the conversion fails: you need to use an online PDF converter\nAll image manipulations are done to jpg files", "Welcome to Flashbook", 1)
+        MessageBox(0, f"Welcome new user! \n\nNo jpgs of books were found in directory {self.dir3} \n\nGo to the menubar of the app:  `Open/Book PDF folder`\nPlace a PDF file there and click on Convert\n\nIf the conversion fails: you need to use an online PDF converter since all image manipulations are done to jpg files.", "Welcome to Flashbook", ICON_EXCLAIM)
     else:
         print("the following books were found:")
         for name in folders:
@@ -543,7 +550,7 @@ class MainFrame(gui.MyFrame):
         if self.printsuccessful == True:
             self.printpreview = True
             p.SwitchPanel(self,0)
-            ctypes.windll.user32.MessageBoxW(0, " your pdf has been created\n open in the menubar: `Open/Open PDF-notes Folder` to\n open the folder in Windows explorer ", "Message", 1)
+            MessageBox(0, " Your PDF has been created!\n Select in the menubar: `Open/Open PDF-notes Folder` to\n open the folder in Windows explorer. ", "Message", MB_ICONINFORMATION)
     def m_lineWpdfOnText( self, event ):
         try:
             int(self.m_lineWpdf.GetValue())
