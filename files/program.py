@@ -73,7 +73,7 @@ def run_flashbook(self):
         dirs = [dir0,self.dir1,self.dir2,self.dir3,self.dir4,self.dir5,self.dir6]
         
         print("=========================================================================================")
-        print("\nThe files will be saved to the following directory: {}\n".format(dir0))
+        print(f"\nThe files will be saved to the following directory: {dir0}\n")
         for item in dirs:
             if not os.path.exists(item):
                 os.makedirs(item)
@@ -91,7 +91,7 @@ def run_flashbook(self):
         folders.sort() 
         
         if len(folders) == 0:
-            print("No books were found in directory: {}\n 1) please type '%localappdata%' in windows explorer\n 2) find Flashbook and place a folder containing jpg files of the pdf in the".format(self.dir3)+ r"'\books' directory"+"\n")
+            print(f"No books were found in directory: {self.dir3}\n 1) please type '%localappdata%' in windows explorer\n 2) find Flashbook and place a folder containing jpg files of the pdf in the"+ r"'\books' directory"+"\n")
         else:
             print("the following books were found:")
             for name in folders:
