@@ -171,9 +171,9 @@ def bitmapleftup(self,event):
         find = True
         while find == True:
             if self.stayonpage == False:
-                picname =  "{}_{}_{}{}{}{}.jpg".format(self.bookname,self.currentpage,randint(0,9),randint(0,9),randint(0,9),randint(0,9))
+                picname =  f"{self.bookname}_{self.currentpage}_{randint(0,9)}{randint(0,9)}{randint(0,9)}{randint(0,9)}.jpg" # the number must be of length 4: randint(0,9999) could give '6' and not '0006'
             else:
-                picname =  "{}_{}_{}{}{}{}.jpg".format(self.bookname,"prtscr",randint(0,9),randint(0,9),randint(0,9),randint(0,9))
+                picname =  f"{self.bookname}_prtscr_{randint(0,9)}{randint(0,9)}{randint(0,9)}{randint(0,9)}.jpg"
             filename = self.dir2+r"\{}\{}".format(self.bookname,picname)
             if not os.path.exists(filename):
                 find = False
@@ -182,28 +182,30 @@ def bitmapleftup(self,event):
         # the list will look like the following:
         # [vert1 [hor1,hor2,hor3],vert2,vert3,[hor4,hor5]]
         # within so that first the hor [] will be combined first horizontally, then all will be combined vertically.
+        
+        dir_ = os.path.join(self.dir2,self.bookname,picname)
         if self.questionmode == True:
             if self.stitchmode_v == True:
                 self.pic_question.append(picname)  
-                self.pic_question_dir.append(self.dir2+r"\{}\{}".format(self.bookname,picname))  
+                self.pic_question_dir.append(dir_)  
             else:
                 try:
                     self.pic_question[-1].append(picname)  
-                    self.pic_question_dir[-1].append(self.dir2+r"\{}\{}".format(self.bookname,picname))  
+                    self.pic_question_dir[-1].append(dir_)  
                 except:
                     self.pic_question.append([picname])  
-                    self.pic_question_dir.append([self.dir2+r"\{}\{}".format(self.bookname,picname)])  
+                    self.pic_question_dir.append([dir_])  
         else:
             if self.stitchmode_v == True:
                 self.pic_answer.append(picname)  
-                self.pic_answer_dir.append(self.dir2+r"\{}\{}".format(self.bookname,picname))    
+                self.pic_answer_dir.append(dir_)    
             else:
                 try:
                     self.pic_answer[-1].append(picname)  
-                    self.pic_answer_dir[-1].append(self.dir2+r"\{}\{}".format(self.bookname,picname)) 
+                    self.pic_answer_dir[-1].append(dir_) 
                 except:
                     self.pic_answer.append([picname])  
-                    self.pic_answer_dir.append([self.dir2+r"\{}\{}".format(self.bookname,picname)])  
+                    self.pic_answer_dir.append([dir_])  
         # show current page
         f.ShowPage(self)     
         
@@ -214,10 +216,8 @@ def panel4_bitmapleftup(self,event):
     x0, y0 = self.panel4_pos
     x1, y1 = self.panel4_pos2
     #rescale
-    x0 = int(x0)
-    y0 = int(y0)
-    x1 = int(x1)
-    y1 = int(y1)
+    x0, y0 = int(x0), int(y0)
+    x1, y1 = int(x1), int(y1)
     
     if abs(x1-x0)>2 and abs(y1-y0)>2:            
         # cut down image
@@ -296,12 +296,12 @@ def selectionentered(self,event):
                     f.CombinePics(self,self.pic_answer_dir)
                     if type(self.pic_answer[0]) is list:
                         self.pic_answer[0] = self.pic_answer[0][0]
-                    self.pdf_answer = str(self.pdf_answer) + r" \pic{" + "{}".format(self.pic_answer[0])+r"}"
+                    self.pdf_answer = str(self.pdf_answer) + r" \pic{" + "{}".format(self.pic_answer[0])+r"}"                        
                 elif len(self.pic_answer) == 1:
                     if type(self.pic_answer[0]) is list:        
                         f.CombinePics(self,self.pic_answer_dir)
                     else:
-                        print("is not a list")                        
+                        print("is not a list")                
                     self.pdf_answer = str(self.pdf_answer) + r" \pic{" + "{}".format(self.pic_answer[0])+r"}"                        
                 
                 #try:   
@@ -486,7 +486,7 @@ def zoomout(self,event):
         f.ShowPage(self)
         f.SetScrollbars(self)
         value = int(self.zoom*100)
-        self.m_Zoom11.SetValue("{}%".format(value))
+        self.m_Zoom11.SetValue(f"{value}%")
         self.panel1.Refresh() # to remove the remnants of a larger bitmap when the page shrinks
         self.Layout()
         #self.m_panel1.Update()
