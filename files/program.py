@@ -28,11 +28,7 @@ import sync_modules  as m4
 import fb_functions    as f
 import fc_functions    as f2
 import print_functions as f3
-
-
-
-
-#--- for colored error messages -----------------------------------------------
+#for colored error messages
 from termcolor import colored
 
 
@@ -77,7 +73,6 @@ def run_flashbook(self):
         for item in dirs:
             if not os.path.exists(item):
                 os.makedirs(item)
-        
          
         # unpacks png images used in the gui
         resources.resourceimages(self.dir6,self.dir1) 
@@ -97,24 +92,15 @@ def run_flashbook(self):
             for name in folders:
                 print(f"- {name}")
             print("")
-        print("=========================================================================================")
-    
-    
-    
-    
-    
-    
-    
-    ########################################################################
+        print("=========================================================================================")   
+    ##
     self.stayonpage = False
     self.resetselection = False
     self.m_dirPicker11.SetInitialDirectory(self.dir3)
-    ## short cuts
+    #short cuts
     ini.initializeparameters(self)
     m.SetKeyboardShortcuts(self)
     initialize(self)
-    def m_CurrentPage11OnText( self, event ):
-        print("hallo")
 
 def run_flashcard(self):    
     print("Welcome to Flashcard , one moment ...")
@@ -182,13 +168,7 @@ def run_flashcard(self):
         
     
     #%%
-        
-        
-
-
-
     
-
     def onShowPopup(self, event):
         win = gui.MyFrame2(self.GetTopLevelParent(), wx.SIMPLE_BORDER)
         btn = event.GetEventObject()
@@ -205,12 +185,9 @@ def run_flashcard(self):
         win.Position(pos,(0,0))
         win.Show(True)      
 
-
     # initialize
     initialize2(self)
     ini2.initializeparameters(self) 
-    
-    
     
     # set mouse short cuts: 
     self.m_bitmapScroll.Bind( wx.EVT_MOUSEWHEEL, self.m_toolSwitch21OnToolClicked )
@@ -255,9 +232,6 @@ def get_IP(self,event):
         self.IP2 = data['IP2']
     self.m_txtMyIP.SetValue(self.IP1)
     self.m_txtTargetIP.SetValue(self.IP2)
-
-    
-
     
 def run_print(self,event):                
     
@@ -290,11 +264,7 @@ def run_print(self,event):
         print("=========================================================================================")
     
     
-    """
-    ###############################################################################
-    #####              MAINFRAME                                              #####
-    ###############################################################################
-    """    
+    """MAINFRAME"""
     initialize(self)
     #initialize parent class    
     
@@ -306,7 +276,6 @@ def run_print(self,event):
     self.pic_command      = "\pic{"
     self.question_command = r'\\quiz{'
     self.answer_command   = r"\\ans{"
-        
     
     #
     ini3.initializeparameters(self)                  
@@ -349,9 +318,6 @@ def set_richtext(self):
     self.txt2.EndFontSize()
     self.txt2.EndBold()
     self.txt2.WriteText("\t\tYou can synchronize two devices as long as they are on the same network e.g. your laptop and desktop using your local wifi network.\n")
-    
-    
-    
     self.txt2.EndFontSize()
     self.Layout()   
     
@@ -451,8 +417,6 @@ def set_richtext(self):
     self.txt.EndFontSize()
     self.txt2.BeginFontSize(12)
     self.txt.WriteText("\t"*29+"(left click to close window)\n")
-    
-    
     self.txt.WriteText("\t 1) First assign one device the role as 'server' and click on 'transfer'\n"
                        "\t 2) Then select on the other device 'client' and click 'transfer'.\n" 
                        "\t 3) It is important that you start the server before the client.\n"
@@ -462,9 +426,6 @@ def set_richtext(self):
                        "\t 7) When all data has been transferred you can safely continue using Flashbook.")
     self.txt.EndFontSize()
     self.Layout()
-    
-    
-    
     
 def SwitchPanel(self,n):
     if n == 0:
@@ -542,34 +503,26 @@ def SwitchPanel(self,n):
         self.Layout()
         
 def set_bitmapbuttons(self):
-    image = PIL.Image.open(self.path_fb, mode='r')
-    image = image.resize((105, 105), PIL.Image.ANTIALIAS) 
-    image2 = wx.Image( image.size)
-    image2.SetData( image.tobytes() )
+    
+    def Img2Bitmap(path,size):    
+        image = PIL.Image.open(path, mode='r')
+        image = image.resize((size, size), PIL.Image.ANTIALIAS) 
+        image2 = wx.Image( image.size)
+        image2.SetData( image.tobytes() )
+        return image2
+    
+    image2 = Img2Bitmap(self.path_fb,105)
     self.m_OpenFlashbook.SetBitmap(wx.Bitmap(image2))
     
-    image = PIL.Image.open(self.path_fc, mode='r')
-    image = image.resize((105, 105), PIL.Image.ANTIALIAS) 
-    image2 = wx.Image( image.size)
-    image2.SetData( image.tobytes() )
+    image2 = Img2Bitmap(self.path_fc,105)
     self.m_OpenFlashcard.SetBitmap(wx.Bitmap(image2))
     
-    image = PIL.Image.open(self.path_pr, mode='r')
-    image = image.resize((105, 105), PIL.Image.ANTIALIAS) 
-    image2 = wx.Image( image.size)
-    image2.SetData( image.tobytes() )
+    image2 = Img2Bitmap(self.path_pr,105)
     self.m_OpenPrint.SetBitmap(wx.Bitmap(image2))
     
-    image = PIL.Image.open(self.path_wifi, mode='r')
-    image = image.resize((105, 105), PIL.Image.ANTIALIAS) 
-    image2 = wx.Image( image.size)
-    image2.SetData( image.tobytes() )
+    image2 = Img2Bitmap(self.path_wifi,105)
     self.m_OpenTransfer.SetBitmap(wx.Bitmap(image2))
-    # stich
     
-    image = PIL.Image.open(self.path_arrow, mode='r')
-    image = image.resize((32, 32))     
-    image2 = wx.Image( image.size)
-    image2.SetData( image.tobytes() )
+    #image2 = Img2Bitmap(self.path_arrow,32)
     self.m_toolStitch.SetBitmap(wx.Bitmap(self.path_arrow2))
-    #
+    
