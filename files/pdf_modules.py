@@ -11,6 +11,7 @@ from pdf2image import convert_from_bytes
 import ctypes
 ICON_EXCLAIM=0x30
 ICON_STOP = 0x10
+MB_ICONINFORMATION = 0x00000040
 
 def ConvertPDF_to_JPG(self):
     
@@ -26,9 +27,9 @@ def ConvertPDF_to_JPG(self):
         If both methods fail user gets instructed to use online-converter instead."""
     
     MessageBox = ctypes.windll.user32.MessageBoxW   
-    MessageBox(0, f'The PDF -> JPG conversion has started.\nIt may take ~6 minutes per book and it is RAM heavy.\nYou may need an online converter if this causes trouble.', "Message", 1)            
+    MessageBox(0, f'The PDF -> JPG conversion has started.\nIt may take a few minutes per book and it is RAM heavy.\nYou may need an online converter if this causes trouble.', "Message", MB_ICONINFORMATION)            
     arr_pdf = [f for f in os.listdir(self.dirpdfbook) if '.pdf' in f]
-    
+    i = 1
     for _, item in enumerate(arr_pdf):
         
         pdfname = item[:-4]
@@ -51,13 +52,16 @@ def ConvertPDF_to_JPG(self):
                     
                 if pages != []:
                     i = 1
-                    MessageBox(0, f'{item} has been converted and is being saved', "Message", 1)    
+                    MessageBox(0, f'{item} has been converted and is being saved', "Message",  MB_ICONINFORMATION)    
                     for page in pages:
                         filename = os.path.join(target_dir, pdfname)
                         nr = "0"*(4-len(f"{i}"))+f"{i}"
-                        page.save(f'{filename+nr}.jpg', 'JPEG')
+                        page.save(f'{filename}-{nr}.jpg', 'JPEG')
                         i += 1
-            MessageBox(0, f'Finished converting PDF to JPG', "Message", ICON_EXCLAIM)   
+               
         except:
             pass
-
+    if i != 1:
+        MessageBox(0, f'Finished converting all books.', "Message", MB_ICONINFORMATION)
+    else:
+        MessageBox(0, f'Finished, no books needed to be converted.', "Message", MB_ICONINFORMATION)
