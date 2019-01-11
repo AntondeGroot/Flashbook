@@ -94,6 +94,7 @@ You can also sync two devices. It will automatically display the IP address of t
 - Perhaps use SQLite for data, currently everything is stored as .tex, .txt, .json files in %localappdata%. Although, now it is easy to alter questions by opening .tex files in Wordpad or TeXnicCenter.
 - Customizable colors for Flashbook: the user should be able to choose the color of the temporary and permanent borders.  
 - Clean up code: make it PEP-8 compliant, add clear docstrings to the functions, perhaps move more code from modules to functions in order to make the modules clearer and shorter.
+- When in Flashbook an image is too large: there are issues displaying it. Either when you Import a screenshot or Zoom in too much.
 - Add ability to refresh books
 - Add ability to combine multiple PDFs for additional information / if a course consists of multiple PDFs: syllabus, book, assignments ...
 - Add ability to change a flashcard while you are rehersing: "change current card" which then shows the user input text / the ability to delete the card.
