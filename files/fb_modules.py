@@ -321,6 +321,7 @@ def arrowscroll(self,event,direction):
             if direction == 'down':
                 self.scrollpos = [42,1337] 
                 self.m_toolNext11OnToolClicked(self)
+    self.Layout()
     event.Skip()                               # necessary to use other functions after this one is used
      
     
@@ -343,10 +344,12 @@ def mousewheel(self,event):
                 else:
                     scrollWin.SetScrollPos(wx.VERTICAL,0,False) #orientation, value, refresh? # 150 is overkill, but it means the new page starts definitely at the bottom of the scroll bar
                     scrollWin.Scroll(0,scrollWin.GetScrollPos(1))
+                
         else:                                  # end of page
             if self.WheelRot < 0:
                 self.scrollpos = [42,1337] 
                 self.m_toolNext11OnToolClicked(self)
+    self.Layout()
     event.Skip()                               # necessary to use other functions after this one is used
     
 def resetselection(self,event):
