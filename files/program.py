@@ -233,8 +233,6 @@ def run_flashcard(self):
     self.SetAcceleratorTable(entries)
     f2.SetScrollbars(self)
         
-
-        
     # answers given 
     def m_buttonCorrectOnButtonClick( self, event ):
         m2.buttonCorrect(self)
