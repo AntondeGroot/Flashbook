@@ -116,7 +116,7 @@ def switchCard(self):
         AbsoluteIndex = self.cardorder[self.index] 
         self.key = f'{self.mode[0]}{AbsoluteIndex}' #e.g. Q12 is a key
         if self.debugmode:
-            print("current key = {}".format(self.key))
+            print(f"current key = {self.key}")
         # if there are no answer cards, then don't switch card: the self.key makes sure this happens
         if f'A{AbsoluteIndex}' not in self.textdictionary:
             self.m_textCtrlMode.SetValue(self.mode)
@@ -130,7 +130,7 @@ def switchCard(self):
         #There is text, determine if there is a picture:
         if self.TextCard == True:
             if self.debugmode:
-                print("\n\nwe have key {} for picdictionary {}\n\n".format(self.key,self.picdictionary))
+                print(f"\n\nwe have key {self.key} for picdictionary {self.picdictionary}\n\n")
             if self.key in self.picdictionary:
                 try: # to combine text with picture
                     f2.CombinePicText(self)
