@@ -183,9 +183,9 @@ def checkBooks(self):
     else:
         print("the following books were found:")
         for name in folders:
-            print("- {}".format(name))
+            print(f"- {name}")
         print("")
-    print("=========================================================================================")
+    print("="*90)
 
 
     
