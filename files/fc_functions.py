@@ -105,7 +105,8 @@ def LoadStats(self):
             self.index = self.resumedata[self.bookname]['index']
             self.nr_questions = self.resumedata[self.bookname]['nr_questions']
             self.cardorder = self.resumedata[self.bookname]['cardorder']
-            self.m_Score21.SetValue("{} %".format(round(float(self.score)/self.nr_questions*100,1)))    
+            _score_ = round(float(self.score)/self.nr_questions*100,1)
+            self.m_Score21.SetValue(f"{_score_} %")    
     except:
         print("no stats found for this book, continue")
         
@@ -228,7 +229,7 @@ def replace_allcommands(defined_command,LaTeX_command,Question,nr_arg):
                 Question = Question.replace(Question[index1:index2],LaTeX_command )
                 #replace the temporary arguments #1,#2... by the real arguments
                 for i in range(nr_arg):
-                    Question = Question.replace("#{}".format(i+1), arguments[i])
+                    Question = Question.replace(f"#{i+1}", arguments[i])
                 # check if another command is in the Q&A
                 FindCommand = (defined_command in Question)
         else:
@@ -263,9 +264,9 @@ def SwitchBitmap(self): # checks if there is an answer card, if not changes mode
         print("f=switchbitmap")
     try:
         # you always start with a question, check if there is an answer:
-        key = 'A{}'.format(self.cardorder[self.index]) # do not use self.key: only check if there is an answer, don't change the key
+        _key_ = f'A{self.cardorder[self.index]}' # do not use self.key: only check if there is an answer, don't change the key
         try:
-            if key not in self.textdictionary and key not in self.picdictionary: # there is no answer card!
+            if _key_ not in self.textdictionary and _key_ not in self.picdictionary: # there is no answer card!
                 self.mode = 'Question'
                 self.SwitchCard = False        
                 id = self.m_toolSwitch21.GetId()
@@ -284,7 +285,7 @@ def CombinePicText(self):
     if self.debugmode:
         print("f=combinepictext")
     # get images
-    imagepic = PIL.Image.open(self.dir2+"\\"+self.bookname+"\\"+self.picdictionary[self.key])
+    imagepic = PIL.Image.open(os.path.join(self.dir2,self.bookname,self.picdictionary[self.key]))
     images = [self.imagetext,imagepic]
     # get info
     widths, heights = zip(*(i.size for i in images))
@@ -308,7 +309,7 @@ def displaycard(self):
         print("f=displaycard")
     try:
         self.TextCard = False
-        self.key = '{}{}'.format(self.mode[0],self.cardorder[self.index])
+        self.key = f'{self.mode[0]}{self.cardorder[self.index]}'
         
         # try to create a TextCard
         if self.key in self.textdictionary:
@@ -329,7 +330,7 @@ def displaycard(self):
                 ShowPage(self)
         else: #if there is no textcard only display the picture
             try:
-                self.image = PIL.Image.open(self.dir2+"\\"+self.bookname+"\\"+self.picdictionary[self.key])
+                self.image = PIL.Image.open(os.path.join(self.dir2,self.bookname,self.picdictionary[self.key]))
                 ShowPage(self)
             except:
                 pass
@@ -339,9 +340,9 @@ def displaycard(self):
 def CreateTextCard(self):
     if self.debugmode:
         print("f=createtextcard")
-        print("is pylab interactive? = {}".format(pylab.isinteractive()))
+        print(f"is pylab interactive? = {pylab.isinteractive()}")
         pylab.ioff()
-        print("is pylab interactive? = {} (after explicitly deactivating it)".format(pylab.isinteractive()))
+        print(f"is pylab interactive? = {pylab.isinteractive()} (after explicitly deactivating it)")
     # acquire text
     usertext = self.textdictionary[self.key]
     # display text in a plot
@@ -446,14 +447,14 @@ def LoadFlashCards(self):
             [T_F,QnA,picname]=remove_pics(self.questions[i],self.pic_command)
             self.questions[i] = QnA # removed pic{} from Question
             if T_F == True:
-                self.picdictionary.update({'Q{}'.format(i): picname})
+                self.picdictionary.update({f'Q{i}': picname})
             findpic = T_F
               
         while findpic2 == True: 
             [T_F2,QnA,picname]=remove_pics(self.answers[i],self.pic_command) 
             self.answers[i] = QnA # removed pic{} from Question
             if T_F2 == True:
-                self.picdictionary.update({'A{}'.format(i): picname})
+                self.picdictionary.update({f'A{i}': picname})
             findpic2 = T_F2      
     """
     CARD ORDER
@@ -510,8 +511,7 @@ def LoadFlashCards(self):
             self.textdictionary.update({'Q{}'.format(i): self.questions2[i]})
         if self.answers2[i] != '':
            self.textdictionary.update({'A{}'.format(i): self.answers2[i]})
-    #except:
-    #    print(colored("Error: couldn't pick file",'red'))
+
 
 def ShowPage(self):
     if self.debugmode:
