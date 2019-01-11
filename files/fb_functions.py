@@ -220,7 +220,7 @@ def ShowPrintScreen(self): # no error
         print(colored("Error: cannot show PrintScreen page",'red'))
     
     
-    
+
 def ShowPage(self): # no error
     if self.debugmode:
         print("fb=ShowPage")
@@ -231,7 +231,7 @@ def ShowPage(self): # no error
         self.width, self.height = self.pageimagecopy.size #so that it doesn't rescale it everytime ShowPage() is used
         self.width , self.height = int(self.width*self.zoom) , int(self.height*self.zoom)
         self.pageimage = self.pageimage.resize((self.width, self.height), PIL.Image.ANTIALIAS)
-        try:   #try to draw borders, but if there are no borders, do nothing
+        try:   #draw borders if they exist
             if self.drawborders == True:
                 drawCoordinates(self)
         except:
@@ -249,7 +249,6 @@ def ShowPage(self): # no error
             output.write("{}".format(self.currentpage))
     except:
         print(colored("Error: cannot show page",'red'))
-
 def ResetQuestions(self): # no errors
     if self.debugmode:
         print("fb=ResetQuestions")
