@@ -12,24 +12,15 @@ import os
 import fb_functions as f
 import json
 
-
-datadir = os.getenv("LOCALAPPDATA")
-dir0 = datadir + r"\FlashBook"
-# create settings folder for debugging
-
-
-
 def dirchanged(self,event):
-    print("hallo fb mod")
-    # for scrolling: only remember current and last position, append and pop, if the numbers repeat [0,0] or [X,X] then you know you've reached either the beginning or the end of the window: then flip page
-    self.scrollpos = [42,1337] 
-    #   INITIALIZE: ACQUIRE ALL INFO NECESSARY
     
+    """For scrolling: only remember current and last position, append and pop 
+    if the numbers repeat [0,0] or [X,X] then you know you've reached either 
+    the beginning or the end of the window: then flip page"""
     
-    #try:
+    self.scrollpos = [42,1337]     
     path = event.GetPath() 
     # - keep track of "nrlist" which is a 4 digit nr 18-> "0018" so that it is easily sorted in other programs
-    #path = os.path.join(self.dir3,os.path.basename(path)[:-4])
     print(f"\nThe chosen path is {path}\n")
     nrlist = []
     arr = os.listdir(path) #
@@ -37,20 +28,16 @@ def dirchanged(self,event):
     for pic in arr:
         if '.jpg' in pic:
            picnames.append(pic)
-           
     
     nr_pics = len(picnames)
     print(f"hallo {nr_pics}") 
     for i in range(nr_pics):
         indexlist = []
-        TF = True
-        #count = 0
-        
+        TF = True        
         picname = picnames[i]
         while TF == True:
             for j in range(len(picname)):
-                k=len(picname)-j-1
-                
+                k=len(picname)-j-1                
                 if (f.is_number(picname[k])==True) and TF==True:
                     indexlist.append(k)  
                 elif (f.is_number(picname[k])==False):
@@ -72,14 +59,11 @@ def dirchanged(self,event):
             I = indexlist[0]
             F = indexlist[-1]+1
             nrlist.append("0"*(4-len_nr)+"{}".format(picname[I:F]))
-    print("hallo")                       
     picnames = [x for _,x in sorted(zip(nrlist,picnames))]
     self.picnames = picnames
     self.bookname = path.replace("{}".format(self.dir3),"")[1:]#to remove '\'
     self.currentpage = 1
-    
     self.PathBorders = os.path.join(self.dir5, self.bookname +'_borders.txt')
-    
     if os.path.exists(os.path.join(self.temp_dir, self.bookname +'.txt')):
         file = open(os.path.join(self.temp_dir, self.bookname+'.txt'), 'r')
         self.currentpage = int(float(file.read()))    
@@ -90,7 +74,6 @@ def dirchanged(self,event):
             file.write(json.dumps({})) 
     
     self.nr_pics = nr_pics
-
     if not os.path.exists(self.dir2+r"\{}".format(self.bookname)):
         os.makedirs(self.dir2+r"\{}".format(self.bookname))
     
@@ -98,7 +81,7 @@ def dirchanged(self,event):
     self.m_TotalPages11.SetValue(str(self.nr_pics))
     nrlist.sort()
     
-    ## open dictionary if it exists
+    #open dictionary if it exists
     try:
         with open(self.PathBorders, 'r') as file:
             self.dictionary = json.load(file)
@@ -113,8 +96,8 @@ def dirchanged(self,event):
     except:
         print(colored("Error: could not load scrolled window",'red'))
     
-    #print(self.drawborders)
-    try:#try to draw borders, but if there are no borders, do nothing
+    #draw borders if they exist
+    try:
         if self.drawborders == True:                    
             f.drawCoordinates(self)
     except:
@@ -125,12 +108,8 @@ def dirchanged(self,event):
         image2.SetData( self.pageimage.tobytes() )
         self.m_bitmapScroll.SetBitmap(wx.Bitmap(image2))
         f.SetScrollbars(self)
-        
-
     except:
         print(colored("Error: could not load scrolled window",'red'))
-    #except:
-    #    print(colored("Error: could not load image",'red'))
         
 def bitmapleftup(self,event):
     if self.cursor == False:
@@ -147,20 +126,17 @@ def bitmapleftup(self,event):
     
     if abs(x1-x0)>2 and abs(y1-y0)>2:            
         self.BorderCoords = [x0,y0,x1,y1]
-        ## save all borders in dict
+        #save all borders in dict
         try:
             #dict key exists, so you should append its value
             val = self.tempdictionary['page {}'.format(self.currentpage)]
             val.append(self.BorderCoords)
             self.tempdictionary['page {}'.format(self.currentpage)] = val
-            #print("val = {}".format(val))
-            #print("dict = {}".format(self.tempdictionary))
         except:
             #dict key does not exist, just add the value to the new key
             self.tempdictionary.update({'page {}'.format(self.currentpage): [self.BorderCoords]})
-            #print("temp dictionary is: {}".format(self.tempdictionary))            
-        
-        # cut down image
+            
+        #crop image
         if self.stayonpage == False:
             img = PIL.Image.open(self.jpgdir)
         else:
@@ -179,9 +155,9 @@ def bitmapleftup(self,event):
                 find = False
         img.save(filename)
         
-        # the list will look like the following:
-        # [vert1 [hor1,hor2,hor3],vert2,vert3,[hor4,hor5]]
-        # within so that first the hor [] will be combined first horizontally, then all will be combined vertically.
+        """the list will look like the following:
+        [vert1 [hor1,hor2,hor3],vert2,vert3,[hor4,hor5]]
+        within so that first the hor [] will be combined first horizontally, then all will be combined vertically."""
         
         dir_ = os.path.join(self.dir2,self.bookname,picname)
         if self.questionmode == True:
@@ -206,7 +182,6 @@ def bitmapleftup(self,event):
                 except:
                     self.pic_answer.append([picname])  
                     self.pic_answer_dir.append([dir_])  
-        # show current page
         f.ShowPage(self)     
         
 def panel4_bitmapleftup(self,event):
@@ -261,10 +236,7 @@ def selectionentered(self,event):
                         else:
                             print("is not a list")
                         self.pdf_question = str(self.pdf_question) + r" \pic{" + "{}".format(self.pic_question[0])+r"}"
-                #try:                     
                 f.ShowInPopup(self,event,"Question")
-                #except:
-                #    pass
                  
             else:
                 self.usertext = self.m_textCtrl2.GetValue()
@@ -274,7 +246,7 @@ def selectionentered(self,event):
                 self.m_textCtrl1.SetValue("Question:")
                 self.m_textCtrl2.SetValue("")
                 
-                # save everything!!------------------------------------------------------------------------------------------------------------
+                # save everything
                 findic = self.dictionary
                 tempdic = self.tempdictionary
                 for key in list(tempdic):      # go over all keys
@@ -304,10 +276,8 @@ def selectionentered(self,event):
                         print("is not a list")                
                     self.pdf_answer = str(self.pdf_answer) + r" \pic{" + "{}".format(self.pic_answer[0])+r"}"                        
                 
-                #try:   
+
                 f.ShowInPopup(self,event,"Answer")                    
-                #except:
-                #    pass
                 # save the user inputs in .tex file
                 if len(self.pdf_question)!=0:
                     with open(os.path.join(self.dir1, self.bookname +'.tex'), 'a') as output: # the mode "a" appends to the file    
@@ -315,8 +285,6 @@ def selectionentered(self,event):
                         output.write(r"\ans{"  + str(self.pdf_answer)   + "}"+"\n")
                 #reset all
                 f.ResetQuestions(self)
-            #except:
-            #    print(colored("Error: cannot enter selection",'red'))
 
 def arrowscroll(self,event,direction):
     
@@ -335,35 +303,24 @@ def arrowscroll(self,event,direction):
     self.scrollpos.append(scrollWin.GetScrollPos(0))
     self.scrollpos.pop(0)
     
+    print(f"currentpage = {self.currentpage}")
+    print(f"direction is {direction}")
     if self.scrollpos[0] == self.scrollpos[1]: # you've reached either the beginning or end of the document
         if self.scrollpos[0] == 0:             # beginning
             if direction == 'up':
                 self.scrollpos = [42,1337]     # make it a little more difficult to scroll back once you scrolled a page
                 self.m_toolBack11OnToolClicked(self)
-                scrollWin.SetScrollPos(wx.VERTICAL,scrollWin.GetScrollPos(1)+150,False) #orientation, value, refresh?  # 150 is overkill, but it means the new page starts definitely at the bottom of the scroll bar
-                scrollWin.Scroll(scrollWin.GetScrollPos(1)+150,scrollWin.GetScrollPos(1))
+                
+                if self.currentpage != 1:
+                    scrollWin.SetScrollPos(wx.VERTICAL,scrollWin.GetScrollPos(1)+150,False) #orientation, value, refresh?  # 150 is overkill, but it means the new page starts definitely at the bottom of the scroll bar
+                    scrollWin.Scroll(scrollWin.GetScrollPos(1)+150,scrollWin.GetScrollPos(1))
+                else:
+                    scrollWin.SetScrollPos(wx.VERTICAL,0,False) #orientation, value, refresh?  # 150 is overkill, but it means the new page starts definitely at the bottom of the scroll bar
+                    scrollWin.Scroll(0,scrollWin.GetScrollPos(1))
         else:                                  # end of page
             if direction == 'down':
                 self.scrollpos = [42,1337] 
                 self.m_toolNext11OnToolClicked(self)
-    event.Skip()                               # necessary to use other functions after this one is used
-    
-    
-    #self.scrollpos.append(_posvalue_)
-    #self.scrollpos.pop(0)
-    #if self.debugmode:
-    #print(f"scroll pos = {self.scrollpos}, {_posvalue_}")
-    """
-    if self.scrollpos[0] == self.scrollpos[1]: # you've reached either the beginning or end of the document
-        if self.scrollpos[0] == 0:             # beginning
-            if self.WheelRot > 0:
-                self.scrollpos = [42,1337]     # make it a little more difficult to scroll back once you scrolled a page
-                self.m_toolBack11OnToolClicked(self)
-        else:                                  # end of page
-            if self.WheelRot < 0:
-                self.scrollpos = [42,1337] 
-                self.m_toolNext11OnToolClicked(self)
-    """
     self.Layout()
     event.Skip()                               # necessary to use other functions after this one is used
      
@@ -381,8 +338,12 @@ def mousewheel(self,event):
             if self.WheelRot > 0:
                 self.scrollpos = [42,1337]     # make it a little more difficult to scroll back once you scrolled a page
                 self.m_toolBack11OnToolClicked(self)
-                scrollWin.SetScrollPos(wx.VERTICAL,scrollWin.GetScrollPos(1)+150,False) #orientation, value, refresh? # 150 is overkill, but it means the new page starts definitely at the bottom of the scroll bar
-                scrollWin.Scroll(scrollWin.GetScrollPos(1)+150,scrollWin.GetScrollPos(1))
+                if self.currentpage != 1:
+                    scrollWin.SetScrollPos(wx.VERTICAL,scrollWin.GetScrollPos(1)+150,False) #orientation, value, refresh? # 150 is overkill, but it means the new page starts definitely at the bottom of the scroll bar
+                    scrollWin.Scroll(scrollWin.GetScrollPos(1)+150,scrollWin.GetScrollPos(1))
+                else:
+                    scrollWin.SetScrollPos(wx.VERTICAL,0,False) #orientation, value, refresh? # 150 is overkill, but it means the new page starts definitely at the bottom of the scroll bar
+                    scrollWin.Scroll(0,scrollWin.GetScrollPos(1))
         else:                                  # end of page
             if self.WheelRot < 0:
                 self.scrollpos = [42,1337] 
@@ -414,10 +375,11 @@ def resetselection(self,event):
     f.LoadPage(self)
     f.ShowPage(self)
     self.resetselection = False
+    
 def switchpage(self,event):
     try:
         pagenumber = self.currentpage
-        if pagenumber <1:
+        if pagenumber < 1:
             pagenumber = 1
         if pagenumber > self.nr_pics:
             pagenumber = self.nr_pics
@@ -489,7 +451,6 @@ def zoomout(self,event):
         self.m_Zoom11.SetValue(f"{value}%")
         self.panel1.Refresh() # to remove the remnants of a larger bitmap when the page shrinks
         self.Layout()
-        #self.m_panel1.Update()
     except:
         print(colored("Error: cannot zoom in",'red'))
 
@@ -501,7 +462,6 @@ def switch_stitchmode(self): # switch the boolean to opposite
 
 def SetKeyboardShortcuts(self):
     
-    #try:
     # set keyboard short cuts: accelerator table        
     self.Id_leftkey   = wx.NewIdRef() 
     self.Id_rightkey  = wx.NewIdRef() 
@@ -527,8 +487,6 @@ def SetKeyboardShortcuts(self):
                                   (wx.ACCEL_NORMAL,  wx.WXK_HOME, self.Id_stitch ),
                                   (wx.ACCEL_NORMAL,  wx.WXK_NUMPAD0, self.Id_stitch )])
     self.SetAcceleratorTable(entries)
-    #except:
-    #    print("Error: cannot set Accelerator Table")
         
 
 def RemoveKeyboardShortcuts(self,index): 
