@@ -100,3 +100,4 @@ You can also sync two devices. It will automatically display the IP address of t
 - Improve design: font / colors / borders / icons / ...
 #### Issues:
 - When in Flashbook an image is too large: there are issues displaying it. When you Import a screenshot that is too large it won't load. When you Zoom in too much you can't scroll to the next page.
+- pdf conversion may not be supported: pdftoppm.exe is called on laptop via miktex. Explicit import needed in spec file?
