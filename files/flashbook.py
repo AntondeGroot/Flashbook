@@ -319,8 +319,10 @@ class MainFrame(gui.MyFrame):
         p.SwitchPanel(self,0)  
         
     def m_menuItemConvertOnMenuSelection( self, event ):
-        t_pdf = lambda self : threading.Thread(target = m5.ConvertPDF_to_JPG , args=(self, )).start()
-        t_pdf(self) 
+        from_ = self.dirpdfbook
+        to_   = self.dir3 
+        t_pdf = lambda from_,to_ : threading.Thread(target = m5.ConvertPDF_to_JPG , args=(from_,to_ )).start()
+        t_pdf(from_,to_) 
         print("converting")
         
     def m_menuPDFfolderOnMenuSelection( self, event ):
