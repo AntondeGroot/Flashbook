@@ -15,17 +15,10 @@ import json
 #import matplotlib.backends.backend_agg as agg
 
 pylab.ioff() # make sure it is inactive, otherwise possible qwindows error    .... https://stackoverflow.com/questions/26970002/matplotlib-cant-suppress-figure-window
-
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
-
-
 datadir = os.getenv("LOCALAPPDATA")
 dir0 = datadir + r"\FlashBook"
-# create settings folder for debugging
-
-
-
 
 class Window2(wx.PopupWindow):
     """"""
@@ -34,7 +27,6 @@ class Window2(wx.PopupWindow):
     #----------------------------------------------------------------------
     def __init__(self, parent, style,information):
         self.info=information
-        #print("picinfo in w2 {}".format(self.info))
         self.border = 10
         """Constructor"""
         wx.PopupWindow.__init__(self, parent, style)
@@ -109,28 +101,20 @@ def is_number(s):
 
 
 def drawRec(self,layer,color): # no errors
-    #if debugmode:
-    #    print("fb=drawRec")
     x0 , y0 = self.cord1
     x1 , y1 = self.cord2
     #rename coordinates if square isn't drawn from top left to bottom right.
     if x0 > x1:
-        c = x0
-        x0 = x1
-        x1 = c
+        x0 , x1 = x1, x0
     if y0 > y1:
-        c = y0
-        y0 = y1
-        y1 = c    
+        y0 , y1 = y1, y0
     #rescale
     x0 = int(x0*self.zoom)
     y0 = int(y0*self.zoom)
     x1 = int(x1*self.zoom)
     y1 = int(y1*self.zoom)
-    #    
-        
-    width = abs(x0 - x1)
-    height = abs(y0 - y1)
+    #            
+    width, height  = abs(x0 - x1), abs(y0 - y1)
     #  Vertical lines   #
     layer[y0:y1,x0] = np.tile(color,[height,1])
     layer[y0:y1,x1] = np.tile(color,[height,1])
@@ -143,8 +127,6 @@ def drawRec(self,layer,color): # no errors
     return layer        
 
 def drawCoordinates(self): # no errors
-    #if debugmode:
-    #    print("fb=drawCoordinates")
     img = np.array(self.pageimage)
     img = np.uint8(img)
     try:#try to look if there already exists borders that need to be drawn
@@ -168,15 +150,10 @@ def drawCoordinates(self): # no errors
     self.pageimage = PIL.Image.fromarray(img)
     
 def SetScrollbars(self): #no errors
-    #if debugmode:
-    #    print("fb=SetScrollbars")
     scrollWin = self.m_scrolledWindow1
     scrollWin.SetScrollbars(0,int(20*self.zoom),0,int(100*self.zoom) )
 
 def LoadPage(self): # no error
-    #if debugmode:
-    #    print("fb=LoadPage")
-    
     
     try:
         self.jpgdir = self.dir3+r'\{}\{}'.format(self.bookname,self.picnames[self.currentpage-1])
@@ -189,15 +166,10 @@ def LoadPage(self): # no error
         self.width , self.height = int(self.width*self.zoom) , int(self.height*self.zoom)
         self.pageimage = self.pageimage.resize((self.width, self.height), PIL.Image.ANTIALIAS)
     except:
-        print(colored("Error: cannot load page",'red'))
-    
-
-    
+        print(colored("Error: cannot load page",'red'))    
     
     
 def ShowPage(self): # no error
-    #if debugmode:
-    #    print("fb=ShowPage")
     try:
         # update
         self.m_PageCtrl.SetValue(str(self.currentpage))
