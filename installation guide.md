@@ -16,6 +16,7 @@ documentation:
 
 - [Stackoverflow: see Esperluette's answer to themself](https://stackoverflow.com/questions/48629486/how-can-i-create-the-minimum-size-executable-with-pyinstaller)
 - [Python docs on venv](https://docs.python.org/3/tutorial/venv.html)
+
 poppler:
 - [https://stackoverflow.com/questions/1681208/python-platform-independent-way-to-modify-path-environment-variable](https://stackoverflow.com/questions/1681208/python-platform-independent-way-to-modify-path-environment-variable)
 - [https://simply-python.com/tag/pdftoimage/](https://simply-python.com/tag/pdftoimage/)
