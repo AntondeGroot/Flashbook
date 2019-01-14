@@ -26,7 +26,7 @@ poppler:
 
 1. download all the files in the `files` folder
 1. go in command prompt to the relevant folder
-1. create a .spec file by typing: `pyi-makespec --noconsole flashbook.py --icon=book.ico --add-binary poppler-0.68.0_x86.7z`
+1. create a .spec file by typing: `pyi-makespec --noconsole flashbook.py --icon=book.ico`
 4. run pyinstaller `pyinstaller flashbook.spec` 
 
 --------------------------------
