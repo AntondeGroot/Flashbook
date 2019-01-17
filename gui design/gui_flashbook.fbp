@@ -37,7 +37,7 @@
             <property name="event_handler">impl_virtual</property>
             <property name="extra_style"></property>
             <property name="fg"></property>
-            <property name="font"></property>
+            <property name="font">,90,90,-1,70,0</property>
             <property name="hidden">0</property>
             <property name="id">wxID_ANY</property>
             <property name="maximum_size"></property>
@@ -47,7 +47,7 @@
             <property name="size">-1,-1</property>
             <property name="style">wxDEFAULT_FRAME_STYLE</property>
             <property name="subclass"></property>
-            <property name="title">FlashBook</property>
+            <property name="title">Flashbook</property>
             <property name="tooltip"></property>
             <property name="window_extra_style"></property>
             <property name="window_name"></property>
@@ -94,7 +94,7 @@
                 <property name="context_menu">1</property>
                 <property name="enabled">1</property>
                 <property name="fg"></property>
-                <property name="font"></property>
+                <property name="font">Verdana,90,90,9,74,0</property>
                 <property name="hidden">0</property>
                 <property name="id">wxID_ANY</property>
                 <property name="label">MyMenuBar</property>
@@ -408,7 +408,7 @@
                                                             <property name="enabled">1</property>
                                                             <property name="fg"></property>
                                                             <property name="floatable">1</property>
-                                                            <property name="font">,90,92,20,70,0</property>
+                                                            <property name="font">Verdana,90,92,20,74,0</property>
                                                             <property name="gripper">0</property>
                                                             <property name="hidden">0</property>
                                                             <property name="id">wxID_ANY</property>
@@ -491,11 +491,11 @@
                                                             <property name="enabled">1</property>
                                                             <property name="fg"></property>
                                                             <property name="floatable">1</property>
-                                                            <property name="font">,90,90,10,70,0</property>
+                                                            <property name="font">Verdana,90,90,10,74,0</property>
                                                             <property name="gripper">0</property>
                                                             <property name="hidden">0</property>
                                                             <property name="id">wxID_ANY</property>
-                                                            <property name="label">Read a PDF that has been converted to jpg&#x0A;and make flashcards / notes while you read</property>
+                                                            <property name="label">Read a PDF that has been converted to jpg&#x0A;and make flashcards / notes while you read.</property>
                                                             <property name="max_size"></property>
                                                             <property name="maximize_button">0</property>
                                                             <property name="maximum_size"></property>
@@ -678,7 +678,7 @@
                                                             <property name="enabled">1</property>
                                                             <property name="fg"></property>
                                                             <property name="floatable">1</property>
-                                                            <property name="font">,90,92,20,70,0</property>
+                                                            <property name="font">Verdana,90,92,20,74,0</property>
                                                             <property name="gripper">0</property>
                                                             <property name="hidden">0</property>
                                                             <property name="id">wxID_ANY</property>
@@ -761,7 +761,7 @@
                                                             <property name="enabled">1</property>
                                                             <property name="fg"></property>
                                                             <property name="floatable">1</property>
-                                                            <property name="font">,90,90,10,70,0</property>
+                                                            <property name="font">Verdana,90,90,10,74,0</property>
                                                             <property name="gripper">0</property>
                                                             <property name="hidden">0</property>
                                                             <property name="id">wxID_ANY</property>
@@ -948,7 +948,7 @@
                                                             <property name="enabled">1</property>
                                                             <property name="fg"></property>
                                                             <property name="floatable">1</property>
-                                                            <property name="font">,90,92,20,70,0</property>
+                                                            <property name="font">Verdana,90,92,20,74,0</property>
                                                             <property name="gripper">0</property>
                                                             <property name="hidden">0</property>
                                                             <property name="id">wxID_ANY</property>
@@ -1031,11 +1031,11 @@
                                                             <property name="enabled">1</property>
                                                             <property name="fg"></property>
                                                             <property name="floatable">1</property>
-                                                            <property name="font">,90,90,10,70,0</property>
+                                                            <property name="font">Verdana,90,90,10,74,0</property>
                                                             <property name="gripper">0</property>
                                                             <property name="hidden">0</property>
                                                             <property name="id">wxID_ANY</property>
-                                                            <property name="label">combines all the flashcards and saves them&#x0A;as a pdf. Includes both Question and Answer.</property>
+                                                            <property name="label">Combine all the flashcards and save them&#x0A;as a PDF. Includes both Question and Answer.</property>
                                                             <property name="max_size"></property>
                                                             <property name="maximize_button">0</property>
                                                             <property name="maximum_size"></property>
@@ -1218,7 +1218,7 @@
                                                             <property name="enabled">1</property>
                                                             <property name="fg"></property>
                                                             <property name="floatable">1</property>
-                                                            <property name="font">,90,92,20,70,0</property>
+                                                            <property name="font">Verdana,90,92,20,74,0</property>
                                                             <property name="gripper">0</property>
                                                             <property name="hidden">0</property>
                                                             <property name="id">wxID_ANY</property>
@@ -1301,7 +1301,7 @@
                                                             <property name="enabled">1</property>
                                                             <property name="fg"></property>
                                                             <property name="floatable">1</property>
-                                                            <property name="font">,90,90,10,70,0</property>
+                                                            <property name="font">Verdana,90,90,10,74,0</property>
                                                             <property name="gripper">0</property>
                                                             <property name="hidden">0</property>
                                                             <property name="id">wxID_ANY</property>
@@ -1731,7 +1731,7 @@
                                                     <property name="enabled">1</property>
                                                     <property name="fg"></property>
                                                     <property name="floatable">1</property>
-                                                    <property name="font"></property>
+                                                    <property name="font">Verdana,90,90,9,74,0</property>
                                                     <property name="gripper">0</property>
                                                     <property name="hidden">0</property>
                                                     <property name="id">wxID_ANY</property>
@@ -1856,7 +1856,7 @@
                                                     <property name="enabled">1</property>
                                                     <property name="fg"></property>
                                                     <property name="floatable">1</property>
-                                                    <property name="font"></property>
+                                                    <property name="font">Verdana,90,90,9,74,0</property>
                                                     <property name="gripper">0</property>
                                                     <property name="hidden">0</property>
                                                     <property name="id">wxID_ANY</property>
@@ -1984,7 +1984,7 @@
                                                     <property name="enabled">1</property>
                                                     <property name="fg"></property>
                                                     <property name="floatable">1</property>
-                                                    <property name="font"></property>
+                                                    <property name="font">Verdana,90,90,9,74,0</property>
                                                     <property name="gripper">0</property>
                                                     <property name="hidden">0</property>
                                                     <property name="id">wxID_ANY</property>
@@ -2062,7 +2062,7 @@
                                                     <property name="enabled">1</property>
                                                     <property name="fg"></property>
                                                     <property name="floatable">1</property>
-                                                    <property name="font"></property>
+                                                    <property name="font">Verdana,90,90,9,74,0</property>
                                                     <property name="gripper">0</property>
                                                     <property name="hidden">0</property>
                                                     <property name="id">wxID_ANY</property>
@@ -2148,7 +2148,7 @@
                                                     <property name="enabled">1</property>
                                                     <property name="fg"></property>
                                                     <property name="floatable">1</property>
-                                                    <property name="font"></property>
+                                                    <property name="font">Verdana,90,90,9,74,0</property>
                                                     <property name="gripper">0</property>
                                                     <property name="hidden">0</property>
                                                     <property name="id">wxID_ANY</property>
@@ -2354,7 +2354,7 @@
                                                     <property name="enabled">1</property>
                                                     <property name="fg"></property>
                                                     <property name="floatable">1</property>
-                                                    <property name="font"></property>
+                                                    <property name="font">Verdana,90,90,9,74,0</property>
                                                     <property name="gripper">0</property>
                                                     <property name="hidden">0</property>
                                                     <property name="id">wxID_ANY</property>
@@ -2515,7 +2515,7 @@
                                                     <property name="enabled">1</property>
                                                     <property name="fg"></property>
                                                     <property name="floatable">1</property>
-                                                    <property name="font"></property>
+                                                    <property name="font">Verdana,90,90,9,74,0</property>
                                                     <property name="gripper">0</property>
                                                     <property name="hidden">0</property>
                                                     <property name="id">wxID_ANY</property>
@@ -3187,7 +3187,7 @@
                                                         <property name="enabled">1</property>
                                                         <property name="fg"></property>
                                                         <property name="floatable">1</property>
-                                                        <property name="font">,90,92,10,70,0</property>
+                                                        <property name="font">Verdana,90,92,10,74,0</property>
                                                         <property name="gripper">0</property>
                                                         <property name="hidden">0</property>
                                                         <property name="id">wxID_ANY</property>
@@ -3278,7 +3278,7 @@
                                                         <property name="enabled">1</property>
                                                         <property name="fg"></property>
                                                         <property name="floatable">1</property>
-                                                        <property name="font"></property>
+                                                        <property name="font">Verdana,90,90,9,74,0</property>
                                                         <property name="gripper">0</property>
                                                         <property name="hidden">0</property>
                                                         <property name="id">wxID_ANY</property>
@@ -3370,7 +3370,7 @@
                                                         <property name="enabled">1</property>
                                                         <property name="fg"></property>
                                                         <property name="floatable">1</property>
-                                                        <property name="font"></property>
+                                                        <property name="font">Verdana,90,90,9,74,0</property>
                                                         <property name="gripper">0</property>
                                                         <property name="hidden">0</property>
                                                         <property name="id">wxID_ANY</property>
@@ -4143,7 +4143,7 @@
                                                     <property name="enabled">1</property>
                                                     <property name="fg"></property>
                                                     <property name="floatable">1</property>
-                                                    <property name="font"></property>
+                                                    <property name="font">Verdana,90,90,9,74,0</property>
                                                     <property name="gripper">0</property>
                                                     <property name="hidden">0</property>
                                                     <property name="id">wxID_ANY</property>
@@ -4248,7 +4248,7 @@
                                                     <property name="enabled">1</property>
                                                     <property name="fg"></property>
                                                     <property name="floatable">1</property>
-                                                    <property name="font">,90,92,12,70,0</property>
+                                                    <property name="font">Verdana,90,92,12,74,0</property>
                                                     <property name="gripper">0</property>
                                                     <property name="hidden">0</property>
                                                     <property name="id">wxID_ANY</property>
@@ -4269,7 +4269,7 @@
                                                     <property name="pos"></property>
                                                     <property name="resize">Resizable</property>
                                                     <property name="show">1</property>
-                                                    <property name="size"></property>
+                                                    <property name="size">-1,20</property>
                                                     <property name="style">wxTE_READONLY</property>
                                                     <property name="subclass"></property>
                                                     <property name="toolbar_pane">0</property>
@@ -4334,7 +4334,7 @@
                                                     <property name="enabled">1</property>
                                                     <property name="fg"></property>
                                                     <property name="floatable">1</property>
-                                                    <property name="font"></property>
+                                                    <property name="font">Verdana,90,90,9,74,0</property>
                                                     <property name="gripper">0</property>
                                                     <property name="hidden">0</property>
                                                     <property name="id">wxID_ANY</property>
@@ -4396,7 +4396,7 @@
                                                     <event name="OnTextURL"></event>
                                                     <event name="OnUpdateUI"></event>
                                                 </object>
-                                                <object class="wxStaticText" expanded="1">
+                                                <object class="wxTextCtrl" expanded="1">
                                                     <property name="BottomDockable">1</property>
                                                     <property name="LeftDockable">1</property>
                                                     <property name="RightDockable">1</property>
@@ -4420,19 +4420,19 @@
                                                     <property name="enabled">1</property>
                                                     <property name="fg"></property>
                                                     <property name="floatable">1</property>
-                                                    <property name="font"></property>
+                                                    <property name="font">Verdana,90,90,9,74,0</property>
                                                     <property name="gripper">0</property>
                                                     <property name="hidden">0</property>
                                                     <property name="id">wxID_ANY</property>
-                                                    <property name="label"> of </property>
-                                                    <property name="max_size"></property>
+                                                    <property name="max_size">-1,-1</property>
                                                     <property name="maximize_button">0</property>
-                                                    <property name="maximum_size"></property>
+                                                    <property name="maximum_size">20,-1</property>
+                                                    <property name="maxlength"></property>
                                                     <property name="min_size"></property>
                                                     <property name="minimize_button">0</property>
-                                                    <property name="minimum_size"></property>
+                                                    <property name="minimum_size">-1,-1</property>
                                                     <property name="moveable">1</property>
-                                                    <property name="name">m_staticText611</property>
+                                                    <property name="name">m_static1</property>
                                                     <property name="pane_border">1</property>
                                                     <property name="pane_position"></property>
                                                     <property name="pane_size"></property>
@@ -4441,15 +4441,19 @@
                                                     <property name="pos"></property>
                                                     <property name="resize">Resizable</property>
                                                     <property name="show">1</property>
-                                                    <property name="size"></property>
-                                                    <property name="style"></property>
+                                                    <property name="size">30,-1</property>
+                                                    <property name="style">wxTE_READONLY</property>
                                                     <property name="subclass"></property>
                                                     <property name="toolbar_pane">0</property>
                                                     <property name="tooltip"></property>
+                                                    <property name="validator_data_type"></property>
+                                                    <property name="validator_style">wxFILTER_NONE</property>
+                                                    <property name="validator_type">wxDefaultValidator</property>
+                                                    <property name="validator_variable"></property>
+                                                    <property name="value"> of </property>
                                                     <property name="window_extra_style"></property>
                                                     <property name="window_name"></property>
-                                                    <property name="window_style"></property>
-                                                    <property name="wrap">-1</property>
+                                                    <property name="window_style">wxNO_BORDER</property>
                                                     <event name="OnChar"></event>
                                                     <event name="OnEnterWindow"></event>
                                                     <event name="OnEraseBackground"></event>
@@ -4472,6 +4476,10 @@
                                                     <event name="OnRightUp"></event>
                                                     <event name="OnSetFocus"></event>
                                                     <event name="OnSize"></event>
+                                                    <event name="OnText"></event>
+                                                    <event name="OnTextEnter"></event>
+                                                    <event name="OnTextMaxLen"></event>
+                                                    <event name="OnTextURL"></event>
                                                     <event name="OnUpdateUI"></event>
                                                 </object>
                                                 <object class="wxTextCtrl" expanded="1">
@@ -4498,7 +4506,7 @@
                                                     <property name="enabled">1</property>
                                                     <property name="fg"></property>
                                                     <property name="floatable">1</property>
-                                                    <property name="font"></property>
+                                                    <property name="font">Verdana,90,90,9,74,0</property>
                                                     <property name="gripper">0</property>
                                                     <property name="hidden">0</property>
                                                     <property name="id">wxID_ANY</property>
@@ -4560,7 +4568,7 @@
                                                     <event name="OnTextURL"></event>
                                                     <event name="OnUpdateUI"></event>
                                                 </object>
-                                                <object class="wxStaticText" expanded="1">
+                                                <object class="wxTextCtrl" expanded="1">
                                                     <property name="BottomDockable">1</property>
                                                     <property name="LeftDockable">1</property>
                                                     <property name="RightDockable">1</property>
@@ -4584,19 +4592,19 @@
                                                     <property name="enabled">1</property>
                                                     <property name="fg"></property>
                                                     <property name="floatable">1</property>
-                                                    <property name="font"></property>
+                                                    <property name="font">Verdana,90,90,9,74,0</property>
                                                     <property name="gripper">0</property>
                                                     <property name="hidden">0</property>
                                                     <property name="id">wxID_ANY</property>
-                                                    <property name="label">    Score: </property>
-                                                    <property name="max_size"></property>
+                                                    <property name="max_size">-1,-1</property>
                                                     <property name="maximize_button">0</property>
-                                                    <property name="maximum_size"></property>
+                                                    <property name="maximum_size">20,-1</property>
+                                                    <property name="maxlength"></property>
                                                     <property name="min_size"></property>
                                                     <property name="minimize_button">0</property>
-                                                    <property name="minimum_size"></property>
+                                                    <property name="minimum_size">-1,-1</property>
                                                     <property name="moveable">1</property>
-                                                    <property name="name">m_staticText311</property>
+                                                    <property name="name">m_static11</property>
                                                     <property name="pane_border">1</property>
                                                     <property name="pane_position"></property>
                                                     <property name="pane_size"></property>
@@ -4605,15 +4613,19 @@
                                                     <property name="pos"></property>
                                                     <property name="resize">Resizable</property>
                                                     <property name="show">1</property>
-                                                    <property name="size"></property>
-                                                    <property name="style"></property>
+                                                    <property name="size">50,-1</property>
+                                                    <property name="style">wxTE_READONLY</property>
                                                     <property name="subclass"></property>
                                                     <property name="toolbar_pane">0</property>
                                                     <property name="tooltip"></property>
+                                                    <property name="validator_data_type"></property>
+                                                    <property name="validator_style">wxFILTER_NONE</property>
+                                                    <property name="validator_type">wxDefaultValidator</property>
+                                                    <property name="validator_variable"></property>
+                                                    <property name="value"> Score: </property>
                                                     <property name="window_extra_style"></property>
                                                     <property name="window_name"></property>
-                                                    <property name="window_style"></property>
-                                                    <property name="wrap">-1</property>
+                                                    <property name="window_style">wxNO_BORDER</property>
                                                     <event name="OnChar"></event>
                                                     <event name="OnEnterWindow"></event>
                                                     <event name="OnEraseBackground"></event>
@@ -4636,6 +4648,10 @@
                                                     <event name="OnRightUp"></event>
                                                     <event name="OnSetFocus"></event>
                                                     <event name="OnSize"></event>
+                                                    <event name="OnText"></event>
+                                                    <event name="OnTextEnter"></event>
+                                                    <event name="OnTextMaxLen"></event>
+                                                    <event name="OnTextURL"></event>
                                                     <event name="OnUpdateUI"></event>
                                                 </object>
                                                 <object class="wxTextCtrl" expanded="1">
@@ -4790,7 +4806,7 @@
                                                     <property name="enabled">1</property>
                                                     <property name="fg"></property>
                                                     <property name="floatable">1</property>
-                                                    <property name="font"></property>
+                                                    <property name="font">Verdana,90,90,9,74,0</property>
                                                     <property name="gripper">0</property>
                                                     <property name="hidden">0</property>
                                                     <property name="id">wxID_ANY</property>
@@ -5142,7 +5158,7 @@
                                                         <property name="enabled">1</property>
                                                         <property name="fg"></property>
                                                         <property name="floatable">1</property>
-                                                        <property name="font"></property>
+                                                        <property name="font">Verdana,90,90,9,74,0</property>
                                                         <property name="gripper">0</property>
                                                         <property name="hidden">0</property>
                                                         <property name="id">wxID_ANY</property>
@@ -5230,7 +5246,7 @@
                                                         <property name="enabled">1</property>
                                                         <property name="fg"></property>
                                                         <property name="floatable">1</property>
-                                                        <property name="font"></property>
+                                                        <property name="font">Verdana,90,90,9,74,0</property>
                                                         <property name="gripper">0</property>
                                                         <property name="hidden">0</property>
                                                         <property name="id">wxID_ANY</property>
@@ -5544,7 +5560,7 @@
                                                                         <property name="enabled">1</property>
                                                                         <property name="fg"></property>
                                                                         <property name="floatable">1</property>
-                                                                        <property name="font"></property>
+                                                                        <property name="font">Verdana,90,90,9,74,0</property>
                                                                         <property name="gripper">0</property>
                                                                         <property name="hidden">0</property>
                                                                         <property name="id">wxID_ANY</property>
@@ -5628,7 +5644,7 @@
                                                                         <property name="enabled">1</property>
                                                                         <property name="fg"></property>
                                                                         <property name="floatable">1</property>
-                                                                        <property name="font"></property>
+                                                                        <property name="font">Verdana,90,90,9,74,0</property>
                                                                         <property name="gripper">0</property>
                                                                         <property name="hidden">0</property>
                                                                         <property name="id">wxID_ANY</property>
@@ -5715,7 +5731,7 @@
                                                                         <property name="enabled">1</property>
                                                                         <property name="fg"></property>
                                                                         <property name="floatable">1</property>
-                                                                        <property name="font"></property>
+                                                                        <property name="font">Verdana,90,90,9,74,0</property>
                                                                         <property name="gripper">0</property>
                                                                         <property name="hidden">0</property>
                                                                         <property name="id">wxID_ANY</property>
@@ -5898,7 +5914,7 @@
                                                                                 <property name="enabled">1</property>
                                                                                 <property name="fg"></property>
                                                                                 <property name="floatable">1</property>
-                                                                                <property name="font"></property>
+                                                                                <property name="font">Verdana,90,90,9,74,0</property>
                                                                                 <property name="gripper">0</property>
                                                                                 <property name="hidden">0</property>
                                                                                 <property name="id">wxID_ANY</property>
@@ -5983,7 +5999,7 @@
                                                                         <property name="enabled">1</property>
                                                                         <property name="fg"></property>
                                                                         <property name="floatable">1</property>
-                                                                        <property name="font"></property>
+                                                                        <property name="font">Verdana,90,90,9,74,0</property>
                                                                         <property name="gripper">0</property>
                                                                         <property name="hidden">0</property>
                                                                         <property name="id">wxID_ANY</property>
@@ -6155,7 +6171,7 @@
                                                                 <property name="enabled">1</property>
                                                                 <property name="fg"></property>
                                                                 <property name="floatable">1</property>
-                                                                <property name="font">Arial Narrow,93,90,7,74,0</property>
+                                                                <property name="font">Verdana,93,90,7,74,0</property>
                                                                 <property name="gripper">0</property>
                                                                 <property name="hidden">0</property>
                                                                 <property name="id">wxID_ANY</property>
@@ -6274,7 +6290,7 @@
                                                                         <property name="enabled">1</property>
                                                                         <property name="fg"></property>
                                                                         <property name="floatable">1</property>
-                                                                        <property name="font"></property>
+                                                                        <property name="font">Verdana,90,90,9,74,0</property>
                                                                         <property name="gripper">0</property>
                                                                         <property name="hidden">0</property>
                                                                         <property name="id">wxID_ANY</property>
@@ -6358,7 +6374,7 @@
                                                                         <property name="enabled">1</property>
                                                                         <property name="fg"></property>
                                                                         <property name="floatable">1</property>
-                                                                        <property name="font"></property>
+                                                                        <property name="font">Verdana,90,90,9,74,0</property>
                                                                         <property name="gripper">0</property>
                                                                         <property name="hidden">0</property>
                                                                         <property name="id">wxID_ANY</property>
@@ -6445,7 +6461,7 @@
                                                                         <property name="enabled">1</property>
                                                                         <property name="fg"></property>
                                                                         <property name="floatable">1</property>
-                                                                        <property name="font"></property>
+                                                                        <property name="font">Verdana,90,90,9,74,0</property>
                                                                         <property name="gripper">0</property>
                                                                         <property name="hidden">0</property>
                                                                         <property name="id">wxID_ANY</property>
@@ -6537,7 +6553,7 @@
                                                                                 <property name="enabled">1</property>
                                                                                 <property name="fg"></property>
                                                                                 <property name="floatable">1</property>
-                                                                                <property name="font"></property>
+                                                                                <property name="font">Verdana,90,90,9,74,0</property>
                                                                                 <property name="gripper">0</property>
                                                                                 <property name="hidden">0</property>
                                                                                 <property name="id">wxID_ANY</property>
@@ -6628,7 +6644,7 @@
                                                                                 <property name="enabled">1</property>
                                                                                 <property name="fg"></property>
                                                                                 <property name="floatable">1</property>
-                                                                                <property name="font"></property>
+                                                                                <property name="font">Verdana,90,90,9,74,0</property>
                                                                                 <property name="gripper">0</property>
                                                                                 <property name="hidden">0</property>
                                                                                 <property name="id">wxID_ANY</property>
@@ -6713,7 +6729,7 @@
                                                                         <property name="enabled">1</property>
                                                                         <property name="fg"></property>
                                                                         <property name="floatable">1</property>
-                                                                        <property name="font"></property>
+                                                                        <property name="font">Verdana,90,90,9,74,0</property>
                                                                         <property name="gripper">0</property>
                                                                         <property name="hidden">0</property>
                                                                         <property name="id">wxID_ANY</property>
@@ -6897,7 +6913,7 @@
                                                         <property name="enabled">1</property>
                                                         <property name="fg"></property>
                                                         <property name="floatable">1</property>
-                                                        <property name="font">,94,90,8,70,0</property>
+                                                        <property name="font">Verdana,93,90,8,74,0</property>
                                                         <property name="gripper">0</property>
                                                         <property name="hidden">0</property>
                                                         <property name="id">wxID_ANY</property>
@@ -6980,7 +6996,7 @@
                                                         <property name="enabled">1</property>
                                                         <property name="fg"></property>
                                                         <property name="floatable">1</property>
-                                                        <property name="font">,90,90,-1,70,0</property>
+                                                        <property name="font">Verdana,90,90,9,74,0</property>
                                                         <property name="gripper">0</property>
                                                         <property name="hidden">0</property>
                                                         <property name="id">wxID_ANY</property>
@@ -7097,7 +7113,7 @@
                                                                 <property name="enabled">1</property>
                                                                 <property name="fg"></property>
                                                                 <property name="floatable">1</property>
-                                                                <property name="font"></property>
+                                                                <property name="font">Verdana,90,90,9,74,0</property>
                                                                 <property name="gripper">0</property>
                                                                 <property name="hidden">0</property>
                                                                 <property name="id">wxID_ANY</property>
@@ -7180,7 +7196,7 @@
                                                                 <property name="enabled">1</property>
                                                                 <property name="fg"></property>
                                                                 <property name="floatable">1</property>
-                                                                <property name="font"></property>
+                                                                <property name="font">Verdana,90,90,9,74,0</property>
                                                                 <property name="gripper">0</property>
                                                                 <property name="hidden">0</property>
                                                                 <property name="id">wxID_ANY</property>
@@ -7274,7 +7290,7 @@
                                                         <property name="enabled">1</property>
                                                         <property name="fg"></property>
                                                         <property name="floatable">1</property>
-                                                        <property name="font">,90,90,10,70,0</property>
+                                                        <property name="font">Verdana,90,90,10,74,0</property>
                                                         <property name="gripper">0</property>
                                                         <property name="hidden">0</property>
                                                         <property name="id">wxID_ANY</property>
@@ -7961,7 +7977,7 @@
                                                 <property name="enabled">1</property>
                                                 <property name="fg"></property>
                                                 <property name="floatable">1</property>
-                                                <property name="font">,94,90,-1,70,0</property>
+                                                <property name="font">Verdana,93,90,9,74,0</property>
                                                 <property name="gripper">0</property>
                                                 <property name="hidden">0</property>
                                                 <property name="id">wxID_ANY</property>
@@ -8054,7 +8070,7 @@
                                                         <property name="enabled">1</property>
                                                         <property name="fg"></property>
                                                         <property name="floatable">1</property>
-                                                        <property name="font"></property>
+                                                        <property name="font">Verdana,90,90,9,74,0</property>
                                                         <property name="gripper">0</property>
                                                         <property name="hidden">0</property>
                                                         <property name="id">wxID_ANY</property>
@@ -8142,7 +8158,7 @@
                                                         <property name="enabled">1</property>
                                                         <property name="fg"></property>
                                                         <property name="floatable">1</property>
-                                                        <property name="font"></property>
+                                                        <property name="font">Verdana,90,90,9,74,0</property>
                                                         <property name="gripper">0</property>
                                                         <property name="hidden">0</property>
                                                         <property name="id">wxID_ANY</property>
@@ -8614,7 +8630,7 @@
                                                                             <property name="enabled">1</property>
                                                                             <property name="fg"></property>
                                                                             <property name="floatable">1</property>
-                                                                            <property name="font"></property>
+                                                                            <property name="font">Verdana,90,90,9,74,0</property>
                                                                             <property name="gripper">0</property>
                                                                             <property name="hidden">0</property>
                                                                             <property name="id">wxID_ANY</property>
@@ -8788,7 +8804,7 @@
                                                                             <property name="enabled">1</property>
                                                                             <property name="fg"></property>
                                                                             <property name="floatable">1</property>
-                                                                            <property name="font"></property>
+                                                                            <property name="font">Verdana,90,90,9,74,0</property>
                                                                             <property name="gripper">0</property>
                                                                             <property name="hidden">0</property>
                                                                             <property name="id">wxID_ANY</property>
@@ -9324,7 +9340,7 @@
                                                                             <property name="enabled">1</property>
                                                                             <property name="fg"></property>
                                                                             <property name="floatable">1</property>
-                                                                            <property name="font">Arial,90,90,9,74,0</property>
+                                                                            <property name="font">Verdana,90,90,9,74,0</property>
                                                                             <property name="gripper">0</property>
                                                                             <property name="hidden">0</property>
                                                                             <property name="id">wxID_ANY</property>
@@ -9411,7 +9427,7 @@
                                                                             <property name="enabled">1</property>
                                                                             <property name="fg"></property>
                                                                             <property name="floatable">1</property>
-                                                                            <property name="font"></property>
+                                                                            <property name="font">Verdana,90,90,9,74,0</property>
                                                                             <property name="gripper">0</property>
                                                                             <property name="hidden">0</property>
                                                                             <property name="id">wxID_ANY</property>
@@ -9609,7 +9625,7 @@
                                     <property name="enabled">1</property>
                                     <property name="fg"></property>
                                     <property name="floatable">1</property>
-                                    <property name="font">Verdana,90,90,-1,70,0</property>
+                                    <property name="font">Verdana,90,90,9,74,0</property>
                                     <property name="gripper">0</property>
                                     <property name="hidden">0</property>
                                     <property name="id">wxID_ANY</property>
@@ -10427,7 +10443,7 @@
             <property name="event_handler">impl_virtual</property>
             <property name="extra_style"></property>
             <property name="fg"></property>
-            <property name="font"></property>
+            <property name="font">Verdana,90,90,9,74,0</property>
             <property name="hidden">0</property>
             <property name="id">wxID_ANY</property>
             <property name="maximum_size">350,250</property>
@@ -10606,7 +10622,7 @@
                                             <property name="enabled">1</property>
                                             <property name="fg"></property>
                                             <property name="floatable">1</property>
-                                            <property name="font"></property>
+                                            <property name="font">Verdana,90,90,9,74,0</property>
                                             <property name="gripper">0</property>
                                             <property name="hidden">0</property>
                                             <property name="id">wxID_ANY</property>
@@ -10689,7 +10705,7 @@
                                             <property name="enabled">1</property>
                                             <property name="fg"></property>
                                             <property name="floatable">1</property>
-                                            <property name="font"></property>
+                                            <property name="font">Verdana,90,90,9,74,0</property>
                                             <property name="gripper">0</property>
                                             <property name="hidden">0</property>
                                             <property name="id">wxID_ANY</property>
@@ -10797,7 +10813,7 @@
                                             <property name="enabled">1</property>
                                             <property name="fg"></property>
                                             <property name="floatable">1</property>
-                                            <property name="font"></property>
+                                            <property name="font">Verdana,90,90,9,74,0</property>
                                             <property name="gripper">0</property>
                                             <property name="hidden">0</property>
                                             <property name="id">wxID_ANY</property>
@@ -10880,7 +10896,7 @@
                                             <property name="enabled">1</property>
                                             <property name="fg"></property>
                                             <property name="floatable">1</property>
-                                            <property name="font"></property>
+                                            <property name="font">Verdana,90,90,9,74,0</property>
                                             <property name="gripper">0</property>
                                             <property name="hidden">0</property>
                                             <property name="id">wxID_ANY</property>
@@ -10971,7 +10987,7 @@
                                             <property name="enabled">1</property>
                                             <property name="fg"></property>
                                             <property name="floatable">1</property>
-                                            <property name="font"></property>
+                                            <property name="font">Verdana,90,90,9,74,0</property>
                                             <property name="gripper">0</property>
                                             <property name="hidden">0</property>
                                             <property name="id">wxID_ANY</property>
@@ -11063,7 +11079,7 @@
                                                     <property name="enabled">1</property>
                                                     <property name="fg"></property>
                                                     <property name="floatable">1</property>
-                                                    <property name="font"></property>
+                                                    <property name="font">Verdana,90,90,9,74,0</property>
                                                     <property name="gripper">0</property>
                                                     <property name="hidden">0</property>
                                                     <property name="id">wxID_ANY</property>
@@ -11151,7 +11167,7 @@
                                                     <property name="enabled">1</property>
                                                     <property name="fg"></property>
                                                     <property name="floatable">1</property>
-                                                    <property name="font"></property>
+                                                    <property name="font">Verdana,90,90,9,74,0</property>
                                                     <property name="gripper">0</property>
                                                     <property name="hidden">0</property>
                                                     <property name="id">wxID_ANY</property>
@@ -11231,7 +11247,7 @@
             <property name="event_handler">impl_virtual</property>
             <property name="extra_style"></property>
             <property name="fg"></property>
-            <property name="font"></property>
+            <property name="font">Verdana,90,90,9,74,0</property>
             <property name="hidden">0</property>
             <property name="id">wxID_ANY</property>
             <property name="maximum_size">350,300</property>
@@ -11410,7 +11426,7 @@
                                             <property name="enabled">1</property>
                                             <property name="fg"></property>
                                             <property name="floatable">1</property>
-                                            <property name="font"></property>
+                                            <property name="font">Verdana,90,90,9,74,0</property>
                                             <property name="gripper">0</property>
                                             <property name="hidden">0</property>
                                             <property name="id">wxID_ANY</property>
@@ -11493,7 +11509,7 @@
                                             <property name="enabled">1</property>
                                             <property name="fg"></property>
                                             <property name="floatable">1</property>
-                                            <property name="font"></property>
+                                            <property name="font">Verdana,90,90,9,74,0</property>
                                             <property name="gripper">0</property>
                                             <property name="hidden">0</property>
                                             <property name="id">wxID_ANY</property>
@@ -11601,7 +11617,7 @@
                                             <property name="enabled">1</property>
                                             <property name="fg"></property>
                                             <property name="floatable">1</property>
-                                            <property name="font"></property>
+                                            <property name="font">Verdana,90,90,9,74,0</property>
                                             <property name="gripper">0</property>
                                             <property name="hidden">0</property>
                                             <property name="id">wxID_ANY</property>
@@ -11684,7 +11700,7 @@
                                             <property name="enabled">1</property>
                                             <property name="fg"></property>
                                             <property name="floatable">1</property>
-                                            <property name="font"></property>
+                                            <property name="font">Verdana,90,90,9,74,0</property>
                                             <property name="gripper">0</property>
                                             <property name="hidden">0</property>
                                             <property name="id">wxID_ANY</property>
@@ -11775,7 +11791,7 @@
                                             <property name="enabled">1</property>
                                             <property name="fg"></property>
                                             <property name="floatable">1</property>
-                                            <property name="font"></property>
+                                            <property name="font">Verdana,90,90,9,74,0</property>
                                             <property name="gripper">0</property>
                                             <property name="hidden">0</property>
                                             <property name="id">wxID_ANY</property>
@@ -11867,7 +11883,7 @@
                                                     <property name="enabled">1</property>
                                                     <property name="fg"></property>
                                                     <property name="floatable">1</property>
-                                                    <property name="font"></property>
+                                                    <property name="font">Verdana,90,90,9,74,0</property>
                                                     <property name="gripper">0</property>
                                                     <property name="hidden">0</property>
                                                     <property name="id">wxID_ANY</property>
@@ -11955,7 +11971,7 @@
                                                     <property name="enabled">1</property>
                                                     <property name="fg"></property>
                                                     <property name="floatable">1</property>
-                                                    <property name="font"></property>
+                                                    <property name="font">Verdana,90,90,9,74,0</property>
                                                     <property name="gripper">0</property>
                                                     <property name="hidden">0</property>
                                                     <property name="id">wxID_ANY</property>
@@ -12045,7 +12061,7 @@
                                             <property name="enabled">1</property>
                                             <property name="fg"></property>
                                             <property name="floatable">1</property>
-                                            <property name="font"></property>
+                                            <property name="font">Verdana,90,90,9,74,0</property>
                                             <property name="gripper">0</property>
                                             <property name="hidden">0</property>
                                             <property name="id">wxID_ANY</property>
@@ -12137,7 +12153,7 @@
                                                     <property name="enabled">1</property>
                                                     <property name="fg"></property>
                                                     <property name="floatable">1</property>
-                                                    <property name="font"></property>
+                                                    <property name="font">Verdana,90,90,9,74,0</property>
                                                     <property name="gripper">0</property>
                                                     <property name="hidden">0</property>
                                                     <property name="id">wxID_ANY</property>
@@ -12225,7 +12241,7 @@
                                                     <property name="enabled">1</property>
                                                     <property name="fg"></property>
                                                     <property name="floatable">1</property>
-                                                    <property name="font"></property>
+                                                    <property name="font">Verdana,90,90,9,74,0</property>
                                                     <property name="gripper">0</property>
                                                     <property name="hidden">0</property>
                                                     <property name="id">wxID_ANY</property>
