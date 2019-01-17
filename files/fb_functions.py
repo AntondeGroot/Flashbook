@@ -11,13 +11,10 @@ import os
 import math
 #matplotlib.use('Agg')
 import pylab
-import re
 import json
 import PIL
 import numpy as np
 from PIL import ImageOps
-import fc_functions as fc
-
 #import matplotlib.backends.backend_agg as agg
 
 pylab.ioff() # make sure it is inactive, otherwise possible qwindows error    .... https://stackoverflow.com/questions/26970002/matplotlib-cant-suppress-figure-window
@@ -179,9 +176,11 @@ def drawCoordinates(self): # no errors
     self.pageimage = PIL.Image.fromarray(img)
     
 def SetScrollbars(self): #no errors
+    if self.debugmode:
+        print("fb=SetScrollbars")
     scrollWin = self.m_scrolledWindow1
-    scrollWin.SetScrollbars(0,int(20*self.zoom),0,int(100*self.zoom) )
-
+    scrollWin.SetScrollbars(int(20*self.zoom),int(20*self.zoom),int(100*self.zoom),int(100*self.zoom) )
+    
 def LoadPage(self): # no error
     if self.debugmode:
         print("fb=LoadPage")
@@ -250,8 +249,9 @@ def ShowPage(self): # no error
             output.write("{}".format(self.currentpage))
     except:
         print(colored("Error: cannot show page",'red'))
-        
 def ResetQuestions(self): # no errors
+    if self.debugmode:
+        print("fb=ResetQuestions")
     self.pdf_question     = ''
     self.pdf_answer       = ''
     self.pic_question     = []
@@ -259,6 +259,7 @@ def ResetQuestions(self): # no errors
     self.pic_question_dir = []
     self.pic_answer_dir   = []
     self.usertext         = ''
+
 
 def CombinePics(self,directory):
     if self.debugmode:
@@ -346,11 +347,14 @@ def CreateTextCard(self):
                 if j == 0:
                     find = False
                     var = j
-    if var + border >  img.size[0]:
+    if var+border >  img.size[0]:
         var = img.size[0]
     else:
-        var = var + border
+        var = var+border
     self.imagetext = img.crop((0,0,var,img.size[1]))
+    
+    
+    
 
 def CombinePicText(self,directory):
     if self.debugmode:
@@ -361,14 +365,14 @@ def CombinePicText(self,directory):
         
         widths, heights = zip(*(i.size for i in images))
         total_height = sum(heights)
-        max_width    = max(widths)
-        NewImage       = PIL.Image.new('RGB', (max_width, total_height), "white")
+        max_width = max(widths)
+        new_im = PIL.Image.new('RGB', (max_width, total_height), "white")
         #combine images to 1
         x_offset = 0
         for im in images:
-            NewImage.paste(im, (0,x_offset))
+            new_im.paste(im, (0,x_offset))
             x_offset += im.size[1]
-        self.image = NewImage
+        self.image = new_im
 
 def ShowInPopup(self,event,mode):
     if self.debugmode:
@@ -394,12 +398,18 @@ def ShowInPopup(self,event,mode):
             self.image = self.imagetext
         except:
             pass
+    print("test test")
     image = self.image
-    
-    """Try to access mousepos, if there wasn't any mouseclick: then just place the popupwindow in the middle of your screen. 
-    this is the case if you only entered text, but didn't select anything with the mouse"""
+    print(type(image))
+    #image.show()
+    #except:
+    ##try:#only text
+    #####CreateTextCard(self)
+    ######image = self.imagetext
+    ##except:
+    ##    pass
     try:
-        a = self.mousepos  
+        a = self.mousepos # try to access mousepos, but if there wasn't any mouseclick: then just place the popupwindow in the middle of your screen. this is the case if you only entered text, but didn't select anything with the mouse
     except:
         self.mousepos = (int(wx.GetDisplaySize()[0]/2),int(wx.GetDisplaySize()[1]/2))
         
@@ -413,20 +423,21 @@ def ShowInPopup(self,event,mode):
 
 
 #%% turn user LaTeX macro into useable LaTeX code
+import re
+import os
+import fc_functions as fc
 
 
-
+# EXAMPLE:
+# defined command = " \secpar{a}{b}   " for the second partial derivative of a wrt b
+# nr = #arguments = 2 which are (a,b)
+# sentence = "if we take the second partial derivative \secpar{X+Y}{t}"
+# returns: position where (X+Y), (t)  begin and end and in the string and that they are the arguments
 
 def Text2Latex(self):
-    """EXAMPLE:
-    defined command = " \secpar{x}{t}}   " for the second partial derivative of a wrt b
-    nr = #arguments = 2 which are (a,b)
-    sentence = "if we take the second partial derivative \secpar{X+Y}{t}"
-    returns: position where (X+Y), (t)  begin and end and in the string and that they are the arguments
-    """
+    usertext = self.usertext
     # find all user defined commands in a separate file
     # start reading after "###" because I defined that as the end of the notes    
-    usertext = self.usertext
     file1 = open(os.path.join(self.dir1, r"usercommands.txt"), 'r')
     newcommand_line_lst = file1.readlines()
     
@@ -468,7 +479,8 @@ def Text2Latex(self):
 
 def replacecommands(defined_command,LaTeX_command,inputstring,nr_arg):        
     length_c = len(defined_command) 
-    #check if the command can be found in Q&A card
+    # check if the command can be found in Q&A
+    #while FindCommand == True: 
     while defined_command in inputstring:
         # if a command has arguments: you need to find their positions
         if nr_arg != 0:
@@ -484,6 +496,7 @@ def replacecommands(defined_command,LaTeX_command,inputstring,nr_arg):
             for i in range(nr_arg):
                 inputstring = inputstring.replace("#{}".format(i+1), arguments[i])
         else:
-            #if there are no arguments to begin with you can directly replace the defined_cmd for the latex_cmd
+            # if there are no arguments you can directly replace the defined_cmd for the latex_cmd
             inputstring = inputstring.replace(defined_command,LaTeX_command)
+    
     return inputstring
