@@ -5,12 +5,14 @@ output = open(filename2, 'w')
 f = open(filename, 'r')
 read = f.readlines()
 
+#Cpath = r'u"D:\\Anton\\Documents\\' 
+Cpath = r'u"C:\\Users\\Anton\\.spyder-py3\\flashbook\\fin\\Flashbook-master\\gui design\\'
 # every first item will be replaced by the one following it.
 org = [
        ".AddSpacer",'.Add',
-       r'u"D:\\Anton\\Documents\\path_min"','path_min',
-       r'u"D:\\Anton\\Documents\\path_add"','path_add',
-       r'u"D:\\Anton\\Documents\\path_switch"','path_switch',
+       Cpath + 'path_min"','path_min',
+       Cpath + 'path_add"','path_add',
+       Cpath + 'path_switch"','path_switch',
        '.AddLabelTool','.AddTool',
        '.AppendItem','.Append',
        '.SetSizeHintsSz','.SetSizeHints',
