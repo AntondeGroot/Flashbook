@@ -99,6 +99,5 @@ You can also sync two devices. It will automatically display the IP address of t
 - Add ability to change a flashcard while you are rehersing: "change current card" which then shows the user input text / the ability to delete the card.
 - Improve design: font / colors / borders / icons / ...
 #### Issues:
-- When in Flashbook an image is too large: there are issues displaying it. When you Import a screenshot that is too large it won't load. When you Zoom in too much you can't scroll to the next page.
 - pdf conversion may not be supported: pdftoppm.exe is called on laptop via miktex. Explicit import needed in spec file? Now this is hopefully accounted for by including poppler.rar in the executables and adding it as 'path variable' if there is no 'pdftoppm.exe' already available. 
 - When you start in Flashcard and then open Flashbook the following occurs: the pages are no longer resized according to the scrollbar (have extra empty space following a page), and you cannot scroll when the mouse is over the image (only when the mouse is next to the image). This also prevents from "scrolling to the next page".
