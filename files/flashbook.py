@@ -356,6 +356,7 @@ class MainFrame(gui.MyFrame):
     " flashbook "
     # import screenshot #
     def m_btnScreenshotOnButtonClick( self, event ):
+        self.BoolCropped = False # is image cropped
         self.currentpage_backup = self.currentpage
         self.currentpage = 'prtscr'
         m3.import_screenshot(self,event)
@@ -375,7 +376,17 @@ class MainFrame(gui.MyFrame):
     
     def m_btnImportScreenshotOnButtonClick( self, event ):
         self.stayonpage = True
+        #load screenshot
+        if self.BoolCropped == False: #load original screenshot
+            img = PIL.Image.open(os.path.join(self.dir4,"screenshot.png"))
+            self.pageimagecopy = img
+            self.pageimage = img        
+            image2 = wx.Image( self.width, self.height )
+            image2.SetData( self.pageimage.tobytes() )
+            self.m_bitmapScroll.SetBitmap(wx.Bitmap(image2))
         p.SwitchPanel(self,1)
+        f.ShowPrintScreen(self)
+        
         
     def m_bitmap4OnLeftDown( self, event ):
         self.panel4_pos = self.m_bitmap4.ScreenToClient(wx.GetMousePosition())
