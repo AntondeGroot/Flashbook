@@ -185,6 +185,7 @@ def bitmapleftup(self,event):
         f.ShowPage(self)     
         
 def panel4_bitmapleftup(self,event):
+    self.BoolCropped = True
     self.SetCursor(wx.Cursor(wx.CURSOR_ARROW))
     self.panel4_pos2 = self.m_bitmap4.ScreenToClient(wx.GetMousePosition())
     
@@ -333,22 +334,36 @@ def mousewheel(self,event):
     if self.debugmode:
         print("scroll pos = {}".format(self.scrollpos))
     self.WheelRot = event.GetWheelRotation()   # get rotation from mouse wheel
-    if self.scrollpos[0] == self.scrollpos[1]: # you've reached either the beginning or end of the document
-        if self.scrollpos[0] == 0:             # beginning
-            if self.WheelRot > 0:
-                self.scrollpos = [42,1337]     # make it a little more difficult to scroll back once you scrolled a page
-                self.m_toolBack11OnToolClicked(self)
-                if self.currentpage != 1:
-                    scrollWin.SetScrollPos(wx.VERTICAL,scrollWin.GetScrollPos(1)+150,False) #orientation, value, refresh? # 150 is overkill, but it means the new page starts definitely at the bottom of the scroll bar
-                    scrollWin.Scroll(scrollWin.GetScrollPos(1)+150,scrollWin.GetScrollPos(1))
-                else:
-                    scrollWin.SetScrollPos(wx.VERTICAL,0,False) #orientation, value, refresh? # 150 is overkill, but it means the new page starts definitely at the bottom of the scroll bar
-                    scrollWin.Scroll(0,scrollWin.GetScrollPos(1))
-                
-        else:                                  # end of page
-            if self.WheelRot < 0:
+    Hvirt= self.m_scrolledWindow1.GetVirtualSize()[1]
+    Hclnt = self.m_scrolledWindow1.GetClientSize()[1]
+    if Hclnt < Hvirt: # there is a scrollbar
+        if self.scrollpos[0] == self.scrollpos[1]: # you've reached either the beginning or end of the document
+            if self.scrollpos[0] == 0:             # beginning
+                if self.WheelRot > 0:
+                    self.scrollpos = [42,1337]     # make it a little more difficult to scroll back once you scrolled a page
+                    self.m_toolBack11OnToolClicked(self)
+                    if self.currentpage != 1:
+                        scrollWin.SetScrollPos(wx.VERTICAL,scrollWin.GetScrollPos(1)+150,False) #orientation, value, refresh? # 150 is overkill, but it means the new page starts definitely at the bottom of the scroll bar
+                        scrollWin.Scroll(scrollWin.GetScrollPos(1)+150,scrollWin.GetScrollPos(1))
+                    else:
+                        scrollWin.SetScrollPos(wx.VERTICAL,0,False) #orientation, value, refresh? # 150 is overkill, but it means the new page starts definitely at the bottom of the scroll bar
+                        scrollWin.Scroll(0,scrollWin.GetScrollPos(1))
+                    
+            elif self.WheelRot < 0:              # end of page
                 self.scrollpos = [42,1337] 
                 self.m_toolNext11OnToolClicked(self)
+    else:# there is no scrollbar
+        if self.WheelRot > 0:
+            self.m_toolBack11OnToolClicked(self)
+            if self.currentpage != 1:
+                scrollWin.SetScrollPos(wx.VERTICAL,scrollWin.GetScrollPos(1)+150,False) #orientation, value, refresh? # 150 is overkill, but it means the new page starts definitely at the bottom of the scroll bar
+                scrollWin.Scroll(scrollWin.GetScrollPos(1)+150,scrollWin.GetScrollPos(1))
+            else:
+                scrollWin.SetScrollPos(wx.VERTICAL,0,False) #orientation, value, refresh? # 150 is overkill, but it means the new page starts definitely at the bottom of the scroll bar
+                scrollWin.Scroll(0,scrollWin.GetScrollPos(1))
+        elif self.WheelRot < 0:
+            self.scrollpos = [42,1337] 
+            self.m_toolNext11OnToolClicked(self)
     self.Layout()
     event.Skip()                               # necessary to use other functions after this one is used
     
