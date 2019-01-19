@@ -102,3 +102,13 @@ You can also sync two devices. It will automatically display the IP address of t
 - pdf conversion may not be supported: pdftoppm.exe is called on laptop via miktex. Explicit import needed in spec file? Now this is hopefully accounted for by including poppler.rar in the executables and adding it as 'path variable' if there is no 'pdftoppm.exe' already available. 
 - When you start in Flashcard and then open Flashbook the following occurs: the pages are no longer resized according to the scrollbar (have extra empty space following a page), and you cannot scroll when the mouse is over the image (only when the mouse is next to the image). This also prevents from "scrolling to the next page".
 - Python multithreading isn't real multithreading as it just switches rapidly between threads. Perhaps incorporate multiprocessing.
+
+
+### name changes:
+just in case it causes issues further down the line of making things pep8 compliant:
+in fc_functions:
+- LoadStats => load_stats
+- SetStats => set_stats
+- RemoveStats = > remove_stats
+- SaveStats => save_stats
+- SwitchBitmap = >  switch_bitmap
