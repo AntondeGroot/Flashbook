@@ -21,8 +21,9 @@ import matplotlib.backends.backend_agg as agg
 import fc_functions as f2
 import json
 import ctypes
-
 import gui_flashbook as gui
+
+MB_ICONINFORMATION = 0x00000040
 MessageBox = ctypes.windll.user32.MessageBoxW
 
 
@@ -44,9 +45,9 @@ def buttonCorrect(self):
         self.score = self.nr_questions
     if self.index > (self.nr_questions-1): 
         self.index = (self.nr_questions-1)
-        f2.RemoveStats(self)
+        f2.remove_stats(self)
         _score_ = round(float(self.score)/self.nr_questions*100,1)
-        MessageBox(0, f"Your score is: {_score_}%", "Result", 1)     
+        MessageBox(0, f"Your score is: {_score_}%", "Result", MB_ICONINFORMATION )     
         runprogram = False 
     _score_ = round(float(self.score)/self.nr_questions*100,1)
     self.m_Score21.SetValue(f"{_score_} %")     
@@ -54,11 +55,11 @@ def buttonCorrect(self):
     
     # update stats
     if runprogram == True:
-        f2.SetStats(self)
-        f2.SaveStats(self)   
+        f2.set_stats(self)
+        f2.save_stats(self)   
         # display cards
         f2.displaycard(self)
-        f2.SwitchBitmap(self)
+        f2.switch_bitmap(self)
     else:
         self.m_Score21.SetValue("")     
         self.m_CurrentPage21.SetValue("")
@@ -76,7 +77,7 @@ def buttonWrong(self):
     self.m_textCtrlMode.SetValue(self.mode)  
     if self.index > (self.nr_questions-1):
         self.index = (self.nr_questions-1)
-        f2.RemoveStats(self)
+        f2.remove_stats(self)
         _score_ = round(float(self.score)/self.nr_questions*100,1)
         MessageBox(0, f"Your score is: {_score_}%", "Result", 1)     
         runprogram = False
@@ -88,10 +89,10 @@ def buttonWrong(self):
     
     ## update stats
     if runprogram == True:
-        f2.SetStats(self)
-        f2.SaveStats(self)    
+        f2.set_stats(self)
+        f2.save_stats(self)    
         f2.displaycard(self)
-        f2.SwitchBitmap(self)
+        f2.switch_bitmap(self)
     f2.SetScrollbars(self)
     if runprogram == False:
         self.m_Score21.SetValue("")     
@@ -110,8 +111,8 @@ def switchCard(self):
         else:
             self.mode = 'Question'
         self.m_textCtrlMode.SetValue(self.mode)
-        # check if there is an answer: if not SwitchBitmap sets the mode back to 'question'
-        f2.SwitchBitmap(self) 
+        # check if there is an answer: if not switch_bitmap sets the mode back to 'question'
+        f2.switch_bitmap(self) 
         self.TextCard = False
         AbsoluteIndex = self.cardorder[self.index] 
         self.key = f'{self.mode[0]}{AbsoluteIndex}' #e.g. Q12 is a key
@@ -149,11 +150,11 @@ def switchCard(self):
                     f2.ShowPage(self)
                 except:
                     pass
-            # you don't need to check for: "no Text & no picture" because SwitchBitmap already takes care of that.
+            # you don't need to check for: "no Text & no picture" because switch_bitmap already takes care of that.
         f2.SetScrollbars(self)
 
-# main program that does all the preprocessing
 def startprogram(self,event): 
+    """main program that does all the preprocessing"""
     self.runprogram   = True
     self.nr_questions = 0
     self.zoom   = 1
@@ -222,11 +223,10 @@ def startprogram(self,event):
                 
             if self.continueSession == True:
                 print("continue session")
-                f2.LoadStats(self)
+                f2.load_stats(self)
             else:
                 print("don't continue session")
-                f2.RemoveStats(self)
-                #f2.SetStats(self)
+                f2.remove_stats(self)
             
         except:
             print(colored("Error: Couldn't open Dialog window nr 1",'red'))
@@ -258,4 +258,4 @@ def startprogram(self,event):
         
     f2.LoadFlashCards(self)
     f2.displaycard(self)        
-    f2.SwitchBitmap(self)
+    f2.switch_bitmap(self)
