@@ -322,7 +322,6 @@ def arrowscroll(self,event,direction):
             if direction == 'down':
                 self.scrollpos = [42,1337] 
                 self.m_toolNext11OnToolClicked(self)
-    self.Layout()
     event.Skip()                               # necessary to use other functions after this one is used
      
     
@@ -364,7 +363,6 @@ def mousewheel(self,event):
         elif self.WheelRot < 0:
             self.scrollpos = [42,1337] 
             self.m_toolNext11OnToolClicked(self)
-    self.Layout()
     event.Skip()                               # necessary to use other functions after this one is used
     
 def resetselection(self,event):
@@ -406,7 +404,7 @@ def switchpage(self,event):
         f.ShowPage(self)
     except:
         print(colored("Error: invalid page number",'red'))
-    self.Layout()
+    #self.Layout()
 def nextpage(self,event):
     try:
         if self.currentpage == 'prtscr':
