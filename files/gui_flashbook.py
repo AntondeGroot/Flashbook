@@ -37,14 +37,11 @@ import wx.richtext
 class MyFrame ( wx.Frame ):
 	
 	def __init__( self, parent, data ):
-		wx.Frame.__init__ ( self, parent, id = wx.ID_ANY, title = u"Flashbook", pos = wx.DefaultPosition, size = wx.Size( -1,-1 ), style = wx.DEFAULT_FRAME_STYLE|wx.TAB_TRAVERSAL )
+		wx.Frame.__init__ ( self, parent, id = wx.ID_ANY, title = u"FlashBook", pos = wx.DefaultPosition, size = wx.Size( -1,-1 ), style = wx.DEFAULT_FRAME_STYLE|wx.TAB_TRAVERSAL )
 		
 		self.SetSizeHints( wx.DefaultSize, wx.DefaultSize )
-		self.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), 70, 90, 90, False, wx.EmptyString ) )
 		
 		self.m_menubar1 = wx.MenuBar( 0 )
-		self.m_menubar1.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
-		
 		self.m_menuOpen = wx.Menu()
 		self.m_menuItemFlashbook = wx.MenuItem( self.m_menuOpen, wx.ID_ANY, u"Book PDF folder", wx.EmptyString, wx.ITEM_NORMAL )
 		self.m_menuItemFlashbook.SetBitmap( data[0] )
@@ -73,10 +70,20 @@ class MyFrame ( wx.Frame ):
 		self.m_menubar1.Append( self.m_menuOpen, u"Open" ) 
 		
 		self.m_menu2 = wx.Menu()
-		self.m_menuHelp = wx.MenuItem( self.m_menu2, wx.ID_ANY, u"How to use ...", wx.EmptyString, wx.ITEM_NORMAL )
+		self.m_menuHelp = wx.MenuItem( self.m_menu2, wx.ID_ANY, u"How to use ...", wx.EmptyString, wx.ITEM_CHECK )
 		self.m_menu2.Append( self.m_menuHelp )
 		
 		self.m_menubar1.Append( self.m_menu2, u"Help" ) 
+		
+		self.m_menu3 = wx.Menu()
+		self.m_checkBox11 = wx.MenuItem( self.m_menu3, wx.ID_ANY, u"Show selections", wx.EmptyString, wx.ITEM_CHECK )
+		self.m_menu3.Append( self.m_checkBox11 )
+		self.m_checkBox11.Check( True )
+		
+		self.m_checkBoxCursor11 = wx.MenuItem( self.m_menu3, wx.ID_ANY, u"Cross-hair cursor", wx.EmptyString, wx.ITEM_CHECK )
+		self.m_menu3.Append( self.m_checkBoxCursor11 )
+		
+		self.m_menubar1.Append( self.m_menu3, u"Settings" ) 
 		
 		self.SetMenuBar( self.m_menubar1 )
 		
@@ -102,13 +109,13 @@ class MyFrame ( wx.Frame ):
 		
 		self.m_staticText9 = wx.StaticText( self.panel0, wx.ID_ANY, u"Flashbook", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.m_staticText9.Wrap( -1 )
-		self.m_staticText9.SetFont( wx.Font( 20, 74, 90, 92, False, "Verdana" ) )
+		self.m_staticText9.SetFont( wx.Font( 20, 70, 90, 92, False, wx.EmptyString ) )
 		
 		bSizer33.Add( self.m_staticText9, 0, wx.ALL, 0 )
 		
-		self.m_staticText91 = wx.StaticText( self.panel0, wx.ID_ANY, u"Read a PDF that has been converted to jpg\nand make flashcards / notes while you read.", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_staticText91 = wx.StaticText( self.panel0, wx.ID_ANY, u"Read a PDF that has been converted to jpg\nand make flashcards / notes while you read", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.m_staticText91.Wrap( -1 )
-		self.m_staticText91.SetFont( wx.Font( 10, 74, 90, 90, False, "Verdana" ) )
+		self.m_staticText91.SetFont( wx.Font( 10, 70, 90, 90, False, wx.EmptyString ) )
 		
 		bSizer33.Add( self.m_staticText91, 0, wx.ALL, 0 )
 		
@@ -122,13 +129,13 @@ class MyFrame ( wx.Frame ):
 		
 		self.m_staticText10 = wx.StaticText( self.panel0, wx.ID_ANY, u"Flashcard", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.m_staticText10.Wrap( -1 )
-		self.m_staticText10.SetFont( wx.Font( 20, 74, 90, 92, False, "Verdana" ) )
+		self.m_staticText10.SetFont( wx.Font( 20, 70, 90, 92, False, wx.EmptyString ) )
 		
 		bSizer34.Add( self.m_staticText10, 0, wx.ALL, 0 )
 		
 		self.m_staticText101 = wx.StaticText( self.panel0, wx.ID_ANY, u"Study the notes you took, either as flashcards\nor just as notes. ", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.m_staticText101.Wrap( -1 )
-		self.m_staticText101.SetFont( wx.Font( 10, 74, 90, 90, False, "Verdana" ) )
+		self.m_staticText101.SetFont( wx.Font( 10, 70, 90, 90, False, wx.EmptyString ) )
 		
 		bSizer34.Add( self.m_staticText101, 0, wx.ALL, 0 )
 		
@@ -143,13 +150,13 @@ class MyFrame ( wx.Frame ):
 		
 		self.m_staticText11 = wx.StaticText( self.panel0, wx.ID_ANY, u"Print", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.m_staticText11.Wrap( -1 )
-		self.m_staticText11.SetFont( wx.Font( 20, 74, 90, 92, False, "Verdana" ) )
+		self.m_staticText11.SetFont( wx.Font( 20, 70, 90, 92, False, wx.EmptyString ) )
 		
 		bSizer35.Add( self.m_staticText11, 0, wx.ALL, 0 )
 		
-		self.m_staticText111 = wx.StaticText( self.panel0, wx.ID_ANY, u"Combine all the flashcards and save them\nas a PDF. Includes both Question and Answer.", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_staticText111 = wx.StaticText( self.panel0, wx.ID_ANY, u"combines all the flashcards and saves them\nas a pdf. Includes both Question and Answer.", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.m_staticText111.Wrap( -1 )
-		self.m_staticText111.SetFont( wx.Font( 10, 74, 90, 90, False, "Verdana" ) )
+		self.m_staticText111.SetFont( wx.Font( 10, 70, 90, 90, False, wx.EmptyString ) )
 		
 		bSizer35.Add( self.m_staticText111, 0, wx.ALL, 0 )
 		
@@ -164,13 +171,13 @@ class MyFrame ( wx.Frame ):
 		
 		self.m_staticText112 = wx.StaticText( self.panel0, wx.ID_ANY, u"Synchronize", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.m_staticText112.Wrap( -1 )
-		self.m_staticText112.SetFont( wx.Font( 20, 74, 90, 92, False, "Verdana" ) )
+		self.m_staticText112.SetFont( wx.Font( 20, 70, 90, 92, False, wx.EmptyString ) )
 		
 		bSizer352.Add( self.m_staticText112, 0, wx.ALL, 0 )
 		
 		self.m_staticText1111 = wx.StaticText( self.panel0, wx.ID_ANY, u"Connect two devices: e.g. your Desktop and Laptop\nand transfer the files between them.", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.m_staticText1111.Wrap( -1 )
-		self.m_staticText1111.SetFont( wx.Font( 10, 74, 90, 90, False, "Verdana" ) )
+		self.m_staticText1111.SetFont( wx.Font( 10, 70, 90, 90, False, wx.EmptyString ) )
 		
 		bSizer352.Add( self.m_staticText1111, 0, wx.ALL, 0 )
 		
@@ -203,16 +210,12 @@ class MyFrame ( wx.Frame ):
 		
 		self.m_toolBar1 = wx.ToolBar( self.panel11, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TB_HORIZONTAL ) 
 		self.m_dirPicker11 = wx.DirPickerCtrl( self.m_toolBar1, wx.ID_ANY, wx.EmptyString, u"Select a folder", wx.DefaultPosition, wx.DefaultSize, 0 )
-		self.m_dirPicker11.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
-		
 		self.m_toolBar1.AddControl( self.m_dirPicker11 )
 		self.m_toolPlus11 = self.m_toolBar1.AddTool( wx.ID_ANY, u"plus", wx.Bitmap( path_add, wx.BITMAP_TYPE_ANY ), wx.NullBitmap, wx.ITEM_NORMAL, wx.EmptyString, wx.EmptyString, None ) 
 		
 		self.m_toolMin11 = self.m_toolBar1.AddTool( wx.ID_ANY, u"min", wx.Bitmap( path_min, wx.BITMAP_TYPE_ANY ), wx.NullBitmap, wx.ITEM_NORMAL, wx.EmptyString, wx.EmptyString, None ) 
 		
 		self.m_Zoom11 = wx.TextCtrl( self.m_toolBar1, wx.ID_ANY, u"100%", wx.DefaultPosition, wx.Size( 40,-1 ), wx.TE_READONLY|wx.NO_BORDER )
-		self.m_Zoom11.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
-		
 		self.m_toolBar1.AddControl( self.m_Zoom11 )
 		self.m_toolBack11 = self.m_toolBar1.AddTool( wx.ID_ANY, u"tool", wx.ArtProvider.GetBitmap( wx.ART_GO_BACK,  ), wx.NullBitmap, wx.ITEM_NORMAL, wx.EmptyString, wx.EmptyString, None ) 
 		
@@ -220,19 +223,14 @@ class MyFrame ( wx.Frame ):
 		
 		self.m_staticText3 = wx.StaticText( self.m_toolBar1, wx.ID_ANY, u"Page: ", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.m_staticText3.Wrap( -1 )
-		self.m_staticText3.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
-		
 		self.m_toolBar1.AddControl( self.m_staticText3 )
 		self.m_CurrentPage11 = wx.TextCtrl( self.m_toolBar1, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.Size( 40,-1 ), wx.TE_CENTRE )
-		self.m_CurrentPage11.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
 		self.m_CurrentPage11.SetMinSize( wx.Size( 10,-1 ) )
 		self.m_CurrentPage11.SetMaxSize( wx.Size( 10,-1 ) )
 		
 		self.m_toolBar1.AddControl( self.m_CurrentPage11 )
 		self.m_staticText6 = wx.StaticText( self.m_toolBar1, wx.ID_ANY, u" of ", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.m_staticText6.Wrap( -1 )
-		self.m_staticText6.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
-		
 		self.m_toolBar1.AddControl( self.m_staticText6 )
 		self.m_TotalPages11 = wx.TextCtrl( self.m_toolBar1, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.Size( 40,-1 ), wx.TE_READONLY|wx.NO_BORDER )
 		self.m_TotalPages11.SetMinSize( wx.Size( 20,-1 ) )
@@ -243,21 +241,6 @@ class MyFrame ( wx.Frame ):
 		
 		self.m_toolDOWN = self.m_toolBar1.AddTool( wx.ID_ANY, u"tool", wx.ArtProvider.GetBitmap( wx.ART_GO_DOWN,  ), wx.NullBitmap, wx.ITEM_NORMAL, wx.EmptyString, wx.EmptyString, None ) 
 		
-		self.m_TotalPage = wx.StaticText( self.m_toolBar1, wx.ID_ANY, u"      Show Selections  ", wx.DefaultPosition, wx.DefaultSize, 0 )
-		self.m_TotalPage.Wrap( -1 )
-		self.m_TotalPage.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
-		
-		self.m_toolBar1.AddControl( self.m_TotalPage )
-		self.m_checkBox11 = wx.CheckBox( self.m_toolBar1, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
-		self.m_checkBox11.SetValue(True) 
-		self.m_toolBar1.AddControl( self.m_checkBox11 )
-		self.m_staticText5 = wx.StaticText( self.m_toolBar1, wx.ID_ANY, u"      Cross-hair cursor   ", wx.DefaultPosition, wx.Size( -1,-1 ), 0 )
-		self.m_staticText5.Wrap( -1 )
-		self.m_staticText5.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
-		
-		self.m_toolBar1.AddControl( self.m_staticText5 )
-		self.m_checkBoxCursor11 = wx.CheckBox( self.m_toolBar1, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.Size( -1,-1 ), 0 )
-		self.m_toolBar1.AddControl( self.m_checkBoxCursor11 )
 		self.m_toolBar1.Realize() 
 		
 		bSizer2.Add( self.m_toolBar1, 0, wx.ALIGN_CENTER|wx.EXPAND, 0 )
@@ -300,18 +283,16 @@ class MyFrame ( wx.Frame ):
 		bSizer3 = wx.BoxSizer( wx.HORIZONTAL )
 		
 		self.m_textCtrl1 = wx.TextCtrl( self.panel11, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, wx.TE_READONLY )
-		self.m_textCtrl1.SetFont( wx.Font( 10, 74, 90, 92, False, "Verdana" ) )
+		self.m_textCtrl1.SetFont( wx.Font( 10, 70, 90, 92, False, wx.EmptyString ) )
 		
 		bSizer3.Add( self.m_textCtrl1, 0, wx.ALL, 5 )
 		
 		self.m_textCtrl2 = wx.TextCtrl( self.panel11, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
-		self.m_textCtrl2.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
 		self.m_textCtrl2.SetMinSize( wx.Size( 400,-1 ) )
 		
 		bSizer3.Add( self.m_textCtrl2, 0, wx.ALL, 5 )
 		
 		self.m_enterselection = wx.Button( self.panel11, wx.ID_ANY, u"Enter Selection", wx.DefaultPosition, wx.DefaultSize, 0 )
-		self.m_enterselection.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
 		self.m_enterselection.SetToolTip( u"shortcut: middle mouse button" )
 		
 		bSizer3.Add( self.m_enterselection, 0, wx.ALL, 5 )
@@ -366,37 +347,29 @@ class MyFrame ( wx.Frame ):
 		
 		self.m_toolBar3 = wx.ToolBar( self.panel21, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TB_HORIZONTAL ) 
 		self.m_filePicker21 = wx.FilePickerCtrl( self.m_toolBar3, wx.ID_ANY, wx.EmptyString, u"Select a file", u"*.tex*", wx.DefaultPosition, wx.DefaultSize, 0 )
-		self.m_filePicker21.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
-		
 		self.m_toolBar3.AddControl( self.m_filePicker21 )
 		self.m_toolSwitch21 = self.m_toolBar3.AddTool( wx.ID_ANY, u"Switch", wx.Bitmap( path_switch, wx.BITMAP_TYPE_ANY ), wx.NullBitmap, wx.ITEM_NORMAL, wx.EmptyString, wx.EmptyString, None ) 
 		
-		self.m_textCtrlMode = wx.TextCtrl( self.m_toolBar3, wx.ID_ANY, u"Question:", wx.DefaultPosition, wx.Size( -1,20 ), wx.TE_READONLY|wx.NO_BORDER )
-		self.m_textCtrlMode.SetFont( wx.Font( 12, 74, 90, 92, False, "Verdana" ) )
+		self.m_textCtrlMode = wx.TextCtrl( self.m_toolBar3, wx.ID_ANY, u"Question:", wx.DefaultPosition, wx.DefaultSize, wx.TE_READONLY|wx.NO_BORDER )
+		self.m_textCtrlMode.SetFont( wx.Font( 12, 70, 90, 92, False, wx.EmptyString ) )
 		
 		self.m_toolBar3.AddControl( self.m_textCtrlMode )
 		self.m_CurrentPage21 = wx.TextCtrl( self.m_toolBar3, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.Size( 40,-1 ), wx.TE_CENTRE|wx.TE_READONLY )
-		self.m_CurrentPage21.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
 		self.m_CurrentPage21.SetMinSize( wx.Size( 10,-1 ) )
 		self.m_CurrentPage21.SetMaxSize( wx.Size( 10,-1 ) )
 		
 		self.m_toolBar3.AddControl( self.m_CurrentPage21 )
-		self.m_static1 = wx.TextCtrl( self.m_toolBar3, wx.ID_ANY, u" of ", wx.DefaultPosition, wx.Size( 30,-1 ), wx.TE_READONLY|wx.NO_BORDER )
-		self.m_static1.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
-		self.m_static1.SetMaxSize( wx.Size( 20,-1 ) )
-		
-		self.m_toolBar3.AddControl( self.m_static1 )
+		self.m_staticText611 = wx.StaticText( self.m_toolBar3, wx.ID_ANY, u" of ", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_staticText611.Wrap( -1 )
+		self.m_toolBar3.AddControl( self.m_staticText611 )
 		self.m_TotalPages21 = wx.TextCtrl( self.m_toolBar3, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.Size( 40,-1 ), wx.TE_READONLY )
-		self.m_TotalPages21.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
 		self.m_TotalPages21.SetMinSize( wx.Size( 20,-1 ) )
 		self.m_TotalPages21.SetMaxSize( wx.Size( 20,-1 ) )
 		
 		self.m_toolBar3.AddControl( self.m_TotalPages21 )
-		self.m_static11 = wx.TextCtrl( self.m_toolBar3, wx.ID_ANY, u" Score: ", wx.DefaultPosition, wx.Size( 50,-1 ), wx.TE_READONLY|wx.NO_BORDER )
-		self.m_static11.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
-		self.m_static11.SetMaxSize( wx.Size( 20,-1 ) )
-		
-		self.m_toolBar3.AddControl( self.m_static11 )
+		self.m_staticText311 = wx.StaticText( self.m_toolBar3, wx.ID_ANY, u"    Score: ", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_staticText311.Wrap( -1 )
+		self.m_toolBar3.AddControl( self.m_staticText311 )
 		self.m_Score21 = wx.TextCtrl( self.m_toolBar3, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, wx.TE_READONLY|wx.NO_BORDER )
 		self.m_Score21.SetMaxSize( wx.Size( 20,-1 ) )
 		
@@ -406,8 +379,6 @@ class MyFrame ( wx.Frame ):
 		self.m_toolMin21 = self.m_toolBar3.AddTool( wx.ID_ANY, u"min", wx.Bitmap( path_min, wx.BITMAP_TYPE_ANY ), wx.NullBitmap, wx.ITEM_NORMAL, wx.EmptyString, wx.EmptyString, None ) 
 		
 		self.m_Zoom21 = wx.TextCtrl( self.m_toolBar3, wx.ID_ANY, u"100%", wx.DefaultPosition, wx.Size( 40,-1 ), wx.TE_READONLY|wx.NO_BORDER )
-		self.m_Zoom21.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
-		
 		self.m_toolBar3.AddControl( self.m_Zoom21 )
 		self.m_toolBar3.Realize() 
 		
@@ -432,13 +403,11 @@ class MyFrame ( wx.Frame ):
 		bSizer31 = wx.BoxSizer( wx.HORIZONTAL )
 		
 		self.m_buttonCorrect = wx.Button( self.panel21, wx.ID_ANY, u"Correct", wx.DefaultPosition, wx.DefaultSize, 0 )
-		self.m_buttonCorrect.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
 		self.m_buttonCorrect.SetToolTip( u"shortcut: left mouse button / left arrow key" )
 		
 		bSizer31.Add( self.m_buttonCorrect, 1, wx.ALL|wx.EXPAND|wx.RIGHT, 5 )
 		
 		self.m_buttonWrong = wx.Button( self.panel21, wx.ID_ANY, u"Wrong", wx.DefaultPosition, wx.DefaultSize, 0 )
-		self.m_buttonWrong.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
 		self.m_buttonWrong.SetToolTip( u"shortcut: right mouse click / right arrow key" )
 		
 		bSizer31.Add( self.m_buttonWrong, 1, wx.ALL|wx.EXPAND|wx.LEFT, 5 )
@@ -484,20 +453,14 @@ class MyFrame ( wx.Frame ):
 		
 		self.m_staticText52 = wx.StaticText( sbSizer1.GetStaticBox(), wx.ID_ANY, u"Boundary line in each \ncard between Q and A?", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.m_staticText52.Wrap( -1 )
-		self.m_staticText52.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
-		
 		gSizer12.Add( self.m_staticText52, 0, wx.ALL, 5 )
 		
 		self.m_lineQA = wx.CheckBox( sbSizer1.GetStaticBox(), wx.ID_ANY, u" yes", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.m_lineQA.SetValue(True) 
-		self.m_lineQA.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
-		
 		gSizer12.Add( self.m_lineQA, 0, wx.ALL, 5 )
 		
 		self.m_staticText62 = wx.StaticText( sbSizer1.GetStaticBox(), wx.ID_ANY, u"Line Thickness", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.m_staticText62.Wrap( -1 )
-		self.m_staticText62.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
-		
 		gSizer12.Add( self.m_staticText62, 0, wx.ALL, 5 )
 		
 		bSizer222 = wx.BoxSizer( wx.HORIZONTAL )
@@ -509,8 +472,6 @@ class MyFrame ( wx.Frame ):
 		
 		self.m_staticText24 = wx.StaticText( sbSizer1.GetStaticBox(), wx.ID_ANY, u"pixels", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.m_staticText24.Wrap( -1 )
-		self.m_staticText24.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
-		
 		bSizer222.Add( self.m_staticText24, 0, wx.ALL, 5 )
 		
 		
@@ -518,8 +479,6 @@ class MyFrame ( wx.Frame ):
 		
 		self.m_staticText7 = wx.StaticText( sbSizer1.GetStaticBox(), wx.ID_ANY, u"Line Color", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.m_staticText7.Wrap( -1 )
-		self.m_staticText7.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
-		
 		gSizer12.Add( self.m_staticText7, 0, wx.ALL, 5 )
 		
 		self.m_colorQAline = wx.ColourPickerCtrl( sbSizer1.GetStaticBox(), wx.ID_ANY, wx.Colour( 0, 0, 0 ), wx.DefaultPosition, wx.DefaultSize, wx.CLRP_DEFAULT_STYLE )
@@ -530,7 +489,7 @@ class MyFrame ( wx.Frame ):
 		
 		self.m_staticText34 = wx.StaticText( sbSizer1.GetStaticBox(), wx.ID_ANY, u"Settings may not be applied if there are no \nAnswer cards made by the user.", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.m_staticText34.Wrap( -1 )
-		self.m_staticText34.SetFont( wx.Font( 7, 74, 93, 90, False, "Verdana" ) )
+		self.m_staticText34.SetFont( wx.Font( 7, 74, 93, 90, False, "Arial Narrow" ) )
 		
 		sbSizer1.Add( self.m_staticText34, 0, wx.ALL, 5 )
 		
@@ -547,34 +506,25 @@ class MyFrame ( wx.Frame ):
 		
 		self.m_staticText511 = wx.StaticText( sbSizer11.GetStaticBox(), wx.ID_ANY, u"Boundary line in each \nrow of the pdf?", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.m_staticText511.Wrap( -1 )
-		self.m_staticText511.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
-		
 		gSizer11.Add( self.m_staticText511, 0, wx.ALL, 5 )
 		
 		self.m_linePDF = wx.CheckBox( sbSizer11.GetStaticBox(), wx.ID_ANY, u" yes", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.m_linePDF.SetValue(True) 
-		self.m_linePDF.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
-		
 		gSizer11.Add( self.m_linePDF, 0, wx.ALL, 5 )
 		
 		self.m_staticText612 = wx.StaticText( sbSizer11.GetStaticBox(), wx.ID_ANY, u"Line Thickness", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.m_staticText612.Wrap( -1 )
-		self.m_staticText612.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
-		
 		gSizer11.Add( self.m_staticText612, 0, wx.ALL, 5 )
 		
 		bSizer221 = wx.BoxSizer( wx.HORIZONTAL )
 		
 		self.m_lineWpdf = wx.TextCtrl( sbSizer11.GetStaticBox(), wx.ID_ANY, u"10", wx.DefaultPosition, wx.DefaultSize, 0 )
-		self.m_lineWpdf.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
 		self.m_lineWpdf.SetMaxSize( wx.Size( 30,-1 ) )
 		
 		bSizer221.Add( self.m_lineWpdf, 0, wx.ALL, 5 )
 		
 		self.m_staticText241 = wx.StaticText( sbSizer11.GetStaticBox(), wx.ID_ANY, u"pixels", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.m_staticText241.Wrap( -1 )
-		self.m_staticText241.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
-		
 		bSizer221.Add( self.m_staticText241, 0, wx.ALL, 5 )
 		
 		
@@ -582,8 +532,6 @@ class MyFrame ( wx.Frame ):
 		
 		self.m_staticText71 = wx.StaticText( sbSizer11.GetStaticBox(), wx.ID_ANY, u"Line Color", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.m_staticText71.Wrap( -1 )
-		self.m_staticText71.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
-		
 		gSizer11.Add( self.m_staticText71, 0, wx.ALL, 5 )
 		
 		self.m_colorPDFline = wx.ColourPickerCtrl( sbSizer11.GetStaticBox(), wx.ID_ANY, wx.Colour( 18, 5, 250 ), wx.DefaultPosition, wx.DefaultSize, wx.CLRP_DEFAULT_STYLE )
@@ -600,12 +548,12 @@ class MyFrame ( wx.Frame ):
 		
 		self.m_staticText33 = wx.StaticText( self.m_panel31, wx.ID_ANY, u"Fine tune image size", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.m_staticText33.Wrap( -1 )
-		self.m_staticText33.SetFont( wx.Font( 8, 74, 93, 90, False, "Verdana" ) )
+		self.m_staticText33.SetFont( wx.Font( 8, 70, 94, 90, False, wx.EmptyString ) )
 		
 		bSizer23.Add( self.m_staticText33, 0, wx.ALL, 5 )
 		
 		self.m_sliderPDFsize = wx.Slider( self.m_panel31, wx.ID_ANY, 100, 70, 130, wx.DefaultPosition, wx.Size( 275,-1 ), wx.SL_BOTH|wx.SL_HORIZONTAL|wx.SL_LABELS )
-		self.m_sliderPDFsize.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
+		self.m_sliderPDFsize.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), 70, 90, 90, False, wx.EmptyString ) )
 		
 		bSizer23.Add( self.m_sliderPDFsize, 0, wx.ALL, 0 )
 		
@@ -613,12 +561,9 @@ class MyFrame ( wx.Frame ):
 		
 		self.m_staticText36 = wx.StaticText( self.m_panel31, wx.ID_ANY, u"Number of pages", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.m_staticText36.Wrap( -1 )
-		self.m_staticText36.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
-		
 		bSizer351.Add( self.m_staticText36, 0, wx.ALL, 5 )
 		
 		self.m_TotalPDFPages = wx.TextCtrl( self.m_panel31, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, wx.TE_READONLY )
-		self.m_TotalPDFPages.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
 		self.m_TotalPDFPages.SetMaxSize( wx.Size( 30,-1 ) )
 		
 		bSizer351.Add( self.m_TotalPDFPages, 0, wx.ALL, 5 )
@@ -627,7 +572,7 @@ class MyFrame ( wx.Frame ):
 		bSizer23.Add( bSizer351, 0, wx.EXPAND, 5 )
 		
 		self.m_PrintFinal = wx.Button( self.m_panel31, wx.ID_ANY, u"Apply", wx.DefaultPosition, wx.DefaultSize, 0 )
-		self.m_PrintFinal.SetFont( wx.Font( 10, 74, 90, 90, False, "Verdana" ) )
+		self.m_PrintFinal.SetFont( wx.Font( 10, 70, 90, 90, False, wx.EmptyString ) )
 		self.m_PrintFinal.SetMinSize( wx.Size( 275,-1 ) )
 		self.m_PrintFinal.SetMaxSize( wx.Size( -1,30 ) )
 		
@@ -692,20 +637,16 @@ class MyFrame ( wx.Frame ):
 		
 		self.m_staticText35 = wx.StaticText( self.m_panel18, wx.ID_ANY, u"Select with left mouse button what area to select", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.m_staticText35.Wrap( -1 )
-		self.m_staticText35.SetFont( wx.Font( 9, 74, 93, 90, False, "Verdana" ) )
+		self.m_staticText35.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), 70, 94, 90, False, wx.EmptyString ) )
 		
 		bSizer331.Add( self.m_staticText35, 0, wx.ALL, 5 )
 		
 		bSizer341 = wx.BoxSizer( wx.HORIZONTAL )
 		
 		self.m_btnSelect = wx.Button( self.m_panel18, wx.ID_ANY, u"Undo Changes", wx.DefaultPosition, wx.DefaultSize, 0 )
-		self.m_btnSelect.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
-		
 		bSizer341.Add( self.m_btnSelect, 0, wx.ALL, 5 )
 		
 		self.m_btnImportScreenshot = wx.Button( self.m_panel18, wx.ID_ANY, u"Import", wx.DefaultPosition, wx.DefaultSize, 0 )
-		self.m_btnImportScreenshot.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
-		
 		bSizer341.Add( self.m_btnImportScreenshot, 0, wx.ALL, 5 )
 		
 		
@@ -753,8 +694,6 @@ class MyFrame ( wx.Frame ):
 		fgSizer1.Add( self.m_staticText39, 0, wx.ALL, 5 )
 		
 		self.m_txtMyIP = wx.TextCtrl( self.m_panel181, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
-		self.m_txtMyIP.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
-		
 		fgSizer1.Add( self.m_txtMyIP, 0, wx.ALL, 5 )
 		
 		self.m_staticText40 = wx.StaticText( self.m_panel181, wx.ID_ANY, u"Target IP", wx.DefaultPosition, wx.DefaultSize, 0 )
@@ -764,8 +703,6 @@ class MyFrame ( wx.Frame ):
 		fgSizer1.Add( self.m_staticText40, 0, wx.ALL, 5 )
 		
 		self.m_txtTargetIP = wx.TextCtrl( self.m_panel181, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
-		self.m_txtTargetIP.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
-		
 		fgSizer1.Add( self.m_txtTargetIP, 0, wx.ALL, 5 )
 		
 		self.m_staticText411 = wx.StaticText( self.m_panel181, wx.ID_ANY, u"Client", wx.DefaultPosition, wx.DefaultSize, 0 )
@@ -801,13 +738,11 @@ class MyFrame ( wx.Frame ):
 		bSizer47 = wx.BoxSizer( wx.HORIZONTAL )
 		
 		self.m_buttonTransfer = wx.Button( self.m_panel181, wx.ID_ANY, u"Transfer", wx.DefaultPosition, wx.DefaultSize, 0 )
-		self.m_buttonTransfer.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
+		self.m_buttonTransfer.SetFont( wx.Font( 9, 74, 90, 90, False, "Arial" ) )
 		
 		bSizer47.Add( self.m_buttonTransfer, 0, wx.ALL, 5 )
 		
 		self.m_txtStatus = wx.TextCtrl( self.m_panel181, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.Size( 400,-1 ), wx.TE_READONLY )
-		self.m_txtStatus.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
-		
 		bSizer47.Add( self.m_txtStatus, 0, wx.ALL, 5 )
 		
 		
@@ -843,7 +778,7 @@ class MyFrame ( wx.Frame ):
 		bSizer442 = wx.BoxSizer( wx.VERTICAL )
 		
 		self.m_notebook = wx.Notebook( self.panelHelp, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, 0 )
-		self.m_notebook.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
+		self.m_notebook.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), 70, 90, 90, False, "Verdana" ) )
 		
 		self.m_panel40 = wx.Panel( self.m_notebook, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TAB_TRAVERSAL )
 		self.m_panel40.SetBackgroundColour( wx.SystemSettings.GetColour( wx.SYS_COLOUR_BTNHIGHLIGHT ) )
@@ -919,6 +854,8 @@ class MyFrame ( wx.Frame ):
 		self.Bind( wx.EVT_MENU, self.m_menuPDFfolderOnMenuSelection, id = self.m_menuPDFfolder.GetId() )
 		self.Bind( wx.EVT_MENU, self.m_menuItemBackToMainOnMenuSelection, id = self.m_menuItemBackToMain.GetId() )
 		self.Bind( wx.EVT_MENU, self.m_menuHelpOnMenuSelection, id = self.m_menuHelp.GetId() )
+		self.Bind( wx.EVT_MENU, self.m_checkBox11OnCheckBox, id = self.m_checkBox11.GetId() )
+		self.Bind( wx.EVT_MENU, self.m_checkBoxCursor11OnCheckBox, id = self.m_checkBoxCursor11.GetId() )
 		self.m_OpenFlashbook.Bind( wx.EVT_BUTTON, self.m_OpenFlashbookOnButtonClick )
 		self.m_OpenFlashcard.Bind( wx.EVT_BUTTON, self.m_OpenFlashcardOnButtonClick )
 		self.m_OpenPrint.Bind( wx.EVT_BUTTON, self.m_OpenPrintOnButtonClick )
@@ -933,8 +870,6 @@ class MyFrame ( wx.Frame ):
 		self.m_CurrentPage11.Bind( wx.EVT_LEAVE_WINDOW, self.m_CurrentPage11OnLeaveWindow )
 		self.Bind( wx.EVT_TOOL, self.m_toolUPOnToolClicked, id = self.m_toolUP.GetId() )
 		self.Bind( wx.EVT_TOOL, self.m_toolDOWNOnToolClicked, id = self.m_toolDOWN.GetId() )
-		self.m_checkBox11.Bind( wx.EVT_CHECKBOX, self.m_checkBox11OnCheckBox )
-		self.m_checkBoxCursor11.Bind( wx.EVT_CHECKBOX, self.m_checkBoxCursor11OnCheckBox )
 		self.m_bitmapScroll.Bind( wx.EVT_LEFT_DOWN, self.m_bitmapScrollOnLeftDown )
 		self.m_bitmapScroll.Bind( wx.EVT_LEFT_UP, self.m_bitmapScrollOnLeftUp )
 		self.m_bitmapScroll.Bind( wx.EVT_MOTION, self.m_bitmapScrollOnMotion )
@@ -1035,6 +970,12 @@ class MyFrame ( wx.Frame ):
 	def m_menuHelpOnMenuSelection( self, event ):
 		event.Skip()
 	
+	def m_checkBox11OnCheckBox( self, event ):
+		event.Skip()
+	
+	def m_checkBoxCursor11OnCheckBox( self, event ):
+		event.Skip()
+	
 	def m_OpenFlashbookOnButtonClick( self, event ):
 		event.Skip()
 	
@@ -1075,12 +1016,6 @@ class MyFrame ( wx.Frame ):
 		event.Skip()
 	
 	def m_toolDOWNOnToolClicked( self, event ):
-		event.Skip()
-	
-	def m_checkBox11OnCheckBox( self, event ):
-		event.Skip()
-	
-	def m_checkBoxCursor11OnCheckBox( self, event ):
 		event.Skip()
 	
 	def m_bitmapScrollOnLeftDown( self, event ):
@@ -1248,7 +1183,6 @@ class MyDialog ( wx.Dialog ):
 		wx.Dialog.__init__ ( self, parent, id = wx.ID_ANY, title = u"Settings", pos = wx.DefaultPosition, size = wx.Size( 349,250 ), style = wx.DEFAULT_DIALOG_STYLE )
 		
 		self.SetSizeHints( wx.DefaultSize, wx.Size( 350,250 ) )
-		self.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
 		
 		bSizer8 = wx.BoxSizer( wx.VERTICAL )
 		
@@ -1261,44 +1195,31 @@ class MyDialog ( wx.Dialog ):
 		
 		self.m_staticText5 = wx.StaticText( self.m_panel4, wx.ID_ANY, u"Number of questions  :", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.m_staticText5.Wrap( -1 )
-		self.m_staticText5.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
-		
 		gSizer1.Add( self.m_staticText5, 0, wx.ALL, 5 )
 		
 		self.m_slider1 = wx.Slider( self.m_panel4, wx.ID_ANY, data, 1, data, wx.DefaultPosition, wx.DefaultSize, wx.SL_HORIZONTAL|wx.SL_LABELS )
-		self.m_slider1.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
-		
 		gSizer1.Add( self.m_slider1, 0, wx.ALL, 5 )
 		
 		self.m_staticText6 = wx.StaticText( self.m_panel4, wx.ID_ANY, u"Multiplier  :", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.m_staticText6.Wrap( -1 )
-		self.m_staticText6.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
-		
 		gSizer1.Add( self.m_staticText6, 0, wx.ALL, 5 )
 		
 		self.m_textCtrl11 = wx.TextCtrl( self.m_panel4, wx.ID_ANY, u"1", wx.DefaultPosition, wx.DefaultSize, 0 )
-		self.m_textCtrl11.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
 		self.m_textCtrl11.SetMaxSize( wx.Size( 30,-1 ) )
 		
 		gSizer1.Add( self.m_textCtrl11, 0, wx.ALL, 5 )
 		
 		self.m_staticText7 = wx.StaticText( self.m_panel4, wx.ID_ANY, u"Order of cards  :", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.m_staticText7.Wrap( -1 )
-		self.m_staticText7.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
-		
 		gSizer1.Add( self.m_staticText7, 0, wx.ALL, 5 )
 		
 		bSizer9 = wx.BoxSizer( wx.VERTICAL )
 		
 		self.m_radioChrono = wx.RadioButton( self.m_panel4, wx.ID_ANY, u"Chronological", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.m_radioChrono.SetValue( True ) 
-		self.m_radioChrono.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
-		
 		bSizer9.Add( self.m_radioChrono, 0, wx.ALL, 5 )
 		
 		self.m_radioRandom = wx.RadioButton( self.m_panel4, wx.ID_ANY, u"Random", wx.DefaultPosition, wx.DefaultSize, 0 )
-		self.m_radioRandom.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
-		
 		bSizer9.Add( self.m_radioRandom, 0, wx.ALL, 5 )
 		
 		
@@ -1345,7 +1266,6 @@ class MyDialog2 ( wx.Dialog ):
 		wx.Dialog.__init__ ( self, parent, id = wx.ID_ANY, title = u"Settings", pos = wx.DefaultPosition, size = wx.Size( 349,300 ), style = wx.DEFAULT_DIALOG_STYLE )
 		
 		self.SetSizeHints( wx.DefaultSize, wx.Size( 350,300 ) )
-		self.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
 		
 		bSizer8 = wx.BoxSizer( wx.VERTICAL )
 		
@@ -1358,44 +1278,31 @@ class MyDialog2 ( wx.Dialog ):
 		
 		self.m_staticText5 = wx.StaticText( self.m_panel4, wx.ID_ANY, u"Number of questions  :", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.m_staticText5.Wrap( -1 )
-		self.m_staticText5.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
-		
 		gSizer1.Add( self.m_staticText5, 0, wx.ALL, 5 )
 		
 		self.m_slider1 = wx.Slider( self.m_panel4, wx.ID_ANY, data, 1, data, wx.DefaultPosition, wx.DefaultSize, wx.SL_HORIZONTAL|wx.SL_LABELS )
-		self.m_slider1.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
-		
 		gSizer1.Add( self.m_slider1, 0, wx.ALL, 5 )
 		
 		self.m_staticText6 = wx.StaticText( self.m_panel4, wx.ID_ANY, u"Multiplier  :", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.m_staticText6.Wrap( -1 )
-		self.m_staticText6.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
-		
 		gSizer1.Add( self.m_staticText6, 0, wx.ALL, 5 )
 		
 		self.m_textCtrl11 = wx.TextCtrl( self.m_panel4, wx.ID_ANY, u"1", wx.DefaultPosition, wx.DefaultSize, 0 )
-		self.m_textCtrl11.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
 		self.m_textCtrl11.SetMaxSize( wx.Size( 30,-1 ) )
 		
 		gSizer1.Add( self.m_textCtrl11, 0, wx.ALL, 5 )
 		
 		self.m_staticText7 = wx.StaticText( self.m_panel4, wx.ID_ANY, u"Order of cards  :", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.m_staticText7.Wrap( -1 )
-		self.m_staticText7.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
-		
 		gSizer1.Add( self.m_staticText7, 0, wx.ALL, 5 )
 		
 		bSizer9 = wx.BoxSizer( wx.VERTICAL )
 		
 		self.m_radioChrono = wx.RadioButton( self.m_panel4, wx.ID_ANY, u"Chronological", wx.DefaultPosition, wx.DefaultSize, wx.RB_GROUP )
 		self.m_radioChrono.SetValue( True ) 
-		self.m_radioChrono.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
-		
 		bSizer9.Add( self.m_radioChrono, 0, wx.ALL, 5 )
 		
 		self.m_radioRandom = wx.RadioButton( self.m_panel4, wx.ID_ANY, u"Random", wx.DefaultPosition, wx.DefaultSize, 0 )
-		self.m_radioRandom.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
-		
 		bSizer9.Add( self.m_radioRandom, 0, wx.ALL, 5 )
 		
 		
@@ -1403,21 +1310,15 @@ class MyDialog2 ( wx.Dialog ):
 		
 		self.m_staticText17 = wx.StaticText( self.m_panel4, wx.ID_ANY, u"Continue last session?", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.m_staticText17.Wrap( -1 )
-		self.m_staticText17.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
-		
 		gSizer1.Add( self.m_staticText17, 0, wx.ALL, 5 )
 		
 		bSizer23 = wx.BoxSizer( wx.VERTICAL )
 		
 		self.m_radioYes = wx.RadioButton( self.m_panel4, wx.ID_ANY, u"Yes", wx.DefaultPosition, wx.DefaultSize, wx.RB_GROUP )
 		self.m_radioYes.SetValue( True ) 
-		self.m_radioYes.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
-		
 		bSizer23.Add( self.m_radioYes, 0, wx.ALL, 5 )
 		
 		self.m_radioNo = wx.RadioButton( self.m_panel4, wx.ID_ANY, u"No", wx.DefaultPosition, wx.DefaultSize, 0 )
-		self.m_radioNo.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
-		
 		bSizer23.Add( self.m_radioNo, 0, wx.ALL, 5 )
 		
 		
