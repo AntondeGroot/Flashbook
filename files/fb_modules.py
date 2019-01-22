@@ -433,8 +433,8 @@ def previouspage(self,event):
         print(colored("Error: can't click on back",'red'))
 
 def setcursor(self,event):
-    lf = event.GetEventObject()
-    cursor = lf.GetValue()
+    #lf = event.GetEventObject()
+    cursor = self.m_checkBoxCursor11.IsChecked()
     self.cursor = cursor
     if cursor == True:
         self.SetCursor(wx.Cursor(wx.CURSOR_CROSS))
