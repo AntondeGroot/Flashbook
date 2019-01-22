@@ -457,10 +457,14 @@ class MainFrame(gui.MyFrame):
     
     # show drawn borders 
     def m_checkBox11OnCheckBox( self, event ):
-        lf = event.GetEventObject()
-        self.drawborders = lf.GetValue()        
-        self.pageimage = self.pageimagecopy # reset image
-        f.ShowPage(self)
+        try:
+            self.drawborders = self.m_checkBox11.IsChecked()   
+            print(f"checkbox is {self.drawborders}")
+            self.pageimage = self.pageimagecopy # reset image
+            f.ShowPage(self)
+            self.Layout()
+        except:# a book hasn't been opened
+            pass
         
 	# draw borders #===========================================================
     def m_bitmapScrollOnLeftDown( self, event ):
