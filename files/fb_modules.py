@@ -296,9 +296,7 @@ def arrowscroll(self,event,direction):
     elif direction == 'up':     
         newpos = scrollWin.GetScrollPos(1)-1
         print(f"scrollpos = {scrollWin.GetScrollPageSize(1),newpos,scrollWin.GetScrollPixelsPerUnit()}" )
-    # change scrollbar    
-    scrollWin.SetScrollPos(wx.VERTICAL,newpos,False) #orientation, value, refresh?
-    scrollWin.Scroll(newpos,scrollWin.GetScrollPos(1))    
+    
     # check if you should go to the next/previous page
     
     self.scrollpos.append(scrollWin.GetScrollPos(0))
@@ -322,6 +320,11 @@ def arrowscroll(self,event,direction):
             if direction == 'down':
                 self.scrollpos = [42,1337] 
                 self.m_toolNext11OnToolClicked(self)
+    else:
+        # change scrollbar    
+        #scrollWin.SetScrollPos(wx.VERTICAL,newpos,True) #orientation, value, refresh?
+        scrollWin.Scroll(wx.VERTICAL,newpos)
+        #scrollWin.Scroll(wx.VERTICAL,newpos,scrollWin.GetScrollPos(1))    
     event.Skip()                               # necessary to use other functions after this one is used
      
     
@@ -404,7 +407,7 @@ def switchpage(self,event):
         f.ShowPage(self)
     except:
         print(colored("Error: invalid page number",'red'))
-    #self.Layout()
+    self.Layout()
 def nextpage(self,event):
     try:
         if self.currentpage == 'prtscr':
@@ -418,7 +421,8 @@ def nextpage(self,event):
         f.SetScrollbars(self)
     except:
         print(colored("Error: can't click on next",'red'))
-
+    self.Layout()
+    
 def previouspage(self,event):    
     try:
         if self.currentpage == 'prtscr':
@@ -431,7 +435,8 @@ def previouspage(self,event):
         f.SetScrollbars(self)            
     except:
         print(colored("Error: can't click on back",'red'))
-
+    self.Layout()
+    
 def setcursor(self,event):
     #lf = event.GetEventObject()
     cursor = self.m_checkBoxCursor11.IsChecked()
