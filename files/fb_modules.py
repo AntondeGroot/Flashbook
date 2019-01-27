@@ -39,31 +39,32 @@ def dirchanged(self,event):
         picname = picnames[i]
         while TF == True:
             for j in range(len(picname)):
-                k=len(picname)-j-1                
-                if (f.is_number(picname[k])==True) and TF==True:
+                k = len(picname) - j-1                
+                if (f.is_number(picname[k]) == True) and TF == True:
                     indexlist.append(k)  
-                elif (f.is_number(picname[k])==False):
-                    if j>0:
-                        if (f.is_number(picname[k+1]))==True:
+                elif (f.is_number(picname[k]) == False):
+                    if j > 0:
+                        if (f.is_number(picname[k+1])) == True:
                             TF = False
-                elif j== len(picname)-1:
+                elif j == len(picname)-1:
                     TF = False
         indexlist.sort()
         len_nr = len(indexlist)
+        
         # I only expect in the order of 1000 pages
         # make sure you can use the nrlist for later use so you can save the output as 
         # "Bookname + ****" a sorted 4 digit number
         if len_nr == 1:
             nrlist.append("000{}".format(picname[indexlist[0]]))
-        elif len_nr ==0:
+        elif len_nr == 0:
             print("found no number for {}".format(picname))
         else:
             I = indexlist[0]
-            F = indexlist[-1]+1
-            nrlist.append("0"*(4-len_nr)+"{}".format(picname[I:F]))
+            F = indexlist[-1] + 1
+            nrlist.append("0"*(4-len_nr) + f"{picname[I:F]}")
     picnames = [x for _,x in sorted(zip(nrlist,picnames))]
     self.picnames = picnames
-    self.bookname = path.replace("{}".format(self.dir3),"")[1:]#to remove '\'
+    self.bookname = path.replace(f"{self.dir3}","")[1:]#to remove '\'
     self.currentpage = 1
     self.PathBorders = os.path.join(self.dir5, self.bookname +'_borders.txt')
     if os.path.exists(os.path.join(self.temp_dir, self.bookname +'.txt')):
@@ -76,8 +77,9 @@ def dirchanged(self,event):
             file.write(json.dumps({})) 
     
     self.nr_pics = nr_pics
-    if not os.path.exists(self.dir2+r"\{}".format(self.bookname)):
-        os.makedirs(self.dir2+r"\{}".format(self.bookname))
+    bookpath = os.path.join(self.dir2,self.bookname)
+    if not os.path.exists(bookpath):
+        os.makedirs(bookpath)
     
     self.m_CurrentPage11.SetValue(str(self.currentpage))
     self.m_TotalPages11.SetValue(str(self.nr_pics))
