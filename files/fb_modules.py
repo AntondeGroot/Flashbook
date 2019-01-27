@@ -14,38 +14,35 @@ import json
 
 def dirchanged(self,event):
     
-    """For scrolling: only remember current and last position, append and pop 
-    if the numbers repeat [0,0] or [X,X] then you know you've reached either 
+    """For scrolling: only remember last few positions, append and pop 
+    if the numbers repeat [0,...,0] or [X,...,X] then you know you've reached either 
     the beginning or the end of the window: then flip page"""
     
-    self.scrollpos_reset = [42, 1337, 3, 2, 1]     
+    self.scrollpos_reset = [5, 4, 3, 2, 1]     
     self.scrollpos = self.scrollpos_reset
     
+    #Keep track of "nrlist" which is a 4 digit nr 18-> "0018" so that it is easily sorted in other programs
     path = event.GetPath() 
-    # - keep track of "nrlist" which is a 4 digit nr 18-> "0018" so that it is easily sorted in other programs
-    print(f"\nThe chosen path is {path}\n")
     nrlist = []
-    arr = os.listdir(path) #
-    picnames = []
-    for pic in arr:
-        if '.jpg' in pic:
-           picnames.append(pic)
-    nr_pics = len(picnames)
-    for i in range(nr_pics):
+    picnames = [pic for pic in os.listdir(path) if '.jpg' in pic]
+    self.nr_pics = len(picnames)
+    
+    for _, picname in enumerate(picnames):
+        
+        SEARCH    = True
+        name_len  = len(picname)
         indexlist = []
-        TF = True        
-        picname = picnames[i]
-        while TF == True:
-            for j in range(len(picname)):
-                k = len(picname) - j-1                
-                if (f.is_number(picname[k]) == True) and TF == True:
+        while SEARCH == True:
+            for j in range(name_len):
+                k = name_len - j - 1                
+                if (f.is_number(picname[k]) == True) and SEARCH == True:
                     indexlist.append(k)  
                 elif (f.is_number(picname[k]) == False):
                     if j > 0:
                         if (f.is_number(picname[k+1])) == True:
-                            TF = False
-                elif j == len(picname)-1:
-                    TF = False
+                            SEARCH = False
+                elif j == name_len - 1: #EOS
+                    SEARCH = False
         indexlist.sort()
         len_nr = len(indexlist)
         
@@ -62,19 +59,18 @@ def dirchanged(self,event):
             nrlist.append("0"*(4-len_nr) + f"{picname[I:F]}")
     picnames = [x for _,x in sorted(zip(nrlist,picnames))]
     self.picnames = picnames
-    self.bookname = path.replace(f"{self.dir3}","")[1:]#to remove '\'
+    self.bookname = path.replace(f"{self.dir3}","")[1:] #to remove first '\'
     self.currentpage = 1
-    self.PathBorders = os.path.join(self.dir5, self.bookname +'_borders.txt')
-    if os.path.exists(os.path.join(self.temp_dir, self.bookname +'.txt')):
-        file = open(os.path.join(self.temp_dir, self.bookname+'.txt'), 'r')
+    self.PathBorders = os.path.join(self.dir5, self.bookname + '_borders.txt')
+    if os.path.exists(os.path.join(self.temp_dir, self.bookname + '.txt')):
+        file = open(os.path.join(self.temp_dir, self.bookname + '.txt'), 'r')
         self.currentpage = int(float(file.read()))    
     
-    #create empty dictionary if it doesn't exist
-    if not os.path.exists(self.PathBorders): #notna
+    #Create empty dictionary if it doesn't exist
+    if not os.path.exists(self.PathBorders):
         with open(self.PathBorders, 'w') as file:
             file.write(json.dumps({})) 
     
-    self.nr_pics = nr_pics
     book_dir = os.path.join(self.dir2,self.bookname)
     if not os.path.exists(book_dir):
         os.makedirs(book_dir)
@@ -83,13 +79,13 @@ def dirchanged(self,event):
     self.m_TotalPages11.SetValue(str(self.nr_pics))
     nrlist.sort()
     
-    #open dictionary if it exists
+    #Open dictionary if it exists
     try:
         with open(self.PathBorders, 'r') as file:
             self.dictionary = json.load(file)
     except:
         self.dictionary = {}
-        print("no drawn rects found for this file, continue")
+        print("No drawn rects found for this file, continue")
     try:
         self.jpgdir = self.dir3+fr'\{self.bookname}\{self.picnames[self.currentpage-1]}'
         self.pageimage = PIL.Image.open(self.jpgdir)
@@ -98,7 +94,7 @@ def dirchanged(self,event):
     except:
         print(colored("Error: could not load scrolled window",'red'))
     
-    #draw borders if they exist
+    #Draw borders if they exist
     try:
         if self.drawborders == True:                    
             f.drawCoordinates(self)
