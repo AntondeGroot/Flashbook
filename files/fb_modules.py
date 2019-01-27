@@ -18,9 +18,9 @@ def dirchanged(self,event):
     if the numbers repeat [0,0] or [X,X] then you know you've reached either 
     the beginning or the end of the window: then flip page"""
     
-    
     self.scrollpos_reset = [42, 1337, 3, 2, 1]     
     self.scrollpos = self.scrollpos_reset
+    
     path = event.GetPath() 
     # - keep track of "nrlist" which is a 4 digit nr 18-> "0018" so that it is easily sorted in other programs
     print(f"\nThe chosen path is {path}\n")
@@ -30,9 +30,7 @@ def dirchanged(self,event):
     for pic in arr:
         if '.jpg' in pic:
            picnames.append(pic)
-    
     nr_pics = len(picnames)
-    print(f"hallo {nr_pics}") 
     for i in range(nr_pics):
         indexlist = []
         TF = True        
@@ -77,9 +75,9 @@ def dirchanged(self,event):
             file.write(json.dumps({})) 
     
     self.nr_pics = nr_pics
-    bookpath = os.path.join(self.dir2,self.bookname)
-    if not os.path.exists(bookpath):
-        os.makedirs(bookpath)
+    book_dir = os.path.join(self.dir2,self.bookname)
+    if not os.path.exists(book_dir):
+        os.makedirs(book_dir)
     
     self.m_CurrentPage11.SetValue(str(self.currentpage))
     self.m_TotalPages11.SetValue(str(self.nr_pics))
@@ -134,12 +132,12 @@ def bitmapleftup(self,event):
         #save all borders in dict
         try:
             #dict key exists, so you should append its value
-            val = self.tempdictionary['page {}'.format(self.currentpage)]
+            val = self.tempdictionary[f'page {self.currentpage}']
             val.append(self.BorderCoords)
-            self.tempdictionary['page {}'.format(self.currentpage)] = val
+            self.tempdictionary[f'page {self.currentpage}'] = val
         except:
             #dict key does not exist, just add the value to the new key
-            self.tempdictionary.update({'page {}'.format(self.currentpage): [self.BorderCoords]})
+            self.tempdictionary.update({f'page {self.currentpage}' : [self.BorderCoords]})
             
         #crop image
         if self.stayonpage == False:
@@ -151,18 +149,20 @@ def bitmapleftup(self,event):
         img = PIL.Image.fromarray(img)
         find = True
         while find == True:
+            rand_nr = str(randint(0, 9999)).rjust(4, "0") #The number must be of length 4: '0006' must be a possible result.
             if self.stayonpage == False:
-                picname =  f"{self.bookname}_{self.currentpage}_{randint(0,9)}{randint(0,9)}{randint(0,9)}{randint(0,9)}.jpg" # the number must be of length 4: randint(0,9999) could give '6' and not '0006'
+                picname =  f"{self.bookname}_{self.currentpage}_{rand_nr}.jpg" 
             else:
-                picname =  f"{self.bookname}_prtscr_{randint(0,9)}{randint(0,9)}{randint(0,9)}{randint(0,9)}.jpg"
-            filename = self.dir2+r"\{}\{}".format(self.bookname,picname)
+                picname =  f"{self.bookname}_prtscr_{rand_nr}.jpg"
+            filename = os.path.join(self.dir2,self.bookname,picname)    
             if not os.path.exists(filename):
                 find = False
         img.save(filename)
         
-        """the list will look like the following:
+        """The list will look like the following:
         [vert1 [hor1,hor2,hor3],vert2,vert3,[hor4,hor5]]
-        within so that first the hor [] will be combined first horizontally, then all will be combined vertically."""
+        So that first the horizontal [] within the list will be combined first, 
+        then everythying will be combined vertically."""
         
         dir_ = os.path.join(self.dir2,self.bookname,picname)
         if self.questionmode == True:
@@ -270,7 +270,7 @@ def selectionentered(self,event):
                 if self.stayonpage == False: # if screenshot mode
                     with open(self.PathBorders, 'w') as file:
                             file.write(json.dumps(self.dictionary)) 
-                if len(self.pic_answer)>1:
+                if len(self.pic_answer) > 1:
                     f.CombinePics(self,self.pic_answer_dir)
                     if type(self.pic_answer[0]) is list:
                         self.pic_answer[0] = self.pic_answer[0][0]
@@ -285,7 +285,7 @@ def selectionentered(self,event):
 
                 f.ShowInPopup(self,event,"Answer")                    
                 # save the user inputs in .tex file
-                if len(self.pdf_question)!=0:
+                if len(self.pdf_question) != 0:
                     with open(os.path.join(self.dir1, self.bookname +'.tex'), 'a') as output: # the mode "a" appends to the file    
                         output.write(r"\quiz{" + str(self.pdf_question) + "}")
                         output.write(r"\ans{"  + str(self.pdf_answer)   + "}"+"\n")
@@ -331,15 +331,13 @@ def arrowscroll(self,event,direction):
         scrollWin.Scroll(wx.VERTICAL,newpos)
         #scrollWin.Scroll(wx.VERTICAL,newpos,scrollWin.GetScrollPos(1))    
     event.Skip()                               # necessary to use other functions after this one is used
-     
-    
         
 def mousewheel(self,event):
     scrollWin = self.m_scrolledWindow1
     self.scrollpos.append(scrollWin.GetScrollPos(0))
     self.scrollpos.pop(0)
     if self.debugmode:
-        print("scroll pos = {}".format(self.scrollpos))
+        print(f"scroll pos = {self.scrollpos}")
     self.WheelRot = event.GetWheelRotation()   # get rotation from mouse wheel
     Hvirt= self.m_scrolledWindow1.GetVirtualSize()[1]
     Hclnt = self.m_scrolledWindow1.GetClientSize()[1]
@@ -350,11 +348,11 @@ def mousewheel(self,event):
                     self.scrollpos = self.scrollpos_reset     # make it a little more difficult to scroll back once you scrolled a page
                     self.m_toolBack11OnToolClicked(self)
                     if self.currentpage != 1:
-                        scrollWin.SetScrollPos(wx.VERTICAL,scrollWin.GetScrollPos(1)+150,False) #orientation, value, refresh? # 150 is overkill, but it means the new page starts definitely at the bottom of the scroll bar
-                        scrollWin.Scroll(scrollWin.GetScrollPos(1)+150,scrollWin.GetScrollPos(1))
+                        scrollWin.SetScrollPos(wx.VERTICAL, scrollWin.GetScrollPos(1) + 150, False) #orientation, value, refresh? # 150 is overkill, but it means the new page starts definitely at the bottom of the scroll bar
+                        scrollWin.Scroll(scrollWin.GetScrollPos(1) + 150, scrollWin.GetScrollPos(1))
                     else:
-                        scrollWin.SetScrollPos(wx.VERTICAL,0,False) #orientation, value, refresh? # 150 is overkill, but it means the new page starts definitely at the bottom of the scroll bar
-                        scrollWin.Scroll(0,scrollWin.GetScrollPos(1))
+                        scrollWin.SetScrollPos(wx.VERTICAL, 0, False) #orientation, value, refresh? # 150 is overkill, but it means the new page starts definitely at the bottom of the scroll bar
+                        scrollWin.Scroll(0, scrollWin.GetScrollPos(1))
                     
             elif self.WheelRot < 0:              # end of page
                 self.scrollpos = self.scrollpos_reset 
@@ -363,11 +361,11 @@ def mousewheel(self,event):
         if self.WheelRot > 0:
             self.m_toolBack11OnToolClicked(self)
             if self.currentpage != 1:
-                scrollWin.SetScrollPos(wx.VERTICAL,scrollWin.GetScrollPos(1)+150,False) #orientation, value, refresh? # 150 is overkill, but it means the new page starts definitely at the bottom of the scroll bar
-                scrollWin.Scroll(scrollWin.GetScrollPos(1)+150,scrollWin.GetScrollPos(1))
+                scrollWin.SetScrollPos(wx.VERTICAL, scrollWin.GetScrollPos(1) + 150, False) #orientation, value, refresh? # 150 is overkill, but it means the new page starts definitely at the bottom of the scroll bar
+                scrollWin.Scroll(scrollWin.GetScrollPos(1) + 150, scrollWin.GetScrollPos(1))
             else:
-                scrollWin.SetScrollPos(wx.VERTICAL,0,False) #orientation, value, refresh? # 150 is overkill, but it means the new page starts definitely at the bottom of the scroll bar
-                scrollWin.Scroll(0,scrollWin.GetScrollPos(1))
+                scrollWin.SetScrollPos(wx.VERTICAL, 0, False) #orientation, value, refresh? # 150 is overkill, but it means the new page starts definitely at the bottom of the scroll bar
+                scrollWin.Scroll(0, scrollWin.GetScrollPos(1))
         elif self.WheelRot < 0:
             self.scrollpos = self.scrollpos_reset 
             self.m_toolNext11OnToolClicked(self)
@@ -376,13 +374,13 @@ def mousewheel(self,event):
 def resetselection(self,event):
     self.resetselection = True
     #  remove all temporary pictures taken
-    if len (self.pic_answer_dir)>0:
+    if len(self.pic_answer_dir) > 0:
         for pic in self.pic_answer_dir:
             try:
                 os.remove(pic)
             except:
                 pass
-    if len (self.pic_question_dir)>0:
+    if len(self.pic_question_dir) > 0:
         for pic in self.pic_question_dir:
             try:
                 os.remove(pic)
@@ -413,6 +411,7 @@ def switchpage(self,event):
     except:
         print(colored("Error: invalid page number",'red'))
     self.Layout()
+    
 def nextpage(self,event):
     try:
         if self.currentpage == 'prtscr':
@@ -457,8 +456,8 @@ def zoomin(self,event):
         f.LoadPage(self)
         f.ShowPage(self)
         f.SetScrollbars(self)
-        value = int(self.zoom*100)
-        self.m_Zoom11.SetValue("{}%".format(value))
+        percentage = int(self.zoom*100)
+        self.m_Zoom11.SetValue(f"{percentage}%")
         self.Layout()
     except:
         print(colored("Error: cannot zoom out",'red'))
@@ -472,8 +471,8 @@ def zoomout(self,event):
         f.LoadPage(self)
         f.ShowPage(self)
         f.SetScrollbars(self)
-        value = int(self.zoom*100)
-        self.m_Zoom11.SetValue(f"{value}%")
+        percentage = int(self.zoom*100)
+        self.m_Zoom11.SetValue(f"{percentage}%")
         self.panel1.Refresh() # to remove the remnants of a larger bitmap when the page shrinks
         self.Layout()
     except:
@@ -491,25 +490,25 @@ def SetKeyboardShortcuts(self):
     self.Id_leftkey   = wx.NewIdRef() 
     self.Id_rightkey  = wx.NewIdRef() 
     self.Id_upkey     = wx.NewIdRef() 
-    self.Id_downkey     = wx.NewIdRef() 
+    self.Id_downkey   = wx.NewIdRef() 
     self.Id_enterkey  = wx.NewIdRef()
     self.Id_stitch    = wx.NewIdRef()
     
     # combine functions with the id
-    self.Bind( wx.EVT_MENU, self.m_toolBack11OnToolClicked,       id = self.Id_leftkey  )
-    self.Bind( wx.EVT_MENU, self.m_toolNext11OnToolClicked,       id = self.Id_rightkey )
+    self.Bind( wx.EVT_MENU, self.m_toolBack11OnToolClicked,     id = self.Id_leftkey  )
+    self.Bind( wx.EVT_MENU, self.m_toolNext11OnToolClicked,     id = self.Id_rightkey )
     self.Bind( wx.EVT_MENU, self.m_enterselectionOnButtonClick, id = self.Id_enterkey )
-    self.Bind( wx.EVT_MENU, self.m_toolStitchOnButtonClick, id = self.Id_stitch )
-    self.Bind(wx.EVT_MENU,  self.m_toolUPOnToolClicked,    id = self.Id_upkey)
-    self.Bind(wx.EVT_MENU,  self.m_toolDOWNOnToolClicked,    id = self.Id_downkey)
+    self.Bind( wx.EVT_MENU, self.m_toolStitchOnButtonClick,     id = self.Id_stitch )
+    self.Bind(wx.EVT_MENU,  self.m_toolUPOnToolClicked,         id = self.Id_upkey)
+    self.Bind(wx.EVT_MENU,  self.m_toolDOWNOnToolClicked,       id = self.Id_downkey)
     
     # combine id with keyboard = now keyboard is connected to functions
-    entries = wx.AcceleratorTable([(wx.ACCEL_NORMAL,  wx.WXK_LEFT, self.Id_leftkey),
-                                  (wx.ACCEL_NORMAL,  wx.WXK_RIGHT, self.Id_rightkey ),
-                                  (wx.ACCEL_NORMAL,  wx.WXK_RETURN, self.Id_enterkey ),
-                                  (wx.ACCEL_NORMAL, wx.WXK_UP, self.Id_upkey),
-                                  (wx.ACCEL_NORMAL, wx.WXK_DOWN, self.Id_downkey),
-                                  (wx.ACCEL_NORMAL,  wx.WXK_HOME, self.Id_stitch ),
+    entries = wx.AcceleratorTable([(wx.ACCEL_NORMAL, wx.WXK_LEFT,    self.Id_leftkey),
+                                  (wx.ACCEL_NORMAL,  wx.WXK_RIGHT,   self.Id_rightkey ),
+                                  (wx.ACCEL_NORMAL,  wx.WXK_RETURN,  self.Id_enterkey ),
+                                  (wx.ACCEL_NORMAL,  wx.WXK_UP,      self.Id_upkey),
+                                  (wx.ACCEL_NORMAL,  wx.WXK_DOWN,    self.Id_downkey),
+                                  (wx.ACCEL_NORMAL,  wx.WXK_HOME,    self.Id_stitch ),
                                   (wx.ACCEL_NORMAL,  wx.WXK_NUMPAD0, self.Id_stitch )])
     self.SetAcceleratorTable(entries)
         
@@ -522,15 +521,15 @@ def RemoveKeyboardShortcuts(self,index):
         self.Id_stitch    = wx.NewIdRef()
         if index == 0:
             self.Bind( wx.EVT_MENU, self.m_enterselectionOnButtonClick, id = self.Id_enterkey )
-            self.Bind( wx.EVT_MENU, self.m_toolStitchOnButtonClick, id = self.Id_stitch )
+            self.Bind( wx.EVT_MENU, self.m_toolStitchOnButtonClick,     id = self.Id_stitch )
             # combine id with keyboard = now keyboard is connected to functions
-            entries = wx.AcceleratorTable([(wx.ACCEL_NORMAL,  wx.WXK_RETURN, self.Id_enterkey),
-                                          (wx.ACCEL_NORMAL,  wx.WXK_HOME, self.Id_stitch ),
+            entries = wx.AcceleratorTable([(wx.ACCEL_NORMAL, wx.WXK_RETURN,  self.Id_enterkey),
+                                          (wx.ACCEL_NORMAL,  wx.WXK_HOME,    self.Id_stitch ),
                                           (wx.ACCEL_NORMAL,  wx.WXK_NUMPAD0, self.Id_stitch )])
         if index == 1:
             self.Bind( wx.EVT_MENU, self.m_toolStitchOnButtonClick, id = self.Id_stitch )
             # combine id with keyboard = now keyboard is connected to functions
-            entries = wx.AcceleratorTable([(wx.ACCEL_NORMAL,  wx.WXK_HOME, self.Id_stitch ),
+            entries = wx.AcceleratorTable([(wx.ACCEL_NORMAL, wx.WXK_HOME,    self.Id_stitch ),
                                           (wx.ACCEL_NORMAL,  wx.WXK_NUMPAD0, self.Id_stitch )])
         self.SetAcceleratorTable(entries)
     except:
