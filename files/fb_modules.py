@@ -18,7 +18,9 @@ def dirchanged(self,event):
     if the numbers repeat [0,0] or [X,X] then you know you've reached either 
     the beginning or the end of the window: then flip page"""
     
-    self.scrollpos = [42,1337]     
+    
+    self.scrollpos_reset = [42, 1337, 3, 2, 1]     
+    self.scrollpos = self.scrollpos_reset
     path = event.GetPath() 
     # - keep track of "nrlist" which is a 4 digit nr 18-> "0018" so that it is easily sorted in other programs
     print(f"\nThe chosen path is {path}\n")
@@ -110,7 +112,8 @@ def dirchanged(self,event):
         f.SetScrollbars(self)
     except:
         print(colored("Error: could not load scrolled window",'red'))
-        
+    self.Layout()
+    
 def bitmapleftup(self,event):
     if self.cursor == False:
         self.SetCursor(wx.Cursor(wx.CURSOR_ARROW))
@@ -304,10 +307,10 @@ def arrowscroll(self,event,direction):
     
     print(f"currentpage = {self.currentpage}")
     print(f"direction is {direction}")
-    if self.scrollpos[0] == self.scrollpos[1]: # you've reached either the beginning or end of the document
+    if len(set(self.scrollpos)) == 1: # you've reached either the beginning or end of the document
         if self.scrollpos[0] == 0:             # beginning
             if direction == 'up':
-                self.scrollpos = [42,1337]     # make it a little more difficult to scroll back once you scrolled a page
+                self.scrollpos = self.scrollpos_reset     # make it a little more difficult to scroll back once you scrolled a page
                 self.m_toolBack11OnToolClicked(self)
                 
                 if self.currentpage != 1:
@@ -318,7 +321,7 @@ def arrowscroll(self,event,direction):
                     scrollWin.Scroll(0,scrollWin.GetScrollPos(1))
         else:                                  # end of page
             if direction == 'down':
-                self.scrollpos = [42,1337] 
+                self.scrollpos = self.scrollpos_reset 
                 self.m_toolNext11OnToolClicked(self)
     else:
         # change scrollbar    
@@ -339,10 +342,10 @@ def mousewheel(self,event):
     Hvirt= self.m_scrolledWindow1.GetVirtualSize()[1]
     Hclnt = self.m_scrolledWindow1.GetClientSize()[1]
     if Hclnt < Hvirt: # there is a scrollbar
-        if self.scrollpos[0] == self.scrollpos[1]: # you've reached either the beginning or end of the document
+        if len(set(self.scrollpos)) == 1: # you've reached either the beginning or end of the document: all elements are the same
             if self.scrollpos[0] == 0:             # beginning
                 if self.WheelRot > 0:
-                    self.scrollpos = [42,1337]     # make it a little more difficult to scroll back once you scrolled a page
+                    self.scrollpos = self.scrollpos_reset     # make it a little more difficult to scroll back once you scrolled a page
                     self.m_toolBack11OnToolClicked(self)
                     if self.currentpage != 1:
                         scrollWin.SetScrollPos(wx.VERTICAL,scrollWin.GetScrollPos(1)+150,False) #orientation, value, refresh? # 150 is overkill, but it means the new page starts definitely at the bottom of the scroll bar
@@ -352,7 +355,7 @@ def mousewheel(self,event):
                         scrollWin.Scroll(0,scrollWin.GetScrollPos(1))
                     
             elif self.WheelRot < 0:              # end of page
-                self.scrollpos = [42,1337] 
+                self.scrollpos = self.scrollpos_reset 
                 self.m_toolNext11OnToolClicked(self)
     else:# there is no scrollbar
         if self.WheelRot > 0:
@@ -364,7 +367,7 @@ def mousewheel(self,event):
                 scrollWin.SetScrollPos(wx.VERTICAL,0,False) #orientation, value, refresh? # 150 is overkill, but it means the new page starts definitely at the bottom of the scroll bar
                 scrollWin.Scroll(0,scrollWin.GetScrollPos(1))
         elif self.WheelRot < 0:
-            self.scrollpos = [42,1337] 
+            self.scrollpos = self.scrollpos_reset 
             self.m_toolNext11OnToolClicked(self)
     event.Skip()                               # necessary to use other functions after this one is used
     
