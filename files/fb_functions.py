@@ -265,7 +265,7 @@ def CombinePics(self,directory):
                 new_im.paste(img, (x_offset,0))
                 x_offset += img.size[0]
             new_im.save(im[0])
-            print(len(im))
+            
             for p,img in enumerate(im):
                 if p!=0:
                     try:
@@ -273,9 +273,9 @@ def CombinePics(self,directory):
                     except:
                         pass
             directory[i] = im[0]
-            print(im[0])
+            
         i += 1
-    print(directory)
+    
     #combine pictures vertically    
     images = list(map(PIL.Image.open, directory))   
     widths, heights = zip(*(i.size for i in images))
@@ -303,11 +303,11 @@ def CreateTextCard(self):
     #LaTeXcode = Text2Latex(self)
     LaTeXcode = self.usertext
     height_card = math.ceil(len(LaTeXcode)/40)/2
-    fig = Figure(figsize=[8, height_card],dpi=100)
+    fig = Figure(figsize=[8, height_card], dpi=100)
     ax = fig.gca()
     ax.plot([0, 0,0, height_card],color = (1,1,1,1))
     ax.axis('off')
-    ax.text(-0.5, height_card/2,LaTeXcode, fontsize = 20, horizontalalignment='left', verticalalignment='center',wrap = True)
+    ax.text(-0.5, height_card/2, LaTeXcode, fontsize = 20, horizontalalignment = 'left', verticalalignment = 'center', wrap = True)
     
     canvas = FigureCanvas(fig)
     canvas.draw()
@@ -336,19 +336,19 @@ def CreateTextCard(self):
         var = img.size[0]
     else:
         var = var + border
-    self.imagetext = img.crop((0,0,var,img.size[1]))
+    self.imagetext = img.crop((0, 0, var, img.size[1]))
 
 def CombinePicText(self,directory):
     if self.debugmode:
         print("fb=CombinePicText")
     if os.path.exists(directory):
         imagepic = PIL.Image.open(directory)
-        images = [self.imagetext,imagepic]
+        images   = [self.imagetext, imagepic]
         
         widths, heights = zip(*(i.size for i in images))
         total_height = sum(heights)
         max_width    = max(widths)
-        NewImage       = PIL.Image.new('RGB', (max_width, total_height), "white")
+        NewImage     = PIL.Image.new('RGB', (max_width, total_height), "white")
         #combine images to 1
         x_offset = 0
         for im in images:
@@ -439,16 +439,16 @@ def Text2Latex(self):
         num_end   = fc.findchar('\]',newcommand_line,"")
         
         latex_start = fc.findchar('{',newcommand_line,1)   
-        latex_end = fc.findchar('}',newcommand_line,-1)
+        latex_end   = fc.findchar('}',newcommand_line,-1)
         # find the commands explicitly
         defined_command = newcommand_line[definition_start+1:definition_end]     ## finds \secpar        
-        LaTeX_command = newcommand_line[latex_start+1:latex_end] ## finds \frac{\partial^2 #1}{\partial #2^2}
+        LaTeX_command   = newcommand_line[latex_start+1:latex_end] ## finds \frac{\partial^2 #1}{\partial #2^2}
         nr_arg = int(newcommand_line[int(num_start[0]+1):int(num_end[0])])            
         
         while defined_command in usertext:
             Q = usertext
             #replace all the commands
-            usertext = replacecommands(defined_command,LaTeX_command,Q,nr_arg)              
+            usertext = replacecommands(defined_command, LaTeX_command, Q, nr_arg)              
     return usertext
 
 
@@ -459,17 +459,17 @@ def replacecommands(defined_command,LaTeX_command,inputstring,nr_arg):
         # if a command has arguments: you need to find their positions
         if nr_arg != 0:
             cmd_start = [m.start() for m in re.finditer(r'\{}'.format(defined_command), inputstring )][0]
-            arguments = fc.find_arguments(cmd_start,inputstring,defined_command,nr_arg)[0]
+            arguments = fc.find_arguments(cmd_start, inputstring, defined_command, nr_arg)[0]
             
-            index1 = fc.find_arguments(cmd_start,inputstring ,defined_command,nr_arg)[1][0]-length_c
-            index2 = fc.find_arguments(cmd_start,inputstring,defined_command,nr_arg)[2][1]+1
+            index1 = fc.find_arguments(cmd_start, inputstring ,defined_command, nr_arg)[1][0]-length_c
+            index2 = fc.find_arguments(cmd_start, inputstring ,defined_command, nr_arg)[2][1]+1
             
             #replace the command by a LaTeX command
-            inputstring = inputstring.replace(inputstring[index1:index2],LaTeX_command )
+            inputstring = inputstring.replace(inputstring[index1:index2], LaTeX_command )
             #replace the temporary arguments #1,#2... by the real arguments
             for i in range(nr_arg):
-                inputstring = inputstring.replace("#{}".format(i+1), arguments[i])
+                inputstring = inputstring.replace(f"#{i+1}", arguments[i])
         else:
             #if there are no arguments to begin with you can directly replace the defined_cmd for the latex_cmd
-            inputstring = inputstring.replace(defined_command,LaTeX_command)
+            inputstring = inputstring.replace(defined_command, LaTeX_command)
     return inputstring
