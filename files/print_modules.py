@@ -75,7 +75,7 @@ def import_screenshot(self,event):
 def print_preview(self,event): 
     program.run_print(self, event)
     #resize to A4 format
-    _,PanelHeight = self.m_panel32.GetSize()
+    _, PanelHeight = self.m_panel32.GetSize()
     PanelWidth = round(float(PanelHeight)/1754.0*1240.0)
     #only select first page and display it on the bitmap
     self.allimages_v = self.allimages_v[0].resize((PanelWidth, PanelHeight), PIL.Image.ANTIALIAS)
@@ -87,7 +87,7 @@ def print_preview(self,event):
     
 def preview_refresh(self):
     notes2paper(self)
-    _,PanelHeight = self.m_panel32.GetSize()
+    _, PanelHeight = self.m_panel32.GetSize()
     PanelWidth = round(float(PanelHeight)/1754.0*1240.0)
     #only select first page and display it on the bitmap
     self.allimages_v = self.allimages_v[0].resize((PanelWidth, PanelHeight), PIL.Image.ANTIALIAS) 
@@ -95,7 +95,6 @@ def preview_refresh(self):
     image2.SetData( self.allimages_v.tobytes() )
     bitmapimage = wx.Bitmap(image2)
     self.m_bitmap3.SetBitmap(bitmapimage)
-    print(self.m_panel32.GetSize())
     self.Layout()
     
 def notes2paper(self):
@@ -109,22 +108,19 @@ def notes2paper(self):
     #target directory
     self.dir_t = os.path.join(os.getenv("LOCALAPPDATA"),"FlashBook","temporary")
     ## create images
-    self.allimages = []
+    self.allimages   = []
     self.allimages_w = [] #widths
     
     for i in range(self.nr_questions):
         self.image_q = PIL.Image.new('RGB', (0, 0),"white")
         self.image_a = []
         for mode in ['Question','Answer']: 
-            print(mode)
             self.mode = mode
             self.TextCard = False      
             self.key = '{}{}'.format(self.mode[0],i)
             try:          
-                print(self.key)
                 # try to create a TextCard
                 if self.key in self.textdictionary:
-                    print("textcard")
                     try:
                         f.CreateTextCard(self)
                     except:
@@ -209,8 +205,6 @@ def notes2paper(self):
             C.append(self.allimages)
             self.allimages_w = []
     self.paper_h_list = C
-    
-    
     
     # combine pics horizontally
     for i,images in enumerate(self.paper_h_list):
@@ -319,31 +313,25 @@ def dirchanged(self,event):
         path = event.GetPath() 
         # - keep track of "nrlist" which is a 4 digit nr 18-> "0018" so that it is easily sorted in other programs
         nrlist = []
-        arr = os.listdir(path) #
-        picnames = []
-        for pic in arr:
-            if '.jpg' in pic:
-               picnames.append(pic)
-               #print(pic)
+        picnames = [d for d in os.listdir(path) if '.jpg' in d]
         nr_pics = len(picnames)
         for i in range(nr_pics):
             indexlist = []
-            TF = True
-            #count = 0
             picname = picnames[i]
-            while TF == True:
+            SEARCH = True
+            while SEARCH == True:
                 for j in range(len(picname)): # can't simply use enumerate, we need to work backwards
                     
-                    k=len(picname)-j-1
+                    k = len(picname)-j-1
                     
-                    if (f.is_number(picname[k])==True) and TF==True:
+                    if (f.is_number(picname[k]) == True) and SEARCH == True:
                         indexlist.append(k)  
-                    elif (f.is_number(picname[k])==False):
-                        if j>0:
-                            if (f.is_number(picname[k+1]))==True:
-                                TF = False
-                    elif j== len(picname)-1:
-                        TF = False
+                    elif (f.is_number(picname[k]) == False):
+                        if j > 0:
+                            if (f.is_number(picname[k+1])) == True:
+                                SEARCH = False
+                    elif j == len(picname) - 1:
+                        SEARCH = False
             indexlist.sort()
             len_nr = len(indexlist)
             # I only expect in the order of 1000 pages
@@ -443,9 +431,7 @@ def find_hook(hookpos,string):
                 if hookcount == 0:
                     condition = False
                     end_index = k+hookpos-1
-                    return end_index
-
-        
+                    return end_index  
 
 
 def findchar(char,string,nr):
@@ -543,19 +529,18 @@ def replace_allcommands(defined_command,LaTeX_command,Question,nr_arg):
 def remove_pics(string,pic_command):
     
     # there is only 1 pic per Q/A, in the form of "some text \pic{name.jpg} some text"   
-    boolean = []
     if pic_command in string: # if \pic is found in text
         # start and endpoints of brackets
         pic_start = [m.start() for m in re.finditer(r'\{}'.format(pic_command), string )][0]        
-        pic_end = find_hook(pic_start,string)
+        pic_end = find_hook(pic_start, string)
         # output
-        boolean = True
-        picname = find_arguments(pic_start,string,pic_command,1)[0][0] # returns string instead of list
-        string = string[:pic_start]+string[pic_end+1:]                 # Question without picture
+        BOOLEAN = True
+        picname = find_arguments(pic_start, string, pic_command, 1)[0][0] # returns string instead of list
+        string = string[:pic_start] + string[pic_end+1:]                 # Question without picture
     else:
-        boolean = False
+        BOOLEAN = False
         picname = []
-    return boolean, string, picname
+    return BOOLEAN, string, picname
 
 def LoadFlashCards(self):
     #if self.debugmode:
@@ -565,8 +550,8 @@ def LoadFlashCards(self):
         end_q_index = 0
         end_a_index = 0    
         for N in range(self.nr_cards):   
-            end_q_index = find_hook(self.q_hookpos[N],self.letterfile)
-            end_a_index = find_hook(self.a_hookpos[N],self.letterfile)    
+            end_q_index = find_hook(self.q_hookpos[N], self.letterfile)
+            end_a_index = find_hook(self.a_hookpos[N], self.letterfile)    
             # collect all Questions and Answers
             self.questions.append(self.letterfile[self.q_hookpos[N]+1:end_q_index])
             self.answers.append(self.letterfile[self.a_hookpos[N]+1:end_a_index])        
@@ -688,13 +673,13 @@ def ShowPage(self):
         
 def resetselection(self,event):
     #  remove all temporary pictures taken
-    if len (self.pic_answer_dir)>0:
+    if len(self.pic_answer_dir) > 0:
         for pic in self.pic_answer_dir:
             try:
                 os.remove(pic)
             except:
                 pass
-    if len (self.pic_question_dir)>0:
+    if len(self.pic_question_dir) > 0:
         for pic in self.pic_question_dir:
             try:
                 os.remove(pic)
@@ -763,10 +748,9 @@ def zoomout(self,event):
         f.LoadPage(self)
         f.ShowPage(self)
         f.SetScrollbars(self)
-        value = int(self.zoom*100)
-        self.m_textZoom.SetValue("{}%".format(value))
+        self.m_textZoom.SetValue(f"{int(self.zoom*100)}%")
     except:
-        print(colored("Error: cannot zoom",'red'))
+        print(colored("Error: cannot zoom out",'red'))
         
 def zoomin(self,event):
     try:
@@ -777,12 +761,10 @@ def zoomin(self,event):
         f.LoadPage(self)
         f.ShowPage(self)
         f.SetScrollbars(self)
-        value = int(self.zoom*100)
-        self.m_textZoom.SetValue("{}%".format(value))
-        self.m_panel1.Refresh() # to remove the remnants of a larger bitmap when the page shrinks
-        #self.m_panel1.Update()
+        self.m_textZoom.SetValue(f"{int(self.zoom*100)}%")
+        self.m_panel1.Refresh() #remove the remnants of a larger bitmap when the page shrinks
     except:
-        print(colored("Error: cannot zoom",'red'))
+        print(colored("Error: cannot zoom in",'red'))
         
 def SetKeyboardShortcuts(self):
     try:# look if Id's already exist
@@ -858,37 +840,30 @@ def add_border(self,img):
 def add_margins(self,img):
     margin = 0.05
     margin_pxs = round(margin * self.a4page_w)
-    new_im = PIL.Image.new("RGB", (self.a4page_w+2*margin_pxs,self.a4page_h+2*margin_pxs),"white")    
-    new_im.paste(img, (margin_pxs,margin_pxs))
+    new_im = PIL.Image.new("RGB", (self.a4page_w + 2*margin_pxs, self.a4page_h + 2*margin_pxs),"white")    
+    new_im.paste(img, (margin_pxs , margin_pxs))
     return new_im
 
 # main program that does all the preprocessing
 def startprogram(self,event): 
     self.runprogram   = True
     self.nr_questions = 0
-    self.zoom   = 1
-    self.chrono = True
-    self.index  = 0
+    self.zoom     = 1
+    self.chrono   = True
+    self.index    = 0
     self.nr_cards = 0
-    self.mode = 'Question'
-    
-    
-    
+    self.mode     = 'Question'    
     self.questions   = []
     self.answers     = []
     self.questions2  = []
     
-    f.SetScrollbars(self)
-    
+    f.SetScrollbars(self)    
     # open file
     try:
         if self.FilePickEvent == True:
-            self.path = self.fileDialog.GetPath()
-            self.bookname = self.fileDialog.GetFilename().replace(".tex","")
-            self.bookname = self.path.replace("{}".format(self.dir1),"")[1:-4]#to remove '\' and '.tex'
-            print(f"bookname after {self.bookname}")
-            self.filename = self.path.replace("{}".format(self.dir1),"")[1:]#to remove '\' but not '.tex'
-            print("book = {} ".format(self.bookname))
+            self.path     = self.fileDialog.GetPath()            
+            self.filename = self.fileDialog.GetFilename()
+            self.bookname = self.filename.replace(".tex","")
     except:
         print(colored("Error: Couldn't open path",'red'))
     try:
@@ -899,9 +874,9 @@ def startprogram(self,event):
         self.letterfile = str(texfile)
         # positions of Questions and Answers
         q_pos   = [m.start() for m in re.finditer(self.question_command, self.letterfile)]
-        a_pos   = [m.start() for m in re.finditer(self.answer_command, self.letterfile)]
-        self.q_hookpos = list(np.array(q_pos)+len(self.question_command)-2)              #position of argument \command{} q_pos indicates where it starts: "\", added the length of the command -2, because it counts 2 extra '\'
-        self.a_hookpos = list(np.array(a_pos)+len(self.answer_command)-2)
+        a_pos   = [m.start() for m in re.finditer(self.answer_command,   self.letterfile)]
+        self.q_hookpos = list(np.array(q_pos) + len(self.question_command) - 2)              #position of argument \command{} q_pos indicates where it starts: "\", added the length of the command -2, because it counts 2 extra '\'
+        self.a_hookpos = list(np.array(a_pos) + len(self.answer_command)   - 2)
         
         self.nr_cards = len(q_pos)
     
@@ -919,6 +894,4 @@ def startprogram(self,event):
     
     # display nr of questions and current index of questions            
     LoadFlashCards(self)
-    print(self.allimages)  
-    print(self.allimages_w)      
     #SwitchBitmap(self)
