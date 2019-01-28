@@ -63,23 +63,19 @@ def recvall(sock, n):
         data += packet
     return data
 
-
-
 def sendmessage(HOST,PORT,self):
     
-    dirlist = os.listdir(self.basedir)
-    appendDir = ["books","pics","resources"] # dont overwrite
+    dirlist    = os.listdir(self.basedir)
+    appendDir  = ["books","pics","resources"] # dont overwrite
     excludeDir = ["IPadresses"]              # exclude this directory from synchronizing
-    print(f"send message {dirlist}")
     
     # Does the user want to transfer books?
     
     dirlist = [x for x in dirlist if x != "books"]
     dirlist = [x for x in dirlist if x not in excludeDir]
-    def Socket_send(HOST,PORT,message):
-        with socket.socket(socket.AF_INET,socket.SOCK_STREAM) as s:
-            s.setsockopt(socket.SOL_SOCKET,socket.SO_REUSEADDR,1)
-            #print(f"socket opened for {repr(message[:20])}")
+    def Socket_send(HOST, PORT, message):
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+            s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
             s.connect((HOST,PORT))
             send_msg(s, message)
             data = recv_msg(s)
@@ -98,9 +94,9 @@ def sendmessage(HOST,PORT,self):
         if os.path.isdir(walkdir):    
             for root,dirs,files in os.walk(walkdir,topdown = False):
                 for name in files:
-                    filelist.append(os.path.join(root,name))
+                    filelist.append(os.path.join(root, name))
                 for name in dirs:
-                    print(os.path.join(root,name))
+                    print(os.path.join(root, name))
         elif os.path.isfile(walkdir):
             filelist.append(walkdir)
         
@@ -118,15 +114,13 @@ def sendmessage(HOST,PORT,self):
             stats = os.stat(filepath_abs)
             # last time file was modified
             creation_time = time.strftime('%y-%m-%d %H:%M:%S',time.gmtime(stats.st_mtime))
-            filepath_rel = os.path.relpath(filepath_abs,self.basedir)            
+            filepath_rel = os.path.relpath(filepath_abs, self.basedir)            
             # send mode:
             # it keeps sending information that includes the name of the file, the server processes this
             # the server then sends back the name of the file. If the name matches the name of the file that was sent: we know the transfer was successful.
             #%%
-            ##sendsend
-            trysend = True
-            
-            while trysend == True:
+            TRYSEND = True
+            while TRYSEND == True:
                 print("loop1")
                 # send file name, mode , creation time
                 message = json.dumps({'name': filepath_rel,'mode': mode, 'creation time' : creation_time}).encode('utf-8')
@@ -143,61 +137,51 @@ def sendmessage(HOST,PORT,self):
                             if json.loads(data.decode('utf-8'))['name'] == filepath_rel:
                                 datadict = json.loads(data.decode('utf-8'))
                                 data_backup = data
-                                trysend = False
+                                TRYSEND = False
                         else:
-                            trysend = False
-            
-            #%%
-            #print(f"data is {data}")
-            #print(f"datadict = {datadict}")
-            
-            trysend = True
-            
-            while trysend == True:
+                            TRYSEND = False
+                            
+            TRYSEND = True            
+            while TRYSEND == True:
                 print("loop2")
                 try:
                     command = datadict['command']
-                    
                     #message = json.dumps({'name': filepath_rel,'data': mode,'command':command}).encode('utf-8')
-                    #data = Socket_send(HOST,PORT,message)
-                    
-                    
+                    #data = Socket_send(HOST,PORT,message)                    
                     if data != None and data != []:
                         datadict = json.loads(data.decode('utf-8'))
-                        if all (k in datadict for k in ("name","command")):
+                        if all (k in datadict for k in ("name", "command")):
                             if datadict['name'] == filepath_rel:
-                                command = json.loads(data.decode('utf-8'))['command']
-                                #print(command)
-                            
+                                command = json.loads(data.decode('utf-8'))['command']                            
                 
-                                # server sends data back indicating how the file should be transfered Client <-> Server
-                                # the data starts with bytes: "sendClientToServer" or "sendServerToClient" + the file
+                                """Server sends data back indicating how the file should be transfered Client <-> Server
+                                the data starts with bytes: "sendClientToServer" or "sendServerToClient" + the file"""
                             
                                 if command == 'sendClientToServer':  
                                     # send data
                                     bytesfile = open(filepath_abs, 'rb').read()
                                     bytesfile = bytes2string(bytesfile)
                                     
-                                    message = json.dumps({'name': filepath_rel,'data': bytesfile , 'command':'sendClientToServer'}).encode('utf-8')
-                                    data2 = Socket_send(HOST,PORT,message)  
+                                    message = json.dumps({'name': filepath_rel, 'data': bytesfile , 'command' : 'sendClientToServer'}).encode('utf-8')
+                                    data2 = Socket_send(HOST, PORT, message)  
                                     datadict = json.loads(data2.decode('utf-8'))
                                     command = datadict['command']
                                     if command == 'finished':
-                                        trysend = False
+                                        TRYSEND = False
                                 elif command == 'sendServerToClient':
                                     datadict = json.loads(data.decode('utf-8'))
                                     data2 = datadict['data']
                                     data2 = string2bytes(data2)
                                     command = datadict['command']
                                     
-                                    os.makedirs(os.path.dirname(filepath_abs), exist_ok=True)
-                                    with open(filepath_abs,'wb') as f:
+                                    os.makedirs(os.path.dirname(filepath_abs), exist_ok = True)
+                                    with open(filepath_abs, 'wb') as f:
                                         f.write(data2)
                                         f.close()
                                     #if command == 'finished':
-                                    trysend = False
+                                    TRYSEND = False
                                 elif command == 'finished':
-                                    trysend = False
+                                    TRYSEND = False
                                 
                 except:
                     data = data_backup
@@ -205,16 +189,15 @@ def sendmessage(HOST,PORT,self):
     self.m_txtStatus.SetValue("Transfer has finished")
     #stop server:
     message = json.dumps({'command':'finished'}).encode('utf-8')
-    data2 = Socket_send(HOST,PORT,message)  
+    data2 = Socket_send(HOST, PORT, message)  
     print("Transfer has finished")
     
     
-def listen(HOST,PORT,self):
-    RunServer = True
+def listen(HOST, PORT, self):
+    RUNSERVER = True
     self.m_txtStatus.SetValue("server is now listening")
     i = 0
-    while RunServer == True:
-        #print(".-.")
+    while RUNSERVER == True:
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
             s.setblocking(0)
@@ -233,20 +216,17 @@ def listen(HOST,PORT,self):
                 self.m_txtStatus.SetValue("server is now receiving data ...")
             print("is now connected")
             
-            
-            runcon = True
+            RUNCON = True
             with conn:
                 #print(colored(f"connected by: {addr}",'red'))
-                while runcon == True:
+                while RUNCON == True:
                     # listen for data from the client:
                     data_in = recv_msg(conn)                            
                     # termination
                     if not data_in:    
-                        #s.close()
-                        runcon = False                        
+                        RUNCON = False                        
                     if data_in == None:
-                        #s.close()
-                        runcon = False       
+                        RUNCON = False       
                                  
                     # manipulation of data
                     if data_in != None and data_in != b'':
@@ -266,8 +246,6 @@ def listen(HOST,PORT,self):
                                 name = os.path.join(self.basedir,filepath_rel)                                        
                                 mode = datadict['mode']
                                 
-                                
-                                #print(f"filename is \t {name}")
                                 if os.path.exists(name):
                                     if mode == 'mode1':
                                         print("don't overwrite")
@@ -323,25 +301,14 @@ def listen(HOST,PORT,self):
                             elif "command" in datadict:
                                 command = datadict['command']
                                 if command == 'finished':
-                                    RunServer = False
+                                    RUNSERVER = False
                                     
-                        
                         send_msg(conn, data_out)        
     self.m_txtStatus.SetValue("server finished") 
-    
-    
        
-def SyncDevices(self,mode,HOST):        
-    
-    #%%
-    #try:# first establish an internetconnection
-    
+def SyncDevices(self, mode, HOST):        
     PORT = 65432        # Port to listen on (non-privileged ports are > 1023)
-    # listen to port:
-    
-    
-    print("")       
-    
+    # listen to port:    
     if mode == 0: # first start server, then client
         HOST = self.IP1
         self.m_txtStatus.SetValue("starting server")
@@ -361,20 +328,12 @@ def SyncDevices(self,mode,HOST):
         HOST = self.IP1
         listen(HOST,PORT,self)    
     #except:
-    #    ctypes.windll.user32.MessageBoxW(0, "Cannot start server: no internet connection detected", "Warning", 1)
-    
+    #    ctypes.windll.user32.MessageBoxW(0, "Cannot start server: no internet connection detected", "Warning", 1)   
     self.m_txtStatus.SetValue("Synching complete!")
-    
-    
-
-	
-
 
 def initialize(self,event): 
-    
-    
     self.basedir = os.path.join(os.getenv("LOCALAPPDATA") ,"FlashBook")
-    self.dirIP = self.basedir + r"\IPadresses"
+    self.dirIP   = os.path.join(self.basedir, "IPadresses")
     
     if not os.path.exists(self.dirIP):
         os.makedirs(self.dirIP)
@@ -385,18 +344,14 @@ def initialize(self,event):
         wmi_sql = "select IPAddress,DefaultIPGateway from Win32_NetworkAdapterConfiguration where IPEnabled = True"
         wmi_out = wmi_obj.query(wmi_sql)[0] #only 1 query
         
-        
         myIP = wmi_out.IPAddress[0]
         
         if not os.path.exists(os.path.join(self.dirIP,'IPadresses.txt')):
-    
-            
             
             print(f"my ip is {myIP}")
             with open(os.path.join(self.dirIP,'IPadresses.txt'),'w') as f:
                 f.write(json.dumps({'IP1' : myIP,'IP2': ""})) 
-                f.close()
-        
+                f.close()      
     except:
         
         ctypes.windll.user32.MessageBoxW(0, "Cannot start server: no internet connection detected2", "Warning", 1)
@@ -415,7 +370,4 @@ def initialize(self,event):
                 f.close()
         self.IP1 = myIP
     self.m_txtMyIP.SetValue(self.IP1)
-    self.m_txtTargetIP.SetValue(self.IP2)
-#%%
-
-   
+    self.m_txtTargetIP.SetValue(self.IP2) 
