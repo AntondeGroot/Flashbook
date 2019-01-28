@@ -65,7 +65,6 @@ def run_flashbook(self):
                 self.debugmode = True
                 print("debugging is enabled")
                     
-        folders = []
         dirs = [dir0,self.dir1,self.dir2,self.dir3,self.dir4,self.dir5,self.dir6]
         
         print("="*90)
@@ -77,19 +76,14 @@ def run_flashbook(self):
         # unpacks png images used in the gui
         resources.resourceimages(self.dir6,self.dir1) 
         #%%
-        
-        arr = os.listdir(self.dir3)
-        for i,item in enumerate(arr):
-            if ('.jpg' not in item) and ('.png' not in item):
-               folders.append(item)
-        self.nr_books = len(folders)
-        folders.sort() 
-        
-        if len(folders) == 0:
+        library = [d for d in os.listdir(self.dir3) if os.path.isdir(os.path.join(self.dir3, d))]
+        self.nr_books = len(library)
+         
+        if len(library) == 0:
             print(f"No books were found in directory: {self.dir3}\n 1) please type '%localappdata%' in windows explorer\n 2) find Flashbook and place a folder containing jpg files of the pdf in the"+ r"'\books' directory"+"\n")
         else:
             print("the following books were found:")
-            for name in folders:
+            for name in library:
                 print(f"- {name}")
             print("")
         print("="*90)   
@@ -150,18 +144,13 @@ def run_flashcard(self):
         # unpack png images used in the gui
         resources.resourceimages(self.dir6,self.dir1) 
         # give info to user about what books he has
-        arr = os.listdir(self.dir3) 
-        booklist = []
         
-        for i,item in enumerate(arr): # make sure the user didn't accidentally put pictures in the 'booksfolder' but in a folder in 'booksfolder'
-            if ('.jpg' not in item) and ('.png' not in item):
-               booklist.append(item)
-        booklist.sort() 
-        if len(booklist) == 0:
+        library = [d for d in os.listdir(self.dir3) if os.path.isdir(os.path.join(self.dir3, d))]
+        if len(library) == 0:
             print(colored("No books were found in directory: {}\n 1) please type '%localappdata%' in windows explorer \n 2) find Flashbook and place a folder containing jpg files of the pdf in the".format(self.dir3)+ r"'\books' directory"+"\n","red"))
         else:
             print("the following books were found:")
-            for name in booklist:
+            for name in library:
                 print("- {}".format(name))
             print("")
         print("="*90)
@@ -237,7 +226,6 @@ def run_print(self,event):
     
     
     def initialize(self):         
-        folders = []
         dirs = [self.dir0,self.dir1,self.dir2,self.dir3,self.dir4,self.dir5,self.dir6]       
         print("="*90)
         print("\nThe files will be saved to the following directory: {}\n".format(self.dir0))
@@ -247,18 +235,15 @@ def run_print(self,event):
         # unpacks png images used in the gui
         resources.resourceimages(self.dir6,self.dir1) 
         #%%
-        arr = os.listdir(self.dir3)
-        for i,item in enumerate(arr):
-            if ('.jpg' not in item) and ('.png' not in item):
-               folders.append(item)
-        self.nr_books = len(folders)
-        folders.sort() 
         
-        if len(folders) == 0:
+        library = [d for d in os.listdir(self.dir3) if os.path.isdir(os.path.join(self.dir3, d))]       
+        self.nr_books = len(library)
+        
+        if len(library) == 0:
             print("No books were found in directory: {}\n 1) please type '%localappdata%' in windows explorer\n 2) find Flashbook and place a folder containing jpg files of the pdf in the".format(self.dir3)+ r"'\books' directory"+"\n")
         else:
             print("the following books were found:")
-            for name in folders:
+            for name in library:
                 print(f"- {name}")
             print("")
         print("="*90)
