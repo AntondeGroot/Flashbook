@@ -31,8 +31,6 @@ class Window2(wx.PopupWindow):
         """Constructor"""
         wx.PopupWindow.__init__(self, parent, style)
         
-        
-        
         panel = wx.Panel(self)
         self.panel = panel
         #panel.SetBackgroundColour("CADET BLUE")
@@ -207,8 +205,6 @@ def ResetQuestions(self): # no errors
 
 
 def CombinePics(self,directory):
-    #if debugmode:
-    #    print("fb=CombinePics")
     images = list(map(PIL.Image.open, directory))   
     widths, heights = zip(*(i.size for i in images))
     total_height = sum(heights)
@@ -252,7 +248,7 @@ def CombinePicText_h(self):
     
     self.allimages_h = []
     
-    for i,images in enumerate(self.allimages):    
+    for _, images in enumerate(self.allimages):    
         
         widths, heights = zip(*(i.size for i in images))
         
@@ -291,23 +287,6 @@ def CombinePicText_v(self):
     
     self.allimages_v[0].show()
     
-    
-    
-    """
-    images = self.allimages_h[0]
-
-    widths, heights = zip(*(i.size for i in images))
-    total_height = sum(heights)
-    max_width = max(widths)
-    new_im = PIL.Image.new('RGB', (max_width, total_height), "white")
-    #combine images to 1
-    y_offset = 0
-    for im in images:
-        new_im.paste(im, (0,y_offset))
-        y_offset += im.size[1]
-    self.image = new_im
-    self.image.show()
-    """
     
 def CombinePicText(self):
     #if debugmode:
@@ -361,14 +340,13 @@ import re
 import os
 import fc_functions as fc
 
-
-# EXAMPLE:
-# defined command = " \secpar{a}{b}   " for the second partial derivative of a wrt b
-# nr = #arguments = 2 which are (a,b)
-# sentence = "if we take the second partial derivative \secpar{X+Y}{t}"
-# returns: position where (X+Y), (t)  begin and end and in the string and that they are the arguments
-
 def Text2Latex(self):
+    """# EXAMPLE:
+    defined command = " \secpar{a}{b}   " for the second partial derivative of a wrt b
+    nr = #arguments = 2 which are (a,b)
+    sentence = "if we take the second partial derivative \secpar{X+Y}{t}"
+    returns: position where (X+Y), (t)  begin and end and in the string and that they are the arguments"""
+    
     usertext = self.usertext
     # find all user defined commands in a separate file
     # start reading after "###" because I defined that as the end of the notes    
@@ -413,8 +391,7 @@ def Text2Latex(self):
 
 def replacecommands(defined_command,LaTeX_command,inputstring,nr_arg):        
     length_c = len(defined_command) 
-    # check if the command can be found in Q&A
-    #while FindCommand == True: 
+    #Check if the command can be found in Q&A
     while defined_command in inputstring:
         # if a command has arguments: you need to find their positions
         if nr_arg != 0:
