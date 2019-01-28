@@ -11,6 +11,7 @@ except:
 
 #------------------------------------------------------------------- general
 import os
+joinpath = os.path.join
 import json
 import shutil
 import subprocess 
@@ -55,9 +56,10 @@ ICON_STOP = 0x10
 MB_ICONINFORMATION = 0x00000040
 MessageBox = ctypes.windll.user32.MessageBoxW
 
-# when using Pyinstaller to get the .exe file: it will standard give an error that it is missing the module 'qwindows.dll'
-# since the .exe created by --onefile takes ages to start, i won't be using that option and then module can be found in the folder below
-# it is resolved by simply copying the qwindows.dll module next to the .exe file
+"""when using Pyinstaller to create the .exe file: it will standardly give an error that it is missing the module 'qwindows.dll'
+since the .exe created by --onefile takes ages to start, i won't be using that option and then module can be found in the folder below
+it is resolved by simply copying the qwindows.dll module next to the .exe file"""
+
 try:
     cwd = os.getcwd()
     if os.path.exists(cwd+"\PyQt5\Qt\plugins\platforms\qwindows.dll"):
@@ -70,30 +72,29 @@ except:
             
 #% path to resources: 
 def setup_sources(self):
-    self.datadir = os.getenv("LOCALAPPDATA")
-    self.dir0 = self.datadir+r"\FlashBook"
-    self.dir7 = self.dir0 + r"\resources"
-    self.path_add = os.path.join(self.dir7,"add.png")
-    self.path_min = os.path.join(self.dir7,"min.png")
-    self.path_repeat = os.path.join(self.dir7,"repeat.png")
-    self.path_repeat_na = os.path.join(self.dir7,"repeat_na.png")
-    self.path_icon = os.path.join(self.dir7,"open-book1.png")
-    self.path_fb = os.path.join(self.dir7,"flashbook.png")
-    self.path_fc = os.path.join(self.dir7,"flashcard.png")
-    self.path_wifi = os.path.join(self.dir7,"wifi.png")
-    self.path_pr = os.path.join(self.dir7,"print.png")
-    self.path_arrow = os.path.join(self.dir7,"arrow.png")
-    self.path_arrow2 = os.path.join(self.dir7,"arrow2.png")
-    self.path_convert = os.path.join(self.dir7,"convert.png")
-    self.path_folder = os.path.join(self.dir7,"folder.png")
+    self.datadir      = os.getenv("LOCALAPPDATA")
+    self.dir0         = joinpath(self.datadir,"FlashBook")
+    self.dir7         = joinpath(self.dir0,"resources")
+    self.path_add     = joinpath(self.dir7,"add.png")
+    self.path_min     = joinpath(self.dir7,"min.png")
+    self.path_icon    = joinpath(self.dir7,"open-book1.png")
+    self.path_fb      = joinpath(self.dir7,"flashbook.png")
+    self.path_fc      = joinpath(self.dir7,"flashcard.png")
+    self.path_wifi    = joinpath(self.dir7,"wifi.png")
+    self.path_pr      = joinpath(self.dir7,"print.png")
+    self.path_arrow   = joinpath(self.dir7,"arrow.png")
+    self.path_arrow2  = joinpath(self.dir7,"arrow2.png")
+    self.path_convert = joinpath(self.dir7,"convert.png")
+    self.path_folder  = joinpath(self.dir7,"folder.png")
+    self.path_repeat  = joinpath(self.dir7,"repeat.png")
+    self.path_repeat_na = joinpath(self.dir7,"repeat_na.png")
 #%% settings   
 def settings_get(self):
 
-    with open(os.path.join(self.dirsettings,"settings.txt"), 'r') as file:
+    with open(joinpath(self.dirsettings,"settings.txt"), 'r') as file:
         settings   = json.load(file)
         debug_var  = settings['debugmode']
         self.pdfmultiplier     = settings['pdfmultiplier'] 
-        #print(f"settings = {settings}")
         self.QAline_thickness  = settings['QAline_thickness']
         self.pdfline_thickness = settings['pdfline_thickness']
         self.QAline_color      = tuple(settings['QAline_color'])
@@ -121,41 +122,37 @@ def settings_set(self):
 #%%
 def initialize(self):
     datadir = os.getenv("LOCALAPPDATA")
-    dir0 = datadir+r"\FlashBook"
+    dir0 = joinpath(datadir,"FlashBook")
     self.dir0 = dir0
-    self.dir1 = dir0 + r"\files"
-    self.dir2 = dir0 + r"\pics"
-    self.dir3 = dir0 + r"\books"
-    self.dir4 = dir0 + r"\temporary"
-    self.dir5 = dir0 + r"\borders"
-    self.dir6 = dir0 + r"\resources"
-    self.dirIP = dir0 + r"\IPadresses"
-    self.dirpdf = dir0 + r"\PDF folder"
-    self.dirpdfbook = dir0 + r"\PDF books"
-    self.dirsettings = dir0 + r"\settings"
+    self.dir1 = joinpath(dir0,"files")
+    self.dir2 = joinpath(dir0,"pics")
+    self.dir3 = joinpath(dir0,"books")
+    self.dir4 = joinpath(dir0,"temporary")
+    self.dir5 = joinpath(dir0,"borders")
+    self.dir6 = joinpath(dir0,"resources")
+    self.dirIP = joinpath(dir0,"IPadresses")
+    self.dirpdf = joinpath(dir0,"PDF folder")
+    self.dirpdfbook = joinpath(dir0,"PDF books")
+    self.dirsettings = joinpath(dir0,"settings")
     self.temp_dir = self.dir4
-    self.statsdir = os.path.join(self.dirsettings, 'data_sessions.json')
+    self.statsdir = joinpath(self.dirsettings, 'data_sessions.json')
     
-    dirs = [dir0,self.dir1,self.dir2,self.dir3,self.dir4,self.dir5,self.dir6,self.dirpdf,self.dirsettings,self.dirIP,self.dirpdfbook]
+    dirs = [self.dir0, self.dir1, self.dir2, self.dir3, self.dir4, self.dir5, self.dir6, self.dirpdf, self.dirsettings, self.dirIP, self.dirpdfbook]
     try:
-        if not os.path.exists(os.path.join(self.dirIP,'IPadresses.txt')):
+        if not os.path.exists(joinpath(self.dirIP,'IPadresses.txt')):
             
-            
-    
             wmi_obj = wmi.WMI()
             wmi_sql = "select IPAddress,DefaultIPGateway from Win32_NetworkAdapterConfiguration where IPEnabled = True"
             wmi_out = wmi_obj.query(wmi_sql)[0] #only 1 query
             
-            
-            myIP = wmi_out.IPAddress[0]
-            
+            myIP = wmi_out.IPAddress[0]          
            
-            with open(os.path.join(self.dirIP,'IPadresses.txt'),'w') as f:
+            with open(joinpath(self.dirIP,'IPadresses.txt'),'w') as f:
                 f.write(json.dumps({'IP1' : myIP,'IP2': ""})) 
                 f.close()
     except:
-        print("Error: could not access internet?")
-    print("=========================================================================================")
+        print("Error: could not access internet")
+    print("="*90)
     print(f"\nThe files will be saved to the following directory: {dir0}\n")
     for item in dirs:
         if not os.path.exists(item):
@@ -163,36 +160,22 @@ def initialize(self):
     # create settings folder for debugging
     settings_create(self)
     settings_get(self)
-    # unpacks png images used in the gui
+    #unpack png images used in the gui
     resources.resourceimages(self.dir6,self.dir1) 
-    #%%
+    
 
-def checkBooks(self):   
-    
-    time.sleep(2)
-    folders = []
-    arr = os.listdir(self.dir3)
-    for filename in arr:
-        if ('.jpg' not in filename) and ('.png' not in filename):
-           folders.append(filename)
-    self.nr_books = len(folders)
-    folders.sort() 
-    
-    if len(folders) == 0:
+def checkBooks(self):       
+    time.sleep(2)    
+    library = [d for d in os.listdir(self.dir3) if os.path.isdir(os.path.join(self.dir3, d))]
+    self.nr_books = len(library)
+    if len(library) == 0:
         MessageBox(0, f"Welcome new user! \n\nNo jpgs of books were found in directory {self.dir3} \n\nGo to the menubar of the app:  `Open/Book PDF folder`\nPlace a PDF file there and click on Convert\n\nIf the conversion fails: you need to use an online PDF converter since all image manipulations are done to jpg files.", "Welcome to Flashbook", ICON_EXCLAIM)
     else:
         print("the following books were found:")
-        for name in folders:
+        for name in library:
             print(f"- {name}")
-        print("")
     print("="*90)
-
-
     
- 
-
-
-
 """
 ###############################################################################
 #####              MAINFRAME                                              #####
@@ -204,7 +187,6 @@ class MainFrame(gui.MyFrame):
     def __init__(self,parent): 
         initialize(self)
         setup_sources(self)
-        
         
         #initialize parent class
         icons = [wx.Bitmap(self.path_folder) , wx.Bitmap(self.path_convert) ]
@@ -281,10 +263,10 @@ class MainFrame(gui.MyFrame):
         else:
             self.m_toolStitch.SetBitmap(wx.Bitmap(self.path_arrow))
         
-        # the following is used to create a mozaic of pictures. There is a question mode and an answer mode
-        # the pics are stored in a list, and when the element of a list is another list it means that particular list is ment to be stitched horizontally
-        # while all the other elements are stitched vertically
-        # all it does is switch [a,...,[x]] for [a,...,x] and back to [a,...,[x]] depending on whether the user has pushed a button to change the direction in which the notes should be stitched together.  
+        """The following is used to create a mozaic of pictures. There is a question mode and an answer mode
+        The pics are stored in a list, and when the element of a list is another list it means that particular list is ment to be stitched horizontally
+        while all the other elements are stitched vertically
+        all it does is switch [a,...,[x]] for [a,...,x] and back to [a,...,[x]] depending on whether the user has pushed a button to change the direction in which the notes should be stitched together.  """
         
         if hasattr(self,'bookname') and self.bookname != '': # a book has been chosen
             #stitch it vertically
@@ -320,14 +302,13 @@ class MainFrame(gui.MyFrame):
         
     def m_menuItemConvertOnMenuSelection( self, event ):
         
-        m5.AddPathvar() #needed to make PDF2jpg work as it sets "Poppler for Windows" as pathvariable
-        from_ = self.dirpdfbook
+        m5.AddPathvar() #needed to make PDF2jpg work, it sets "Poppler for Windows" as pathvariable
+        from_    = self.dirpdfbook
         tempdir_ = self.dir4
-        to_   = self.dir3 
+        to_      = self.dir3 
         
-        t_pdf = lambda from_,to_ : threading.Thread(target = m5.ConvertPDF_to_JPG , args=(from_,tempdir_,to_ )).start()
-        t_pdf(from_,to_) 
-        print("converting")
+        t_pdf = lambda from_, tempdir_, to_ : threading.Thread(target = m5.ConvertPDF_to_JPG , args=(from_, tempdir_, to_ )).start()
+        t_pdf(from_, tempdir_, to_) 
         
     def m_menuPDFfolderOnMenuSelection( self, event ):
         subprocess.Popen(f"explorer {self.dirpdf}")
@@ -345,7 +326,6 @@ class MainFrame(gui.MyFrame):
             self.lastpage = 4
         elif self.panel5.IsShown():
             self.lastpage = 5
-        print(f"panel was : {self.lastpage}")
         p.SwitchPanel(self,6)
             
     def m_richText12OnLeftDown( self, event ):
@@ -354,7 +334,7 @@ class MainFrame(gui.MyFrame):
         p.SwitchPanel(self,5) 
     #%% flashbook
     " flashbook "
-    # import screenshot #
+    #Import screenshot
     def m_btnScreenshotOnButtonClick( self, event ):
         self.BoolCropped = False # is image cropped
         self.currentpage_backup = self.currentpage
@@ -378,7 +358,7 @@ class MainFrame(gui.MyFrame):
         self.stayonpage = True
         #load screenshot
         if self.BoolCropped == False: #load original screenshot
-            img = PIL.Image.open(os.path.join(self.dir4,"screenshot.png"))
+            img = PIL.Image.open(joinpath(self.dir4,"screenshot.png"))
             self.pageimagecopy = img
             self.pageimage = img        
             image2 = wx.Image( self.width, self.height )
@@ -482,12 +462,12 @@ class MainFrame(gui.MyFrame):
     #%% transfer
     def m_txtMyIPOnKeyUp( self, event ):
         self.IP1 = self.m_txtMyIP.GetValue()
-        with open(os.path.join(self.dirIP,'IPadresses.txt'),'w') as f:
+        with open(joinpath(self.dirIP,'IPadresses.txt'),'w') as f:
             f.write(json.dumps({'IP1' : self.IP1,'IP2': self.IP2})) 
             f.close()        
     def m_txtTargetIPOnKeyUp( self, event ):
         self.IP2 = self.m_txtTargetIP.GetValue()
-        with open(os.path.join(self.dirIP,'IPadresses.txt'),'w') as f:
+        with open(joinpath(self.dirIP,'IPadresses.txt'),'w') as f:
             f.write(json.dumps({'IP1' : self.IP1,'IP2': self.IP2})) 
             f.close()
     def m_buttonTransferOnButtonClick(self,event):
