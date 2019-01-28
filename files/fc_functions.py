@@ -157,7 +157,7 @@ def find_arguments(hookpos, sentence, defined_command, nr_arguments):
     
     k = 0
     hookcount = 0      
-    search = True
+    SEARCH = True
     argcount = 0
     argclose_index = [] 
     argopen_index  = []
@@ -165,7 +165,7 @@ def find_arguments(hookpos, sentence, defined_command, nr_arguments):
     cstr_start = [m.start() for m in re.finditer(r'\{}'.format(defined_command), sentence )][0]
     
     for i in range(cstr_start,len(sentence)):            # make sure it starts with {
-        if (search == True):
+        if (SEARCH == True):
             k += 1
             char = sentence[i]
             
@@ -179,7 +179,7 @@ def find_arguments(hookpos, sentence, defined_command, nr_arguments):
                 if hookcount == 0:
                     argcount += 1
                     if argcount == nr_arguments:
-                        search = False
+                        SEARCH = False
                     argclose_index.append(k+cstr_start-1) #save closing indices
     arguments = []
     for i in range(nr_arguments):
@@ -190,8 +190,8 @@ def replace_allcommands(defined_command, LaTeX_command, Question, nr_arg):
     """replace all defined commands in a string"""
     length_c = len(defined_command) 
     # check if the command can be found in Q&A
-    FindCommand = (defined_command in Question)
-    while FindCommand == True: 
+    SEARCH = (defined_command in Question)
+    while SEARCH == True: 
         # if a command has arguments: you need to find their positions
         if nr_arg != 0:
             cmd_start = [m.start() for m in re.finditer(r'\{}'.format(defined_command), Question )][0]
@@ -200,7 +200,7 @@ def replace_allcommands(defined_command, LaTeX_command, Question, nr_arg):
             A = find_arguments(cmd_start,Question ,defined_command,nr_arg)
     
             if not A[0]: # quits if the index is empty
-                FindCommand = False
+                SEARCH = False
             else:
                 index1 = find_arguments(cmd_start,Question ,defined_command,nr_arg)[1][0]-length_c
                 index2 = find_arguments(cmd_start,Question,defined_command,nr_arg)[2][1]+1
@@ -211,12 +211,12 @@ def replace_allcommands(defined_command, LaTeX_command, Question, nr_arg):
                 for i in range(nr_arg):
                     Question = Question.replace(f"#{i+1}", arguments[i])
                 # check if another command is in the Q&A
-                FindCommand = (defined_command in Question)
+                SEARCH = (defined_command in Question)
         else:
             # if there are no arguments you can directly replace the defined_cmd for the latex_cmd
             # only needs to do this once for the entire string
             Question = Question.replace(defined_command,LaTeX_command)
-            FindCommand = False
+            SEARCH = False
     
     return Question
 
@@ -224,19 +224,19 @@ def remove_pics(string, pic_command):
     
     """by design, there is only 1 picture per Q/A, in the form: 
     'some text \pic{name.jpg} some text'   """
-    boolean = []
+    
     if pic_command in string: # if \pic is found in text
         # start and endpoints of brackets
         pic_start = [m.start() for m in re.finditer(r'\{}'.format(pic_command), string )][0]        
         pic_end   = find_hook(pic_start,string)
         # output
-        boolean = True
+        BOOLEAN = True
         picname = find_arguments(pic_start,string,pic_command,1)[0][0] # returns string instead of list
         string  = string[:pic_start] + string[pic_end+1:]                 # Question without picture
     else:
-        boolean = False
+        BOOLEAN = False
         picname = []
-    return boolean, string, picname
+    return BOOLEAN, string, picname
 
 
 def switch_bitmap(self):
@@ -364,7 +364,7 @@ def LoadFlashCards(self):
         if "###" in commandline:
             index = i+1
     # remove the lines that precede the ### for user explanation on how to use newcommand        
-    if "{}".format(index).isdigit() == True:
+    if f"{index}".isdigit() == True:
         newcommand_line_lst[:index]=[]
     # only look at lines containing "newcommand" removes all empty and irrelevant lines
     newcommand_line_lst = [x for x in newcommand_line_lst if ("newcommand"  in x)]
@@ -421,22 +421,22 @@ def LoadFlashCards(self):
     self.a_pics = []
     # remove all \pic{} commands
     for i in range(self.nr_cards):
-        findpic = True
-        findpic2 = True            
+        SEARCH1 = True
+        SEARCH2 = True            
         # Questions: replace pics{}
-        while findpic == True:#find all pic commands
-            [T_F,QnA,picname] = remove_pics(self.questions[i],self.pic_command)
+        while SEARCH1 == True:#find all pic commands
+            [T_F, QnA, picname] = remove_pics(self.questions[i],self.pic_command)
             self.questions[i] = QnA # removed pic{} from Question
             if T_F == True:
                 self.picdictionary.update({f'Q{i}': picname})
-            findpic = T_F
+            SEARCH1 = T_F
               
-        while findpic2 == True: 
+        while SEARCH2 == True: 
             [T_F2,QnA,picname] = remove_pics(self.answers[i],self.pic_command) 
-            self.answers[i] = QnA # removed pic{} from Question
+            self.answers[i] = QnA # removed pic{} from Answer
             if T_F2 == True:
                 self.picdictionary.update({f'A{i}': picname})
-            findpic2 = T_F2      
+            SEARCH2 = T_F2      
             
     """CARD ORDER"""
     ## determine cardorder based on user given input
@@ -461,12 +461,12 @@ def LoadFlashCards(self):
                 for i in range(self.nr_cards):   # possibly way larger than needed:
                     cardorder.append(random.sample(range(self.nr_cards),self.nr_cards))
                 cardorder = [val for sublist in cardorder for val in sublist]
-                con = True
+                SEARCH = True
                 index = 0
                 # remove duplicate numbers
-                while con == True:
+                while SEARCH == True:
                     if index == len(cardorder)-2:
-                        con = False
+                        SEARCH = False
                     if cardorder[index] == cardorder[index+1]:
                         del cardorder[index+1]
                         index += 1
@@ -485,9 +485,9 @@ def LoadFlashCards(self):
     # save questions and answers in dictionaries
     for i,item in enumerate(self.questions):
         if self.questions2[i] != '':
-            self.textdictionary.update({'Q{}'.format(i): self.questions2[i]})
+            self.textdictionary.update({f'Q{i}' : self.questions2[i]})
         if self.answers2[i] != '':
-           self.textdictionary.update({'A{}'.format(i): self.answers2[i]})
+           self.textdictionary.update({f'A{i}' : self.answers2[i]})
 
 
 def ShowPage(self):
