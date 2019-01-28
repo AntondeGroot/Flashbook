@@ -27,7 +27,7 @@ from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 
 
 datadir = os.getenv("LOCALAPPDATA")
-dir0 = datadir + r"\FlashBook"
+dir0 = os.path.join(datadir, "FlashBook")
 # create settings folder for debugging
 
 
@@ -40,43 +40,30 @@ class Window2(wx.PopupWindow):
     
     #----------------------------------------------------------------------
     def __init__(self, parent, style,image):
-        
-        #print("picinfo in w2 {}".format(self.info))
-        
+                
         """Constructor"""
         wx.PopupWindow.__init__(self, parent, style)
         border = 10
-        #if self.debugmode:
-        print("fb=Window2")
-
+        print("FB popupwindow")
         panel = wx.Panel(self)
         
-        #panel.SetBackgroundColour("CADET BLUE")
-        
-        panel.SetBackgroundColour(wx.Colour(179, 236, 255) )
-   
-        #self.m_bitmap123 = wx.StaticBitmap( panel, wx.ID_ANY, wx.NullBitmap, wx.DefaultPosition, wx.DefaultSize, 0 )
+        #panel.SetBackgroundColour("CADET BLUE")        
+        panel.SetBackgroundColour(wx.Colour(179, 236, 255) )        
         
         self.m_bitmap123 = wx.StaticBitmap( panel, wx.ID_ANY, wx.NullBitmap,[border,border], wx.DefaultSize, 0 ) #displace image by width of border
-        
         st = wx.StaticBitmap( panel, wx.ID_ANY, wx.NullBitmap, wx.DefaultPosition, wx.DefaultSize, 0 )
         
-        
         width, height = image.size
-        
         image2 = wx.Image( width, height )
         image2.SetData( image.tobytes() )
-        
         self.m_bitmap123.SetBitmap(wx.Bitmap(image2))   
-        
         self.SetSize( (width+2*border ,height+2*border) )
         panel.SetSize( (width+2*border, height+2*border) )
-        
+      
         panel.Bind(wx.EVT_LEFT_DOWN, self.OnMouseLeftDown)
         panel.Bind(wx.EVT_MOTION, self.OnMouseMotion)
         panel.Bind(wx.EVT_LEFT_UP, self.OnMouseLeftUp)
-        panel.Bind(wx.EVT_RIGHT_UP, self.OnRightUp)
-        
+        panel.Bind(wx.EVT_RIGHT_UP, self.OnRightUp)        
         st.Bind(wx.EVT_LEFT_DOWN, self.OnMouseLeftDown)
         st.Bind(wx.EVT_MOTION, self.OnMouseMotion)
         st.Bind(wx.EVT_LEFT_UP, self.OnMouseLeftUp)
@@ -207,7 +194,7 @@ def ShowPrintScreen(self): # no error
         self.m_CurrentPage11.SetValue("PrtScr")
         #rescale image
         self.width, self.height = self.pageimagecopy.size #so that it doesn't rescale it everytime ShowPage() is used
-        self.width , self.height = int(self.width*self.zoom) , int(self.height*self.zoom)
+        self.width, self.height = int(self.width*self.zoom) , int(self.height*self.zoom)
         self.pageimage = self.pageimage.resize((self.width, self.height), PIL.Image.ANTIALIAS)
         
         image2 = wx.Image( self.width, self.height )
@@ -222,7 +209,7 @@ def ShowPrintScreen(self): # no error
     
     
 
-def ShowPage(self): # no error
+def ShowPage(self): 
     if self.debugmode:
         print("fb=ShowPage")
     try:
@@ -230,7 +217,7 @@ def ShowPage(self): # no error
         self.m_CurrentPage11.SetValue(str(self.currentpage))
         #rescale image
         self.width, self.height = self.pageimagecopy.size #so that it doesn't rescale it everytime ShowPage() is used
-        self.width , self.height = int(self.width*self.zoom) , int(self.height*self.zoom)
+        self.width, self.height = int(self.width*self.zoom) , int(self.height*self.zoom)
         self.pageimage = self.pageimage.resize((self.width, self.height), PIL.Image.ANTIALIAS)
         try:   #draw borders if they exist
             if self.drawborders == True:
@@ -330,21 +317,20 @@ def CreateTextCard(self):
     self.imagetext = PIL.Image.frombytes("RGB", size, raw_data, decoder_name='raw', )
     # crop the LaTeX image further
     border = 30
-    find = True
+    SEARCH = True
     img = self.imagetext
     imginv = ImageOps.invert(img)
     
     img_array = np.sum(np.sum(np.array(imginv),2),0) # look where something is not "white" in the x-axis
-    while find == True:
-        for i in range(len(img_array)): # 
-            print(i)
+    while SEARCH == True:
+        for i in range(len(img_array)):
             j = len(img_array) - i-1            
-            if find == True:
+            if SEARCH == True:
                 if img_array[j]!= 0:
-                    find = False
+                    SEARCH = False
                     var = j
                 if j == 0:
-                    find = False
+                    SEARCH = False
                     var = j
     if var + border >  img.size[0]:
         var = img.size[0]
