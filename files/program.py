@@ -5,6 +5,7 @@ Created on Wed Nov  1 18:43:04 2017
 """
 
 import os
+joinpath = os.path.join
 import json
 import shutil
 import PIL
@@ -43,12 +44,12 @@ def run_flashbook(self):
         datadir = os.getenv("LOCALAPPDATA")
         dir0 = datadir+r"\FlashBook"
         self.dir0 = dir0
-        self.dir1 = dir0 + r"\files"
-        self.dir2 = dir0 + r"\pics"
-        self.dir3 = dir0 + r"\books"
-        self.dir4 = dir0 + r"\temporary"
-        self.dir5 = dir0 + r"\borders"
-        self.dir6 = dir0 + r"\resources"
+        self.dir1 = joinpath(dir0,"files")
+        self.dir2 = joinpath(dir0,"pics")
+        self.dir3 = joinpath(dir0,"books")
+        self.dir4 = joinpath(dir0,"temporary")
+        self.dir5 = joinpath(dir0,"borders")
+        self.dir6 = joinpath(dir0,"resources")
         self.temp_dir = self.dir4
         
         # create settings folder for debugging
@@ -97,25 +98,20 @@ def run_flashbook(self):
     initialize(self)
 
 def run_flashcard(self):    
-    print("Welcome to Flashcard , one moment ...")
-    
-    #%%
     def initialize2(self):
         # set all directories
         datadir = os.getenv("LOCALAPPDATA")
-        dir0 = datadir+r"\FlashBook"
-        self.dir1 = dir0 + r"\files"
-        self.dir2 = dir0 + r"\pics"
-        self.dir3 = dir0 + r"\books"
-        self.dir4 = dir0 + r"\temporary"
-        self.dir5 = dir0 + r"\borders"
-        self.dir6 = dir0 + r"\resources"
+        dir0 = joinpath(datadir,"FlashBook")
+        self.dir1 = joinpath(dir0,"files")
+        self.dir2 = joinpath(dir0,"pics")
+        self.dir3 = joinpath(dir0,"books")
+        self.dir4 = joinpath(dir0,"temporary")
+        self.dir5 = joinpath(dir0,"borders")
+        self.dir6 = joinpath(dir0,"resources")
         self.temp_dir = self.dir4
-
                 
         self.m_filePicker21.SetInitialDirectory(self.dir1+'\.') #for filepicker you can't just set a directory like dirPicker, in this case it should end in "\." so that it has to look for files, otherwise it will see a folder as a file...
-        os.chdir(self.dir1)
-        
+        os.chdir(self.dir1)        
         
         dirs = [dir0,self.dir1,self.dir2,self.dir3,self.dir4,self.dir5,self.dir6]        
         print("="*90)
@@ -232,10 +228,7 @@ def run_print(self,event):
         for item in dirs:
             if not os.path.exists(item):
                 os.makedirs(item)
-        # unpacks png images used in the gui
-        resources.resourceimages(self.dir6,self.dir1) 
-        #%%
-        
+        resources.resourceimages(self.dir6,self.dir1) # unpacks png images used in the gui
         library = [d for d in os.listdir(self.dir3) if os.path.isdir(os.path.join(self.dir3, d))]       
         self.nr_books = len(library)
         
@@ -250,9 +243,7 @@ def run_print(self,event):
     
     
     """MAINFRAME"""
-    initialize(self)
-    #initialize parent class    
-    
+    initialize(self)    
     self.dir_LaTeX          = self.dir1
     self.dir_LaTeX_commands = self.dir1
     self.dir_pics           = self.dir2
@@ -261,10 +252,8 @@ def run_print(self,event):
     self.pic_command      = "\pic{"
     self.question_command = r'\\quiz{'
     self.answer_command   = r"\\ans{"
-    
-    #
     ini3.initializeparameters(self)                  
-    ## LOAD ALL DATA 
+    #Load all data
     m3.startprogram(self,event)
 
 def set_richtext(self):
