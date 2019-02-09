@@ -176,7 +176,7 @@ def startprogram(self,event):
         self.path = event.GetPath()
         print(f"path = {self.path}")
         self.filename = self.path.replace(f"{self.dir1}","")[1:]   #to remove '\' but not '.tex'
-        self.bookname = self.filename[0:-4]                        #also remove extension '.tex'
+        self.bookname = os.path.splitext(self.filename)[0]         #also remove extension '.tex'
         print(f"book = {self.bookname} ")
     except:
         print(colored("Error: Couldn't open path",'red'))
