@@ -74,13 +74,15 @@ def ConvertPDF_to_JPG(PDFdir,tempdir,JPGdir):
         except:
             t_MBox(0, f'The file "{pdfname}.pdf" probably has a space in its name between the name and the ".pdf" extension.\nPlease remove this space.\nOtherwise it is a different error in os.Listdir', "Error", ICON_STOP)
         try:
-            if os.listdir(target_dir) == []:      
+            if os.listdir(target_dir) == []:    
+                
                 """The original module worked if you used: 'convert_from_path(origin_dir,dpi=170)'
                 if you didn't use the output_folder argument. However it then needs to store all the
                 pages in ram, which makes it a very expensive operation. If for example you use it on a 
                 laptop which can't handle it , it will abort the operation and only save the first X pages of a book.
                 
                 To counteract this, if you add the argument 'output_folder' it will save all the pages as separate .ppm files
+                and then converts the .ppm files to .jpg files.
                 """
                 #Try to convert
                 convert_from_path(origin_dir,dpi=170,output_folder=tempdir_ppm)
