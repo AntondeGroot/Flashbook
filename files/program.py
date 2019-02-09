@@ -41,20 +41,10 @@ def run_flashbook(self):
     
     def initialize(self):
         os.chdir(self.dir0)
-        datadir = os.getenv("LOCALAPPDATA")
-        dir0 = datadir+r"\FlashBook"
-        self.dir0 = dir0
-        self.dir1 = joinpath(dir0,"files")
-        self.dir2 = joinpath(dir0,"pics")
-        self.dir3 = joinpath(dir0,"books")
-        self.dir4 = joinpath(dir0,"temporary")
-        self.dir5 = joinpath(dir0,"borders")
-        self.dir6 = joinpath(dir0,"resources")
-        self.temp_dir = self.dir4
         
         # create settings folder for debugging
         if not os.path.exists(self.dirsettings+r"\settings.txt"): 
-            with open(dir0+r"\settings.txt", 'w') as file:
+            with open(self.dir0+r"\settings.txt", 'w') as file:
                 file.write(json.dumps({'debugmode' : 0})) 
         with open(self.dirsettings+r"\settings.txt", 'r') as file:
             debug_var = json.load(file)['debugmode']
@@ -66,10 +56,10 @@ def run_flashbook(self):
                 self.debugmode = True
                 print("debugging is enabled")
                     
-        dirs = [dir0,self.dir1,self.dir2,self.dir3,self.dir4,self.dir5,self.dir6]
+        dirs = [self.dir0,self.dir1,self.dir2,self.dir3,self.dir4,self.dir5,self.dir6]
         
         print("="*90)
-        print(f"\nThe files will be saved to the following directory: {dir0}\n")
+        print(f"\nThe files will be saved to the following directory: {self.dir0}\n")
         for item in dirs:
             if not os.path.exists(item):
                 os.makedirs(item)
@@ -100,30 +90,20 @@ def run_flashbook(self):
 def run_flashcard(self):    
     def initialize2(self):
         # set all directories
-        datadir = os.getenv("LOCALAPPDATA")
-        dir0 = joinpath(datadir,"FlashBook")
-        self.dir1 = joinpath(dir0,"files")
-        self.dir2 = joinpath(dir0,"pics")
-        self.dir3 = joinpath(dir0,"books")
-        self.dir4 = joinpath(dir0,"temporary")
-        self.dir5 = joinpath(dir0,"borders")
-        self.dir6 = joinpath(dir0,"resources")
-        self.temp_dir = self.dir4
                 
         self.m_filePicker21.SetInitialDirectory(self.dir1+'\.') #for filepicker you can't just set a directory like dirPicker, in this case it should end in "\." so that it has to look for files, otherwise it will see a folder as a file...
         os.chdir(self.dir1)        
         
-        dirs = [dir0,self.dir1,self.dir2,self.dir3,self.dir4,self.dir5,self.dir6]        
+        dirs = [self.dir0,self.dir1,self.dir2,self.dir3,self.dir4,self.dir5,self.dir6]        
         print("="*90)
-        print("\nThe files will be saved to the following directory: {}\n".format(dir0))
+        print("\nThe files will be saved to the following directory: {}\n".format(self.dir0))
         
         for item in dirs:
             if not os.path.exists(item):
                 os.makedirs(item)
                 
-        self.csv_dir = dir0+'/date.csv'
-        self.file_exists = os.path.isfile(self.csv_dir)
-        
+        self.csv_dir = self.dir0+'/date.csv'
+        self.file_exists = os.path.isfile(self.csv_dir)       
         self.dir_LaTeX          = self.dir1
         self.dir_LaTeX_commands = self.dir1
         self.dir_pics           = self.dir2
