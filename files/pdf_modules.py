@@ -61,7 +61,7 @@ def ConvertPDF_to_JPG(PDFdir,tempdir,JPGdir):
     i = 1
     for _, item in enumerate(arr_pdf):
         #Get file name and dir names
-        pdfname = item[:-4]
+        pdfname = os.path.splitext(item)[0] #exclude file extension
         tempdir_ppm = os.path.join(tempdir,pdfname)
         os.makedirs(tempdir_ppm)
         origin_dir = os.path.join(PDFdir, item)
