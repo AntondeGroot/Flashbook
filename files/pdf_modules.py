@@ -57,12 +57,13 @@ def ConvertPDF_to_JPG(PDFdir,tempdir,JPGdir):
     t_MBox = lambda a,b,c,d :threading.Thread(target=MessageBox,args=(a,b,c,d)).start()
     
     t_MBox(0, f'The PDF -> JPG conversion has started.\nIt may take a few minutes per book.', "Message", MB_ICONINFORMATION)
-    arr_pdf = [f for f in os.listdir(PDFdir) if '.pdf' in f]
+    arr_pdf = [f for f in os.listdir(PDFdir) if os.path.splitext(f)[1] == '.pdf']    
+        
     i = 1
     for _, item in enumerate(arr_pdf):
         #Get file name and dir names
         pdfname = os.path.splitext(item)[0] #exclude file extension
-        tempdir_ppm = os.path.join(tempdir,pdfname)
+        tempdir_ppm = os.path.join(tempdir, pdfname)
         os.makedirs(tempdir_ppm)
         origin_dir = os.path.join(PDFdir, item)
         target_dir = os.path.join(JPGdir, pdfname)
@@ -85,9 +86,9 @@ def ConvertPDF_to_JPG(PDFdir,tempdir,JPGdir):
                 and then converts the .ppm files to .jpg files.
                 """
                 #Try to convert
-                convert_from_path(origin_dir,dpi=170,output_folder=tempdir_ppm)
+                convert_from_path(origin_dir, dpi=170, output_folder = tempdir_ppm)
                 if os.listdir(tempdir_ppm) == []:
-                    convert_from_bytes(open(origin_dir, 'rb').read(),output_folder=tempdir_ppm)         
+                    convert_from_bytes(open(origin_dir, 'rb').read(), output_folder = tempdir_ppm)         
                 if os.listdir(tempdir_ppm) == []:
                     t_MBox(0, 0, f'The file "{pdfname}.pdf" could not be converted to JPG.\nPlease use an online PDF converter instead.\nThen place the JPG files in a map folder named after the book in {JPGdir}', "Error", ICON_STOP)                    
                 if os.listdir(tempdir_ppm) != []:
@@ -96,7 +97,7 @@ def ConvertPDF_to_JPG(PDFdir,tempdir,JPGdir):
                     #Save the JPG files
                     DirList = os.listdir(tempdir_ppm)
                     for filename in DirList:
-                        pagepath = os.path.join(tempdir_ppm,filename)
+                        pagepath = os.path.join(tempdir_ppm, filename)
                         page_i = PIL.Image.open(pagepath)
                         filename = os.path.join(target_dir, pdfname)
                         nr = "0"*(4-len(f"{i}"))+f"{i}"
