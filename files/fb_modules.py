@@ -11,6 +11,13 @@ import wx
 import os
 import fb_functions as f
 import json
+import ctypes
+
+#ctypes:
+ICON_EXCLAIM=0x30
+ICON_STOP = 0x10
+MB_ICONINFORMATION = 0x00000040
+MessageBox = ctypes.windll.user32.MessageBoxW
 
 def dirchanged(self,event):
     
@@ -22,10 +29,14 @@ def dirchanged(self,event):
     self.scrollpos = self.scrollpos_reset
     
     #Keep track of "nrlist" which is a 4 digit nr 18-> "0018" so that it is easily sorted in other programs
-    path = event.GetPath() 
+    path = event.GetPath()
+    print(f"path is {path}")
     nrlist = []
-    picnames = [pic for pic in os.listdir(path) if '.jpg' in pic]
+    picnames = [pic for pic in os.listdir(path) if os.path.splitext(pic)[1] == '.jpg']
     self.nr_pics = len(picnames)
+    print(f"nr pics is {self.nr_pics} ")
+    if self.nr_pics == 0:
+        MessageBox(0, " The selected folder does not contain any images!", "Error", MB_ICONINFORMATION)
     
     for _, picname in enumerate(picnames):
         
@@ -59,7 +70,9 @@ def dirchanged(self,event):
             nrlist.append("0"*(4-len_nr) + f"{picname[I:F]}")
     picnames = [x for _,x in sorted(zip(nrlist,picnames))]
     self.picnames = picnames
-    self.bookname = path.replace(f"{self.dir3}","")[1:] #to remove first '\'
+    self.bookname = os.path.basename(path)
+    self.booknamepath = path.replace(self.dir3,"")
+    print(f"path = {path}   bookpath = {self.booknamepath}   bookname {self.bookname}")
     self.currentpage = 1
     self.PathBorders = os.path.join(self.dir5, self.bookname + '_borders.txt')
     if os.path.exists(os.path.join(self.temp_dir, self.bookname + '.txt')):
@@ -86,13 +99,13 @@ def dirchanged(self,event):
     except:
         self.dictionary = {}
         print("No drawn rects found for this file, continue")
-    try:
-        self.jpgdir = self.dir3+fr'\{self.bookname}\{self.picnames[self.currentpage-1]}'
+    try: 
+        self.jpgdir = self.dir3+fr'\{self.booknamepath}\{self.picnames[self.currentpage-1]}'
         self.pageimage = PIL.Image.open(self.jpgdir)
         self.pageimagecopy = self.pageimage
         self.width, self.height = self.pageimage.size
     except:
-        print(colored("Error: could not load scrolled window",'red'))
+        print(colored("Error: could not load scrolled window 1",'red'))
     
     #Draw borders if they exist
     try:
@@ -107,7 +120,7 @@ def dirchanged(self,event):
         self.m_bitmapScroll.SetBitmap(wx.Bitmap(image2))
         f.SetScrollbars(self)
     except:
-        print(colored("Error: could not load scrolled window",'red'))
+        print(colored("Error: could not load scrolled window 2",'red'))
     self.Layout()
     
 def bitmapleftup(self,event):
@@ -150,7 +163,7 @@ def bitmapleftup(self,event):
                 picname =  f"{self.bookname}_{self.currentpage}_{rand_nr}.jpg" 
             else:
                 picname =  f"{self.bookname}_prtscr_{rand_nr}.jpg"
-            filename = os.path.join(self.dir2,self.bookname,picname)    
+            filename = os.path.join(self.dir2, self.bookname, picname)    
             if not os.path.exists(filename):
                 find = False
         img.save(filename)
