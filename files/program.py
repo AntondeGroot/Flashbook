@@ -247,19 +247,6 @@ def run_print(self,event):
             if not os.path.exists(item):
                 os.makedirs(item)
         resources.resourceimages(self.dir6,self.dir1) # unpacks png images used in the gui
-        """
-        library = [d for d in os.listdir(self.dir3) if os.path.isdir(os.path.join(self.dir3, d))]       
-        self.nr_books = len(library)
-        
-        if len(library) == 0:
-            print("No books were found in directory: {}\n 1) please type '%localappdata%' in windows explorer\n 2) find Flashbook and place a folder containing jpg files of the pdf in the".format(self.dir3)+ r"'\books' directory"+"\n")
-        else:
-            print("the following books were found:")
-            for name in library:
-                print(f"- {name}")
-            print("")
-        print("="*90)
-        """
     
     """MAINFRAME"""
     initialize(self)    
