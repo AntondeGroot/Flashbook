@@ -4,6 +4,8 @@ Created on Wed Nov  1 18:43:04 2017
 @author: Anton
 """
 
+import ctypes
+import time
 import os
 joinpath = os.path.join
 import json
@@ -31,6 +33,64 @@ import fc_functions    as f2
 import print_functions as f3
 #for colored error messages
 from termcolor import colored
+
+#ctypes:
+ICON_EXCLAIM=0x30
+ICON_STOP = 0x10
+MB_ICONINFORMATION = 0x00000040
+MessageBox = ctypes.windll.user32.MessageBoxW
+
+
+def checkBooks(self,sleeptime):
+
+    """Check if there are PDFs
+    Then Check if they have been converted to JPG, they can be placed in subfolders, grouped together by topic
+    e.g. "Study / Physics / Math / ..."   """
+       
+    time.sleep(sleeptime)
+    
+    # check PDFs
+    library_pdf = [os.path.splitext(x)[0] for x in os.listdir(self.dirpdfbook) if os.path.splitext(x)[1] == '.pdf']
+    if len(library_pdf) == 0:
+        MessageBox(0, f"Welcome new user! \n\nNo PDFs were found in directory {self.dirpdfbook} \n\nGo to the menubar of the app:  `Open/Book PDF folder`\nPlace a PDF file there and click on Convert\n\nIf the conversion fails: you need to use an online PDF converter since all image manipulations are done to jpg files.", "Welcome to Flashbook", ICON_EXCLAIM)
+    
+    # check JPGs
+    library = []
+    categories  = []
+    pathlib = []
+    tab  = ' '*3
+    
+    pdfnames = [os.path.splitext(x)[0] for x in os.listdir(self.dirpdfbook) if os.path.splitext(x)[1] == '.pdf']
+    """Look for all final folders""" 
+    for root, dirs, _ in os.walk(self.dir3, topdown = False):
+        for name in dirs:
+            if name in pdfnames:
+                library.append(name)
+                if os.path.basename(root) != os.path.basename(self.dir3): #If it is not the dir you start in
+                    categories.append(f'{os.path.basename(root).upper()} - {name}')
+                    pathlib.append(os.path.join(os.path.basename(root),name))    
+                else:
+                    categories.append(f"{tab+name}")
+                    pathlib.append(name)
+    pdfs2send = [x for x in pdfnames if x not in str(pathlib)]    
+    
+    library.sort()
+    categories.sort()
+    pathlib.sort()
+    
+    self.nr_books = len(library)
+    
+    if len(library) == 0:
+        MessageBox(0, f"Welcome new user! \n\nNo converted books were found in directory {self.dir3} \n\nGo to the menubar of the app:  `Open/Book PDF folder`\nPlace a PDF file there and click on Convert\n\nIf the conversion fails: you need to use an online PDF converter since all image manipulations are done to jpg files.", "Welcome to Flashbook", ICON_EXCLAIM)
+    else:
+        print("the following books were found:")
+        for name in categories:
+            print(f"- {name}")
+    print("="*90)
+    
+    
+    return library, pathlib, pdfs2send, categories 
+    
 
 
 def run_flashbook(self):
@@ -66,18 +126,7 @@ def run_flashbook(self):
          
         # unpacks png images used in the gui
         resources.resourceimages(self.dir6,self.dir1) 
-        #%%
-        library = [d for d in os.listdir(self.dir3) if os.path.isdir(os.path.join(self.dir3, d))]
-        self.nr_books = len(library)
-         
-        if len(library) == 0:
-            print(f"No books were found in directory: {self.dir3}\n 1) please type '%localappdata%' in windows explorer\n 2) find Flashbook and place a folder containing jpg files of the pdf in the"+ r"'\books' directory"+"\n")
-        else:
-            print("the following books were found:")
-            for name in library:
-                print(f"- {name}")
-            print("")
-        print("="*90)   
+        
     ##
     self.stayonpage = False
     self.resetselection = False
@@ -120,17 +169,6 @@ def run_flashcard(self):
         # unpack png images used in the gui
         resources.resourceimages(self.dir6,self.dir1) 
         # give info to user about what books he has
-        
-        library = [d for d in os.listdir(self.dir3) if os.path.isdir(os.path.join(self.dir3, d))]
-        if len(library) == 0:
-            print(colored("No books were found in directory: {}\n 1) please type '%localappdata%' in windows explorer \n 2) find Flashbook and place a folder containing jpg files of the pdf in the".format(self.dir3)+ r"'\books' directory"+"\n","red"))
-        else:
-            print("the following books were found:")
-            for name in library:
-                print("- {}".format(name))
-            print("")
-        print("="*90)
-        
     
     #%%
     
@@ -209,6 +247,7 @@ def run_print(self,event):
             if not os.path.exists(item):
                 os.makedirs(item)
         resources.resourceimages(self.dir6,self.dir1) # unpacks png images used in the gui
+        """
         library = [d for d in os.listdir(self.dir3) if os.path.isdir(os.path.join(self.dir3, d))]       
         self.nr_books = len(library)
         
@@ -220,7 +259,7 @@ def run_print(self,event):
                 print(f"- {name}")
             print("")
         print("="*90)
-    
+        """
     
     """MAINFRAME"""
     initialize(self)    
