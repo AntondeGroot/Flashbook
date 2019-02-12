@@ -164,17 +164,7 @@ def initialize(self):
     resources.resourceimages(self.dir6,self.dir1) 
     
 
-def checkBooks(self):       
-    time.sleep(2)    
-    library = [d for d in os.listdir(self.dir3) if os.path.isdir(os.path.join(self.dir3, d))]
-    self.nr_books = len(library)
-    if len(library) == 0:
-        MessageBox(0, f"Welcome new user! \n\nNo jpgs of books were found in directory {self.dir3} \n\nGo to the menubar of the app:  `Open/Book PDF folder`\nPlace a PDF file there and click on Convert\n\nIf the conversion fails: you need to use an online PDF converter since all image manipulations are done to jpg files.", "Welcome to Flashbook", ICON_EXCLAIM)
-    else:
-        print("the following books were found:")
-        for name in library:
-            print(f"- {name}")
-    print("="*90)
+
     
 """
 ###############################################################################
@@ -192,8 +182,8 @@ class MainFrame(gui.MyFrame):
         icons = [wx.Bitmap(self.path_folder) , wx.Bitmap(self.path_convert) ]
         gui.MyFrame.__init__(self,parent,icons) #added extra argument, so that WXpython.py can easily add the Dialog Windows (which require an extra argument), which is now used to add extra icons to the menubar             
         self.Maximize(True) # open the app window maximized
-        t_ini = lambda self : threading.Thread(target = checkBooks , args=(self, )).start()
-        t_ini(self) 
+        t_books = lambda self,delay : threading.Thread(target = p.checkBooks , args=(self,delay )).start()
+        t_books(self, 2) 
         
         self.stitchmode_v = True
         self.FilePickEvent = True 
