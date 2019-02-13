@@ -17,7 +17,7 @@ import PIL
 import numpy as np
 from PIL import ImageOps
 import fc_functions as fc
-
+import program as p
 #import matplotlib.backends.backend_agg as agg
 
 pylab.ioff() # make sure it is inactive, otherwise possible qwindows error    .... https://stackoverflow.com/questions/26970002/matplotlib-cant-suppress-figure-window
@@ -30,14 +30,7 @@ datadir = os.getenv("LOCALAPPDATA")
 dir0 = os.path.join(datadir, "FlashBook")
 # create settings folder for debugging
 
-import traceback
 
-def ERRORMESSAGE(msg):
-    print(colored(f"{msg}\n",'red',attrs=['underline']))
-    ErrorMessage = traceback.format_exc()
-    print(colored(f"{ErrorMessage}\n",'red'))
-
-    
 
 
 class Window2(wx.PopupWindow):
@@ -191,7 +184,7 @@ def LoadPage(self): # no error
         self.width , self.height = int(self.width*self.zoom) , int(self.height*self.zoom)
         self.pageimage = self.pageimage.resize((self.width, self.height), PIL.Image.ANTIALIAS)
     except:
-        ERRORMESSAGE("Error: cannot load page")
+        p.ERRORMESSAGE("Error: cannot load page")
     
 def ShowPrintScreen(self): # no error
     try:
@@ -210,7 +203,7 @@ def ShowPrintScreen(self): # no error
         self.m_bitmap4.SetBitmap(wx.Bitmap(image2))
         self.Layout()
     except:
-        ERRORMESSAGE("Error: cannot show PrintScreen page")
+        p.ERRORMESSAGE("Error: cannot show PrintScreen page")
     
     
 
@@ -241,7 +234,7 @@ def ShowPage(self):
                 self.currentpage = self.currentpage_backup
             output.write("{}".format(self.currentpage))
     except:
-        ERRORMESSAGE("Error: cannot show page")
+        p.ERRORMESSAGE("Error: cannot show page")
         
 def ResetQuestions(self): # no errors
     self.pdf_question     = ''
@@ -271,8 +264,8 @@ def CombinePics(self,directory):
                 x_offset += img.size[0]
             new_im.save(im[0])
             
-            for p,img in enumerate(im):
-                if p!=0:
+            for j,img in enumerate(im):
+                if j!= 0:
                     try:
                         os.remove(img)
                     except:
@@ -373,7 +366,7 @@ def ShowInPopup(self,event,mode):
         self.image = image
         #image.show()
     except:
-        ERRORMESSAGE("Error: could not open file in popup")
+        p.ERRORMESSAGE("Error: could not open file in popup")
     try:
         CreateTextCard(self)
     except:
