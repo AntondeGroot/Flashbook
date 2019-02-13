@@ -12,6 +12,7 @@ from pdf2image import convert_from_bytes
 import shutil
 import threading
 import ctypes
+import program as p
 ICON_EXCLAIM=0x30
 ICON_STOP = 0x10
 MB_ICONINFORMATION = 0x00000040
@@ -38,7 +39,7 @@ def AddPathvar():
 
 
 
-def ConvertPDF_to_JPG(PDFdir,tempdir,JPGdir):
+def ConvertPDF_to_JPG(self, PDFdir, tempdir, JPGdir):
     
     """Convert a PDF to JPG files.
     
@@ -56,11 +57,12 @@ def ConvertPDF_to_JPG(PDFdir,tempdir,JPGdir):
     MessageBox = ctypes.windll.user32.MessageBoxW     
     t_MBox = lambda a,b,c,d :threading.Thread(target=MessageBox,args=(a,b,c,d)).start()
     
-    t_MBox(0, f'The PDF -> JPG conversion has started.\nIt may take a few minutes per book.', "Message", MB_ICONINFORMATION)
-    arr_pdf = [f for f in os.listdir(PDFdir) if os.path.splitext(f)[1] == '.pdf']    
-        
+    t_MBox(0, f'The PDF -> JPG conversion has started.\nIt may take a few minutes per book.', "Message", MB_ICONINFORMATION)   
+    
+    pdfs2send, _, _, _ = p.checkBooks(self,0)
+    
     i = 1
-    for _, item in enumerate(arr_pdf):
+    for _, item in enumerate(pdfs2send):
         #Get file name and dir names
         pdfname = os.path.splitext(item)[0] #exclude file extension
         tempdir_ppm = os.path.join(tempdir, pdfname)
