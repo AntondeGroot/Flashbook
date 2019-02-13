@@ -13,6 +13,11 @@ import math
 import pylab
 import json
 #import matplotlib.backends.backend_agg as agg
+import traceback
+def ERRORMESSAGE(msg):
+    print(colored(f"{msg}\n",'red',attrs=['underline']))
+    ErrorMessage = traceback.format_exc()
+    print(colored(f"{ErrorMessage}\n",'red'))
 
 pylab.ioff() # make sure it is inactive, otherwise possible qwindows error    .... https://stackoverflow.com/questions/26970002/matplotlib-cant-suppress-figure-window
 from matplotlib.figure import Figure
@@ -164,7 +169,7 @@ def LoadPage(self): # no error
         self.width , self.height = int(self.width*self.zoom) , int(self.height*self.zoom)
         self.pageimage = self.pageimage.resize((self.width, self.height), PIL.Image.ANTIALIAS)
     except:
-        print(colored("Error: cannot load page",'red'))    
+        ERRORMESSAGE("Error: cannot load page")    
     
     
 def ShowPage(self): # no error
@@ -190,7 +195,7 @@ def ShowPage(self): # no error
         with open(os.path.join(self.temp_dir, self.bookname +'.txt'), 'w') as output:   
             output.write("{}".format(self.currentpage))
     except:
-        print(colored("Error: cannot show page",'red'))
+        ERRORMESSAGE("Error: cannot show page")
 
 def ResetQuestions(self): # no errors
     #if debugmode:
