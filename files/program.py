@@ -41,6 +41,18 @@ MB_ICONINFORMATION = 0x00000040
 MessageBox = ctypes.windll.user32.MessageBoxW
 
 
+import traceback
+import logging
+def ERRORMESSAGE(msg):
+    print(colored(f"{msg}\n",'red',attrs=['underline']))
+    ErrorMessage = traceback.format_exc()
+    print(colored(f"{ErrorMessage}\n",'red'))
+    path = os.path.join(os.getenv("LOCALAPPDATA"),'FlashBook','temporary')
+    LOG_FILENAME = os.path.join(path,'logging_example.out')
+    logging.basicConfig(filename=LOG_FILENAME, level=logging.INFO)
+    logging.warning(ErrorMessage)
+
+
 def checkBooks(self,sleeptime):
 
     """Check if there are PDFs
