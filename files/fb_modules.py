@@ -10,6 +10,7 @@ import PIL
 import wx
 import os
 import fb_functions as f
+import program as p
 import json
 import ctypes
 
@@ -18,13 +19,6 @@ ICON_EXCLAIM=0x30
 ICON_STOP = 0x10
 MB_ICONINFORMATION = 0x00000040
 MessageBox = ctypes.windll.user32.MessageBoxW
-
-import traceback
-
-def ERRORMESSAGE(msg):
-    print(colored(f"{msg}\n",'red',attrs=['underline']))
-    ErrorMessage = traceback.format_exc()
-    print(colored(f"{ErrorMessage}\n",'red'))
 
 
 def dirchanged(self,event):
@@ -114,14 +108,14 @@ def dirchanged(self,event):
         self.pageimagecopy = self.pageimage
         self.width, self.height = self.pageimage.size
     except:
-        ERRORMESSAGE("Error : could not load scrolled window 1")
+        p.ERRORMESSAGE("Error : could not load scrolled window 1")
         
     #Draw borders if they exist
     try:
         if self.drawborders == True:                    
             f.drawCoordinates(self)
     except:
-        ERRORMESSAGE("Error: could not draw borders")
+        p.ERRORMESSAGE("Error: could not draw borders")
                   
     try:
         image2 = wx.Image( self.width, self.height )
@@ -129,7 +123,7 @@ def dirchanged(self,event):
         self.m_bitmapScroll.SetBitmap(wx.Bitmap(image2))
         f.SetScrollbars(self)
     except:
-        ERRORMESSAGE("Error: could not load scrolled window 2")
+        p.ERRORMESSAGE("Error: could not load scrolled window 2")
     self.Layout()
     
 def bitmapleftup(self,event):
@@ -427,7 +421,7 @@ def switchpage(self,event):
         f.LoadPage(self)
         f.ShowPage(self)
     except:
-        ERRORMESSAGE("Error: invalid page number")
+        p.ERRORMESSAGE("Error: invalid page number")
     self.Layout()
     
 def nextpage(self,event):
@@ -442,7 +436,7 @@ def nextpage(self,event):
         f.ShowPage(self)
         f.SetScrollbars(self)
     except:
-        ERRORMESSAGE("Error: can't click on next")
+        p.ERRORMESSAGE("Error: can't click on next")
     self.Layout()
     
 def previouspage(self,event):    
@@ -456,7 +450,7 @@ def previouspage(self,event):
         f.ShowPage(self)
         f.SetScrollbars(self)            
     except:
-        ERRORMESSAGE("Error: can't click on back")
+        p.ERRORMESSAGE("Error: can't click on back")
     self.Layout()
     
 def setcursor(self,event):
@@ -478,7 +472,7 @@ def zoomin(self,event):
         self.m_Zoom11.SetValue(f"{percentage}%")
         self.Layout()
     except:
-        ERRORMESSAGE("Error: cannot zoom out")
+        p.ERRORMESSAGE("Error: cannot zoom out")
 def zoomout(self,event):
     
     try:
@@ -494,7 +488,7 @@ def zoomout(self,event):
         self.panel1.Refresh() # to remove the remnants of a larger bitmap when the page shrinks
         self.Layout()
     except:
-        ERRORMESSAGE("Error: cannot zoom in")
+        p.ERRORMESSAGE("Error: cannot zoom in")
 
 def switch_stitchmode(self): # switch the boolean to opposite
     print("you pressed switch")
@@ -551,6 +545,6 @@ def RemoveKeyboardShortcuts(self,index):
                                           (wx.ACCEL_NORMAL,  wx.WXK_NUMPAD0, self.Id_stitch )])
         self.SetAcceleratorTable(entries)
     except:
-        ERRORMESSAGE("Error: cannot unset Accelerator Table")
+        p.ERRORMESSAGE("Error: cannot unset Accelerator Table")
 
 
