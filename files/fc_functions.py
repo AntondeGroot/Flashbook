@@ -19,7 +19,12 @@ import pylab
 pylab.ioff() 
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
-
+import traceback
+def ERRORMESSAGE(msg):
+    print(colored(f"{msg}\n",'red',attrs=['underline']))
+    ErrorMessage = traceback.format_exc()
+    print(colored(f"{ErrorMessage}\n",'red'))
+    
 ## setting up relevant paths
 datadir = os.getenv("LOCALAPPDATA")
 dir0    = datadir + r"\FlashBook"
@@ -104,7 +109,7 @@ def remove_stats(self):
             del dictionary[self.bookname]
             file.write(json.dumps(dictionary))
     except: # no update, just overwrite with popped dictionary
-        print("Error could not load saved stats from RemoveStats()")
+        ERRORMESSAGE("Error could not load saved stats from RemoveStats()")
     
     
 def set_stats(self):
@@ -258,10 +263,10 @@ def switch_bitmap(self):
                 id_ = self.m_toolSwitch21.GetId()
                 self.m_toolBar3.SetToolNormalBitmap(id_, wx.Bitmap( path_repeat, wx.BITMAP_TYPE_ANY ))
         except:
-            print(colored("Error: could not switch bitmap #2","red"))
+            ERRORMESSAGE("Error: could not switch bitmap #2")
     except:
         
-        print(colored("Error: could not switch bitmap #1","red"))
+        ERRORMESSAGE("Error: could not switch bitmap #1")
     
 def CombinePicText(self):
     if self.debugmode:
@@ -297,7 +302,7 @@ def displaycard(self):
             try:
                 CreateTextCard(self)
             except:
-                print(colored("Error: could not create textcard","red"))
+                ERRORMESSAGE("Error: could not create textcard")
         # if there is a textcard either combine them with a picture or display it on its own
         if self.TextCard == True: 
             if self.key in self.picdictionary:
@@ -316,7 +321,7 @@ def displaycard(self):
             except:
                 pass
     except:
-        print(colored("Error: could not display card","red"))
+        ERRORMESSAGE("Error: could not display card")
 
 def CreateTextCard(self):
     if self.debugmode:
@@ -497,7 +502,7 @@ def ShowPage(self):
         image2.SetData( self.image.tobytes() )        
         self.m_bitmapScroll1.SetBitmap(wx.Bitmap(image2))        
     except:        
-        print(colored("Error: cannot show image","red"))
+        ERRORMESSAGE("Error: cannot show image")
 
 # reset scroll bar when switching page:
 def SetScrollbars(self):
