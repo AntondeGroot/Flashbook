@@ -1,4 +1,4 @@
-Topics applied: TCP networks / WMI SQL queries / win32 processes / OOP / multithreading / JSON / 
+Topics applied: TCP networks / WMI SQL queries / win32 processes / OOP / multithreading / JSON / traceback logging
 
 # Flashbook : PDF reader & study tool
 
