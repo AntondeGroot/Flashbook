@@ -52,7 +52,7 @@ import sys
 sys.setrecursionlimit(5000)
 
 path = os.path.join(os.getenv("LOCALAPPDATA"),'FlashBook','temporary')
-LOG_FILENAME = os.path.join(path,'logging_example.out')
+LOG_FILENAME = os.path.join(path,'logging_traceback.out')
 logging.basicConfig(filename=LOG_FILENAME, level=logging.INFO)
 logging.info('New session has started')
 
