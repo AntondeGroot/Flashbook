@@ -19,6 +19,7 @@ import pylab
 import matplotlib.backends.backend_agg as agg
 #matplotlib.use('TKAgg')
 import fc_functions as f2
+import program as p
 import json
 import ctypes
 import gui_flashbook as gui
@@ -26,11 +27,6 @@ import gui_flashbook as gui
 MB_ICONINFORMATION = 0x00000040
 MessageBox = ctypes.windll.user32.MessageBoxW
 
-import traceback
-def ERRORMESSAGE(msg):
-    print(colored(f"{msg}\n",'red',attrs=['underline']))
-    ErrorMessage = traceback.format_exc()
-    print(colored(f"{ErrorMessage}\n",'red'))
 
 
 def buttonCorrect(self):
@@ -133,7 +129,7 @@ def switchCard(self):
             try:
                 f2.CreateTextCard(self)
             except:
-                ERRORMESSAGE("Error: failed to create TextCard")
+                p.ERRORMESSAGE("Error: failed to create TextCard")
         #There is text, determine if there is a picture:
         if self.TextCard == True:
             if self.debugmode:
@@ -143,7 +139,7 @@ def switchCard(self):
                     f2.CombinePicText(self)
                     f2.ShowPage(self)     
                 except:
-                    ERRORMESSAGE("Error: cannot combine pic with text")
+                    p.ERRORMESSAGE("Error: cannot combine pic with text")
             else: #only display text
                 self.image = self.imagetext
                 f2.ShowPage(self)
@@ -185,7 +181,7 @@ def startprogram(self,event):
         self.bookname = os.path.splitext(self.filename)[0]         #also remove extension '.tex'
         print(f"book = {self.bookname} ")
     except:
-        ERRORMESSAGE("Error: Couldn't open path")
+        p.ERRORMESSAGE("Error: Couldn't open path")
     self.resumedata = {self.bookname : {'score': self.score, 'index': self.index, 'nr_questions':self.nr_questions}}
     try:
         if os.path.exists(self.path):
@@ -201,7 +197,7 @@ def startprogram(self,event):
         self.nr_cards = len(q_pos)
         
     except:
-        ERRORMESSAGE("Error: could not find questions/answers")
+        p.ERRORMESSAGE("Error: could not find questions/answers")
 
 
     #open dialog window
@@ -235,7 +231,7 @@ def startprogram(self,event):
                 f2.remove_stats(self)
             
         except:
-            ERRORMESSAGE("Error: Couldn't open Dialog window nr 1")
+            p.ERRORMESSAGE("Error: Couldn't open Dialog window nr 1")
     else:
         try:
             with gui.MyDialog(self,data) as dlg: #'data' sets the max range of the slider
@@ -245,13 +241,13 @@ def startprogram(self,event):
                 self.continueSession = False
                 self.multiplier = dlg.m_textCtrl11.GetValue()
         except:
-            ERRORMESSAGE("Error: Couldn't open Dialog window nr 2")
+            p.ERRORMESSAGE("Error: Couldn't open Dialog window nr 2")
             
     # if you want to use all cards twice or 1.5 times for the quiz: then exclude invalid selections of this multiplier
     try:
         self.multiplier = float(self.multiplier)
     except:
-        ERRORMESSAGE("Error: entered multiplier was not a number, continue as if multiplier = 1")
+        p.ERRORMESSAGE("Error: entered multiplier was not a number, continue as if multiplier = 1")
         self.multiplier = 1
     if self.multiplier <= 0:
         self.multiplier = 1
