@@ -300,8 +300,8 @@ class MainFrame(gui.MyFrame):
         tempdir_ = self.dir4
         to_      = self.dir3 
         
-        t_pdf = lambda from_, tempdir_, to_ : threading.Thread(target = m5.ConvertPDF_to_JPG , args=(from_, tempdir_, to_ )).start()
-        t_pdf(from_, tempdir_, to_) 
+        t_pdf = lambda self, from_, tempdir_, to_ : threading.Thread(target = m5.ConvertPDF_to_JPG , args=(self,from_, tempdir_, to_ )).start()
+        t_pdf(self, from_, tempdir_, to_) 
         
     def m_menuPDFfolderOnMenuSelection( self, event ):
         subprocess.Popen(f"explorer {self.dirpdf}")
