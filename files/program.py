@@ -72,7 +72,7 @@ def checkBooks(self,sleeptime):
                 else:
                     categories.append(f"{tab+name}")
                     pathlib.append(name)
-    pdfs2send = [x for x in pdfnames if x not in str(pathlib)]    
+    pdfs2send = [x for x in os.listdir(self.dirpdfbook) if os.path.splitext(x)[0] not in str(pathlib)]    
     
     library.sort()
     categories.sort()
@@ -89,7 +89,7 @@ def checkBooks(self,sleeptime):
     print("="*90)
     
     
-    return library, pathlib, pdfs2send, categories 
+    return pdfs2send, library, pathlib, categories 
     
 
 
