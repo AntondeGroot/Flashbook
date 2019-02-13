@@ -50,6 +50,8 @@ import wmi # for IPaddress
 import sys
 sys.setrecursionlimit(5000)
 
+
+
 #ctypes:
 ICON_EXCLAIM=0x30
 ICON_STOP = 0x10
@@ -152,6 +154,7 @@ def initialize(self):
                 f.close()
     except:
         print("Error: could not access internet")
+        
     print("="*90)
     print(f"\nThe files will be saved to the following directory: {dir0}\n")
     for item in dirs:
