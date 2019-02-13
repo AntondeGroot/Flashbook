@@ -26,6 +26,7 @@ import wx.html as html
 import wx._html
 import gui_flashbook as gui
 import ctypes # pop up messages
+import logging
 #------------------------------------------------------------------- modules
 import program as p
 import fb_initialization as ini 
@@ -50,6 +51,10 @@ import wmi # for IPaddress
 import sys
 sys.setrecursionlimit(5000)
 
+path = os.path.join(os.getenv("LOCALAPPDATA"),'FlashBook','temporary')
+LOG_FILENAME = os.path.join(path,'logging_example.out')
+logging.basicConfig(filename=LOG_FILENAME, level=logging.INFO)
+logging.info('New session has started')
 
 
 #ctypes:
@@ -115,12 +120,14 @@ def settings_create(self):
         with open(self.dirsettings+r"\settings.txt", 'w') as file:
             file.write(json.dumps({'debugmode' : 0,'pdfmultiplier': 1.0, 'QAline_thickness' : 1, 'pdfline_thickness' : 5, 
                                    'QAline_color' : (0,0,0), 'pdfline_color' : (18,5,250), 'QAline_bool': True,'pdfline_bool': True }))       
+            file.close()
             
 def settings_set(self):
     with open(self.dirsettings+r"\settings.txt", 'w') as file:
         file.write(json.dumps({'debugmode' : 0, 'pdfmultiplier': self.pdfmultiplier,'QAline_thickness' : self.QAline_thickness, 'pdfline_thickness': self.pdfline_thickness, 
                                'QAline_color' : self.QAline_color, 'pdfline_color' : self.pdfline_color, 'QAline_bool': self.QAline_bool,'pdfline_bool': self.pdfline_bool}))           
-
+        file.close()
+        
 #%%
 def initialize(self):
     datadir = os.getenv("LOCALAPPDATA")
@@ -197,9 +204,7 @@ class MainFrame(gui.MyFrame):
         self.SetIcon(iconimage)
         p.SwitchPanel(self,0)
         self.printpreview = True
-        
-        
-        
+                        
     #%% Panel selection
     " Panel selection "
     def m_OpenFlashbookOnButtonClick( self, event ):
