@@ -48,7 +48,7 @@ def ERRORMESSAGE(msg):
     ErrorMessage = traceback.format_exc()
     print(colored(f"{ErrorMessage}\n",'red'))
     path = os.path.join(os.getenv("LOCALAPPDATA"),'FlashBook','temporary')
-    LOG_FILENAME = os.path.join(path,'logging_example.out')
+    LOG_FILENAME = os.path.join(path,'logging_traceback.out')
     logging.basicConfig(filename=LOG_FILENAME, level=logging.INFO)
     logging.warning(ErrorMessage)
 
