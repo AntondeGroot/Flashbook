@@ -18,7 +18,11 @@ from termcolor import colored
 import win32clipboard
 from win32api import GetSystemMetrics
 import wx
-
+import traceback
+def ERRORMESSAGE(msg):
+    print(colored(f"{msg}\n",'red',attrs=['underline']))
+    ErrorMessage = traceback.format_exc()
+    print(colored(f"{ErrorMessage}\n",'red'))
 
 #ctypes:
 ICON_EXCLAIM=0x30
@@ -124,7 +128,7 @@ def notes2paper(self):
                     try:
                         f.CreateTextCard(self)
                     except:
-                        print(colored("Error: could not create textcard","red"))
+                        ERRORMESSAGE("Error: could not create textcard")
                 # if there is a textcard either combine them with a picture or display it on its own
                 if self.TextCard == True: 
                     if self.key in self.picdictionary:
@@ -149,7 +153,7 @@ def notes2paper(self):
                         else:
                             self.image_a = self.image
             except:
-                print(colored("Error: could not display card","red"))  
+                ERRORMESSAGE("Error: could not display card")  
         
         #combine question and answer:
         if self.image_a != []:
@@ -384,14 +388,14 @@ def dirchanged(self,event):
             self.pageimagecopy = self.pageimage
             self.width, self.height = self.pageimage.size
         except:
-            print(colored("Error: could not load scrolled window",'red'))
+            ERRORMESSAGE("Error: could not load scrolled window")
         
         #print(self.drawborders)
         try:#try to draw borders, but if there are no borders, do nothing
             if self.drawborders == True:                    
                 f.drawCoordinates(self)
         except:
-            print(colored("Error: could not draw borders",'red'))
+            ERRORMESSAGE("Error: could not draw borders")
             pass            
         try:
             image2 = wx.Image( self.width, self.height )
@@ -401,9 +405,9 @@ def dirchanged(self,event):
             
 
         except:
-            print(colored("Error: could not load scrolled window",'red'))
+            ERRORMESSAGE("Error: could not load scrolled window")
     except:
-        print(colored("Error: could not load image",'red'))
+        ERRORMESSAGE("Error: could not load image")
 
 
 
@@ -656,7 +660,7 @@ def LoadFlashCards(self):
             if self.answers2[i] != '':
                self.textdictionary.update({'A{}'.format(i): self.answers2[i]})
     except:
-        print(colored("Error: couldn't pick file",'red'))
+        ERRORMESSAGE("Error: couldn't pick file")
           
     notes2paper(self)
     
@@ -669,7 +673,7 @@ def ShowPage(self):
         image2.SetData( self.image.tobytes() )        
         self.m_bitmapScroll.SetBitmap(wx.Bitmap(image2))        
     except:        
-        print(colored("Error: cannot show image","red"))
+        ERRORMESSAGE("Error: cannot show image")
         
 def resetselection(self,event):
     #  remove all temporary pictures taken
@@ -707,7 +711,7 @@ def switchpage(self,event):
         f.LoadPage(self)
         f.ShowPage(self)
     except:
-        print(colored("Error: invalid page number",'red'))
+        ERRORMESSAGE("Error: invalid page number")
         
 def nextpage(self,event):
     try:
@@ -719,7 +723,7 @@ def nextpage(self,event):
         f.ShowPage(self)
         f.SetScrollbars(self)
     except:
-        print(colored("Error: can't click on next",'red'))
+        ERRORMESSAGE("Error: can't click on next")
         
 def previouspage(self,event):
     try:
@@ -731,7 +735,7 @@ def previouspage(self,event):
         f.ShowPage(self)
         f.SetScrollbars(self)            
     except:
-        print(colored("Error: can't click on back",'red'))
+        ERRORMESSAGE("Error: can't click on back")
 
 def setcursor(self,event):
     lf = event.GetEventObject()
@@ -750,7 +754,7 @@ def zoomout(self,event):
         f.SetScrollbars(self)
         self.m_textZoom.SetValue(f"{int(self.zoom*100)}%")
     except:
-        print(colored("Error: cannot zoom out",'red'))
+        ERRORMESSAGE("Error: cannot zoom out")
         
 def zoomin(self,event):
     try:
@@ -764,7 +768,7 @@ def zoomin(self,event):
         self.m_textZoom.SetValue(f"{int(self.zoom*100)}%")
         self.m_panel1.Refresh() #remove the remnants of a larger bitmap when the page shrinks
     except:
-        print(colored("Error: cannot zoom in",'red'))
+        ERRORMESSAGE("Error: cannot zoom in")
         
 def SetKeyboardShortcuts(self):
     try:# look if Id's already exist
@@ -821,10 +825,10 @@ def SwitchBitmap(self): # checks if there is an answer card, if not changes mode
                 id = self.m_toolSwitch.GetId()
                 self.m_toolBar11.SetToolNormalBitmap(id,wx.Bitmap( self.path_repeat, wx.BITMAP_TYPE_ANY ))
         except:
-            print(colored("Error: could not switch bitmap #2","red"))
+            ERRORMESSAGE("Error: could not switch bitmap #2")
     except:
         
-        print(colored("Error: could not switch bitmap #1","red"))
+        ERRORMESSAGE("Error: could not switch bitmap #1")
 
 def add_border(self,img):
     if self.pdfline_bool == True:
@@ -865,7 +869,7 @@ def startprogram(self,event):
             self.filename = self.fileDialog.GetFilename()
             self.bookname = self.filename.replace(".tex","")
     except:
-        print(colored("Error: Couldn't open path",'red'))
+        ERRORMESSAGE("Error: Couldn't open path")
     try:
         if os.path.exists(self.path):
             file = open(self.path, 'r')
@@ -881,7 +885,7 @@ def startprogram(self,event):
         self.nr_cards = len(q_pos)
     
     except:
-        print(colored("Error: finding questions/answers",'red'))
+        ERRORMESSAGE("Error: finding questions/answers")
 
     ## dialog display              
     
