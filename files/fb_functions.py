@@ -171,7 +171,7 @@ def LoadPage(self): # no error
     if self.debugmode:
         print("fb=LoadPage")
     try:
-        self.jpgdir = self.dir3+r'\{}\{}'.format(self.bookname,self.picnames[self.currentpage-1])
+        self.jpgdir = self.dir3+r'\{}\{}'.format(self.booknamepath,self.picnames[self.currentpage-1])
         print(self.jpgdir)
         if self.stayonpage == False:
             self.pageimage = PIL.Image.open(self.jpgdir)
