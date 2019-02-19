@@ -231,8 +231,9 @@ class MainFrame(gui.MyFrame):
         m4.initialize(self,event)
         
     def m_OpenPrintOnButtonClick(self,event):
-        thr1 = threading.Thread(target = p.SwitchPanel, name = 'thread1', args = (self,3 ))
-        thr1.run()
+        t_panel = lambda self,page : threading.Thread(target = p.SwitchPanel , args=(self,page )).start()
+        t_panel(self, 3) 
+        
         with wx.FileDialog(self, "Choose which file to print", wildcard="*.tex",style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST) as fileDialog:
             fileDialog.SetPath(self.dir1+'\.')
             if fileDialog.ShowModal() == wx.ID_CANCEL:
@@ -248,9 +249,9 @@ class MainFrame(gui.MyFrame):
                 self.m_lineWqa.SetValue(str(self.QAline_thickness))
                 self.m_lineQA.SetValue(self.QAline_bool)
                 self.m_linePDF.SetValue(self.pdfline_bool)            
-                thr2 = threading.Thread(target = m3.print_preview, name = 'thread2', args = (self,event ))
-                thr2.run()
-                print(self.image)
+                
+                t_preview = lambda self,evt : threading.Thread(target = m3.print_preview, name = 't_preview' , args=(self,evt )).run()
+                t_preview(self, event) 
                 
     #%% menu item events
     " menu item events "
@@ -547,7 +548,7 @@ class MainFrame(gui.MyFrame):
         
     def m_PrintFinalOnButtonClick( self, event ):
         self.printsuccessful = False
-        self.printpreview = False
+        self.printpreview  = False
         self.FilePickEvent = False
         m3.preview_refresh(self)
         if self.printsuccessful == True:
