@@ -142,7 +142,7 @@ def notes2paper(self):
                 else: #if there is no textcard only display the picture
                     if self.key in self.picdictionary:
                         try:
-                            self.image = PIL.Image.open(self.dir2+"\\"+self.bookname+"\\"+self.picdictionary[self.key])
+                            self.image = PIL.Image.open(os.path.join(self.dir2, self.bookname ,self.picdictionary[self.key]))
                         except:
                             pass
                         if mode == 'Question':
