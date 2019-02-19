@@ -238,7 +238,7 @@ class MainFrame(gui.MyFrame):
             fileDialog.SetPath(self.dir1+'\.')
             if fileDialog.ShowModal() == wx.ID_CANCEL:
                 p.SwitchPanel(self,0) 
-                return     # the user changed their mind
+                return None    # the user changed their mind
             else:
                 self.fileDialog = fileDialog
                 self.FilePickEvent = True
