@@ -6,12 +6,15 @@ Created on Fri Sep 14 13:26:43 2018
 import bisect
 import ctypes
 import img2pdf
+import print_initialization as ini3
 import json
 import numpy as np
 import os
 from PIL import Image
 import PIL
-import print_functions as f
+import fb_functions as f
+import fc_functions as f2
+import print_functions as f3
 import program as p
 import program
 import re
@@ -27,6 +30,17 @@ ICON_STOP = 0x10
 MessageBox = ctypes.windll.user32.MessageBoxW
 #win32api: total width of all monitors
 SM_CXVIRTUALSCREEN = 78 
+
+def ColumnSliders(self):
+    LIST = []
+    if self.m_checkBox_col1.IsChecked():
+        LIST.append(self.m_slider_col1.GetValue())
+    if self.m_checkBox_col2.IsChecked():
+        LIST.append(self.m_slider_col2.GetValue())
+    if self.m_checkBox_col3.IsChecked():
+        LIST.append(self.m_slider_col3.GetValue())
+    return LIST
+
 
 def import_screenshot(self,event):
     """Import a screenshot, it takes multiple monitors into account. 
@@ -74,7 +88,8 @@ def import_screenshot(self,event):
 
 
 def print_preview(self,event): 
-    program.run_print(self, event)
+    ini3.initializeparameters(self) 
+    startprogram(self,event)
     #resize to A4 format
     _, PanelHeight = self.m_panel32.GetSize()
     PanelWidth = round(float(PanelHeight)/1754.0*1240.0)
@@ -88,6 +103,7 @@ def print_preview(self,event):
     
 def preview_refresh(self):
     notes2paper(self)
+    #startprogram(self,event)
     _, PanelHeight = self.m_panel32.GetSize()
     PanelWidth = round(float(PanelHeight)/1754.0*1240.0)
     #only select first page and display it on the bitmap
@@ -100,39 +116,31 @@ def preview_refresh(self):
     
 def notes2paper(self):
     
-    import print_functions as f
     N = 1.3
     self.a4page_w  = round(1240*N*self.pdfmultiplier) # in pixels
-    self.a4page_h = round(1754*N*self.pdfmultiplier)
+    self.a4page_h  = round(1754*N*self.pdfmultiplier)
     self.paper_h      = []
     self.paper_h_list = []
-    #target directory
-    self.dir_t = os.path.join(os.getenv("LOCALAPPDATA"),"FlashBook","temporary")
     ## create images
     self.allimages   = []
     self.allimages_w = [] #widths
     
+    """
+    """
     for i in range(self.nr_questions):
         self.image_q = PIL.Image.new('RGB', (0, 0),"white")
         self.image_a = []
         for mode in ['Question','Answer']: 
             self.mode = mode
             self.TextCard = False      
-            self.key = '{}{}'.format(self.mode[0],i)
-            try:          
-                # try to create a TextCard
+            self.key = f'{self.mode[0]}{i}'
+            try: # try to create a TextCard
                 if self.key in self.textdictionary:
-                    try:
-                        f.CreateTextCard(self)
-                    except:
-                        p.ERRORMESSAGE("Error: could not create textcard")
+                    f3.CreateTextCardPrint(self)
                 # if there is a textcard either combine them with a picture or display it on its own
                 if self.TextCard == True: 
                     if self.key in self.picdictionary:
-                        try:
-                            f.CombinePicText(self)      
-                        except:
-                            pass
+                        f2.CombinePicText(self)      
                     else:
                         self.image = self.imagetext                        
                         if mode == 'Question':
@@ -141,10 +149,9 @@ def notes2paper(self):
                             self.image_a = self.image
                 else: #if there is no textcard only display the picture
                     if self.key in self.picdictionary:
-                        try:
-                            self.image = PIL.Image.open(os.path.join(self.dir2, self.bookname ,self.picdictionary[self.key]))
-                        except:
-                            pass
+                        path = os.path.join(self.dir2, self.bookname ,self.picdictionary[self.key])
+                        if os.path.isfile(path):
+                            self.image = PIL.Image.open(path)
                         if mode == 'Question':
                             self.image_q = self.image
                         else:
@@ -159,7 +166,7 @@ def notes2paper(self):
             total_height = sum(heights)
             max_width = max(widths)
             if self.QAline_bool == True:
-                new_im = PIL.Image.new('RGB', (max_width, total_height+self.QAline_thickness), "white")
+                new_im = PIL.Image.new('RGB', (max_width, total_height + self.QAline_thickness), "white")
                 line = PIL.Image.new('RGB', (round(0.7*max_width), self.QAline_thickness), self.QAline_color)
                 #combine images to 1
                 new_im.paste(images[0], (0,0))
@@ -170,10 +177,26 @@ def notes2paper(self):
                 #combine images to 1
                 new_im.paste(images[0], (0,0))
                 new_im.paste(images[1], (0,self.image_q.size[1]))
+            
+            
+            
             self.image = new_im
             
         else:
             self.image = self.image_q
+        
+        ##anton
+        if ColumnSliders(self) != []:
+            columns = ColumnSliders(self)
+            ColumnWidths = [int(col/100*self.a4page_w) for col in columns if col != 0]                       
+
+            if len(ColumnWidths) > 0:
+                w,h = self.image.size
+                if w > min(ColumnWidths) and w > 0:
+                    NearestCol = min(ColumnWidths, key=lambda x:abs(x-w))
+                    self.image = self.image.resize((NearestCol,int(NearestCol/w*h)), PIL.Image.ANTIALIAS)
+                
+             
         
         
         self.allimages.append(self.image)
@@ -225,7 +248,7 @@ def notes2paper(self):
             new_im = add_border(self,new_im)
             self.paper_h.append(new_im)
         except: # if only one picture left
-            print(images.size)
+            #print(images.size)
             if images.size[0] > self.a4page_w:
                 w,h = images.size
                 images = images.resize((self.a4page_w,int(h*self.a4page_w/w)))
@@ -248,8 +271,8 @@ def notes2paper(self):
                 self.paper_h = self.paper_h[index:] 
                 self.img_heights = self.img_heights[index:] 
                 A = np.cumsum(self.img_heights)
-                print(A)
-                print("\n")      
+                #print(A)
+                #print("\n")      
             else:
                 D.append(self.paper_h)
                 self.img_heights = []
@@ -286,30 +309,31 @@ def notes2paper(self):
     folder = []
     if self.printpreview == False:
         for image in imagelist:
-            
-            pathname = os.path.join(self.dir_t,"temporary{}.png".format(i))
+            pathname = os.path.join(self.dir4,f"temporary{i}.png")
             folder.append(pathname)
             image.save(pathname)
             #image.show()
             i += 1
-        filename = os.path.join(self.dirpdf,"{}.pdf".format(self.bookname))
+        filename = os.path.join(self.dirpdf,f"{self.bookname}.pdf")
         try:
-            with open(filename, "wb") as f:
-                f.write(img2pdf.convert([i for i in folder if i.endswith(".png")]))
+            with open(filename, "wb") as file:
+                file.write(img2pdf.convert([i for i in folder if i.endswith(".png")]))
             self.printsuccessful = True
         except:
             self.printsuccessful = False
             MessageBox(0, "If you have the PDF opened in another file, close it and try it again.", "Warning", ICON_EXCLAIM)
+        
+        # remove all temporary files of the form "temporary(...).png"    
+        [os.remove(os.path.join(self.dir4,x)) for x in os.listdir(self.dir4) if ("temporary" in x and os.path.splitext(x)[1]=='.png' )]
+        
     else:
         pass
     self.m_TotalPDFPages.SetValue(str(''))
     self.m_TotalPDFPages.SetValue(str(len(self.allimages_v)))
 
 def dirchanged(self,event):
-    # for scrolling: only remember current and last position, append and pop, if the numbers repeat [0,0] or [X,X] then you know you've reached either the beginning or the end of the window: then flip page
-    self.scrollpos = [42,1337] 
     #   INITIALIZE: ACQUIRE ALL INFO NECESSARY
-    print("\nThe chosen path is {}\n".format(event.GetPath()))
+    print(f"\nThe chosen path is {event.GetPath()}\n")
     try:
         path = event.GetPath() 
         # - keep track of "nrlist" which is a 4 digit nr 18-> "0018" so that it is easily sorted in other programs
@@ -325,11 +349,11 @@ def dirchanged(self,event):
                     
                     k = len(picname)-j-1
                     
-                    if (f.is_number(picname[k]) == True) and SEARCH == True:
+                    if (f3.is_number(picname[k]) == True) and SEARCH == True:
                         indexlist.append(k)  
-                    elif (f.is_number(picname[k]) == False):
+                    elif (f3.is_number(picname[k]) == False):
                         if j > 0:
-                            if (f.is_number(picname[k+1])) == True:
+                            if (f3.is_number(picname[k+1])) == True:
                                 SEARCH = False
                     elif j == len(picname) - 1:
                         SEARCH = False
@@ -340,16 +364,16 @@ def dirchanged(self,event):
             # "Bookname + ****" a sorted 4 digit number
             if len_nr == 1:
                 nrlist.append("000{}".format(picname[indexlist[0]]))
-            elif len_nr ==0:
-                print("found no number for {}".format(picname))
+            elif len_nr == 0:
+                print(f"found no number for {picname}")
             else:
                 I = indexlist[0]
-                F = indexlist[-1]+1
+                F = indexlist[-1] + 1
                 nrlist.append("0"*(4-len_nr)+"{}".format(picname[I:F]))
                        
         picnames = [x for _,x in sorted(zip(nrlist,picnames))]
         self.picnames = picnames
-        self.bookname = path.replace("{}".format(self.dir3),"")[1:]#to remove '\'
+        self.bookname = path.replace(f"{self.dir3}","")[1:]#to remove '\'
         self.currentpage = 1
         
         self.PathBorders = os.path.join(self.dir5, self.bookname +'_borders.txt')
@@ -364,9 +388,9 @@ def dirchanged(self,event):
                 file.write(json.dumps({})) 
                 
         self.nr_pics = nr_pics
-
-        if not os.path.exists(self.dir2+r"\{}".format(self.bookname)):
-            os.makedirs(self.dir2+r"\{}".format(self.bookname))
+        dirpath = os.path.join(self.dir2,self.bookname)
+        if not os.path.exists(dirpath):
+            os.makedirs(dirpath)
         
         self.m_CurrentPage.SetValue(str(self.currentpage))
         self.m_textCtrl5.SetValue(str(self.nr_pics))
@@ -380,25 +404,22 @@ def dirchanged(self,event):
             self.dictionary = {}
             print("no drawn rects found for this file, continue")
         try:
-            self.jpgdir = self.dir3+r'\{}\{}'.format(self.bookname,self.picnames[self.currentpage-1])
+            self.jpgdir = os.path.join(self.dir3, self.bookname, self.picnames[self.currentpage-1])
             self.pageimage = PIL.Image.open(self.jpgdir)
             self.pageimagecopy = self.pageimage
             self.width, self.height = self.pageimage.size
         except:
             p.ERRORMESSAGE("Error: could not load scrolled window")
         
-        #print(self.drawborders)
-        try:#try to draw borders, but if there are no borders, do nothing
-            if self.drawborders == True:                    
-                f.drawCoordinates(self)
-        except:
-            p.ERRORMESSAGE("Error: could not draw borders")
-            pass            
+        #try to draw borders, but if there are no borders, do nothing
+        if self.drawborders == True:                    
+            f3.drawCoordinates(self)
+             
         try:
             image2 = wx.Image( self.width, self.height )
             image2.SetData( self.pageimage.tobytes() )
             self.m_bitmapScroll.SetBitmap(wx.Bitmap(image2))
-            f.SetScrollbars(self)
+            f3.SetScrollbars(self)
             
 
         except:
@@ -408,365 +429,11 @@ def dirchanged(self,event):
 
 
 
-        
 
 
-def find_hook(hookpos,string):    
-    """Method:
-    Count
-        { == +1 
-        } == -1
-    When the count == 0 you are done.
-    """
-    k = 0
-    hookcount = 0
-    condition = True
-    for i in range(hookpos,len(string)):#make sure it starts with {
-        if (condition == True):
-            k = k+1
-            char = string[i]
-            if char == '{':
-                hookcount += 1
-            if char == '}':
-                hookcount -= 1
-                if hookcount == 0:
-                    condition = False
-                    end_index = k+hookpos-1
-                    return end_index  
 
-
-def findchar(char,string,nr):
-    nr1 = str(nr)
-    if nr1.isdigit() == True:
-        ans = [m.start() for m in re.finditer(r'{}'.format(char), string )][nr]
-        return ans 
-    if nr == -1:  # negative numbers arent considered digits, we will only need [0,1,-1, or no argument]
-        ans = [m.start() for m in re.finditer(r'{}'.format(char), string )][nr]
-        return ans 
-    else:
-        ans = [m.start() for m in re.finditer(r'{}'.format(char), string )]
-        return ans 
-
-def contains(iterable):
-    k = 0
-    ans = []
-    con = []
-    for element in iterable:
-        if element:
-             ans.append(k)
-             con = True
-        k=k+1
-    return con,ans 
-
-def find_arguments(hookpos,sentence,defined_command,nr_arguments):
     
-    k = 0
-    hookcount = 0      
-    condition = True
-    argcount = 0
-    # find opening and closing {} for the arguments
-    argclose_index = [] 
-    argopen_index  = []
 
-    cstr_start = [m.start() for m in re.finditer(r'\{}'.format(defined_command), sentence )][0]
-    
-    for i in range(cstr_start,len(sentence)):            # make sure it starts with {
-        if (condition == True):
-            k = k+1
-            char = sentence[i]
-            
-            if char == '{':
-                hookcount += 1
-                if hookcount ==1:
-                    argopen_index.append(k+cstr_start-1)  # save opening indices
-                
-            if char == '}':
-                hookcount -= 1
-                if hookcount == 0:
-                    argcount += 1
-                    if argcount== nr_arguments:           #if the nr of closed loops == nr of arguments we are done
-                        condition = False
-                    argclose_index.append(k+cstr_start-1) #save closing indices
-    arguments = []
-    for i in range(nr_arguments):
-        arguments.append(sentence[argopen_index[i]+1:argclose_index[i]])
-    return arguments, argopen_index, argclose_index
-
-
-def replace_allcommands(defined_command,LaTeX_command,Question,nr_arg):    
-    
-    length_c = len(defined_command) 
-    # check if the command can be found in Q&A
-    FindCommand = (defined_command in Question)
-    while FindCommand == True: 
-        # if a command has arguments: you need to find their positions
-        if nr_arg != 0:
-            cmd_start = [m.start() for m in re.finditer(r'\{}'.format(defined_command), Question )][0]
-            arguments = find_arguments(cmd_start,Question,defined_command,nr_arg)[0]
-            # check if it gives empty [], otherwise index1 = [] will give errors
-            A = find_arguments(cmd_start,Question ,defined_command,nr_arg)
-    
-            if not A[0]: # quits if the index is empty
-                FindCommand = False
-            else:
-                index1 = find_arguments(cmd_start,Question ,defined_command,nr_arg)[1][0]-length_c
-                index2 = find_arguments(cmd_start,Question,defined_command,nr_arg)[2][1]+1
-                
-                #replace the command by a LaTeX command
-                Question = Question.replace(Question[index1:index2],LaTeX_command )
-                #replace the temporary arguments #1,#2... by the real arguments
-                for i in range(nr_arg):
-                    Question = Question.replace("#{}".format(i+1), arguments[i])
-                # check if another command is in the Q&A
-                FindCommand = (defined_command in Question)
-        else:
-            # if there are no arguments you can directly replace the defined_cmd for the latex_cmd
-            # only needs to do this once for the entire string
-            Question = Question.replace(defined_command,LaTeX_command)
-            FindCommand = False
-    
-    return Question
-
-def remove_pics(string,pic_command):
-    
-    # there is only 1 pic per Q/A, in the form of "some text \pic{name.jpg} some text"   
-    if pic_command in string: # if \pic is found in text
-        # start and endpoints of brackets
-        pic_start = [m.start() for m in re.finditer(r'\{}'.format(pic_command), string )][0]        
-        pic_end = find_hook(pic_start, string)
-        # output
-        BOOLEAN = True
-        picname = find_arguments(pic_start, string, pic_command, 1)[0][0] # returns string instead of list
-        string = string[:pic_start] + string[pic_end+1:]                 # Question without picture
-    else:
-        BOOLEAN = False
-        picname = []
-    return BOOLEAN, string, picname
-
-def LoadFlashCards(self):
-    #if self.debugmode:
-    #    print("f=loadflashcards")
-    try:
-        # find the closing '}' for a command                                         
-        end_q_index = 0
-        end_a_index = 0    
-        for N in range(self.nr_cards):   
-            end_q_index = find_hook(self.q_hookpos[N], self.letterfile)
-            end_a_index = find_hook(self.a_hookpos[N], self.letterfile)    
-            # collect all Questions and Answers
-            self.questions.append(self.letterfile[self.q_hookpos[N]+1:end_q_index])
-            self.answers.append(self.letterfile[self.a_hookpos[N]+1:end_a_index])        
-        # replace user defined commands, found in a separate file                  
-        file1 = open(os.path.join(self.dir_LaTeX_commands, r"usercommands.txt"), 'r')
-        newcommand_line_lst = file1.readlines()
-        # start reading after "###" because I defined that as the end of the notes
-        index = []
-        for i,commandline in enumerate(newcommand_line_lst):
-            if "###" in commandline:
-                index = i+1
-        # remove the lines that precede the ### for user explanation on how to use newcommand        
-        if "{}".format(index).isdigit() == True:
-            newcommand_line_lst[:index]=[]
-        # only look at lines containing "newcommand" removes all empty and irrelevant lines
-        newcommand_line_lst = [x for x in newcommand_line_lst if ("newcommand"  in x)]
-        nr_c = len(newcommand_line_lst)
-        
-        ##  how to replace a user defined command with a command that is known in latex
-        # look for all commands if they appear anywhere in questions or answers.
-        # find indices of: -defined command -original command, -number of arguments
-        for i in range(nr_c):
-            newcommand_line = newcommand_line_lst[i]
-            # extract all the data from a commandline
-            c_start = findchar('{',newcommand_line,0)
-            c_end   = findchar('}',newcommand_line,0)
-            
-            num_start = findchar('\[',newcommand_line,"")              # the argument "" indicates it will find all instances
-            num_end   = findchar('\]',newcommand_line,"") 
-           
-            newc_start = findchar('{',newcommand_line,1)   
-            newc_end = findchar('}',newcommand_line,-1)
-            # find the commands explicitly
-            defined_command = newcommand_line[c_start+1:c_end]         # finds \secpar{}{}            
-            LaTeX_command   = newcommand_line[newc_start+1:newc_end]   # finds \frac{\partial^2 #1}{\partial #2^2}
-            nr_arg          = int(newcommand_line[int(num_start[0]+1):int(num_end[0])])
-            
-            # find where they can be found in all of the questions/answers
-            cond_q = contains(defined_command in x for x in self.questions) 
-            cond_a = contains(defined_command in x for x in self.answers)  
-            
-            #check questions: does the i-th command occur in the questions
-            if cond_q[0] == True: #first index gives T/F, 2nd index gives index where it is true
-                nr = len(cond_q[1])
-                for j in range(nr):
-                    index1 = cond_q[1]
-                    index2 = index1[j]                    
-                    # select the right question and replace all the commands
-                    Q = self.questions[index2]
-                    self.questions[index2] = replace_allcommands(defined_command,LaTeX_command,Q,nr_arg)
-                                    
-            #check answers: does the i-th command occur in the answers
-            if cond_a[0] == True: #first index gives T/F, 2nd index gives index where it is true
-                nr = len(cond_a[1])
-                for k in range(nr):
-                    index1 = cond_a[1]
-                    index2 = index1[k]
-                    # select the right answer and replace all the commands
-                    A = self.answers[index2]
-                    self.answers[index2] = replace_allcommands(defined_command,LaTeX_command,A,nr_arg)
-                    
-        ## replace all \pics out of the QnA and save the picture names.
-        self.picdictionary  = {}
-        self.textdictionary = {}
-        self.q_pics = []
-        self.a_pics = []
-        # remove all \pic{} commands
-        for i in range(self.nr_cards):
-            findpic = True
-            findpic2 = True            
-            # Questions: replace pics{}
-            while findpic == True:#find all pic commands
-                [T_F,QnA,picname]=remove_pics(self.questions[i],self.pic_command)
-                self.questions[i] = QnA # removed pic{} from Question
-                if T_F == True:
-                    self.picdictionary.update({'Q{}'.format(i): picname})
-                findpic = T_F
-                  
-            while findpic2 == True: 
-                [T_F2,QnA,picname]=remove_pics(self.answers[i],self.pic_command) 
-                self.answers[i] = QnA # removed pic{} from Question
-                if T_F2 == True:
-                    self.picdictionary.update({'A{}'.format(i): picname})
-                findpic2 = T_F2      
-        """
-        CARD ORDER
-        """
-        ## determine cardorder based on user given input
-        self.cardorder = range(self.nr_questions)    
-            
-        # reformat QnA
-        self.questions2 = []
-        self.answers2 = []
-        for i,question in enumerate(self.questions):
-            answer = self.answers[i]
-            self.questions2.append(question.strip())
-            self.answers2.append(answer.strip())
-        # save questions and answers in dictionaries
-        for i,question in enumerate(self.questions):
-            if self.questions2[i] != '':
-                self.textdictionary.update({'Q{}'.format(i): self.questions2[i]})
-            if self.answers2[i] != '':
-               self.textdictionary.update({'A{}'.format(i): self.answers2[i]})
-    except:
-        p.ERRORMESSAGE("Error: couldn't pick file")
-          
-    notes2paper(self)
-    
-def ShowPage(self):
-    if self.debugmode:
-        print("f=showpage")
-    try:
-        width, height = self.image.size
-        image2 = wx.Image( width, height )
-        image2.SetData( self.image.tobytes() )        
-        self.m_bitmapScroll.SetBitmap(wx.Bitmap(image2))        
-    except:        
-        p.ERRORMESSAGE("Error: cannot show image")
-        
-def resetselection(self,event):
-    #  remove all temporary pictures taken
-    if len(self.pic_answer_dir) > 0:
-        for pic in self.pic_answer_dir:
-            try:
-                os.remove(pic)
-            except:
-                pass
-    if len(self.pic_question_dir) > 0:
-        for pic in self.pic_question_dir:
-            try:
-                os.remove(pic)
-            except:
-                pass
-    #reset all values:
-    self.tempdictionary = {}
-    f.ResetQuestions(self)        
-    self.questionmode = True
-    self.m_textCtrl1.SetValue("Question:")
-    self.m_textCtrl2.SetValue("")
-    # update drawn borders
-    f.LoadPage(self)
-    f.ShowPage(self)
-    
-def switchpage(self,event):
-    try:
-        pagenumber = int(event.GetEventObject().GetValue())
-        if pagenumber <1:
-            pagenumber = 1
-        if pagenumber > self.nr_pics:
-            pagenumber = self.nr_pics
-        self.currentpage = pagenumber
-        print(self.currentpage)
-        f.LoadPage(self)
-        f.ShowPage(self)
-    except:
-        p.ERRORMESSAGE("Error: invalid page number")
-        
-def nextpage(self,event):
-    try:
-        if self.currentpage > self.nr_pics-1:
-            self.currentpage = self.currentpage
-        else:
-            self.currentpage = self.currentpage+1
-        f.LoadPage(self)
-        f.ShowPage(self)
-        f.SetScrollbars(self)
-    except:
-        p.ERRORMESSAGE("Error: can't click on next")
-        
-def previouspage(self,event):
-    try:
-        if self.currentpage == 1:
-            self.currentpage = self.currentpage
-        else:
-            self.currentpage = self.currentpage-1    
-        f.LoadPage(self)
-        f.ShowPage(self)
-        f.SetScrollbars(self)            
-    except:
-        p.ERRORMESSAGE("Error: can't click on back")
-
-def setcursor(self,event):
-    lf = event.GetEventObject()
-    cursor = lf.GetValue()
-    self.cursor = cursor
-    if cursor == True:
-        self.SetCursor(wx.Cursor(wx.CURSOR_CROSS))
-    else:
-        self.SetCursor(wx.Cursor(wx.CURSOR_ARROW))
-        
-def zoomout(self,event):
-    try:
-        self.zoom += 0.1
-        f.LoadPage(self)
-        f.ShowPage(self)
-        f.SetScrollbars(self)
-        self.m_textZoom.SetValue(f"{int(self.zoom*100)}%")
-    except:
-        p.ERRORMESSAGE("Error: cannot zoom out")
-        
-def zoomin(self,event):
-    try:
-        if self.zoom == 0.1:
-            self.zoom = self.zoom
-        else:
-            self.zoom += -0.1
-        f.LoadPage(self)
-        f.ShowPage(self)
-        f.SetScrollbars(self)
-        self.m_textZoom.SetValue(f"{int(self.zoom*100)}%")
-        self.m_panel1.Refresh() #remove the remnants of a larger bitmap when the page shrinks
-    except:
-        p.ERRORMESSAGE("Error: cannot zoom in")
-        
 def SetKeyboardShortcuts(self):
     try:# look if Id's already exist
         # combine functions with the id
@@ -795,22 +462,21 @@ def SetKeyboardShortcuts(self):
         self.SetAcceleratorTable(entries)
 
 def RemoveKeyboardShortcuts(self):
-    try:# look if Id's already exist
-        # combine functions with the id        
-        self.Unbind( wx.EVT_MENU, self.m_toolBackOnToolClicked,       id = self.Id_leftkey  )
-        self.Unbind( wx.EVT_MENU, self.m_toolNextOnToolClicked,       id = self.Id_rightkey )
-        self.Unbind( wx.EVT_MENU, self.m_enterselectionOnButtonClick, id = self.Id_enterkey )
-        # empty acceleratortable?
-        self.SetAcceleratorTable()
-    except:
-        pass
+    # combine functions with the id        
+    self.Unbind( wx.EVT_MENU, self.m_toolBackOnToolClicked,       id = self.Id_leftkey  )
+    self.Unbind( wx.EVT_MENU, self.m_toolNextOnToolClicked,       id = self.Id_rightkey )
+    self.Unbind( wx.EVT_MENU, self.m_enterselectionOnButtonClick, id = self.Id_enterkey )
+    # empty acceleratortable?
+    self.SetAcceleratorTable()
 
+"""
 def SwitchBitmap(self): # checks if there is an answer card, if not changes mode back to question.
     if self.debugmode:
         print("f=switchbitmap")
     try:
         # you always start with a question, check if there is an answer:
-        key = 'A{}'.format(self.cardorder[self.index]) # do not use self.key: only check if there is an answer, don't change the key
+        nr = self.cardorder[self.index]
+        key = f'A{nr}' # do not use self.key: only check if there is an answer, don't change the key
         try:
             if key not in self.textdictionary and key not in self.picdictionary: # there is no answer card!
                 self.mode = 'Question'
@@ -826,12 +492,11 @@ def SwitchBitmap(self): # checks if there is an answer card, if not changes mode
     except:
         
         p.ERRORMESSAGE("Error: could not switch bitmap #1")
-
+"""
 def add_border(self,img):
     if self.pdfline_bool == True:
         new_im = PIL.Image.new("RGB", (self.a4page_w,img.size[1]+self.pdfline_thickness),"white")    
         border = PIL.Image.new("RGB", (self.a4page_w,self.pdfline_thickness), self.pdfline_color)    
-        #print(type(self.pdfline_color ))
         new_im.paste(border, (0,img.size[1]))
         new_im.paste(img, (0,0))
         return new_im
@@ -858,7 +523,7 @@ def startprogram(self,event):
     self.answers     = []
     self.questions2  = []
     
-    f.SetScrollbars(self)    
+    f3.SetScrollbars(self)    
     # open file
     try:
         if self.FilePickEvent == True:
@@ -880,19 +545,14 @@ def startprogram(self,event):
         self.a_hookpos = list(np.array(a_pos) + len(self.answer_command)   - 2)
         
         self.nr_cards = len(q_pos)
-    
+        self.nr_questions = len(q_pos)
     except:
         p.ERRORMESSAGE("Error: finding questions/answers")
 
     ## dialog display              
-    
-    #open My dialog, don't forget to add two parameters to "def __init__( self, parent,MaxValue,Value )" within MyDialog 
-    #and use these values to set the slider as you wish. Don't forget to add "self.Destroy" when you press the button
-    #open dialog window
     self.nr_questions = self.nr_cards
     self.chrono = True
-    self.multiplier = 1
-    
+    self.multiplier = 1    
     # display nr of questions and current index of questions            
-    LoadFlashCards(self)
-    #SwitchBitmap(self)
+    f2.LoadFlashCards(self, False)
+    notes2paper(self)
