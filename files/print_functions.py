@@ -11,24 +11,23 @@ import os
 import math
 #matplotlib.use('Agg')
 import pylab
+import fb_functions    as f
+import fc_functions    as f2
 import program as p
 import json
+import re
 #import matplotlib.backends.backend_agg as agg
-
-
 pylab.ioff() # make sure it is inactive, otherwise possible qwindows error    .... https://stackoverflow.com/questions/26970002/matplotlib-cant-suppress-figure-window
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
-datadir = os.getenv("LOCALAPPDATA")
-dir0 = datadir + r"\FlashBook"
 
 class Window2(wx.PopupWindow):
     """"""
     #if debugmode:
     #    print("fb=Window2")
     #----------------------------------------------------------------------
-    def __init__(self, parent, style,information):
-        self.info=information
+    def __init__(self, parent, style, information):
+        self.info = information
         self.border = 10
         """Constructor"""
         wx.PopupWindow.__init__(self, parent, style)
@@ -130,33 +129,33 @@ def drawCoordinates(self): # no errors
     img = np.array(self.pageimage)
     img = np.uint8(img)
     try:#try to look if there already exists borders that need to be drawn
-        coordinatelist = self.dictionary['page {}'.format(self.currentpage)]
+        coordinatelist = self.dictionary[f'page {self.currentpage}']
         for coord in coordinatelist:    
             self.cord1 = coord[0:2]
             self.cord2 = coord[2:]
             img = drawRec(self,img,self.colorlist[0])
     except:
-        pass
+        p.ERRORMESSAGE("Error: could not draw borders")
     
     try:    #there won't always be tempdict borders, so try and otherwise go further
-        coordinatelist = self.tempdictionary['page {}'.format(self.currentpage)]
+        coordinatelist = self.tempdictionary[f'page {self.currentpage}']
         for coord in coordinatelist:    
             self.cord1 = coord[0:2]
             self.cord2 = coord[2:]
             img = drawRec(self,img,self.colorlist[1])
     except:
-        pass
+        p.ERRORMESSAGE("Error: could not draw temporary borders")
     #export image
     self.pageimage = PIL.Image.fromarray(img)
     
-def SetScrollbars(self): #no errors
+def SetScrollbars(self): 
     scrollWin = self.m_scrolledWindow1
     scrollWin.SetScrollbars(0,int(20*self.zoom),0,int(100*self.zoom) )
 
-def LoadPage(self): # no error
+def LoadPage(self): 
     
     try:
-        self.jpgdir = self.dir3+r'\{}\{}'.format(self.bookname,self.picnames[self.currentpage-1])
+        self.jpgdir = os.path.join(self.dir3, self.bookname, self.picnames[self.currentpage-1])
         print(self.jpgdir)
         self.pageimage = PIL.Image.open(self.jpgdir)
         self.pageimagecopy = self.pageimage
@@ -190,7 +189,7 @@ def ShowPage(self): # no error
         ##
         self.m_bitmapScroll.SetBitmap(wx.Bitmap(image2))
         with open(os.path.join(self.temp_dir, self.bookname +'.txt'), 'w') as output:   
-            output.write("{}".format(self.currentpage))
+            output.write(f"{self.currentpage}")
     except:
         p.ERRORMESSAGE("Error: cannot show page")
 
@@ -205,7 +204,31 @@ def ResetQuestions(self): # no errors
     self.pic_answer_dir   = []
     self.usertext         = ''
 
+def CreateTextCardPrint(self):
+    
+    #if debugmode:
+    #    print("fb=CreateTextCard")
+    self.TextCard = True    
+    #LaTeXcode = Text2Latex(self)
+    self.usertext = self.textdictionary[self.key]
+    LaTeXcode = self.usertext
+    height_card = math.ceil(len(LaTeXcode)/40)/2
+    fig = Figure(figsize=[8, height_card],dpi=100)
+    ax = fig.gca()
+    ax.plot([0, 0,0, height_card],color = (1,1,1,1))
+    ax.axis('off')
+    ax.text(-0.5, height_card/2,LaTeXcode, fontsize = self.LaTeXfontsize, horizontalalignment='left', verticalalignment='center',wrap = True)
+    
+    canvas = FigureCanvas(fig)
+    canvas.draw()
+    renderer = canvas.get_renderer()
+    raw_data = renderer.tostring_rgb()
+    size = canvas.get_width_height()
+    self.imagetext = PIL.Image.frombytes("RGB", size, raw_data, decoder_name='raw', )
 
+
+
+"""
 def CombinePics(self,directory):
     images = list(map(PIL.Image.open, directory))   
     widths, heights = zip(*(i.size for i in images))
@@ -225,27 +248,8 @@ def CombinePics(self,directory):
                 os.remove(item)
             except:
                 pass
-def CreateTextCard(self):
-    #if debugmode:
-    #    print("fb=CreateTextCard")
-    self.TextCard = True    
-    #LaTeXcode = Text2Latex(self)
-    self.usertext = self.textdictionary[self.key]
-    LaTeXcode = self.usertext
-    height_card = math.ceil(len(LaTeXcode)/40)/2
-    fig = Figure(figsize=[8, height_card],dpi=100)
-    ax = fig.gca()
-    ax.plot([0, 0,0, height_card],color = (1,1,1,1))
-    ax.axis('off')
-    ax.text(-0.5, height_card/2,LaTeXcode, fontsize = 20, horizontalalignment='left', verticalalignment='center',wrap = True)
-    
-    canvas = FigureCanvas(fig)
-    canvas.draw()
-    renderer = canvas.get_renderer()
-    raw_data = renderer.tostring_rgb()
-    size = canvas.get_width_height()
-    self.imagetext = PIL.Image.frombytes("RGB", size, raw_data, decoder_name='raw', )
-
+"""
+        
 def CombinePicText_h(self):
     
     self.allimages_h = []
@@ -290,57 +294,14 @@ def CombinePicText_v(self):
     self.allimages_v[0].show()
     
     
-def CombinePicText(self):
-    #if debugmode:
-    #    print("fb=CombinePicText")
-    imagepic = PIL.Image.open(self.dir2+"\\"+self.bookname+"\\"+self.picdictionary[self.key])
-    images = [self.imagetext,imagepic]
+        
     
-    widths, heights = zip(*(i.size for i in images))
-    total_height = sum(heights)
-    max_width = max(widths)
-    new_im = PIL.Image.new('RGB', (max_width, total_height), "white")
-    #combine images to 1
-    y_offset = 0
-    for im in images:
-        new_im.paste(im, (0,y_offset))
-        y_offset += im.size[1]
-    self.image = new_im
 
-def ShowInPopup(self,mode):
-    #if debugmode:
-    #    print("fb=ShowInPopup")
-    try:# a picture directory may not exist
-        if mode == "Answer":
-            directory = self.pic_answer_dir[0]
-        if mode == "Question":
-            directory = self.pic_question_dir[0]
-        image = PIL.Image.open(directory)
-    except:
-        pass
-    try:
-        CreateTextCard(self)
-        CombinePicText(self,directory)
-        image = self.image
-    except:
-        try:#only text
-            CreateTextCard(self)
-            image = self.imagetext
-        except:
-            pass
-    
-    win = Window2(self.GetTopLevelParent(), wx.SIMPLE_BORDER,image)
-    pos = self.m_scrolledWindow1.ClientToScreen( (0,0) )
-    #print(' pos = {}'.format(pos))
-    win.Position(pos, (0, 200))
-    win.Show(True)  
     
 
 
 #%% turn user LaTeX macro into useable LaTeX code
-import re
-import os
-import fc_functions as fc
+
 
 def Text2Latex(self):
     """# EXAMPLE:
@@ -371,14 +332,14 @@ def Text2Latex(self):
     for i in range(nr_commands):
         newcommand_line = newcommand_line_lst[i]
         # extract all the data from a commandline
-        definition_start = fc.findchar('{',newcommand_line,0)
-        definition_end   = fc.findchar('}',newcommand_line,0)
+        definition_start = f2.findchar('{',newcommand_line,0)
+        definition_end   = f2.findchar('}',newcommand_line,0)
         
-        num_start = fc.findchar('\[',newcommand_line,"")
-        num_end   = fc.findchar('\]',newcommand_line,"")
+        num_start = f2.findchar('\[',newcommand_line,"")
+        num_end   = f2.findchar('\]',newcommand_line,"")
         
-        latex_start = fc.findchar('{',newcommand_line,1)   
-        latex_end = fc.findchar('}',newcommand_line,-1)
+        latex_start = f2.findchar('{',newcommand_line,1)   
+        latex_end = f2.findchar('}',newcommand_line,-1)
         # find the commands explicitly
         defined_command = newcommand_line[definition_start+1:definition_end]     ## finds \secpar        
         LaTeX_command = newcommand_line[latex_start+1:latex_end] ## finds \frac{\partial^2 #1}{\partial #2^2}
@@ -398,10 +359,10 @@ def replacecommands(defined_command,LaTeX_command,inputstring,nr_arg):
         # if a command has arguments: you need to find their positions
         if nr_arg != 0:
             cmd_start = [m.start() for m in re.finditer(r'\{}'.format(defined_command), inputstring )][0]
-            arguments = fc.find_arguments(cmd_start,inputstring,defined_command,nr_arg)[0]
+            arguments = f2.find_arguments(cmd_start,inputstring,defined_command,nr_arg)[0]
             
-            index1 = fc.find_arguments(cmd_start,inputstring ,defined_command,nr_arg)[1][0]-length_c
-            index2 = fc.find_arguments(cmd_start,inputstring,defined_command,nr_arg)[2][1]+1
+            index1 = f2.find_arguments(cmd_start,inputstring ,defined_command,nr_arg)[1][0]-length_c
+            index2 = f2.find_arguments(cmd_start,inputstring,defined_command,nr_arg)[2][1]+1
             
             #replace the command by a LaTeX command
             inputstring = inputstring.replace(inputstring[index1:index2],LaTeX_command )
