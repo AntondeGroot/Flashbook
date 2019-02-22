@@ -51,7 +51,7 @@ import wmi # for IPaddress
 import sys
 sys.setrecursionlimit(5000)
 
-path = os.path.join(os.getenv("LOCALAPPDATA"),'FlashBook','temporary')
+path = os.path.join(os.getenv("LOCALAPPDATA"),'Flashbook','temporary')
 LOG_FILENAME = os.path.join(path,'logging_traceback.out')
 logging.basicConfig(filename=LOG_FILENAME, level=logging.INFO)
 logging.info('New session has started')
@@ -77,10 +77,25 @@ try:
 except:
     print("no qwindows.dll module found  (#2)")
             
+            
+def BoxesChecked(self,n):
+    CHECKED1 = self.m_checkBox_col1.IsChecked()
+    CHECKED2 = self.m_checkBox_col2.IsChecked()
+    CHECKED3 = self.m_checkBox_col3.IsChecked()
+    if n == 1:
+        return CHECKED1
+    elif n == 2:
+        return CHECKED2
+    elif n == 3:
+        return CHECKED3
+    else:
+        p.ERRORMESSAGE("Error: invalid entry in BoxesChecked")
+        return False
+    
 #% path to resources: 
 def setup_sources(self):
     self.datadir      = os.getenv("LOCALAPPDATA")
-    self.dir0         = joinpath(self.datadir,"FlashBook")
+    self.dir0         = joinpath(self.datadir,"Flashbook")
     self.dir7         = joinpath(self.dir0,"resources")
     self.path_add     = joinpath(self.dir7,"add.png")
     self.path_min     = joinpath(self.dir7,"min.png")
@@ -97,41 +112,90 @@ def setup_sources(self):
     self.path_repeat_na = joinpath(self.dir7,"repeat_na.png")
 #%% settings   
 def settings_get(self):
-
-    with open(joinpath(self.dirsettings,"settings.txt"), 'r') as file:
-        settings   = json.load(file)
-        debug_var  = settings['debugmode']
-        self.pdfmultiplier     = settings['pdfmultiplier'] 
-        self.QAline_thickness  = settings['QAline_thickness']
-        self.pdfline_thickness = settings['pdfline_thickness']
-        self.QAline_color      = tuple(settings['QAline_color'])
-        self.pdfline_color     = tuple(settings['pdfline_color'])        
-        self.QAline_bool       = settings['QAline_bool']
-        self.pdfline_bool      = settings['pdfline_bool']
-        
-        if debug_var == 0:
-            self.debugmode = False
-        else:
-            self.debugmode = True
-            print("debugging is enabled")
-            
+    try:
+        with open(joinpath(self.dirsettings,"settings.txt"), 'r') as file:
+            settings = json.load(file)
+            self.debugmode         = settings['debugmode']
+            self.pdfmultiplier     = settings['pdfmultiplier'] 
+            self.QAline_thickness  = settings['QAline_thickness']
+            self.pdfline_thickness = settings['pdfline_thickness']
+            self.QAline_color      = tuple(settings['QAline_color'])
+            self.pdfline_color     = tuple(settings['pdfline_color'])        
+            self.QAline_bool       = settings['QAline_bool']
+            self.pdfline_bool      = settings['pdfline_bool']
+            self.pdfPageColsPos    = settings['pdfPageColsPos']
+            self.pdfPageColsChecks = settings['pdfPageColsChecks']
+            self.LaTeXfontsize     = settings['LaTeXfontsize']
+            self.bordercolors      = settings['bordercolors']
+    except:
+        # Just in case when the settings.txt has been tempered with        
+        if os.path.exists(joinpath(self.dirsettings,"settings.txt")):
+            os.remove(joinpath(self.dirsettings,"settings.txt"))
+        settings_create(self)
+        settings_get(self)
+           
 def settings_create(self):
-    if not os.path.exists(self.dirsettings+r"\settings.txt"):   
-        with open(self.dirsettings+r"\settings.txt", 'w') as file:
-            file.write(json.dumps({'debugmode' : 0,'pdfmultiplier': 1.0, 'QAline_thickness' : 1, 'pdfline_thickness' : 5, 
-                                   'QAline_color' : (0,0,0), 'pdfline_color' : (18,5,250), 'QAline_bool': True,'pdfline_bool': True }))       
+    if not os.path.exists(joinpath(self.dirsettings,"settings.txt")):   
+        with open(joinpath(self.dirsettings,"settings.txt"), 'w') as file:
+            file.write(json.dumps({'debugmode' : False,
+                                   'pdfmultiplier': 1.0, 
+                                   'QAline_thickness' : 1, 
+                                   'pdfline_thickness' : 5, 
+                                   'QAline_color' : (0,0,0), 
+                                   'pdfline_color' : (18,5,250), 
+                                   'QAline_bool': True,
+                                   'pdfline_bool': True ,
+                                   'pdfPageColsPos' : [25 , 50 , 75],
+                                   'pdfPageColsChecks' : [False, True, False],
+                                   'LaTeXfontsize' : 20,
+                                   'bordercolors' : [[0,0,0],[200,0,0]]}))
             file.close()
             
 def settings_set(self):
-    with open(self.dirsettings+r"\settings.txt", 'w') as file:
-        file.write(json.dumps({'debugmode' : 0, 'pdfmultiplier': self.pdfmultiplier,'QAline_thickness' : self.QAline_thickness, 'pdfline_thickness': self.pdfline_thickness, 
-                               'QAline_color' : self.QAline_color, 'pdfline_color' : self.pdfline_color, 'QAline_bool': self.QAline_bool,'pdfline_bool': self.pdfline_bool}))           
+    with open(joinpath(self.dirsettings,"settings.txt"), 'w') as file:
+        file.write(json.dumps({'debugmode' : self.debugmode, 
+                               'pdfmultiplier': self.pdfmultiplier,
+                               'QAline_thickness' : self.QAline_thickness, 
+                               'pdfline_thickness': self.pdfline_thickness, 
+                               'QAline_color' : self.QAline_color, 
+                               'pdfline_color' : self.pdfline_color, 
+                               'QAline_bool': self.QAline_bool,
+                               'pdfline_bool': self.pdfline_bool,
+                               'pdfPageColsPos' : self.pdfPageColsPos,
+                               'pdfPageColsChecks': self.pdfPageColsChecks,
+                               'LaTeXfontsize' : self.LaTeXfontsize,
+                               'bordercolors' : self.bordercolors}))
         file.close()
-        
+
+def settings_reset(self):
+    if os.path.exists(joinpath(self.dirsettings,"settings.txt")):
+        os.remove(joinpath(self.dirsettings,"settings.txt"))
+    settings_create(self)
+    settings_get(self)
+    self.drawborders = True 
+    self.m_checkBox11.Check(True)
+    self.cursor = False
+    self.SetCursor(wx.Cursor(wx.CURSOR_ARROW))
+    self.m_checkBoxCursor11.Check(False)
+    if self.panel3.IsShown():
+        self.m_colorQAline.SetColour(self.QAline_color)
+        self.m_colorPDFline.SetColour(self.pdfline_color)
+        self.m_lineWpdf.SetValue(str(self.pdfline_thickness))
+        self.m_lineWqa.SetValue(str(self.QAline_thickness))
+        self.m_lineQA.SetValue(self.QAline_bool)
+        self.m_linePDF.SetValue(self.pdfline_bool)            
+        self.m_sliderPDFsize.SetValue(int(200-self.pdfmultiplier*100))
+        self.m_slider_col1.SetValue(self.pdfPageColsPos[0])
+        self.m_slider_col2.SetValue(self.pdfPageColsPos[1])
+        self.m_slider_col3.SetValue(self.pdfPageColsPos[2])
+        self.m_checkBox_col1.SetValue(self.pdfPageColsChecks[0])
+        self.m_checkBox_col2.SetValue(self.pdfPageColsChecks[1])
+        self.m_checkBox_col3.SetValue(self.pdfPageColsChecks[2])
+    
 #%%
 def initialize(self):
     datadir = os.getenv("LOCALAPPDATA")
-    dir0 = joinpath(datadir,"FlashBook")
+    dir0 = joinpath(datadir,"Flashbook")
     self.dir0 = dir0
     self.dir1 = joinpath(dir0,"files")
     self.dir2 = joinpath(dir0,"pics")
@@ -148,19 +212,17 @@ def initialize(self):
     
     dirs = [self.dir0, self.dir1, self.dir2, self.dir3, self.dir4, self.dir5, self.dir6, self.dirpdf, self.dirsettings, self.dirIP, self.dirpdfbook]
     try:
-        if not os.path.exists(joinpath(self.dirIP,'IPadresses.txt')):
-            
+        if not os.path.exists(joinpath(self.dirIP,'IPadresses.txt')):          
             wmi_obj = wmi.WMI()
             wmi_sql = "select IPAddress,DefaultIPGateway from Win32_NetworkAdapterConfiguration where IPEnabled = True"
-            wmi_out = wmi_obj.query(wmi_sql)[0] #only 1 query
-            
+            wmi_out = wmi_obj.query(wmi_sql)[0] #only 1 query           
             myIP = wmi_out.IPAddress[0]          
            
             with open(joinpath(self.dirIP,'IPadresses.txt'),'w') as f:
                 f.write(json.dumps({'IP1' : myIP,'IP2': ""})) 
                 f.close()
     except:
-        print("Error: could not access internet")
+        p.ERRORMESSAGE("Error: could not access internet")
         
     print("="*90)
     print(f"\nThe files will be saved to the following directory: {dir0}\n")
@@ -183,9 +245,11 @@ def initialize(self):
 """
 
 class MainFrame(gui.MyFrame):
-    #constructor    
+    
+    """ INITIALIZE """
     def __init__(self,parent): 
         initialize(self)
+        settings_get(self)
         setup_sources(self)
         
         #initialize parent class
@@ -205,35 +269,51 @@ class MainFrame(gui.MyFrame):
         p.SwitchPanel(self,0)
         self.printpreview = True
                         
-    #%% Panel selection
-    " Panel selection "
+    #%% MAIN PROGRAMS
+    """ MAIN PROGRAMS """ 
+    
     def m_OpenFlashbookOnButtonClick( self, event ):
+        """START MAIN PROGRAM : FLASHBOOK"""
         self.stayonpage = False
         self.stitchmode_v = True # stich vertical or horizontal
         self.m_dirPicker11.SetInitialDirectory(self.dir3)
         self.m_dirPicker11.SetPath(self.dir3)
-        # at first disable the border of the bitmap, 
-        # otherwise you get a bordered empty bitmap. Enable the border only when there is a bitmap
-        self.m_bitmapScroll.SetWindowStyleFlag(False) 
+        self.m_bitmapScroll.SetWindowStyleFlag(False)  # first disable the border of the bitmap, otherwise you get a bordered empty bitmap. Enable the border only when there is a bitmap
         setup_sources(self)
         p.SwitchPanel(self,1)      
         m.SetKeyboardShortcuts(self)
         p.run_flashbook(self)
         
     def m_OpenFlashcardOnButtonClick( self, event ):
+        """START MAIN PROGRAM : FLASCARD"""
         p.SwitchPanel(self,2)
         p.run_flashcard(self)
+        
     def m_OpenTransferOnButtonClick(self,event):
+        """START MAIN PROGRAM : WIFI SYNC"""
         p.SwitchPanel(self,5)
         p.get_IP(self,event)
-        #client = self.m_radioClient.GetValue() #boolean
-        #p.run_transfer(self,event,client)
         m4.initialize(self,event)
         
     def m_OpenPrintOnButtonClick(self,event):
+        """START MAIN PROGRAM : PRINT PDF NOTES"""
         t_panel = lambda self,page : threading.Thread(target = p.SwitchPanel , args=(self,page )).start()
         t_panel(self, 3) 
+        settings_get(self)
+        self.m_colorQAline.SetColour(self.QAline_color)
+        self.m_colorPDFline.SetColour(self.pdfline_color)
+        self.m_lineWpdf.SetValue(str(self.pdfline_thickness))
+        self.m_lineWqa.SetValue(str(self.QAline_thickness))
+        self.m_lineQA.SetValue(self.QAline_bool)
+        self.m_linePDF.SetValue(self.pdfline_bool)            
         
+        self.m_sliderPDFsize.SetValue(int(200-self.pdfmultiplier*100))
+        self.m_slider_col1.SetValue(self.pdfPageColsPos[0])
+        self.m_slider_col2.SetValue(self.pdfPageColsPos[1])
+        self.m_slider_col3.SetValue(self.pdfPageColsPos[2])
+        self.m_checkBox_col1.SetValue(self.pdfPageColsChecks[0])
+        self.m_checkBox_col2.SetValue(self.pdfPageColsChecks[1])
+        self.m_checkBox_col3.SetValue(self.pdfPageColsChecks[2])
         with wx.FileDialog(self, "Choose which file to print", wildcard="*.tex",style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST) as fileDialog:
             fileDialog.SetPath(self.dir1+'\.')
             if fileDialog.ShowModal() == wx.ID_CANCEL:
@@ -242,17 +322,52 @@ class MainFrame(gui.MyFrame):
             else:
                 self.fileDialog = fileDialog
                 self.FilePickEvent = True
-                settings_get(self)
-                self.m_colorQAline.SetColour(self.QAline_color)
-                self.m_colorPDFline.SetColour(self.pdfline_color)
-                self.m_lineWpdf.SetValue(str(self.pdfline_thickness))
-                self.m_lineWqa.SetValue(str(self.QAline_thickness))
-                self.m_lineQA.SetValue(self.QAline_bool)
-                self.m_linePDF.SetValue(self.pdfline_bool)            
                 
+                #m3.print_preview(self,event)
                 t_preview = lambda self,evt : threading.Thread(target = m3.print_preview, name = 't_preview' , args=(self,evt )).run()
                 t_preview(self, event) 
-                
+    
+    def m_slider_col1OnScrollChanged(self, event):
+        self.pdfPageColsPos[0] = self.m_slider_col1.GetValue()
+        settings_set(self)
+        if BoxesChecked(self,1):
+            t_preview = lambda self : threading.Thread(target = m3.preview_refresh, name = 't_preview' , args=(self, )).run()
+            t_preview(self) 
+            
+            
+            
+    def m_slider_col2OnScrollChanged(self, event):
+        self.pdfPageColsPos[1] = self.m_slider_col2.GetValue()
+        settings_set(self)
+        if BoxesChecked(self,2):
+            t_preview = lambda self : threading.Thread(target = m3.preview_refresh, name = 't_preview' , args=(self, )).run()
+            t_preview(self) 
+            
+    def m_slider_col3OnScrollChanged(self, event):
+        self.pdfPageColsPos[2] = self.m_slider_col3.GetValue()
+        settings_set(self)
+        if BoxesChecked(self,3):
+            t_preview = lambda self : threading.Thread(target = m3.preview_refresh, name = 't_preview' , args=(self, )).run()
+            t_preview(self) 
+            
+    def m_checkBox_col1OnCheckBox( self, event ):
+        self.pdfPageColsChecks[0] = self.m_checkBox_col1.GetValue()
+        settings_set(self)
+        t_preview = lambda self : threading.Thread(target = m3.preview_refresh, name = 't_preview' , args=(self, )).run()
+        t_preview(self) 
+            
+    def m_checkBox_col2OnCheckBox( self, event ):
+        self.pdfPageColsChecks[1] = self.m_checkBox_col2.GetValue()
+        settings_set(self)
+        t_preview = lambda self : threading.Thread(target = m3.preview_refresh, name = 't_preview' , args=(self, )).run()
+        t_preview(self) 
+            
+    def m_checkBox_col3OnCheckBox( self, event ):
+        self.pdfPageColsChecks[2] = self.m_checkBox_col3.GetValue()
+        settings_set(self)
+        t_preview = lambda self : threading.Thread(target = m3.preview_refresh, name = 't_preview' , args=(self, )).run()
+        t_preview(self) 
+            
     #%% menu item events
     " menu item events "
     def m_toolStitchOnButtonClick( self, event ):
@@ -331,6 +446,31 @@ class MainFrame(gui.MyFrame):
         p.SwitchPanel(self,1) 
     def m_txtHelpSyncOnLeftDown(self,event):
         p.SwitchPanel(self,5) 
+    
+    
+    #%% settings menu
+    """ settings menu """
+    def m_resetselectionOnButtonClick( self, event ):               
+        m.resetselection(self,event)
+    
+    def m_enterselectionOnButtonClick( self, event ):
+        m.selectionentered(self,event)
+        
+    def m_checkBoxCursor11OnCheckBox( self, event ):  
+        m.setcursor(self,event)
+    
+    # show drawn borders 
+    def m_checkBox11OnCheckBox( self, event ):
+        try:
+            self.drawborders = self.m_checkBox11.IsChecked()   
+            print(f"checkbox is {self.drawborders}")
+            self.pageimage = self.pageimagecopy # reset image
+            f.ShowPage(self)
+            self.Layout()
+        except:# a book hasn't been opened
+            pass    
+    def m_menuResetSettingsOnMenuSelection( self, event ):
+        settings_reset(self)   
     #%% flashbook
     " flashbook "
     #Import screenshot
@@ -404,11 +544,6 @@ class MainFrame(gui.MyFrame):
     def m_toolDOWNOnToolClicked( self, event ):
         m.arrowscroll(self,event,'down')        
     
-    
-    
-    
-    
-    
     def m_CurrentPage11OnEnterWindow( self, event ):
         m.RemoveKeyboardShortcuts(self,1)
         
@@ -424,27 +559,6 @@ class MainFrame(gui.MyFrame):
     def m_bitmapScrollOnMouseWheel( self, event ):
         m.mousewheel(self,event)
         
-    # user selections #========================================================
-    def m_resetselectionOnButtonClick( self, event ):               
-        m.resetselection(self,event)
-    
-    def m_enterselectionOnButtonClick( self, event ):
-        m.selectionentered(self,event)
-        
-    def m_checkBoxCursor11OnCheckBox( self, event ):  
-        m.setcursor(self,event)
-    
-    # show drawn borders 
-    def m_checkBox11OnCheckBox( self, event ):
-        try:
-            self.drawborders = self.m_checkBox11.IsChecked()   
-            print(f"checkbox is {self.drawborders}")
-            self.pageimage = self.pageimagecopy # reset image
-            f.ShowPage(self)
-            self.Layout()
-        except:# a book hasn't been opened
-            pass
-        
 	# draw borders #===========================================================
     def m_bitmapScrollOnLeftDown( self, event ):
         self.panel_pos = self.m_bitmapScroll.ScreenToClient(wx.GetMousePosition())
@@ -458,7 +572,8 @@ class MainFrame(gui.MyFrame):
     def m_richText22OnLeftDown( self, event ):
         p.SwitchPanel(self,2) 
     
-    #%% transfer
+    #%% sync files
+    """ sync files """
     def m_txtMyIPOnKeyUp( self, event ):
         self.IP1 = self.m_txtMyIP.GetValue()
         with open(joinpath(self.dirIP,'IPadresses.txt'),'w') as f:
@@ -477,8 +592,7 @@ class MainFrame(gui.MyFrame):
             print("start client")
             self.m_txtStatus.SetValue("starting client")
             t_sync = lambda self,mode,HOST :threading.Thread(target=m4.SyncDevices,args=(self,mode,HOST)).start()
-            t_sync(self,1,HOST)
-            
+            t_sync(self,1,HOST)        
             
         else:
             HOST = self.IP1
@@ -491,7 +605,7 @@ class MainFrame(gui.MyFrame):
             
         
     #%% flashcard
-    " flashcard "
+    """ flashcard """
     # main program
     def m_filePicker21OnFileChanged( self, event ):
         m2.startprogram(self,event)
@@ -514,8 +628,9 @@ class MainFrame(gui.MyFrame):
         m2.switchCard(self)
         
     #%% print the notes
+    """ print the notes """
     def m_sliderPDFsizeOnScrollChanged(self,event):
-        self.pdfmultiplier = float(self.m_sliderPDFsize.GetValue())/100
+        self.pdfmultiplier = float(200-self.m_sliderPDFsize.GetValue())/100
         settings_set(self)
         m3.preview_refresh(self)
     
@@ -548,33 +663,32 @@ class MainFrame(gui.MyFrame):
         
     def m_PrintFinalOnButtonClick( self, event ):
         self.printsuccessful = False
-        self.printpreview  = False
-        self.FilePickEvent = False
+        self.printpreview    = False
+        self.FilePickEvent   = False
         m3.preview_refresh(self)
         if self.printsuccessful == True:
             self.printpreview = True
             p.SwitchPanel(self,0)
             MessageBox(0, " Your PDF has been created!\n Select in the menubar: `Open/Open PDF-notes Folder` to\n open the folder in Windows explorer. ", "Message", MB_ICONINFORMATION)
-    def m_lineWpdfOnText( self, event ):
-        try:
-            int(self.m_lineWpdf.GetValue())
             
+    def m_lineWpdfOnText( self, event ):
+        try:            
             if int(self.m_lineWpdf.GetValue()) >= 0:
                 self.pdfline_thickness = int(self.m_lineWpdf.GetValue())
                 settings_set(self)
                 m3.preview_refresh(self)
         except:
-            print("Error: invalid entry")
-    def m_lineWqaOnText( self, event ):
-        try:
-            int(self.m_lineWqa.GetValue())
+            p.ERRORMESSAGE("Error: invalid entry")
             
+    def m_lineWqaOnText( self, event ):
+        try:            
             if int(self.m_lineWqa.GetValue()) >= 0:
                 self.QAline_thickness = int(self.m_lineWqa.GetValue())
                 settings_set(self)
                 m3.preview_refresh(self)
         except:
-            print("Error: invalid entry")
+            p.ERRORMESSAGE("Error: invalid entry")
+            
     #%% Help menu
     def m_richText1OnLeftDown(self,event):
         p.SwitchPanel(self,self.lastpage)
