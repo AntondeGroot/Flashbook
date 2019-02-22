@@ -155,11 +155,11 @@ def drawCoordinates(self): # no errors
     #export image
     self.pageimage = PIL.Image.fromarray(img)
     
-def SetScrollbars(self): #no errors
+def SetScrollbars(self): 
     scrollWin = self.m_scrolledWindow1
     scrollWin.SetScrollbars(int(20*self.zoom),int(20*self.zoom),int(100*self.zoom),int(100*self.zoom) )
 
-def LoadPage(self): # no error
+def LoadPage(self): 
     if self.debugmode:
         print("fb=LoadPage")
     try:
@@ -218,9 +218,7 @@ def ShowPage(self):
         image2 = wx.Image( self.width, self.height )
         image2.SetData( self.pageimage.tobytes() )
         
-        ##
         self.m_bitmapScroll.SetBitmap(wx.Bitmap(image2))
-        #self.Layout()
         with open(os.path.join(self.temp_dir, self.bookname +'.txt'), 'w') as output:   
             if self.currentpage == 'prtscr' and hasattr(self,'currentpage_backup'):
                 self.currentpage = self.currentpage_backup
