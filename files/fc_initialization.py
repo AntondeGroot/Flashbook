@@ -8,13 +8,21 @@ import fc_functions as f2
 import wx
 
 def initializeparameters(self):
-    self.scrollpos = [42,1337] 
+    self.dir_LaTeX          = self.dir1
+    self.dir_LaTeX_commands = self.dir1
+    self.dir_pics           = self.dir2
+    # some commands used to create the flashcards and seperate elements: question/answer/picture
+    # this way it will remain clear for the user so that he could manually change an entry.
+    self.pic_command      = "\pic{"
+    self.question_command = r'\\quiz{'
+    self.answer_command   = r"\\ans{"
+    
     # initialize variables:
     self.bookname       = ''
     self.image          = []
     self.panel_pos      = (0,0)        
     self.zoom           = 1.0
-    self.m_Zoom21.SetValue("{}%".format(int(self.zoom*100)))  
+    self.m_Zoom21.SetValue(f"{int(self.zoom*100)}%")  
     #
     self.runprogram = True
     self.SwitchCard = True
