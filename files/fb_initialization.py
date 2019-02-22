@@ -16,7 +16,7 @@ def initializeparameters(self):
     # initialize variables:
     self.bookname       = ''
     self.BorderCoords   = []         
-    self.colorlist      = [[0,0,0],[200,0,0]]
+    self.colorlist      = self.bordercolors
     self.currentpage    = 1
     self.cursor         = False    # normal cursor
     self.drawborders    = True

@@ -47,7 +47,7 @@ def ERRORMESSAGE(msg):
     print(colored(f"{msg}\n",'red',attrs=['underline']))
     ErrorMessage = traceback.format_exc()
     print(colored(f"{ErrorMessage}\n",'red'))
-    path = os.path.join(os.getenv("LOCALAPPDATA"),'FlashBook','temporary')
+    path = os.path.join(os.getenv("LOCALAPPDATA"),'Flashbook','temporary')
     LOG_FILENAME = os.path.join(path,'logging_traceback.out')
     logging.basicConfig(filename=LOG_FILENAME, level=logging.INFO)
     logging.warning(ErrorMessage)
@@ -109,36 +109,7 @@ def run_flashbook(self):
     print("Welcome to Flashbook , one moment ...")     
     self.m_bitmapScroll.SetBitmap(wx.Bitmap(wx.Image( 1,1 ))) # always empty bitmap, in case someone reruns the program
     self.m_CurrentPage11.SetValue('')
-    self.m_TotalPages11.SetValue('')
-    
-    def initialize(self):
-        os.chdir(self.dir0)
-        
-        # create settings folder for debugging
-        if not os.path.exists(self.dirsettings+r"\settings.txt"): 
-            with open(self.dir0+r"\settings.txt", 'w') as file:
-                file.write(json.dumps({'debugmode' : 0})) 
-        with open(self.dirsettings+r"\settings.txt", 'r') as file:
-            debug_var = json.load(file)['debugmode']
-            print(debug_var)
-            print(type(debug_var))
-            if debug_var == 0:
-                self.debugmode = False
-            else:
-                self.debugmode = True
-                print("debugging is enabled")
-                    
-        dirs = [self.dir0,self.dir1,self.dir2,self.dir3,self.dir4,self.dir5,self.dir6]
-        
-        print("="*90)
-        print(f"\nThe files will be saved to the following directory: {self.dir0}\n")
-        for item in dirs:
-            if not os.path.exists(item):
-                os.makedirs(item)
-         
-        # unpacks png images used in the gui
-        resources.resourceimages(self.dir6,self.dir1) 
-        
+    self.m_TotalPages11.SetValue('')                      
     ##
     self.stayonpage = False
     self.resetselection = False
@@ -146,9 +117,9 @@ def run_flashbook(self):
     #short cuts
     ini.initializeparameters(self)
     m.SetKeyboardShortcuts(self)
-    initialize(self)
 
 def run_flashcard(self):    
+    ini2.initializeparameters(self)
     def initialize2(self):
         # set all directories
                 
@@ -157,7 +128,7 @@ def run_flashcard(self):
         
         dirs = [self.dir0,self.dir1,self.dir2,self.dir3,self.dir4,self.dir5,self.dir6]        
         print("="*90)
-        print("\nThe files will be saved to the following directory: {}\n".format(self.dir0))
+        print(f"\nThe files will be saved to the following directory: {self.dir0}\n")
         
         for item in dirs:
             if not os.path.exists(item):
@@ -165,14 +136,7 @@ def run_flashcard(self):
                 
         self.csv_dir = self.dir0+'/date.csv'
         self.file_exists = os.path.isfile(self.csv_dir)       
-        self.dir_LaTeX          = self.dir1
-        self.dir_LaTeX_commands = self.dir1
-        self.dir_pics           = self.dir2
-        # some commands used to create the flashcards and seperate elements: question/answer/picture
-        # this way it will remain clear for the user so that he could manually change an entry.
-        self.pic_command      = "\pic{"
-        self.question_command = r'\\quiz{'
-        self.answer_command   = r"\\ans{"
+        
         
         
         for item in dirs:
@@ -195,7 +159,6 @@ def run_flashcard(self):
     
     def SettingsPopUp( self, event ):
         win = gui.MyFrame2(self.GetTopLevelParent(), wx.SIMPLE_BORDER)
-        #print("panel pos = {}".format(wx.GetMousePosition()))
         pos = wx.GetMousePosition()
         win.Position(pos,(0,0))
         win.Show(True)      
@@ -248,31 +211,6 @@ def get_IP(self,event):
     self.m_txtMyIP.SetValue(self.IP1)
     self.m_txtTargetIP.SetValue(self.IP2)
     
-def run_print(self,event):                
-    
-    
-    def initialize(self):         
-        dirs = [self.dir0,self.dir1,self.dir2,self.dir3,self.dir4,self.dir5,self.dir6]       
-        print("="*90)
-        print("\nThe files will be saved to the following directory: {}\n".format(self.dir0))
-        for item in dirs:
-            if not os.path.exists(item):
-                os.makedirs(item)
-        resources.resourceimages(self.dir6,self.dir1) # unpacks png images used in the gui
-    
-    """MAINFRAME"""
-    initialize(self)    
-    self.dir_LaTeX          = self.dir1
-    self.dir_LaTeX_commands = self.dir1
-    self.dir_pics           = self.dir2
-    # some commands used to create the flashcards and seperate elements: question/answer/picture
-    # this way it will remain clear for the user so that he could manually change an entry.
-    self.pic_command      = "\pic{"
-    self.question_command = r'\\quiz{'
-    self.answer_command   = r"\\ans{"
-    ini3.initializeparameters(self)                  
-    #Load all data
-    m3.startprogram(self,event)
 
 def set_richtext(self):
     #richtext for General tab

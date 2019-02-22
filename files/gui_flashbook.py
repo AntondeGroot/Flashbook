@@ -11,7 +11,7 @@ import wx.richtext
 import os
 
 datadir = os.getenv("LOCALAPPDATA")
-dir0 = datadir+r"\FlashBook"
+dir0 = datadir+r"\Flashbook"
 dir7 = dir0 + r"\resources"
 path_add = os.path.join(dir7,"add.png")
 path_min = os.path.join(dir7,"min.png")
@@ -83,6 +83,11 @@ class MyFrame ( wx.Frame ):
 		
 		self.m_checkBoxCursor11 = wx.MenuItem( self.m_menu3, wx.ID_ANY, u"Crosshair cursor", wx.EmptyString, wx.ITEM_CHECK )
 		self.m_menu3.Append( self.m_checkBoxCursor11 )
+		
+		self.m_menu3.AppendSeparator()
+		
+		self.m_menuResetSettings = wx.MenuItem( self.m_menu3, wx.ID_ANY, u"Reset Settings", wx.EmptyString, wx.ITEM_NORMAL )
+		self.m_menu3.Append( self.m_menuResetSettings )
 		
 		self.m_menubar1.Append( self.m_menu3, u"Settings" ) 
 		
@@ -176,7 +181,7 @@ class MyFrame ( wx.Frame ):
 		
 		bSizer352.Add( self.m_staticText112, 0, wx.ALL, 0 )
 		
-		self.m_staticText1111 = wx.StaticText( self.panel0, wx.ID_ANY, u"Connect two devices: e.g. your Desktop and Laptop\nand synchronize the files on both devices.", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_staticText1111 = wx.StaticText( self.panel0, wx.ID_ANY, u"Connect two devices: e.g. your Desktop and Laptop     \nand synchronize the files on both devices.", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.m_staticText1111.Wrap( -1 )
 		self.m_staticText1111.SetFont( wx.Font( 10, 74, 90, 90, False, "Verdana" ) )
 		
@@ -478,7 +483,7 @@ class MyFrame ( wx.Frame ):
 		
 		sbSizer1 = wx.StaticBoxSizer( wx.StaticBox( self.m_panel31, wx.ID_ANY, wx.EmptyString ), wx.VERTICAL )
 		
-		sbSizer1.SetMinSize( wx.Size( 275,-1 ) ) 
+		sbSizer1.SetMinSize( wx.Size( 310,-1 ) ) 
 		gSizer12 = wx.GridSizer( 0, 2, 0, 0 )
 		
 		self.m_staticText52 = wx.StaticText( sbSizer1.GetStaticBox(), wx.ID_ANY, u"Boundary line \nbetween Q and A", wx.DefaultPosition, wx.DefaultSize, 0 )
@@ -487,7 +492,7 @@ class MyFrame ( wx.Frame ):
 		
 		gSizer12.Add( self.m_staticText52, 0, wx.ALL, 5 )
 		
-		self.m_lineQA = wx.CheckBox( sbSizer1.GetStaticBox(), wx.ID_ANY, u" ", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_lineQA = wx.CheckBox( sbSizer1.GetStaticBox(), wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.m_lineQA.SetValue(True) 
 		self.m_lineQA.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
 		
@@ -540,7 +545,7 @@ class MyFrame ( wx.Frame ):
 		
 		sbSizer11 = wx.StaticBoxSizer( wx.StaticBox( self.m_panel31, wx.ID_ANY, wx.EmptyString ), wx.VERTICAL )
 		
-		sbSizer11.SetMinSize( wx.Size( 275,-1 ) ) 
+		sbSizer11.SetMinSize( wx.Size( 310,-1 ) ) 
 		gSizer11 = wx.GridSizer( 0, 2, 0, 0 )
 		
 		self.m_staticText511 = wx.StaticText( sbSizer11.GetStaticBox(), wx.ID_ANY, u"Boundary line in each \nrow of the pdf", wx.DefaultPosition, wx.DefaultSize, 0 )
@@ -596,16 +601,62 @@ class MyFrame ( wx.Frame ):
 		
 		bSizer23.Add( ( 0, 10), 0, wx.EXPAND, 5 )
 		
-		self.m_staticText33 = wx.StaticText( self.m_panel31, wx.ID_ANY, u"Fine tune image size", wx.DefaultPosition, wx.DefaultSize, 0 )
+		sbSizer3 = wx.StaticBoxSizer( wx.StaticBox( self.m_panel31, wx.ID_ANY, wx.EmptyString ), wx.VERTICAL )
+		
+		sbSizer3.SetMinSize( wx.Size( 310,-1 ) ) 
+		self.m_staticText33 = wx.StaticText( sbSizer3.GetStaticBox(), wx.ID_ANY, u"Fine tune image size", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.m_staticText33.Wrap( -1 )
 		self.m_staticText33.SetFont( wx.Font( 8, 74, 93, 90, False, "Verdana" ) )
 		
-		bSizer23.Add( self.m_staticText33, 0, wx.ALL, 5 )
+		sbSizer3.Add( self.m_staticText33, 0, wx.ALL, 5 )
 		
-		self.m_sliderPDFsize = wx.Slider( self.m_panel31, wx.ID_ANY, 100, 70, 130, wx.DefaultPosition, wx.Size( 275,-1 ), wx.SL_BOTH|wx.SL_HORIZONTAL|wx.SL_LABELS )
+		self.m_sliderPDFsize = wx.Slider( sbSizer3.GetStaticBox(), wx.ID_ANY, 100, 70, 130, wx.DefaultPosition, wx.Size( 275,-1 ), wx.SL_BOTH|wx.SL_HORIZONTAL|wx.SL_LABELS )
 		self.m_sliderPDFsize.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
 		
-		bSizer23.Add( self.m_sliderPDFsize, 0, wx.ALL, 0 )
+		sbSizer3.Add( self.m_sliderPDFsize, 0, wx.ALL, 0 )
+		
+		self.m_staticText331 = wx.StaticText( sbSizer3.GetStaticBox(), wx.ID_ANY, u"Limit image size by page width %", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_staticText331.Wrap( -1 )
+		self.m_staticText331.SetFont( wx.Font( 8, 74, 93, 90, False, "Verdana" ) )
+		
+		sbSizer3.Add( self.m_staticText331, 0, wx.ALL, 5 )
+		
+		self.m_staticText401 = wx.StaticText( sbSizer3.GetStaticBox(), wx.ID_ANY, u"You can select multiple widths.\nIf an image is wider than any given width,\nthen it will be resized to the nearest value.", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_staticText401.Wrap( -1 )
+		self.m_staticText401.SetFont( wx.Font( 8, 74, 90, 90, False, "Verdana" ) )
+		
+		sbSizer3.Add( self.m_staticText401, 0, wx.ALL, 5 )
+		
+		fgSizer2 = wx.FlexGridSizer( 0, 2, 0, 0 )
+		fgSizer2.SetFlexibleDirection( wx.BOTH )
+		fgSizer2.SetNonFlexibleGrowMode( wx.FLEX_GROWMODE_SPECIFIED )
+		
+		self.m_slider_col1 = wx.Slider( sbSizer3.GetStaticBox(), wx.ID_ANY, 100, 0, 100, wx.DefaultPosition, wx.Size( 200,-1 ), wx.SL_HORIZONTAL|wx.SL_LABELS )
+		fgSizer2.Add( self.m_slider_col1, 0, wx.ALL, 0 )
+		
+		self.m_checkBox_col1 = wx.CheckBox( sbSizer3.GetStaticBox(), wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
+		fgSizer2.Add( self.m_checkBox_col1, 0, wx.ALL, 5 )
+		
+		self.m_slider_col2 = wx.Slider( sbSizer3.GetStaticBox(), wx.ID_ANY, 100, 0, 100, wx.DefaultPosition, wx.Size( 200,-1 ), wx.SL_HORIZONTAL|wx.SL_LABELS )
+		fgSizer2.Add( self.m_slider_col2, 0, wx.ALL, 0 )
+		
+		self.m_checkBox_col2 = wx.CheckBox( sbSizer3.GetStaticBox(), wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
+		fgSizer2.Add( self.m_checkBox_col2, 0, wx.ALL, 5 )
+		
+		self.m_slider_col3 = wx.Slider( sbSizer3.GetStaticBox(), wx.ID_ANY, 100, 0, 100, wx.DefaultPosition, wx.Size( 200,-1 ), wx.SL_HORIZONTAL|wx.SL_LABELS )
+		fgSizer2.Add( self.m_slider_col3, 0, wx.ALL, 0 )
+		
+		self.m_checkBox_col3 = wx.CheckBox( sbSizer3.GetStaticBox(), wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
+		fgSizer2.Add( self.m_checkBox_col3, 0, wx.ALL, 5 )
+		
+		
+		sbSizer3.Add( fgSizer2, 0, wx.EXPAND, 5 )
+		
+		
+		bSizer23.Add( sbSizer3, 0, wx.EXPAND, 5 )
+		
+		
+		bSizer23.Add( ( 0, 30), 0, wx.EXPAND, 5 )
 		
 		bSizer351 = wx.BoxSizer( wx.HORIZONTAL )
 		
@@ -857,7 +908,7 @@ class MyFrame ( wx.Frame ):
 		self.m_panel40.SetSizer( bSizer62 )
 		self.m_panel40.Layout()
 		bSizer62.Fit( self.m_panel40 )
-		self.m_notebook.AddPage( self.m_panel40, u"General", False )
+		self.m_notebook.AddPage( self.m_panel40, u"a page", False )
 		self.m_panel41 = wx.Panel( self.m_notebook, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TAB_TRAVERSAL )
 		bSizer63 = wx.BoxSizer( wx.VERTICAL )
 		
@@ -870,7 +921,7 @@ class MyFrame ( wx.Frame ):
 		self.m_panel41.SetSizer( bSizer63 )
 		self.m_panel41.Layout()
 		bSizer63.Fit( self.m_panel41 )
-		self.m_notebook.AddPage( self.m_panel41, u"Flashbook", True )
+		self.m_notebook.AddPage( self.m_panel41, u"a page", True )
 		self.m_panel42 = wx.Panel( self.m_notebook, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TAB_TRAVERSAL )
 		bSizer64 = wx.BoxSizer( wx.VERTICAL )
 		
@@ -927,6 +978,7 @@ class MyFrame ( wx.Frame ):
 		self.Bind( wx.EVT_MENU, self.m_menuHelpOnMenuSelection, id = self.m_menuHelp.GetId() )
 		self.Bind( wx.EVT_MENU, self.m_checkBox11OnCheckBox, id = self.m_checkBox11.GetId() )
 		self.Bind( wx.EVT_MENU, self.m_checkBoxCursor11OnCheckBox, id = self.m_checkBoxCursor11.GetId() )
+		self.Bind( wx.EVT_MENU, self.m_menuResetSettingsOnMenuSelection, id = self.m_menuResetSettings.GetId() )
 		self.m_OpenFlashbook.Bind( wx.EVT_BUTTON, self.m_OpenFlashbookOnButtonClick )
 		self.m_OpenFlashcard.Bind( wx.EVT_BUTTON, self.m_OpenFlashcardOnButtonClick )
 		self.m_OpenPrint.Bind( wx.EVT_BUTTON, self.m_OpenPrintOnButtonClick )
@@ -1005,6 +1057,12 @@ class MyFrame ( wx.Frame ):
 		self.m_colorPDFline.Bind( wx.EVT_COLOURPICKER_CHANGED, self.m_colorPDFlineOnColourChanged )
 		self.m_sliderPDFsize.Bind( wx.EVT_KEY_UP, self.m_sliderPDFsizeOnKeyUp )
 		self.m_sliderPDFsize.Bind( wx.EVT_SCROLL_CHANGED, self.m_sliderPDFsizeOnScrollChanged )
+		self.m_slider_col1.Bind( wx.EVT_SCROLL_CHANGED, self.m_slider_col1OnScrollChanged )
+		self.m_checkBox_col1.Bind( wx.EVT_CHECKBOX, self.m_checkBox_col1OnCheckBox )
+		self.m_slider_col2.Bind( wx.EVT_SCROLL_CHANGED, self.m_slider_col2OnScrollChanged )
+		self.m_checkBox_col2.Bind( wx.EVT_CHECKBOX, self.m_checkBox_col2OnCheckBox )
+		self.m_slider_col3.Bind( wx.EVT_SCROLL_CHANGED, self.m_slider_col3OnScrollChanged )
+		self.m_checkBox_col3.Bind( wx.EVT_CHECKBOX, self.m_checkBox_col3OnCheckBox )
 		self.m_PrintFinal.Bind( wx.EVT_BUTTON, self.m_PrintFinalOnButtonClick )
 		self.m_bitmap4.Bind( wx.EVT_LEFT_DOWN, self.m_bitmap4OnLeftDown )
 		self.m_bitmap4.Bind( wx.EVT_LEFT_UP, self.m_bitmap4OnLeftUp )
@@ -1045,6 +1103,9 @@ class MyFrame ( wx.Frame ):
 		event.Skip()
 	
 	def m_checkBoxCursor11OnCheckBox( self, event ):
+		event.Skip()
+	
+	def m_menuResetSettingsOnMenuSelection( self, event ):
 		event.Skip()
 	
 	def m_OpenFlashbookOnButtonClick( self, event ):
@@ -1205,6 +1266,24 @@ class MyFrame ( wx.Frame ):
 		event.Skip()
 	
 	def m_sliderPDFsizeOnScrollChanged( self, event ):
+		event.Skip()
+	
+	def m_slider_col1OnScrollChanged( self, event ):
+		event.Skip()
+	
+	def m_checkBox_col1OnCheckBox( self, event ):
+		event.Skip()
+	
+	def m_slider_col2OnScrollChanged( self, event ):
+		event.Skip()
+	
+	def m_checkBox_col2OnCheckBox( self, event ):
+		event.Skip()
+	
+	def m_slider_col3OnScrollChanged( self, event ):
+		event.Skip()
+	
+	def m_checkBox_col3OnCheckBox( self, event ):
 		event.Skip()
 	
 	def m_PrintFinalOnButtonClick( self, event ):

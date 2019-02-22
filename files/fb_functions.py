@@ -25,14 +25,6 @@ pylab.ioff() # make sure it is inactive, otherwise possible qwindows error    ..
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 
-
-datadir = os.getenv("LOCALAPPDATA")
-dir0 = os.path.join(datadir, "FlashBook")
-# create settings folder for debugging
-
-
-
-
 class Window2(wx.PopupWindow):
     """"""
     
@@ -144,7 +136,7 @@ def drawCoordinates(self): # no errors
     img = np.array(self.pageimage)
     img = np.uint8(img)
     try:#try to look if there already exists borders that need to be drawn
-        coordinatelist = self.dictionary['page {}'.format(self.currentpage)]
+        coordinatelist = self.dictionary[f'page {self.currentpage}']
         for coord in coordinatelist:    
             self.cord1 = coord[0:2]
             self.cord2 = coord[2:]
@@ -153,7 +145,7 @@ def drawCoordinates(self): # no errors
         pass
     
     try:    #there won't always be tempdict borders, so try and otherwise go further
-        coordinatelist = self.tempdictionary['page {}'.format(self.currentpage)]
+        coordinatelist = self.tempdictionary[f'page {self.currentpage}']
         for coord in coordinatelist:    
             self.cord1 = coord[0:2]
             self.cord2 = coord[2:]
@@ -163,15 +155,15 @@ def drawCoordinates(self): # no errors
     #export image
     self.pageimage = PIL.Image.fromarray(img)
     
-def SetScrollbars(self): #no errors
+def SetScrollbars(self): 
     scrollWin = self.m_scrolledWindow1
     scrollWin.SetScrollbars(int(20*self.zoom),int(20*self.zoom),int(100*self.zoom),int(100*self.zoom) )
 
-def LoadPage(self): # no error
+def LoadPage(self): 
     if self.debugmode:
         print("fb=LoadPage")
     try:
-        self.jpgdir = self.dir3+r'\{}\{}'.format(self.booknamepath,self.picnames[self.currentpage-1])
+        self.jpgdir = os.path.join(self.dir3, self.booknamepath, self.picnames[self.currentpage-1])
         print(self.jpgdir)
         if self.stayonpage == False:
             self.pageimage = PIL.Image.open(self.jpgdir)
@@ -226,13 +218,11 @@ def ShowPage(self):
         image2 = wx.Image( self.width, self.height )
         image2.SetData( self.pageimage.tobytes() )
         
-        ##
         self.m_bitmapScroll.SetBitmap(wx.Bitmap(image2))
-        #self.Layout()
         with open(os.path.join(self.temp_dir, self.bookname +'.txt'), 'w') as output:   
             if self.currentpage == 'prtscr' and hasattr(self,'currentpage_backup'):
                 self.currentpage = self.currentpage_backup
-            output.write("{}".format(self.currentpage))
+            output.write(f"{self.currentpage}")
     except:
         p.ERRORMESSAGE("Error: cannot show page")
         
@@ -287,72 +277,88 @@ def CombinePics(self,directory):
         x_offset += im.size[1]
     new_im.save(directory[0])
     #only save first picture (combined pic) the rest will be removed.
-    for p,path in enumerate(directory):
-        if p!=0:
+    for k,path in enumerate(directory):
+        if k!=0:
             try:
                 os.remove(path)
             except:
                 pass
             
 def CreateTextCard(self):
-    if self.debugmode:
-        print("fb=CreateTextCard")
-    self.TextCard = True    
-    #LaTeXcode = Text2Latex(self)
-    LaTeXcode = self.usertext
-    height_card = math.ceil(len(LaTeXcode)/40)/2
-    fig = Figure(figsize=[8, height_card], dpi=100)
-    ax = fig.gca()
-    ax.plot([0, 0,0, height_card],color = (1,1,1,1))
-    ax.axis('off')
-    ax.text(-0.5, height_card/2, LaTeXcode, fontsize = 20, horizontalalignment = 'left', verticalalignment = 'center', wrap = True)
-    
-    canvas = FigureCanvas(fig)
-    canvas.draw()
-    renderer = canvas.get_renderer()
-    raw_data = renderer.tostring_rgb()
-    size = canvas.get_width_height()
-    self.imagetext = PIL.Image.frombytes("RGB", size, raw_data, decoder_name='raw', )
-    # crop the LaTeX image further
-    border = 30
-    SEARCH = True
-    img = self.imagetext
-    imginv = ImageOps.invert(img)
-    
-    img_array = np.sum(np.sum(np.array(imginv),2),0) # look where something is not "white" in the x-axis
-    while SEARCH == True:
-        for i in range(len(img_array)):
-            j = len(img_array) - i-1            
-            if SEARCH == True:
-                if img_array[j]!= 0:
-                    SEARCH = False
-                    var = j
-                if j == 0:
-                    SEARCH = False
-                    var = j
-    if var + border >  img.size[0]:
-        var = img.size[0]
-    else:
-        var = var + border
-    self.imagetext = img.crop((0, 0, var, img.size[1]))
+    self.ERROR = False
+    try:
+        if self.debugmode:
+            print("fb=CreateTextCard")
+        self.TextCard = True    
+        #LaTeXcode = Text2Latex(self)
+        LaTeXcode = self.usertext
+        height_card = math.ceil(len(LaTeXcode)/40)/2
+        fig = Figure(figsize=[8, height_card], dpi=100)
+        ax = fig.gca()
+        ax.plot([0, 0,0, height_card],color = (1,1,1,1))
+        ax.axis('off')
+        ax.text(-0.5, height_card/2, LaTeXcode, fontsize = self.LaTeXfontsize, horizontalalignment = 'left', verticalalignment = 'center', wrap = True)
+        
+        canvas = FigureCanvas(fig)
+        canvas.draw()
+        renderer = canvas.get_renderer()
+        raw_data = renderer.tostring_rgb()
+        size = canvas.get_width_height()
+        self.imagetext = PIL.Image.frombytes("RGB", size, raw_data, decoder_name='raw', )
+        # crop the LaTeX image further
+        border = 30
+        SEARCH = True
+        img = self.imagetext
+        imginv = ImageOps.invert(img)
+        
+        img_array = np.sum(np.sum(np.array(imginv),2),0) # look where something is not "white" in the x-axis
+        while SEARCH == True:
+            for i in range(len(img_array)):
+                j = len(img_array) - i-1            
+                if SEARCH == True:
+                    if img_array[j]!= 0:
+                        SEARCH = False
+                        var = j
+                    if j == 0:
+                        SEARCH = False
+                        var = j
+        if var + border >  img.size[0]:
+            var = img.size[0]
+        else:
+            var = var + border
+        self.imagetext = img.crop((0, 0, var, img.size[1]))
+    except:
+        self.ERROR = True
+        p.ERRORMESSAGE("Error: could not create textcard")
+
+
+
+
 
 def CombinePicText(self,directory):
-    if self.debugmode:
-        print("fb=CombinePicText")
-    if os.path.exists(directory):
-        imagepic = PIL.Image.open(directory)
-        images   = [self.imagetext, imagepic]
-        
-        widths, heights = zip(*(i.size for i in images))
-        total_height = sum(heights)
-        max_width    = max(widths)
-        NewImage     = PIL.Image.new('RGB', (max_width, total_height), "white")
-        #combine images to 1
-        x_offset = 0
-        for im in images:
-            NewImage.paste(im, (0,x_offset))
-            x_offset += im.size[1]
-        self.image = NewImage
+    self.ERROR = False
+    try:
+        if self.debugmode:
+            print("fb=CombinePicText")
+        if os.path.exists(directory):
+            imagepic = PIL.Image.open(directory)
+            images   = [self.imagetext, imagepic]
+            
+            widths, heights = zip(*(i.size for i in images))
+            total_height = sum(heights)
+            max_width    = max(widths)
+            NewImage     = PIL.Image.new('RGB', (max_width, total_height), "white")
+            #combine images to 1
+            y_offset = 0
+            for im in images:
+                NewImage.paste(im, (0,y_offset))
+                y_offset += im.size[1]
+            self.image = NewImage
+    except:
+        self.ERROR = True
+
+
+
 
 def ShowInPopup(self,event,mode):
     if self.debugmode:
@@ -390,10 +396,8 @@ def ShowInPopup(self,event,mode):
     win = Window2(self.GetTopLevelParent(), wx.SIMPLE_BORDER,image)    
     win.Position((self.mousepos[0]-10,self.mousepos[1]-10), (0,0))
     win.Show(True)  
-    try:
+    if hasattr(self,'imagetext'):
         delattr(self, 'imagetext')
-    except AttributeError:
-        pass
 
 
 #%% turn user LaTeX macro into useable LaTeX code
@@ -422,13 +426,11 @@ def Text2Latex(self):
     newcommand_line_lst[:index]=[]
     # only look at lines containing "newcommand"
     newcommand_line_lst = [x for x in newcommand_line_lst if ("newcommand"  in x)]
-    nr_commands = len(newcommand_line_lst)
     
     ###  how to replace a user defined command with a command that is known in latex ###
     
     # check for all commands
-    for i in range(nr_commands):
-        newcommand_line = newcommand_line_lst[i]
+    for i,newcommand_line in enumerate(newcommand_line_lst):
         # extract all the data from a commandline
         definition_start = fc.findchar('{',newcommand_line,0)
         definition_end   = fc.findchar('}',newcommand_line,0)

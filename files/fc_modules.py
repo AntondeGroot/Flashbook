@@ -35,8 +35,6 @@ def buttonCorrect(self):
     #import
     
     runprogram = self.runprogram
-    
-    #
     self.index += 1    
     if runprogram == True:
         self.score +=1
@@ -258,6 +256,6 @@ def startprogram(self,event):
     self.m_CurrentPage21.SetValue(f"{self.index+1}")
     self.m_TotalPages21.SetValue(f"{self.nr_questions}")
         
-    f2.LoadFlashCards(self)
+    f2.LoadFlashCards(self, True)
     f2.displaycard(self)        
     f2.switch_bitmap(self)

@@ -65,7 +65,7 @@ def dirchanged(self,event):
         if len_nr == 1:
             nrlist.append("000{}".format(picname[indexlist[0]]))
         elif len_nr == 0:
-            print("found no number for {}".format(picname))
+            print(f"found no number for {picname}")
         else:
             I = indexlist[0]
             F = indexlist[-1] + 1
@@ -188,6 +188,9 @@ def bitmapleftup(self,event):
                 except:
                     self.pic_question.append([picname])  
                     self.pic_question_dir.append([dir_])  
+                #restore stitchmode to default
+                self.stitchmode_v =  True            
+                self.m_toolStitch.SetBitmap(wx.Bitmap(self.path_arrow2))
         else:
             if self.stitchmode_v == True:
                 self.pic_answer.append(picname)  
@@ -199,6 +202,9 @@ def bitmapleftup(self,event):
                 except:
                     self.pic_answer.append([picname])  
                     self.pic_answer_dir.append([dir_])  
+                #restore stitchmode to default
+                self.stitchmode_v =  True            
+                self.m_toolStitch.SetBitmap(wx.Bitmap(self.path_arrow2))
         f.ShowPage(self)     
         
 def panel4_bitmapleftup(self,event):
