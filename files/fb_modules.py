@@ -31,12 +31,10 @@ def dirchanged(self,event):
     self.scrollpos = self.scrollpos_reset
     
     #Keep track of "nrlist" which is a 4 digit nr 18-> "0018" so that it is easily sorted in other programs
-    path = event.GetPath()
-    print(f"path is {path}")
+    pathfile = event.GetPath()
     nrlist = []
-    picnames = [pic for pic in os.listdir(path) if os.path.splitext(pic)[1] == '.jpg']
+    picnames = [pic for pic in os.listdir(pathfile) if os.path.splitext(pic)[1] == '.jpg']
     self.nr_pics = len(picnames)
-    print(f"nr pics is {self.nr_pics} ")
     if self.nr_pics == 0:
         MessageBox(0, " The selected folder does not contain any images!", "Error", MB_ICONINFORMATION)
     
@@ -65,16 +63,15 @@ def dirchanged(self,event):
         if len_nr == 1:
             nrlist.append("000{}".format(picname[indexlist[0]]))
         elif len_nr == 0:
-            print(f"found no number for {picname}")
+            print("found no number for {}".format(picname))
         else:
             I = indexlist[0]
             F = indexlist[-1] + 1
             nrlist.append("0"*(4-len_nr) + f"{picname[I:F]}")
     picnames = [x for _,x in sorted(zip(nrlist,picnames))]
     self.picnames = picnames
-    self.bookname = os.path.basename(path)
-    self.booknamepath = path.replace(self.dir3,"")[1:]
-    print(f"path = {path}   bookpath = {self.booknamepath}   bookname {self.bookname}")
+    self.bookname = os.path.basename(pathfile)
+    self.booknamepath = os.path.relpath(pathfile, self.dir3)
     self.currentpage = 1
     self.PathBorders = os.path.join(self.dir5, self.bookname + '_borders.txt')
     if os.path.exists(os.path.join(self.temp_dir, self.bookname + '.txt')):
@@ -103,7 +100,7 @@ def dirchanged(self,event):
         print("No drawn rects found for this file, continue")
     try: 
         self.jpgdir    = os.path.join(self.dir3, self.booknamepath, self.picnames[self.currentpage-1])
-        print(self.booknamepath,self.dir3)
+        print(f"booknamepath {self.booknamepath}\n startdir{self.dir3}")
         self.pageimage = PIL.Image.open(self.jpgdir)
         self.pageimagecopy = self.pageimage
         self.width, self.height = self.pageimage.size
@@ -188,9 +185,6 @@ def bitmapleftup(self,event):
                 except:
                     self.pic_question.append([picname])  
                     self.pic_question_dir.append([dir_])  
-                #restore stitchmode to default
-                self.stitchmode_v =  True            
-                self.m_toolStitch.SetBitmap(wx.Bitmap(self.path_arrow2))
         else:
             if self.stitchmode_v == True:
                 self.pic_answer.append(picname)  
@@ -202,9 +196,6 @@ def bitmapleftup(self,event):
                 except:
                     self.pic_answer.append([picname])  
                     self.pic_answer_dir.append([dir_])  
-                #restore stitchmode to default
-                self.stitchmode_v =  True            
-                self.m_toolStitch.SetBitmap(wx.Bitmap(self.path_arrow2))
         f.ShowPage(self)     
         
 def panel4_bitmapleftup(self,event):
