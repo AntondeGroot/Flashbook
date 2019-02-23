@@ -51,11 +51,12 @@ import wmi # for IPaddress
 import sys
 sys.setrecursionlimit(5000)
 
+"""
 path = os.path.join(os.getenv("LOCALAPPDATA"),'Flashbook','temporary')
 LOG_FILENAME = os.path.join(path,'logging_traceback.out')
-logging.basicConfig(filename=LOG_FILENAME, level=logging.INFO)
+logging.basicConfig(filename=LOG_FILENAME, level=logging.DEBUG)
 logging.info('New session has started')
-
+""" 
 
 #ctypes:
 ICON_EXCLAIM=0x30
@@ -127,6 +128,8 @@ def settings_get(self):
             self.pdfPageColsChecks = settings['pdfPageColsChecks']
             self.LaTeXfontsize     = settings['LaTeXfontsize']
             self.bordercolors      = settings['bordercolors']
+            self.drawborders       = settings['drawborders']
+            self.cursor            = settings['cursor']
     except:
         # Just in case when the settings.txt has been tempered with        
         if os.path.exists(joinpath(self.dirsettings,"settings.txt")):
@@ -148,10 +151,19 @@ def settings_create(self):
                                    'pdfPageColsPos' : [25 , 50 , 75],
                                    'pdfPageColsChecks' : [False, True, False],
                                    'LaTeXfontsize' : 20,
-                                   'bordercolors' : [[0,0,0],[200,0,0]]}))
+                                   'bordercolors' : [[0,0,0],[200,0,0]],
+                                   'drawborders' : True,
+                                   'cursor' : False}))
             file.close()
             
 def settings_set(self):
+    #self.m_checkBox11.Check(self.drawborders)
+    #self.m_checkBoxCursor11.Check(self.cursor)
+    
+    #m.setcursor(self)
+    #self.m_checkBox11.Check(False)
+    
+    
     with open(joinpath(self.dirsettings,"settings.txt"), 'w') as file:
         file.write(json.dumps({'debugmode' : self.debugmode, 
                                'pdfmultiplier': self.pdfmultiplier,
@@ -164,7 +176,9 @@ def settings_set(self):
                                'pdfPageColsPos' : self.pdfPageColsPos,
                                'pdfPageColsChecks': self.pdfPageColsChecks,
                                'LaTeXfontsize' : self.LaTeXfontsize,
-                               'bordercolors' : self.bordercolors}))
+                               'bordercolors' : self.bordercolors,
+                               'drawborders' : self.drawborders,
+                               'cursor' : self.cursor}))
         file.close()
 
 def settings_reset(self):
@@ -172,11 +186,10 @@ def settings_reset(self):
         os.remove(joinpath(self.dirsettings,"settings.txt"))
     settings_create(self)
     settings_get(self)
-    self.drawborders = True 
-    self.m_checkBox11.Check(True)
-    self.cursor = False
-    self.SetCursor(wx.Cursor(wx.CURSOR_ARROW))
-    self.m_checkBoxCursor11.Check(False)
+    self.m_checkBox11.Check(self.drawborders)
+    #self.cursor = False
+    #self.SetCursor(wx.Cursor(wx.CURSOR_ARROW))
+    #self.m_checkBoxCursor11.Check(False)
     if self.panel3.IsShown():
         self.m_colorQAline.SetColour(self.QAline_color)
         self.m_colorPDFline.SetColour(self.pdfline_color)
@@ -249,12 +262,17 @@ class MainFrame(gui.MyFrame):
     """ INITIALIZE """
     def __init__(self,parent): 
         initialize(self)
-        settings_get(self)
+        
+        
         setup_sources(self)
         
         #initialize parent class
         icons = [wx.Bitmap(self.path_folder) , wx.Bitmap(self.path_convert) ]
         gui.MyFrame.__init__(self,parent,icons) #added extra argument, so that WXpython.py can easily add the Dialog Windows (which require an extra argument), which is now used to add extra icons to the menubar             
+        settings_get(self)
+        settings_set(self)
+        #settings_set(self)
+        
         self.Maximize(True) # open the app window maximized
         t_books = lambda self,delay : threading.Thread(target = p.checkBooks , args=(self,delay )).start()
         t_books(self, 2) 
@@ -268,7 +286,12 @@ class MainFrame(gui.MyFrame):
         self.SetIcon(iconimage)
         p.SwitchPanel(self,0)
         self.printpreview = True
-                        
+        
+        self.m_checkBox11.Check(self.drawborders)
+        self.m_checkBoxCursor11.Check(self.cursor)
+        self.m_checkBoxDebug.Check(self.debugmode)
+        m.setcursor(self)
+                      
     #%% MAIN PROGRAMS
     """ MAIN PROGRAMS """ 
     
@@ -450,19 +473,22 @@ class MainFrame(gui.MyFrame):
     
     #%% settings menu
     """ settings menu """
-    def m_resetselectionOnButtonClick( self, event ):               
+    def m_resetselectionOnButtonClick( self, event ):           
         m.resetselection(self,event)
     
     def m_enterselectionOnButtonClick( self, event ):
         m.selectionentered(self,event)
         
-    def m_checkBoxCursor11OnCheckBox( self, event ):  
-        m.setcursor(self,event)
+    def m_checkBoxCursor11OnCheckBox( self, event ):
+        self.cursor = not self.cursor
+        m.setcursor(self)
+        settings_set(self)
     
     # show drawn borders 
     def m_checkBox11OnCheckBox( self, event ):
+        self.drawborders = self.m_checkBox11.IsChecked()   
+        settings_set(self)
         try:
-            self.drawborders = self.m_checkBox11.IsChecked()   
             print(f"checkbox is {self.drawborders}")
             self.pageimage = self.pageimagecopy # reset image
             f.ShowPage(self)
@@ -471,6 +497,10 @@ class MainFrame(gui.MyFrame):
             pass    
     def m_menuResetSettingsOnMenuSelection( self, event ):
         settings_reset(self)   
+        self.m_checkBox11.Check(self.drawborders)
+        self.m_checkBoxCursor11.Check(self.cursor)
+        self.m_checkBoxDebug.Check(self.debugmode)
+        m.setcursor(self)   
     #%% flashbook
     " flashbook "
     #Import screenshot
@@ -698,7 +728,13 @@ class MainFrame(gui.MyFrame):
         p.SwitchPanel(self,self.lastpage)
     def m_richText4OnLeftDown(self,event):
         p.SwitchPanel(self,self.lastpage)
-    
+    #%%
+    def m_checkBoxDebugOnMenuSelection( self, event ):
+        self.debugmode = not self.debugmode
+        settings_set(self)
+    def m_menuResetLogOnMenuSelection( self, event ):
+        [os.remove(os.path.join(self.dir4,x)) for x in os.listdir(self.dir4) if ("logging" in x and os.path.splitext(x)[1]=='.out' )]
+        
 # start the application
 app = wx.App(False) 
 frame = MainFrame(None)
