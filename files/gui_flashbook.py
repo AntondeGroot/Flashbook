@@ -914,7 +914,7 @@ class MyFrame ( wx.Frame ):
 		self.m_panel40.SetSizer( bSizer62 )
 		self.m_panel40.Layout()
 		bSizer62.Fit( self.m_panel40 )
-		self.m_notebook.AddPage( self.m_panel40, u"a page", False )
+		self.m_notebook.AddPage( self.m_panel40, u"General", False )
 		self.m_panel41 = wx.Panel( self.m_notebook, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TAB_TRAVERSAL )
 		bSizer63 = wx.BoxSizer( wx.VERTICAL )
 		
@@ -927,7 +927,7 @@ class MyFrame ( wx.Frame ):
 		self.m_panel41.SetSizer( bSizer63 )
 		self.m_panel41.Layout()
 		bSizer63.Fit( self.m_panel41 )
-		self.m_notebook.AddPage( self.m_panel41, u"a page", True )
+		self.m_notebook.AddPage( self.m_panel41, u"Flashbook", True )
 		self.m_panel42 = wx.Panel( self.m_notebook, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TAB_TRAVERSAL )
 		bSizer64 = wx.BoxSizer( wx.VERTICAL )
 		
