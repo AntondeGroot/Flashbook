@@ -11,6 +11,7 @@ import wx
 import os
 import fb_functions as f
 import program as p
+import log_module as log
 import json
 import ctypes
 
@@ -31,10 +32,12 @@ def dirchanged(self,event):
     self.scrollpos = self.scrollpos_reset
     
     #Keep track of "nrlist" which is a 4 digit nr 18-> "0018" so that it is easily sorted in other programs
-    pathfile = event.GetPath()
+    path = event.GetPath()
+    print(f"path is {path}")
     nrlist = []
-    picnames = [pic for pic in os.listdir(pathfile) if os.path.splitext(pic)[1] == '.jpg']
+    picnames = [pic for pic in os.listdir(path) if os.path.splitext(pic)[1] == '.jpg']
     self.nr_pics = len(picnames)
+    print(f"nr pics is {self.nr_pics} ")
     if self.nr_pics == 0:
         MessageBox(0, " The selected folder does not contain any images!", "Error", MB_ICONINFORMATION)
     
@@ -63,15 +66,16 @@ def dirchanged(self,event):
         if len_nr == 1:
             nrlist.append("000{}".format(picname[indexlist[0]]))
         elif len_nr == 0:
-            print("found no number for {}".format(picname))
+            print(f"found no number for {picname}")
         else:
             I = indexlist[0]
             F = indexlist[-1] + 1
             nrlist.append("0"*(4-len_nr) + f"{picname[I:F]}")
     picnames = [x for _,x in sorted(zip(nrlist,picnames))]
     self.picnames = picnames
-    self.bookname = os.path.basename(pathfile)
-    self.booknamepath = os.path.relpath(pathfile, self.dir3)
+    self.bookname = os.path.basename(path)
+    self.booknamepath = path.replace(self.dir3,"")[1:]
+    print(f"path = {path}   bookpath = {self.booknamepath}   bookname {self.bookname}")
     self.currentpage = 1
     self.PathBorders = os.path.join(self.dir5, self.bookname + '_borders.txt')
     if os.path.exists(os.path.join(self.temp_dir, self.bookname + '.txt')):
@@ -100,19 +104,19 @@ def dirchanged(self,event):
         print("No drawn rects found for this file, continue")
     try: 
         self.jpgdir    = os.path.join(self.dir3, self.booknamepath, self.picnames[self.currentpage-1])
-        print(f"booknamepath {self.booknamepath}\n startdir{self.dir3}")
+        print(self.booknamepath,self.dir3)
         self.pageimage = PIL.Image.open(self.jpgdir)
         self.pageimagecopy = self.pageimage
         self.width, self.height = self.pageimage.size
     except:
-        p.ERRORMESSAGE("Error : could not load scrolled window 1")
+        log.ERRORMESSAGE("Error : could not load scrolled window 1")
         
     #Draw borders if they exist
     try:
         if self.drawborders == True:                    
             f.drawCoordinates(self)
     except:
-        p.ERRORMESSAGE("Error: could not draw borders")
+        log.ERRORMESSAGE("Error: could not draw borders")
                   
     try:
         image2 = wx.Image( self.width, self.height )
@@ -120,7 +124,7 @@ def dirchanged(self,event):
         self.m_bitmapScroll.SetBitmap(wx.Bitmap(image2))
         f.SetScrollbars(self)
     except:
-        p.ERRORMESSAGE("Error: could not load scrolled window 2")
+        log.ERRORMESSAGE("Error: could not load scrolled window 2")
     self.Layout()
     
 def bitmapleftup(self,event):
@@ -185,6 +189,9 @@ def bitmapleftup(self,event):
                 except:
                     self.pic_question.append([picname])  
                     self.pic_question_dir.append([dir_])  
+                #restore stitchmode to default
+                self.stitchmode_v =  True            
+                self.m_toolStitch.SetBitmap(wx.Bitmap(self.path_arrow2))
         else:
             if self.stitchmode_v == True:
                 self.pic_answer.append(picname)  
@@ -196,6 +203,9 @@ def bitmapleftup(self,event):
                 except:
                     self.pic_answer.append([picname])  
                     self.pic_answer_dir.append([dir_])  
+                #restore stitchmode to default
+                self.stitchmode_v =  True            
+                self.m_toolStitch.SetBitmap(wx.Bitmap(self.path_arrow2))
         f.ShowPage(self)     
         
 def panel4_bitmapleftup(self,event):
@@ -306,18 +316,14 @@ def arrowscroll(self,event,direction):
     scrollWin = self.m_scrolledWindow1
     if direction == 'down':    
         newpos = scrollWin.GetScrollPos(1)+1
-        print(f"scrollpos = {scrollWin.GetScrollPageSize(1),newpos,scrollWin.GetScrollPixelsPerUnit()}" )
     elif direction == 'up':     
         newpos = scrollWin.GetScrollPos(1)-1
-        print(f"scrollpos = {scrollWin.GetScrollPageSize(1),newpos,scrollWin.GetScrollPixelsPerUnit()}" )
     
     # check if you should go to the next/previous page
     
     self.scrollpos.append(scrollWin.GetScrollPos(0))
     self.scrollpos.pop(0)
     
-    print(f"currentpage = {self.currentpage}")
-    print(f"direction is {direction}")
     if len(set(self.scrollpos)) == 1: # you've reached either the beginning or end of the document
         if self.scrollpos[0] == 0:             # beginning
             if direction == 'up':
@@ -336,10 +342,8 @@ def arrowscroll(self,event,direction):
                 self.m_toolNext11OnToolClicked(self)
     else:
         # change scrollbar    
-        #scrollWin.SetScrollPos(wx.VERTICAL,newpos,True) #orientation, value, refresh?
         scrollWin.Scroll(wx.VERTICAL,newpos)
-        #scrollWin.Scroll(wx.VERTICAL,newpos,scrollWin.GetScrollPos(1))    
-    event.Skip()                               # necessary to use other functions after this one is used
+    event.Skip() # necessary to use another function after this one                               
         
 def mousewheel(self,event):
     scrollWin = self.m_scrolledWindow1
@@ -418,7 +422,7 @@ def switchpage(self,event):
         f.LoadPage(self)
         f.ShowPage(self)
     except:
-        p.ERRORMESSAGE("Error: invalid page number")
+        log.ERRORMESSAGE("Error: invalid page number")
     self.Layout()
     
 def nextpage(self,event):
@@ -433,7 +437,7 @@ def nextpage(self,event):
         f.ShowPage(self)
         f.SetScrollbars(self)
     except:
-        p.ERRORMESSAGE("Error: can't click on next")
+        log.ERRORMESSAGE("Error: can't click on next")
     self.Layout()
     
 def previouspage(self,event):    
@@ -447,10 +451,10 @@ def previouspage(self,event):
         f.ShowPage(self)
         f.SetScrollbars(self)            
     except:
-        p.ERRORMESSAGE("Error: can't click on back")
+        log.ERRORMESSAGE("Error: can't click on back")
     self.Layout()
     
-def setcursor(self,event):
+def setcursor(self):
     #lf = event.GetEventObject()
     cursor = self.m_checkBoxCursor11.IsChecked()
     self.cursor = cursor
@@ -469,7 +473,7 @@ def zoomin(self,event):
         self.m_Zoom11.SetValue(f"{percentage}%")
         self.Layout()
     except:
-        p.ERRORMESSAGE("Error: cannot zoom out")
+        log.ERRORMESSAGE("Error: cannot zoom out")
 def zoomout(self,event):
     
     try:
@@ -485,7 +489,7 @@ def zoomout(self,event):
         self.panel1.Refresh() # to remove the remnants of a larger bitmap when the page shrinks
         self.Layout()
     except:
-        p.ERRORMESSAGE("Error: cannot zoom in")
+        log.ERRORMESSAGE("Error: cannot zoom in")
 
 def switch_stitchmode(self): # switch the boolean to opposite
     print("you pressed switch")
@@ -542,6 +546,6 @@ def RemoveKeyboardShortcuts(self,index):
                                           (wx.ACCEL_NORMAL,  wx.WXK_NUMPAD0, self.Id_stitch )])
         self.SetAcceleratorTable(entries)
     except:
-        p.ERRORMESSAGE("Error: cannot unset Accelerator Table")
+        log.ERRORMESSAGE("Error: cannot unset Accelerator Table")
 
 
