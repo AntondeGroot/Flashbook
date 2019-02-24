@@ -16,7 +16,7 @@ import fb_functions as f
 import fc_functions as f2
 import print_functions as f3
 import program as p
-import program
+import log_module as log
 import re
 from termcolor import colored
 import win32clipboard
@@ -71,7 +71,7 @@ def import_screenshot(self,event):
                         
                     self.backupimage = image3
                     self.m_bitmap4.SetBitmap(image3)
-                    program.SwitchPanel(self,4)
+                    p.SwitchPanel(self,4)
                     
                 else:
                     MessageBox(0, "There is no screenshot available\npress PrtScr again\nor press Alt+PrtScr to only copy an active window", "Error", ICON_EXCLAIM)
@@ -157,7 +157,7 @@ def notes2paper(self):
                         else:
                             self.image_a = self.image
             except:
-                p.ERRORMESSAGE("Error: could not display card")  
+                log.ERRORMESSAGE("Error: could not display card")  
         
         #combine question and answer:
         if self.image_a != []:
@@ -409,7 +409,7 @@ def dirchanged(self,event):
             self.pageimagecopy = self.pageimage
             self.width, self.height = self.pageimage.size
         except:
-            p.ERRORMESSAGE("Error: could not load scrolled window")
+            log.ERRORMESSAGE("Error: could not load scrolled window")
         
         #try to draw borders, but if there are no borders, do nothing
         if self.drawborders == True:                    
@@ -423,9 +423,9 @@ def dirchanged(self,event):
             
 
         except:
-            p.ERRORMESSAGE("Error: could not load scrolled window")
+            log.ERRORMESSAGE("Error: could not load scrolled window")
     except:
-        p.ERRORMESSAGE("Error: could not load image")
+        log.ERRORMESSAGE("Error: could not load image")
 
 
 
@@ -469,30 +469,7 @@ def RemoveKeyboardShortcuts(self):
     # empty acceleratortable?
     self.SetAcceleratorTable()
 
-"""
-def SwitchBitmap(self): # checks if there is an answer card, if not changes mode back to question.
-    if self.debugmode:
-        print("f=switchbitmap")
-    try:
-        # you always start with a question, check if there is an answer:
-        nr = self.cardorder[self.index]
-        key = f'A{nr}' # do not use self.key: only check if there is an answer, don't change the key
-        try:
-            if key not in self.textdictionary and key not in self.picdictionary: # there is no answer card!
-                self.mode = 'Question'
-                self.SwitchCard = False        
-                id = self.m_toolSwitch.GetId()
-                self.m_toolBar11.SetToolNormalBitmap(id,wx.Bitmap( self.path_repeat_na, wx.BITMAP_TYPE_ANY ))        
-            else:
-                self.SwitchCard = True
-                id = self.m_toolSwitch.GetId()
-                self.m_toolBar11.SetToolNormalBitmap(id,wx.Bitmap( self.path_repeat, wx.BITMAP_TYPE_ANY ))
-        except:
-            p.ERRORMESSAGE("Error: could not switch bitmap #2")
-    except:
-        
-        p.ERRORMESSAGE("Error: could not switch bitmap #1")
-"""
+
 def add_border(self,img):
     if self.pdfline_bool == True:
         new_im = PIL.Image.new("RGB", (self.a4page_w,img.size[1]+self.pdfline_thickness),"white")    
@@ -531,7 +508,7 @@ def startprogram(self,event):
             self.filename = self.fileDialog.GetFilename()
             self.bookname = self.filename.replace(".tex","")
     except:
-        p.ERRORMESSAGE("Error: Couldn't open path")
+        log.ERRORMESSAGE("Error: Couldn't open path")
     try:
         if os.path.exists(self.path):
             file = open(self.path, 'r')
@@ -547,7 +524,7 @@ def startprogram(self,event):
         self.nr_cards = len(q_pos)
         self.nr_questions = len(q_pos)
     except:
-        p.ERRORMESSAGE("Error: finding questions/answers")
+        log.ERRORMESSAGE("Error: finding questions/answers")
 
     ## dialog display              
     self.nr_questions = self.nr_cards
