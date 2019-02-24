@@ -17,8 +17,6 @@ def initializeparameters(self):
     self.BorderCoords   = []         
     self.colorlist      = self.bordercolors
     self.currentpage    = 1
-    self.cursor         = False    # normal cursor
-    self.drawborders    = True
     self.image          = []
     self.imagecopy      = []
     self.tempdictionary = {}
