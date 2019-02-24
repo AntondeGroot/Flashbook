@@ -18,6 +18,7 @@ import numpy as np
 from PIL import ImageOps
 import fc_functions as fc
 import program as p
+import log_module as log
 #import matplotlib.backends.backend_agg as agg
 
 pylab.ioff() # make sure it is inactive, otherwise possible qwindows error    .... https://stackoverflow.com/questions/26970002/matplotlib-cant-suppress-figure-window
@@ -176,7 +177,7 @@ def LoadPage(self):
         self.width , self.height = int(self.width*self.zoom) , int(self.height*self.zoom)
         self.pageimage = self.pageimage.resize((self.width, self.height), PIL.Image.ANTIALIAS)
     except:
-        p.ERRORMESSAGE("Error: cannot load page")
+        log.ERRORMESSAGE("Error: cannot load page")
     
 def ShowPrintScreen(self): # no error
     try:
@@ -195,7 +196,7 @@ def ShowPrintScreen(self): # no error
         self.m_bitmap4.SetBitmap(wx.Bitmap(image2))
         self.Layout()
     except:
-        p.ERRORMESSAGE("Error: cannot show PrintScreen page")
+        log.ERRORMESSAGE("Error: cannot show PrintScreen page")
     
     
 
@@ -224,7 +225,7 @@ def ShowPage(self):
                 self.currentpage = self.currentpage_backup
             output.write(f"{self.currentpage}")
     except:
-        p.ERRORMESSAGE("Error: cannot show page")
+        log.ERRORMESSAGE("Error: cannot show page")
         
 def ResetQuestions(self): # no errors
     self.pdf_question     = ''
@@ -329,7 +330,7 @@ def CreateTextCard(self):
         self.imagetext = img.crop((0, 0, var, img.size[1]))
     except:
         self.ERROR = True
-        p.ERRORMESSAGE("Error: could not create textcard")
+        log.ERRORMESSAGE("Error: could not create textcard")
 
 
 
@@ -372,7 +373,7 @@ def ShowInPopup(self,event,mode):
         self.image = image
         #image.show()
     except:
-        p.ERRORMESSAGE("Error: could not open file in popup")
+        log.ERRORMESSAGE("Error: could not open file in popup")
     try:
         CreateTextCard(self)
     except:
