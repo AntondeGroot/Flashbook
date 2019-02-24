@@ -38,6 +38,7 @@ import fc_modules    as m2
 import print_modules as m3
 import sync_modules  as m4
 import pdf_modules   as m5
+import log_module    as log
 import fb_functions    as f
 import fc_functions    as f2
 import print_functions as f3
@@ -90,7 +91,7 @@ def BoxesChecked(self,n):
     elif n == 3:
         return CHECKED3
     else:
-        p.ERRORMESSAGE("Error: invalid entry in BoxesChecked")
+        log.ERRORMESSAGE("Error: invalid entry in BoxesChecked")
         return False
     
 #% path to resources: 
@@ -235,7 +236,7 @@ def initialize(self):
                 f.write(json.dumps({'IP1' : myIP,'IP2': ""})) 
                 f.close()
     except:
-        p.ERRORMESSAGE("Error: could not access internet")
+        log.ERRORMESSAGE("Error: could not access internet")
         
     print("="*90)
     print(f"\nThe files will be saved to the following directory: {dir0}\n")
@@ -708,7 +709,7 @@ class MainFrame(gui.MyFrame):
                 settings_set(self)
                 m3.preview_refresh(self)
         except:
-            p.ERRORMESSAGE("Error: invalid entry")
+            log.ERRORMESSAGE("Error: invalid entry")
             
     def m_lineWqaOnText( self, event ):
         try:            
@@ -717,7 +718,7 @@ class MainFrame(gui.MyFrame):
                 settings_set(self)
                 m3.preview_refresh(self)
         except:
-            p.ERRORMESSAGE("Error: invalid entry")
+            log.ERRORMESSAGE("Error: invalid entry")
             
     #%% Help menu
     def m_richText1OnLeftDown(self,event):
