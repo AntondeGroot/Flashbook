@@ -10,6 +10,7 @@ import os
 import PIL
 import PIL.Image
 import program as p
+import log_module as log
 import random
 import re
 from termcolor import colored
@@ -113,7 +114,7 @@ def remove_stats(self):
             del dictionary[self.bookname]
             file.write(json.dumps(dictionary))
     except: # no update, just overwrite with popped dictionary
-        p.ERRORMESSAGE("Error could not load saved stats from RemoveStats()")
+        log.ERRORMESSAGE("Error could not load saved stats from RemoveStats()")
     
     
 def set_stats(self):
@@ -274,10 +275,10 @@ def switch_bitmap(self):
                 id_ = self.m_toolSwitch21.GetId()
                 self.m_toolBar3.SetToolNormalBitmap(id_, wx.Bitmap( path_repeat, wx.BITMAP_TYPE_ANY ))
         except:
-            p.ERRORMESSAGE("Error: could not switch bitmap #2")
+            log.ERRORMESSAGE("Error: could not switch bitmap #2")
     except:
         
-        p.ERRORMESSAGE("Error: could not switch bitmap #1")
+        log.ERRORMESSAGE("Error: could not switch bitmap #1")
     
 
     
@@ -318,7 +319,7 @@ def displaycard(self):
             try:
                 CreateTextCard(self)
             except:
-                p.ERRORMESSAGE("Error: could not create textcard")
+                log.ERRORMESSAGE("Error: could not create textcard")
         # if there is a textcard either combine them with a picture or display it on its own
         if self.TextCard == True: 
             if self.key in self.picdictionary:
@@ -337,7 +338,7 @@ def displaycard(self):
             except:
                 pass
     except:
-        p.ERRORMESSAGE("Error: could not display card")
+        log.ERRORMESSAGE("Error: could not display card")
 
 def CreateTextCard(self):
     if self.debugmode:
@@ -521,7 +522,7 @@ def LoadFlashCards(self,USERINPUT):
             if self.answers2[i] != '':
                self.textdictionary.update({f'A{i}' : self.answers2[i]})
     except:
-       p.ERRORMESSAGE("Error: couldn't pick file, LoadFlashCards error")
+       log.ERRORMESSAGE("Error: couldn't pick file, LoadFlashCards error")
     
 def ShowPage(self):
     try:
@@ -530,7 +531,7 @@ def ShowPage(self):
         image2.SetData( self.image.tobytes() )        
         self.m_bitmapScroll1.SetBitmap(wx.Bitmap(image2))        
     except:        
-        p.ERRORMESSAGE("Error: cannot show image")
+        log.ERRORMESSAGE("Error: cannot show image")
 
 # reset scroll bar when switching page:
 def SetScrollbars(self):
