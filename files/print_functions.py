@@ -13,6 +13,7 @@ import math
 import pylab
 import fb_functions    as f
 import fc_functions    as f2
+import log_module      as log
 import program as p
 import json
 import re
@@ -135,7 +136,7 @@ def drawCoordinates(self): # no errors
             self.cord2 = coord[2:]
             img = drawRec(self,img,self.colorlist[0])
     except:
-        p.ERRORMESSAGE("Error: could not draw borders")
+        log.ERRORMESSAGE("Error: could not draw borders")
     
     try:    #there won't always be tempdict borders, so try and otherwise go further
         coordinatelist = self.tempdictionary[f'page {self.currentpage}']
@@ -144,7 +145,7 @@ def drawCoordinates(self): # no errors
             self.cord2 = coord[2:]
             img = drawRec(self,img,self.colorlist[1])
     except:
-        p.ERRORMESSAGE("Error: could not draw temporary borders")
+        log.ERRORMESSAGE("Error: could not draw temporary borders")
     #export image
     self.pageimage = PIL.Image.fromarray(img)
     
@@ -165,7 +166,7 @@ def LoadPage(self):
         self.width , self.height = int(self.width*self.zoom) , int(self.height*self.zoom)
         self.pageimage = self.pageimage.resize((self.width, self.height), PIL.Image.ANTIALIAS)
     except:
-        p.ERRORMESSAGE("Error: cannot load page")    
+        log.ERRORMESSAGE("Error: cannot load page")    
     
     
 def ShowPage(self): # no error
@@ -191,7 +192,7 @@ def ShowPage(self): # no error
         with open(os.path.join(self.temp_dir, self.bookname +'.txt'), 'w') as output:   
             output.write(f"{self.currentpage}")
     except:
-        p.ERRORMESSAGE("Error: cannot show page")
+        log.ERRORMESSAGE("Error: cannot show page")
 
 def ResetQuestions(self): # no errors
     #if debugmode:
