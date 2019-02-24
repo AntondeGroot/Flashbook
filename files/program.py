@@ -41,16 +41,6 @@ MB_ICONINFORMATION = 0x00000040
 MessageBox = ctypes.windll.user32.MessageBoxW
 
 
-import traceback
-import logging
-def ERRORMESSAGE(msg):
-    print(colored(f"{msg}\n",'red',attrs=['underline']))
-    ErrorMessage = traceback.format_exc()
-    print(colored(f"{ErrorMessage}\n",'red'))
-    path = os.path.join(os.getenv("LOCALAPPDATA"),'Flashbook','temporary')
-    LOG_FILENAME = os.path.join(path,'logging_traceback.out')
-    logging.basicConfig(filename=LOG_FILENAME, level=logging.INFO)
-    logging.warning(ErrorMessage)
 
 
 def checkBooks(self,sleeptime):
@@ -144,7 +134,6 @@ def run_flashcard(self):
                 os.makedirs(item)
         # unpack png images used in the gui
         resources.resourceimages(self.dir6,self.dir1) 
-        # give info to user about what books he has
     
     #%%
     
