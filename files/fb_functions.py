@@ -385,20 +385,25 @@ def ShowInPopup(self,event,mode):
             self.image = self.imagetext
         except:
             pass
-    image = self.image
-    
-    """Try to access mousepos, if there wasn't any mouseclick: then just place the popupwindow in the middle of your screen. 
-    this is the case if you only entered text, but didn't select anything with the mouse"""
     try:
-        a = self.mousepos  
+        image = self.image
+        """Try to access mousepos, if there wasn't any mouseclick: then just place the popupwindow in the middle of your screen. 
+        this is the case if you only entered text, but didn't select anything with the mouse"""
+        try:
+            a = self.mousepos  
+        except:
+            self.mousepos = (int(wx.GetDisplaySize()[0]/2),int(wx.GetDisplaySize()[1]/2))
+            
+        win = Window2(self.GetTopLevelParent(), wx.SIMPLE_BORDER,image)    
+        win.Position((self.mousepos[0]-10,self.mousepos[1]-10), (0,0))
+        win.Show(True)  
+        if hasattr(self,'imagetext'):
+            delattr(self, 'imagetext')
+        self.image = []
     except:
-        self.mousepos = (int(wx.GetDisplaySize()[0]/2),int(wx.GetDisplaySize()[1]/2))
+        # this is a normal occurance when you switch between Q and A
+        pass
         
-    win = Window2(self.GetTopLevelParent(), wx.SIMPLE_BORDER,image)    
-    win.Position((self.mousepos[0]-10,self.mousepos[1]-10), (0,0))
-    win.Show(True)  
-    if hasattr(self,'imagetext'):
-        delattr(self, 'imagetext')
 
 
 #%% turn user LaTeX macro into useable LaTeX code
