@@ -33,11 +33,10 @@ def dirchanged(self,event):
     
     #Keep track of "nrlist" which is a 4 digit nr 18-> "0018" so that it is easily sorted in other programs
     path = event.GetPath()
-    print(f"path is {path}")
     nrlist = []
     picnames = [pic for pic in os.listdir(path) if os.path.splitext(pic)[1] == '.jpg']
     self.nr_pics = len(picnames)
-    print(f"nr pics is {self.nr_pics} ")
+    
     if self.nr_pics == 0:
         MessageBox(0, " The selected folder does not contain any images!", "Error", MB_ICONINFORMATION)
     
@@ -75,11 +74,11 @@ def dirchanged(self,event):
     self.picnames = picnames
     self.bookname = os.path.basename(path)
     self.booknamepath = path.replace(self.dir3,"")[1:]
-    print(f"path = {path}   bookpath = {self.booknamepath}   bookname {self.bookname}")
     self.currentpage = 1
     self.PathBorders = os.path.join(self.dir5, self.bookname + '_borders.txt')
-    if os.path.exists(os.path.join(self.temp_dir, self.bookname + '.txt')):
-        file = open(os.path.join(self.temp_dir, self.bookname + '.txt'), 'r')
+    path_file = os.path.join(self.temp_dir, self.bookname + '.txt')
+    if os.path.exists(path_file):
+        file = open(path_file, 'r')
         self.currentpage = int(float(file.read()))    
     
     #Create empty dictionary if it doesn't exist
@@ -235,7 +234,7 @@ def panel4_bitmapleftup(self,event):
 def selectionentered(self,event):
     
     if hasattr(self,'bookname') and self.bookname != '':
-        if self.m_textCtrl2.GetValue() != '' or len(self.pic_question)>0:
+        if self.m_textCtrl2.GetValue() != '' or len(self.pic_question) > 0:
             if self.questionmode == True:
                 # change mode to answer
                 self.usertext = self.m_textCtrl2.GetValue()
@@ -389,16 +388,12 @@ def resetselection(self,event):
     #  remove all temporary pictures taken
     if len(self.pic_answer_dir) > 0:
         for pic in self.pic_answer_dir:
-            try:
+            if os.path.exists(pic):
                 os.remove(pic)
-            except:
-                pass
     if len(self.pic_question_dir) > 0:
         for pic in self.pic_question_dir:
-            try:
+            if os.path.exists(pic):
                 os.remove(pic)
-            except:
-                pass
     #reset all values:
     self.tempdictionary = {}
     f.ResetQuestions(self)        
