@@ -66,12 +66,9 @@ def recvall(sock, n):
 def sendmessage(HOST,PORT,self):
     
     dirlist    = os.listdir(self.basedir)
-    appendDir  = ["books","pics","resources"] # dont overwrite
-    excludeDir = ["IPadresses"]              # exclude this directory from synchronizing
+    appendDir  = ["pics","resources"]   # dont overwrite files in these directories
+    excludeDir = ["IPadresses","books"] # exclude this directory from synchronizing
     
-    # Does the user want to transfer books?
-    
-    dirlist = [x for x in dirlist if x != "books"]
     dirlist = [x for x in dirlist if x not in excludeDir]
     def Socket_send(HOST, PORT, message):
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
@@ -338,8 +335,7 @@ def initialize(self,event):
     if not os.path.exists(self.dirIP):
         os.makedirs(self.dirIP)
         
-    try:
-        
+    try:     
         wmi_obj = wmi.WMI()
         wmi_sql = "select IPAddress,DefaultIPGateway from Win32_NetworkAdapterConfiguration where IPEnabled = True"
         wmi_out = wmi_obj.query(wmi_sql)[0] #only 1 query
