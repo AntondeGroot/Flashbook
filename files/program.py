@@ -96,6 +96,7 @@ def checkBooks(self,sleeptime):
 
 
 def run_flashbook(self):
+    
     print("Welcome to Flashbook , one moment ...")     
     self.m_bitmapScroll.SetBitmap(wx.Bitmap(wx.Image( 1,1 ))) # always empty bitmap, in case someone reruns the program
     self.m_CurrentPage11.SetValue('')
@@ -109,6 +110,7 @@ def run_flashbook(self):
     m.SetKeyboardShortcuts(self)
 
 def run_flashcard(self):    
+    
     ini2.initializeparameters(self)
     def initialize2(self):
         # set all directories
@@ -175,7 +177,7 @@ def run_flashcard(self):
                                   (wx.ACCEL_NORMAL,  wx.WXK_UP, Id_Correct),
                                   (wx.ACCEL_NORMAL,  wx.WXK_DOWN, Id_Wrong)])
     self.SetAcceleratorTable(entries)
-    f2.SetScrollbars(self)
+    f2.SetScrollbars_fc(self)
         
     # answers given 
     def m_buttonCorrectOnButtonClick( self, event ):
