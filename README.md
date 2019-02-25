@@ -75,7 +75,7 @@ Then you can either use your mouse or your arrow keys to: flip the card, indicat
 
 When you click on the 'print' button you get to the following preview window:
 
-![alt text](https://github.com/AntondeGroot/Flashbook/blob/master/readme%20images/print1.png)
+![alt text](https://github.com/AntondeGroot/Flashbook/blob/master/readme%20images/print2.png)
 
 where you can modify it to your liking. You add lines between Q&A cards (if present) and between each horizontal row of cards. You can also change the color and thickness of these lines. If you press 'apply' a pdf will be made. The location of this folder can be opened via the menubar.
 
