@@ -534,6 +534,6 @@ def ShowPage(self):
         log.ERRORMESSAGE("Error: cannot show image")
 
 # reset scroll bar when switching page:
-def SetScrollbars(self):
+def SetScrollbars_fc(self):
     scrollWin = self.m_scrolledWindow11
     scrollWin.SetScrollbars(0,int(20*self.zoom),0,int(100*self.zoom) )
