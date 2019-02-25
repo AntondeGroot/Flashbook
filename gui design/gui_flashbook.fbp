@@ -275,6 +275,21 @@
                         <event name="OnMenuSelection">m_checkBoxCursor11OnCheckBox</event>
                         <event name="OnUpdateUI"></event>
                     </object>
+                    <object class="wxMenuItem" expanded="1">
+                        <property name="bitmap"></property>
+                        <property name="checked">0</property>
+                        <property name="enabled">1</property>
+                        <property name="help"></property>
+                        <property name="id">wxID_ANY</property>
+                        <property name="kind">wxITEM_CHECK</property>
+                        <property name="label">Debug mode</property>
+                        <property name="name">m_checkBoxDebug</property>
+                        <property name="permission">none</property>
+                        <property name="shortcut"></property>
+                        <property name="unchecked_bitmap"></property>
+                        <event name="OnMenuSelection">m_checkBoxDebugOnMenuSelection</event>
+                        <event name="OnUpdateUI"></event>
+                    </object>
                     <object class="separator" expanded="1">
                         <property name="name">m_separator3</property>
                         <property name="permission">none</property>
@@ -292,6 +307,21 @@
                         <property name="shortcut"></property>
                         <property name="unchecked_bitmap"></property>
                         <event name="OnMenuSelection">m_menuResetSettingsOnMenuSelection</event>
+                        <event name="OnUpdateUI"></event>
+                    </object>
+                    <object class="wxMenuItem" expanded="1">
+                        <property name="bitmap"></property>
+                        <property name="checked">0</property>
+                        <property name="enabled">1</property>
+                        <property name="help"></property>
+                        <property name="id">wxID_ANY</property>
+                        <property name="kind">wxITEM_NORMAL</property>
+                        <property name="label">Reset log file</property>
+                        <property name="name">m_menuResetLog</property>
+                        <property name="permission">none</property>
+                        <property name="shortcut"></property>
+                        <property name="unchecked_bitmap"></property>
+                        <event name="OnMenuSelection">m_menuResetLogOnMenuSelection</event>
                         <event name="OnUpdateUI"></event>
                     </object>
                 </object>
@@ -10192,7 +10222,7 @@
                                     <event name="OnUpdateUI"></event>
                                     <object class="notebookpage" expanded="1">
                                         <property name="bitmap"></property>
-                                        <property name="label">a page</property>
+                                        <property name="label">General</property>
                                         <property name="select">0</property>
                                         <object class="wxPanel" expanded="1">
                                             <property name="BottomDockable">1</property>
@@ -10376,7 +10406,7 @@
                                     </object>
                                     <object class="notebookpage" expanded="1">
                                         <property name="bitmap"></property>
-                                        <property name="label">a page</property>
+                                        <property name="label">Flashbook</property>
                                         <property name="select">1</property>
                                         <object class="wxPanel" expanded="1">
                                             <property name="BottomDockable">1</property>
@@ -10560,7 +10590,7 @@
                                     </object>
                                     <object class="notebookpage" expanded="1">
                                         <property name="bitmap"></property>
-                                        <property name="label">a page</property>
+                                        <property name="label">Flashcard</property>
                                         <property name="select">0</property>
                                         <object class="wxPanel" expanded="1">
                                             <property name="BottomDockable">1</property>
@@ -10744,7 +10774,7 @@
                                     </object>
                                     <object class="notebookpage" expanded="1">
                                         <property name="bitmap"></property>
-                                        <property name="label">a page</property>
+                                        <property name="label">Synchronize</property>
                                         <property name="select">0</property>
                                         <object class="wxPanel" expanded="1">
                                             <property name="BottomDockable">1</property>
