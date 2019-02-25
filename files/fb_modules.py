@@ -392,7 +392,7 @@ def resetselection(self,event):
                 os.remove(pic)
     if len(self.pic_question_dir) > 0:
         for pic in self.pic_question_dir:
-            if os.path.exists(pic):
+            if type(pic) == str and os.path.exists(pic):
                 os.remove(pic)
     #reset all values:
     self.tempdictionary = {}
