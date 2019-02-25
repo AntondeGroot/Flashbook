@@ -35,7 +35,7 @@ def initializeparameters(self):
     self.questions   = []
     self.answers     = []
     self.questions2  = []
-    f2.SetScrollbars(self)
+    f2.SetScrollbars_fc(self)
     
     # set mouse short cuts: 
     self.m_bitmapScroll.Bind( wx.EVT_MOUSEWHEEL, self.m_toolSwitch21OnToolClicked )
