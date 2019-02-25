@@ -152,7 +152,7 @@ def settings_create(self):
                                    'vertline_thickness': 5,
                                    'QAline_color' : (0,0,0), 
                                    'pdfline_color' : (18,5,250),
-                                   'vertline_color' : (18,5,250),
+                                   'vertline_color' : (255,128,0),
                                    'QAline_bool': True,
                                    'pdfline_bool': True ,
                                    'vertline_bool': True,
@@ -721,6 +721,9 @@ class MainFrame(gui.MyFrame):
         self.FilePickEvent = False
         RGB = self.m_colorPDFline.GetColour()
         self.pdfline_color  = (RGB.Red(),RGB.Green(),RGB.Blue())    
+        if self.m_checkBoxSameColor.GetValue() == True:
+            self.vertline_color  = self.pdfline_color 
+            self.m_colorVERTline.SetColour(self.pdfline_color)
         settings_set(self)
         m3.preview_refresh(self)
         
