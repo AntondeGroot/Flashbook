@@ -494,6 +494,7 @@ def switch_stitchmode(self): # switch the boolean to opposite
 
 def SetKeyboardShortcuts(self):
     
+    self.SetAcceleratorTable(wx.AcceleratorTable())
     # set keyboard short cuts: accelerator table        
     self.Id_leftkey   = wx.NewIdRef() 
     self.Id_rightkey  = wx.NewIdRef() 
