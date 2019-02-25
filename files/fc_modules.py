@@ -19,6 +19,7 @@ import pylab
 import matplotlib.backends.backend_agg as agg
 #matplotlib.use('TKAgg')
 import fc_functions as f2
+import log_module as log
 import program as p
 import json
 import ctypes
@@ -33,7 +34,8 @@ def buttonCorrect(self):
     # initialize
     f2.clearbitmap(self)
     #import
-    
+    debug = self.debugmode
+    log.DEBUGLOG("test1","test2",debugmode = debug, msg="hallo")
     runprogram = self.runprogram
     self.index += 1    
     if runprogram == True:
@@ -93,7 +95,7 @@ def buttonWrong(self):
         f2.save_stats(self)    
         f2.displaycard(self)
         f2.switch_bitmap(self)
-    f2.SetScrollbars(self)
+    f2.SetScrollbars_fc(self)
     if runprogram == False:
         self.m_Score21.SetValue("")     
         self.m_CurrentPage21.SetValue("")
@@ -127,7 +129,7 @@ def switchCard(self):
             try:
                 f2.CreateTextCard(self)
             except:
-                p.ERRORMESSAGE("Error: failed to create TextCard")
+                log.ERRORMESSAGE("Error: failed to create TextCard")
         #There is text, determine if there is a picture:
         if self.TextCard == True:
             if self.debugmode:
@@ -137,7 +139,7 @@ def switchCard(self):
                     f2.CombinePicText(self)
                     f2.ShowPage(self)     
                 except:
-                    p.ERRORMESSAGE("Error: cannot combine pic with text")
+                    log.ERRORMESSAGE("Error: cannot combine pic with text")
             else: #only display text
                 self.image = self.imagetext
                 f2.ShowPage(self)
@@ -151,7 +153,7 @@ def switchCard(self):
                 except:
                     pass
             # you don't need to check for: "no Text & no picture" because switch_bitmap already takes care of that.
-        f2.SetScrollbars(self)
+        f2.SetScrollbars_fc(self)
 
 def startprogram(self,event): 
     """main program that does all the preprocessing"""
@@ -169,7 +171,7 @@ def startprogram(self,event):
     self.answers     = []
     self.questions2 = []
     
-    f2.SetScrollbars(self)
+    f2.SetScrollbars_fc(self)
     
     # open file
     try:
@@ -179,7 +181,7 @@ def startprogram(self,event):
         self.bookname = os.path.splitext(self.filename)[0]         #also remove extension '.tex'
         print(f"book = {self.bookname} ")
     except:
-        p.ERRORMESSAGE("Error: Couldn't open path")
+        log.ERRORMESSAGE("Error: Couldn't open path")
     self.resumedata = {self.bookname : {'score': self.score, 'index': self.index, 'nr_questions':self.nr_questions}}
     try:
         if os.path.exists(self.path):
@@ -195,7 +197,7 @@ def startprogram(self,event):
         self.nr_cards = len(q_pos)
         
     except:
-        p.ERRORMESSAGE("Error: could not find questions/answers")
+        log.ERRORMESSAGE("Error: could not find questions/answers")
 
 
     #open dialog window
@@ -229,7 +231,7 @@ def startprogram(self,event):
                 f2.remove_stats(self)
             
         except:
-            p.ERRORMESSAGE("Error: Couldn't open Dialog window nr 1")
+            log.ERRORMESSAGE("Error: Couldn't open Dialog window nr 1")
     else:
         try:
             with gui.MyDialog(self,data) as dlg: #'data' sets the max range of the slider
@@ -239,13 +241,13 @@ def startprogram(self,event):
                 self.continueSession = False
                 self.multiplier = dlg.m_textCtrl11.GetValue()
         except:
-            p.ERRORMESSAGE("Error: Couldn't open Dialog window nr 2")
+            log.ERRORMESSAGE("Error: Couldn't open Dialog window nr 2")
             
     # if you want to use all cards twice or 1.5 times for the quiz: then exclude invalid selections of this multiplier
     try:
         self.multiplier = float(self.multiplier)
     except:
-        p.ERRORMESSAGE("Error: entered multiplier was not a number, continue as if multiplier = 1")
+        log.ERRORMESSAGE("Error: entered multiplier was not a number, continue as if multiplier = 1")
         self.multiplier = 1
     if self.multiplier <= 0:
         self.multiplier = 1
