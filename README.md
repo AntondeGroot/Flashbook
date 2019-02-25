@@ -109,11 +109,4 @@ You can also sync two devices. It will automatically display the IP address of t
 - Facebook: drawn borders suddenly shifted up and to the left. This does not affect new borders being drawn (or the final selections), or past selections. Perhaps this is caused by a missing self.Layout() where the page should be redrawn. Perhaps the page is rescaled but the borders aren't.
 - Python multithreading isn't real multithreading as it just switches rapidly between threads. Perhaps incorporate multiprocessing.
 
-### name changes:
-just in case it causes issues further down the line of making things pep8 compliant:
-in fc_functions:
-- LoadStats => load_stats
-- SetStats => set_stats
-- RemoveStats = > remove_stats
-- SaveStats => save_stats
-- SwitchBitmap = >  switch_bitmap
+
