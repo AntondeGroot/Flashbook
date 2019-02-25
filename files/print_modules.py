@@ -233,34 +233,53 @@ def notes2paper(self):
     # combine pics horizontally
     for i,images in enumerate(self.paper_h_list):
         try:
-            widths, heights = zip(*(i.size for i in images)) 
-            
+            if self.vertline_bool:
+                widths, heights = zip(*(tuple([i.size[0]  + 2*self.vertline_thickness + 2*5,i.size[1]]) for i in images)) 
+            else:
+                widths, heights = zip(*(i.size for i in images)) 
             max_height = max(heights)
             total_width = sum(widths)
+            self.maxheight = max_height
             
             new_im = PIL.Image.new('RGB', (total_width, max_height), "white")
             #combine images to 1
             x_offset = 0
-            for im in images:
+            for i,im in enumerate(images):
+                if i == 0 :
+                    im = add_sideborder(self,im,"both")
+                else:
+                    im = add_sideborder(self,im,"right")
+                    #im.show()
                 new_im.paste(im, (x_offset,0))
                 x_offset += im.size[0]
+                
             self.image = new_im
-            new_im = add_border(self,new_im)
+            new_im = add_border(self,new_im,"single")
             self.paper_h.append(new_im)
+        
         except: # if only one picture left
+        
             #print(images.size)
             if images.size[0] > self.a4page_w:
+                if i == 0 :
+                    images = add_sideborder(self,images,"both")
+                else:
+                    images = add_sideborder(self,images,"right")
                 w,h = images.size
                 images = images.resize((self.a4page_w,int(h*self.a4page_w/w)))
-            images = add_border(self,images)
-            self.paper_h.append(images)
             
+            images = add_border(self,images,"single")
+            self.paper_h.append(images)
+          
     #self.paper_h[0].show()    
     # sort images vertically
     D = []
     self.img_heights = []
     for img in self.paper_h:
-        self.img_heights.append(img.size[1])
+        if self.pdfline_bool:
+            self.img_heights.append(img.size[1]+self.pdfline_thickness)
+        else:
+            self.img_heights.append(img.size[1])
     
     A = np.cumsum(self.img_heights)
     if self.printpreview == False or self.printpreview == True:
@@ -270,9 +289,7 @@ def notes2paper(self):
                 D.append(self.paper_h[:index] )
                 self.paper_h = self.paper_h[index:] 
                 self.img_heights = self.img_heights[index:] 
-                A = np.cumsum(self.img_heights)
-                #print(A)
-                #print("\n")      
+                A = np.cumsum(self.img_heights)    
             else:
                 D.append(self.paper_h)
                 self.img_heights = []
@@ -288,10 +305,14 @@ def notes2paper(self):
     for i,images in enumerate(self.paper_h):
         new_im = PIL.Image.new('RGB', (self.a4page_w, self.a4page_h), "white")        
         y_offset = 0
+        x_offset = 0
         try:
             for im in images:
                 new_im.paste(im, (0,y_offset))
                 y_offset += im.size[1]
+                x_offset += im.size[0]
+            self.combinedwidth = x_offset
+            new_im = add_border(self,new_im,"multi")
             self.image = new_im
             new_im = add_margins(self,new_im)
             self.allimages_v.append(new_im)
@@ -470,15 +491,48 @@ def RemoveKeyboardShortcuts(self):
     self.SetAcceleratorTable()
 
 
-def add_border(self,img):
+def add_border(self,img,mode):
     if self.pdfline_bool == True:
-        new_im = PIL.Image.new("RGB", (self.a4page_w,img.size[1]+self.pdfline_thickness),"white")    
-        border = PIL.Image.new("RGB", (self.a4page_w,self.pdfline_thickness), self.pdfline_color)    
+        if mode == "single":
+            new_im = PIL.Image.new("RGB", (self.a4page_w,img.size[1]+self.pdfline_thickness),"white")    
+            border = PIL.Image.new("RGB", (img.size[0] ,self.pdfline_thickness), self.pdfline_color)    
+        else:
+            new_im = PIL.Image.new("RGB", (self.a4page_w,img.size[1]+self.pdfline_thickness),"white")    
+            border = PIL.Image.new("RGB", (self.combinedwidth ,self.pdfline_thickness), self.pdfline_color)    
         new_im.paste(border, (0,img.size[1]))
         new_im.paste(img, (0,0))
         return new_im
     else:
         return img
+
+def add_sideborder(self,img,mode):
+    linesep = 5
+    #self.maxheight = img.size[1]
+    if  self.vertline_bool == True:        
+        if mode == "both":
+            new_size =  (img.size[0] + 2*self.vertline_thickness + 2*linesep ,self.maxheight )
+            IMGPOS  = (linesep + self.vertline_thickness , 0)
+            POS = (img.size[0] + self.vertline_thickness+2*linesep  ,0)
+            
+            new_im = PIL.Image.new("RGB", new_size,"white")
+            border = PIL.Image.new("RGB", (self.vertline_thickness , self.maxheight), self.vertline_color)    
+            new_im.paste(img, IMGPOS)
+            new_im.paste(border, (0 ,0))
+            new_im.paste(border, POS)
+        else:
+            new_size =  (img.size[0] + self.vertline_thickness + 3*linesep,self.maxheight )
+            IMGPOS  = (0 , 0)
+            #POS = (img.size[0] + 3*linesep  ,0)
+            POS = (img.size[0] + int(2.8*linesep) ,0)
+            new_im = PIL.Image.new("RGB", new_size,"white")
+            border = PIL.Image.new("RGB", (self.vertline_thickness , self.maxheight), self.vertline_color)    
+            new_im.paste(img, IMGPOS)
+            new_im.paste(border, POS)
+        return new_im
+    else:
+        return img
+
+    
     
 def add_margins(self,img):
     margin = 0.05
