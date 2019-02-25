@@ -101,12 +101,11 @@ You can also sync two devices. It will automatically display the IP address of t
 - Improve design: font / colors / borders / icons / ...
 #### Issues:
 
-- When you start in Flashcard and then open Flashbook the following occurs: the pages are no longer resized according to the scrollbar (have extra empty space following a page), and you cannot scroll when the mouse is over the image (only when the mouse is next to the image). This also prevents from "scrolling to the next page".
+- you can't switch from **flashcard** to **flashbook** because there is an error in which not all keyeventbindings are undone. Only the arrow keys are succesfully unbound, but the mouse-button events are not unbound for an unknown reason. This prohibits the use of the mouse. Only restarting the program and only opening Flashbook will fix it (temporarily).
 
 #### Possible Issues:
 - pdf conversion may not be supported: pdftoppm.exe is called on laptop via miktex. Explicit import needed in spec file? Now this is hopefully accounted for by including poppler.rar in the executables and adding it as 'path variable' if there is no 'pdftoppm.exe' already available. 
 
-- While working on a laptop flashbook had the following bug: (when only a mousepad was used) taking notes drew borders from the upper left of the screen to the point where the mouse was released. Not starting from the point where the left mouse button was pressed down. After rebooting the laptop this issue vanished. The standard position is (0,0) unless the left button is pressed then it gets updated. So somehow it didn't register the left button click but did register when the button was no longer pressed. 
 - Facebook: drawn borders suddenly shifted up and to the left. This does not affect new borders being drawn (or the final selections), or past selections. Perhaps this is caused by a missing self.Layout() where the page should be redrawn. Perhaps the page is rescaled but the borders aren't.
 - Python multithreading isn't real multithreading as it just switches rapidly between threads. Perhaps incorporate multiprocessing.
 
