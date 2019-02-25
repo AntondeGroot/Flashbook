@@ -101,7 +101,7 @@ You can also sync two devices. It will automatically display the IP address of t
 - Improve design: font / colors / borders / icons / ...
 #### Issues:
 
-- you can't switch from **flashcard** to **flashbook** because there is an error in which not all keyeventbindings are undone. Only the arrow keys are succesfully unbound, but the mouse-button events are not unbound for an unknown reason. This prohibits the use of the mouse. Only restarting the program and only opening Flashbook will fix it (temporarily).
+- you can't switch from **flashcard** to **flashbook** because there is an error in which not all keyeventbindings are undone. Only the arrow keys are succesfully unbound, but the mouse-button events are not unbound for an unknown reason. This prohibits the use of the mouse. Only restarting the program and only opening Flashbook will fix it.
 
 #### Possible Issues:
 - pdf conversion may not be supported: pdftoppm.exe is called on laptop via miktex. Explicit import needed in spec file? Now this is hopefully accounted for by including poppler.rar in the executables and adding it as 'path variable' if there is no 'pdftoppm.exe' already available. 
