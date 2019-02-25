@@ -492,7 +492,7 @@ class MyFrame ( wx.Frame ):
 		sbSizer1.SetMinSize( wx.Size( 310,-1 ) ) 
 		gSizer12 = wx.GridSizer( 0, 2, 0, 0 )
 		
-		self.m_staticText52 = wx.StaticText( sbSizer1.GetStaticBox(), wx.ID_ANY, u"Boundary line \nbetween Q and A", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_staticText52 = wx.StaticText( sbSizer1.GetStaticBox(), wx.ID_ANY, u"Boundary line \nbetween Q and A", wx.DefaultPosition, wx.Size( 150,-1 ), 0 )
 		self.m_staticText52.Wrap( -1 )
 		self.m_staticText52.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
 		
@@ -554,7 +554,7 @@ class MyFrame ( wx.Frame ):
 		sbSizer11.SetMinSize( wx.Size( 310,-1 ) ) 
 		gSizer11 = wx.GridSizer( 0, 2, 0, 0 )
 		
-		self.m_staticText511 = wx.StaticText( sbSizer11.GetStaticBox(), wx.ID_ANY, u"Boundary line in each \nrow of the pdf", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_staticText511 = wx.StaticText( sbSizer11.GetStaticBox(), wx.ID_ANY, u"Boundary line in each \nrow of the pdf", wx.DefaultPosition, wx.Size( 150,-1 ), 0 )
 		self.m_staticText511.Wrap( -1 )
 		self.m_staticText511.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
 		
@@ -603,6 +603,71 @@ class MyFrame ( wx.Frame ):
 		
 		
 		bSizer23.Add( sbSizer11, 0, 0, 5 )
+		
+		
+		bSizer23.Add( ( 0, 10), 0, wx.EXPAND, 5 )
+		
+		sbSizer111 = wx.StaticBoxSizer( wx.StaticBox( self.m_panel31, wx.ID_ANY, wx.EmptyString ), wx.VERTICAL )
+		
+		sbSizer111.SetMinSize( wx.Size( 310,-1 ) ) 
+		gSizer111 = wx.GridSizer( 0, 2, 0, 0 )
+		
+		self.m_staticText5111 = wx.StaticText( sbSizer111.GetStaticBox(), wx.ID_ANY, u"Vertical lines", wx.DefaultPosition, wx.Size( 150,-1 ), 0 )
+		self.m_staticText5111.Wrap( -1 )
+		self.m_staticText5111.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
+		
+		gSizer111.Add( self.m_staticText5111, 0, wx.ALL, 5 )
+		
+		self.m_lineVERT = wx.CheckBox( sbSizer111.GetStaticBox(), wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_lineVERT.SetValue(True) 
+		gSizer111.Add( self.m_lineVERT, 0, wx.ALL, 5 )
+		
+		self.m_staticText6121 = wx.StaticText( sbSizer111.GetStaticBox(), wx.ID_ANY, u"Line Thickness", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_staticText6121.Wrap( -1 )
+		self.m_staticText6121.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
+		
+		gSizer111.Add( self.m_staticText6121, 0, wx.ALL, 5 )
+		
+		bSizer2211 = wx.BoxSizer( wx.HORIZONTAL )
+		
+		self.m_lineWvert = wx.TextCtrl( sbSizer111.GetStaticBox(), wx.ID_ANY, u"10", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_lineWvert.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
+		self.m_lineWvert.SetMaxSize( wx.Size( 30,-1 ) )
+		
+		bSizer2211.Add( self.m_lineWvert, 0, wx.ALL, 5 )
+		
+		self.m_staticText2411 = wx.StaticText( sbSizer111.GetStaticBox(), wx.ID_ANY, u"pixels", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_staticText2411.Wrap( -1 )
+		self.m_staticText2411.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
+		
+		bSizer2211.Add( self.m_staticText2411, 0, wx.ALL, 5 )
+		
+		
+		gSizer111.Add( bSizer2211, 1, 0, 5 )
+		
+		self.m_staticText711 = wx.StaticText( sbSizer111.GetStaticBox(), wx.ID_ANY, u"Line Color", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_staticText711.Wrap( -1 )
+		self.m_staticText711.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
+		
+		gSizer111.Add( self.m_staticText711, 0, wx.ALL, 5 )
+		
+		self.m_colorVERTline = wx.ColourPickerCtrl( sbSizer111.GetStaticBox(), wx.ID_ANY, wx.Colour( 18, 5, 250 ), wx.DefaultPosition, wx.DefaultSize, wx.CLRP_DEFAULT_STYLE )
+		self.m_colorVERTline.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
+		
+		gSizer111.Add( self.m_colorVERTline, 0, wx.ALL, 5 )
+		
+		self.m_staticText55 = wx.StaticText( sbSizer111.GetStaticBox(), wx.ID_ANY, u"Same color as \nhorizontal lines", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_staticText55.Wrap( -1 )
+		gSizer111.Add( self.m_staticText55, 0, wx.ALL, 5 )
+		
+		self.m_checkBoxSameColor = wx.CheckBox( sbSizer111.GetStaticBox(), wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
+		gSizer111.Add( self.m_checkBoxSameColor, 0, wx.ALL, 5 )
+		
+		
+		sbSizer111.Add( gSizer111, 0, 0, 0 )
+		
+		
+		bSizer23.Add( sbSizer111, 0, wx.EXPAND, 5 )
 		
 		
 		bSizer23.Add( ( 0, 10), 0, wx.EXPAND, 5 )
@@ -1063,6 +1128,12 @@ class MyFrame ( wx.Frame ):
 		self.m_lineWpdf.Bind( wx.EVT_TEXT, self.m_lineWpdfOnText )
 		self.m_lineWpdf.Bind( wx.EVT_TEXT_ENTER, self.m_lineWpdfOnTextEnter )
 		self.m_colorPDFline.Bind( wx.EVT_COLOURPICKER_CHANGED, self.m_colorPDFlineOnColourChanged )
+		self.m_lineVERT.Bind( wx.EVT_CHECKBOX, self.m_lineVERTOnCheckBox )
+		self.m_lineVERT.Bind( wx.EVT_LEFT_UP, self.m_linePDFOnLeftUp )
+		self.m_lineWvert.Bind( wx.EVT_TEXT, self.m_lineWvertOnText )
+		self.m_lineWvert.Bind( wx.EVT_TEXT_ENTER, self.m_lineWvertOnTextEnter )
+		self.m_colorVERTline.Bind( wx.EVT_COLOURPICKER_CHANGED, self.m_colorVERTlineOnColourChanged )
+		self.m_checkBoxSameColor.Bind( wx.EVT_CHECKBOX, self.m_checkBoxSameColorOnCheckBox )
 		self.m_sliderPDFsize.Bind( wx.EVT_KEY_UP, self.m_sliderPDFsizeOnKeyUp )
 		self.m_sliderPDFsize.Bind( wx.EVT_SCROLL_CHANGED, self.m_sliderPDFsizeOnScrollChanged )
 		self.m_slider_col1.Bind( wx.EVT_SCROLL_CHANGED, self.m_slider_col1OnScrollChanged )
@@ -1274,6 +1345,22 @@ class MyFrame ( wx.Frame ):
 		event.Skip()
 	
 	def m_colorPDFlineOnColourChanged( self, event ):
+		event.Skip()
+	
+	def m_lineVERTOnCheckBox( self, event ):
+		event.Skip()
+	
+	
+	def m_lineWvertOnText( self, event ):
+		event.Skip()
+	
+	def m_lineWvertOnTextEnter( self, event ):
+		event.Skip()
+	
+	def m_colorVERTlineOnColourChanged( self, event ):
+		event.Skip()
+	
+	def m_checkBoxSameColorOnCheckBox( self, event ):
 		event.Skip()
 	
 	def m_sliderPDFsizeOnKeyUp( self, event ):
