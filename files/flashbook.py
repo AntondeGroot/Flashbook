@@ -117,24 +117,24 @@ def settings_get(self):
     try:
         with open(joinpath(self.dirsettings,"settings.txt"), 'r') as file:
             settings = json.load(file)
-            self.debugmode         = settings['debugmode']
-            self.pdfmultiplier     = settings['pdfmultiplier'] 
-            self.QAline_thickness  = settings['QAline_thickness']
-            self.pdfline_thickness = settings['pdfline_thickness']
-            self.vertline_thickness= settings['vertline_thickness']
-            self.QAline_color      = tuple(settings['QAline_color'])
-            self.pdfline_color     = tuple(settings['pdfline_color']) 
-            self.vertline_color    = tuple(settings['vertline_color'])
-            self.QAline_bool       = settings['QAline_bool']
-            self.pdfline_bool      = settings['pdfline_bool']
-            self.vertline_bool     = settings['vertline_bool']
-            self.samecolor_bool    = settings['samecolor_bool']
-            self.pdfPageColsPos    = settings['pdfPageColsPos']
-            self.pdfPageColsChecks = settings['pdfPageColsChecks']
-            self.LaTeXfontsize     = settings['LaTeXfontsize']
-            self.bordercolors      = settings['bordercolors']
-            self.drawborders       = settings['drawborders']
-            self.cursor            = settings['cursor']
+            self.debugmode          = settings['debugmode']
+            self.pdfmultiplier      = settings['pdfmultiplier'] 
+            self.QAline_thickness   = settings['QAline_thickness']
+            self.pdfline_thickness  = settings['pdfline_thickness']
+            self.vertline_thickness = settings['vertline_thickness']
+            self.QAline_color       = tuple(settings['QAline_color'])
+            self.pdfline_color      = tuple(settings['pdfline_color']) 
+            self.vertline_color     = tuple(settings['vertline_color'])
+            self.QAline_bool        = settings['QAline_bool']
+            self.pdfline_bool       = settings['pdfline_bool']
+            self.vertline_bool      = settings['vertline_bool']
+            self.samecolor_bool     = settings['samecolor_bool']
+            self.pdfPageColsPos     = settings['pdfPageColsPos']
+            self.pdfPageColsChecks  = settings['pdfPageColsChecks']
+            self.LaTeXfontsize      = settings['LaTeXfontsize']
+            self.bordercolors       = settings['bordercolors']
+            self.drawborders        = settings['drawborders']
+            self.cursor             = settings['cursor']
     except:
         # Just in case when the settings.txt has been tempered with        
         if os.path.exists(joinpath(self.dirsettings,"settings.txt")):
