@@ -121,10 +121,14 @@ def settings_get(self):
             self.pdfmultiplier     = settings['pdfmultiplier'] 
             self.QAline_thickness  = settings['QAline_thickness']
             self.pdfline_thickness = settings['pdfline_thickness']
+            self.vertline_thickness= settings['vertline_thickness']
             self.QAline_color      = tuple(settings['QAline_color'])
-            self.pdfline_color     = tuple(settings['pdfline_color'])        
+            self.pdfline_color     = tuple(settings['pdfline_color']) 
+            self.vertline_color    = tuple(settings['vertline_color'])
             self.QAline_bool       = settings['QAline_bool']
             self.pdfline_bool      = settings['pdfline_bool']
+            self.vertline_bool     = settings['vertline_bool']
+            self.samecolor_bool    = settings['samecolor_bool']
             self.pdfPageColsPos    = settings['pdfPageColsPos']
             self.pdfPageColsChecks = settings['pdfPageColsChecks']
             self.LaTeXfontsize     = settings['LaTeXfontsize']
@@ -144,11 +148,15 @@ def settings_create(self):
             file.write(json.dumps({'debugmode' : False,
                                    'pdfmultiplier': 1.0, 
                                    'QAline_thickness' : 1, 
-                                   'pdfline_thickness' : 5, 
+                                   'pdfline_thickness' : 5,
+                                   'vertline_thickness': 5,
                                    'QAline_color' : (0,0,0), 
-                                   'pdfline_color' : (18,5,250), 
+                                   'pdfline_color' : (18,5,250),
+                                   'vertline_color' : (18,5,250),
                                    'QAline_bool': True,
                                    'pdfline_bool': True ,
+                                   'vertline_bool': True,
+                                   'samecolor_bool': True,
                                    'pdfPageColsPos' : [25 , 50 , 75],
                                    'pdfPageColsChecks' : [False, True, False],
                                    'LaTeXfontsize' : 20,
@@ -170,10 +178,14 @@ def settings_set(self):
                                'pdfmultiplier': self.pdfmultiplier,
                                'QAline_thickness' : self.QAline_thickness, 
                                'pdfline_thickness': self.pdfline_thickness, 
+                               'vertline_thickness': self.vertline_thickness,
                                'QAline_color' : self.QAline_color, 
-                               'pdfline_color' : self.pdfline_color, 
+                               'pdfline_color' : self.pdfline_color,
+                               'vertline_color' : self.vertline_color,
                                'QAline_bool': self.QAline_bool,
                                'pdfline_bool': self.pdfline_bool,
+                               'vertline_bool': self.vertline_bool,
+                               'samecolor_bool': self.samecolor_bool,
                                'pdfPageColsPos' : self.pdfPageColsPos,
                                'pdfPageColsChecks': self.pdfPageColsChecks,
                                'LaTeXfontsize' : self.LaTeXfontsize,
@@ -194,10 +206,17 @@ def settings_reset(self):
     if self.panel3.IsShown():
         self.m_colorQAline.SetColour(self.QAline_color)
         self.m_colorPDFline.SetColour(self.pdfline_color)
+        self.m_colorVERTline.SetColour(self.vertline_color)
+        
         self.m_lineWpdf.SetValue(str(self.pdfline_thickness))
         self.m_lineWqa.SetValue(str(self.QAline_thickness))
+        self.m_lineWvert.SetValue(str(self.vertline_thickness))
+        
         self.m_lineQA.SetValue(self.QAline_bool)
         self.m_linePDF.SetValue(self.pdfline_bool)            
+        self.m_lineVERT.SetValue(self.vertline_bool)
+        self.m_checkBoxSameColor.SetValue(self.samecolor_bool)
+        
         self.m_sliderPDFsize.SetValue(int(200-self.pdfmultiplier*100))
         self.m_slider_col1.SetValue(self.pdfPageColsPos[0])
         self.m_slider_col2.SetValue(self.pdfPageColsPos[1])
@@ -323,13 +342,20 @@ class MainFrame(gui.MyFrame):
         """START MAIN PROGRAM : PRINT PDF NOTES"""
         t_panel = lambda self,page : threading.Thread(target = p.SwitchPanel , args=(self,page )).start()
         t_panel(self, 3) 
-        settings_get(self)
+        settings_get(self)                
+        
         self.m_colorQAline.SetColour(self.QAline_color)
         self.m_colorPDFline.SetColour(self.pdfline_color)
+        self.m_colorVERTline.SetColour(self.vertline_color)
+        
         self.m_lineWpdf.SetValue(str(self.pdfline_thickness))
         self.m_lineWqa.SetValue(str(self.QAline_thickness))
+        self.m_lineWvert.SetValue(str(self.vertline_thickness))
+        
         self.m_lineQA.SetValue(self.QAline_bool)
         self.m_linePDF.SetValue(self.pdfline_bool)            
+        self.m_lineVERT.SetValue(self.vertline_bool)
+        self.m_checkBoxSameColor.SetValue(self.samecolor_bool)
         
         self.m_sliderPDFsize.SetValue(int(200-self.pdfmultiplier*100))
         self.m_slider_col1.SetValue(self.pdfPageColsPos[0])
@@ -676,6 +702,13 @@ class MainFrame(gui.MyFrame):
         self.pdfline_bool = self.m_linePDF.GetValue()
         settings_set(self)
         m3.preview_refresh(self)
+        
+    def m_lineVERTOnCheckBox( self, event):
+        self.FilePickEvent = False
+        self.vertline_bool = self.m_lineVERT.GetValue()
+        settings_set(self)
+        m3.preview_refresh(self)
+        
     
     def m_colorQAlineOnColourChanged( self, event ):
         self.FilePickEvent = False
@@ -690,6 +723,18 @@ class MainFrame(gui.MyFrame):
         self.pdfline_color  = (RGB.Red(),RGB.Green(),RGB.Blue())    
         settings_set(self)
         m3.preview_refresh(self)
+        
+    def m_colorVERTlineOnColourChanged( self, event):
+        if self.m_checkBoxSameColor.GetValue() == True:
+            self.vertline_color  = self.pdfline_color 
+            self.m_colorVERTline.SetColour(self.pdfline_color)
+        else:
+            self.FilePickEvent = False
+            RGB = self.m_colorVERTline.GetColour()
+            self.vertline_color  = (RGB.Red(),RGB.Green(),RGB.Blue())    
+        settings_set(self)
+        m3.preview_refresh(self)
+        
         
         
     def m_PrintFinalOnButtonClick( self, event ):
@@ -720,6 +765,23 @@ class MainFrame(gui.MyFrame):
         except:
             log.ERRORMESSAGE("Error: invalid entry")
             
+    def m_lineWvertOnText( self, event ):
+        try:            
+            if int(self.m_lineWvert.GetValue()) >= 0:
+                self.vertline_thickness = int(self.m_lineWvert.GetValue())
+                settings_set(self)
+                m3.preview_refresh(self)
+        except:
+            log.ERRORMESSAGE("Error: invalid entry")  
+    def m_checkBoxSameColorOnCheckBox(self,event):
+        self.samecolor_bool = self.m_checkBoxSameColor.IsChecked()
+        if self.samecolor_bool:
+            self.FilePickEvent = False
+            self.vertline_color = self.pdfline_color     
+        self.m_colorVERTline.SetColour(self.vertline_color)     
+        settings_set(self)
+        m3.preview_refresh(self)
+        
     #%% Help menu
     def m_richText1OnLeftDown(self,event):
         p.SwitchPanel(self,self.lastpage)
