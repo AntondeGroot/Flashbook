@@ -128,6 +128,8 @@ def notes2paper(self):
     """
     """
     for i in range(self.nr_questions):
+        imagename = f"temporary{i}.png" 
+        imagepath = os.path.join(self.dir4, imagename)
         self.image_q = PIL.Image.new('RGB', (0, 0),"white")
         self.image_a = []
         for mode in ['Question','Answer']: 
@@ -136,11 +138,17 @@ def notes2paper(self):
             self.key = f'{self.mode[0]}{i}'
             try: # try to create a TextCard
                 if self.key in self.textdictionary:
+                    print(f"create textcard for {i}")
                     f3.CreateTextCardPrint(self)
                 # if there is a textcard either combine them with a picture or display it on its own
                 if self.TextCard == True: 
                     if self.key in self.picdictionary:
-                        f2.CombinePicText(self)      
+                        print(f"create combicard for {i}")
+                        f2.CombinePicText(self)
+                        if mode == 'Question':
+                            self.image_q = self.image
+                        else:
+                            self.image_a = self.image
                     else:
                         self.image = self.imagetext                        
                         if mode == 'Question':
@@ -167,7 +175,7 @@ def notes2paper(self):
             max_width = max(widths)
             if self.QAline_bool == True:
                 new_im = PIL.Image.new('RGB', (max_width, total_height + self.QAline_thickness), "white")
-                line = PIL.Image.new('RGB', (round(0.7*max_width), self.QAline_thickness), self.QAline_color)
+                line = PIL.Image.new('RGB', (self.image_q.size[0], self.QAline_thickness), self.QAline_color)
                 #combine images to 1
                 new_im.paste(images[0], (0,0))
                 new_im.paste(line,(0,self.image_q.size[1]))
@@ -177,14 +185,13 @@ def notes2paper(self):
                 #combine images to 1
                 new_im.paste(images[0], (0,0))
                 new_im.paste(images[1], (0,self.image_q.size[1]))
-            
-            
-            
             self.image = new_im
             
         else:
-            self.image = self.image_q
-        
+            if self.image_q.size != (0,0): 
+                self.image = self.image_q
+            else:
+                print("error"*200)
         ##anton
         if ColumnSliders(self) != []:
             columns = ColumnSliders(self)
@@ -194,13 +201,20 @@ def notes2paper(self):
                 w,h = self.image.size
                 if w > min(ColumnWidths) and w > 0:
                     NearestCol = min(ColumnWidths, key=lambda x:abs(x-w))
-                    self.image = self.image.resize((NearestCol,int(NearestCol/w*h)), PIL.Image.ANTIALIAS)
-                
-             
-        
-        
-        self.allimages.append(self.image)
-        self.allimages_w.append(self.image.size[0])
+                    self.image = self.image.resize((int(NearestCol),int(NearestCol/w*h)), PIL.Image.ANTIALIAS)
+        #if self.image.size != (0,0):
+        try:
+            self.image.save(imagepath)                    
+        except:
+            print(f"goes wrong for {imagename} \t {self.image}")
+            
+        self.allimages.append(imagepath)
+        if self.vertline_bool:
+            # Keep in mind the extra width needed for the vertical lines
+            # Overestimate by 1 vertline_thickness to play it safe:            thickness << width of image
+            self.allimages_w.append(self.image.size[0] + 2*self.vertline_thickness + 2*5) 
+        else:
+            self.allimages_w.append(self.image.size[0])
     # sort images horizontally
     A = np.cumsum(self.allimages_w)
     C = []
@@ -223,7 +237,7 @@ def notes2paper(self):
             C.append(self.allimages[:index])
             self.allimages = self.allimages[index:] 
             self.allimages_w = self.allimages_w[index:] 
-            A = np.cumsum(self.allimages_w)
+            A = np.cumsum(self.allimages_w)  #anton what if it is too wide
             
         elif index == len(A): # image is not too wide AND last in list
             C.append(self.allimages)
@@ -231,12 +245,13 @@ def notes2paper(self):
     self.paper_h_list = C
     
     # combine pics horizontally
-    for i,images in enumerate(self.paper_h_list):
+    for i,paths in enumerate(self.paper_h_list):
+        images = [PIL.Image.open(x) for x in paths]
         try:
             if self.vertline_bool:
-                widths, heights = zip(*(tuple([i.size[0]  + 2*self.vertline_thickness + 2*5,i.size[1]]) for i in images)) 
+                widths, heights = zip(*(tuple([im.size[0] + 2*self.vertline_thickness + 2*5, im.size[1]]) for im in images)) 
             else:
-                widths, heights = zip(*(i.size for i in images)) 
+                widths, heights = zip(*(im.size for im in images)) 
             max_height = max(heights)
             total_width = sum(widths)
             self.maxheight = max_height
