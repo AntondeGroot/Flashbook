@@ -9,6 +9,7 @@ import PIL
 import wx
 import os
 import math
+from PIL import ImageOps
 #matplotlib.use('Agg')
 import pylab
 import fb_functions    as f
@@ -226,7 +227,29 @@ def CreateTextCardPrint(self):
     raw_data = renderer.tostring_rgb()
     size = canvas.get_width_height()
     self.imagetext = PIL.Image.frombytes("RGB", size, raw_data, decoder_name='raw', )
-
+    
+    # crop the LaTeX image further
+    border = 30
+    SEARCH = True
+    img = self.imagetext
+    imginv = ImageOps.invert(img)
+    
+    img_array = np.sum(np.sum(np.array(imginv),2),0) # look where something is not "white" in the x-axis
+    while SEARCH == True:
+        for i in range(len(img_array)):
+            j = len(img_array) - i-1            
+            if SEARCH == True:
+                if img_array[j]!= 0:
+                    SEARCH = False
+                    var = j
+                if j == 0:
+                    SEARCH = False
+                    var = j
+    if var + border >  img.size[0]:
+        var = img.size[0]
+    else:
+        var = var + border
+    self.imagetext = img.crop((0, 0, var, img.size[1]))
 
 
 """
