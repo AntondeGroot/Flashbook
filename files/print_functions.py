@@ -250,6 +250,7 @@ def CreateTextCardPrint(self):
     else:
         var = var + border
     self.imagetext = img.crop((0, 0, var, img.size[1]))
+    
 
 
 """
