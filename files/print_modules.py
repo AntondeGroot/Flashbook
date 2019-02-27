@@ -22,7 +22,10 @@ from termcolor import colored
 import win32clipboard
 from win32api import GetSystemMetrics
 import wx
+import threading
 
+def saveimage(image,path):
+    image.save(path)
 
 #ctypes:
 ICON_EXCLAIM=0x30
@@ -41,6 +44,37 @@ def ColumnSliders(self):
         LIST.append(self.m_slider_col3.GetValue())
     return LIST
 
+
+def Flatlist_to_List(list1,list2):
+    x = 0
+    list3 = []
+    """
+    List1 is a list of lists
+    List2 is a flatlist
+    convert List2 to the same form as List1
+    """
+    #check first if the two lists have the same nr of elements
+    flatlist = [item for sublist in list1 for item in sublist]
+    assert len(flatlist) == len(list2)
+    #convert list2 in the same form as list
+    nrlist = [len(x) for x in list1]
+    for nr in nrlist:
+        y = x
+        x+=nr
+        list3.append(list2[y:x])
+    return list3
+
+
+def calculate_pdflines(_input):
+    _list = _input
+    B = []
+    _list.insert(0,0)
+    
+    for i,x in enumerate(_list):
+        if i != 0 and i != len(_list):
+            B.append(max(x,_list[i-1]))
+    assert len(B) == len(_input)-1
+    return B
 
 def import_screenshot(self,event):
     """Import a screenshot, it takes multiple monitors into account. 
@@ -64,7 +98,9 @@ def import_screenshot(self,event):
                     image = Image.merge("RGB", (r, g, b))
                     image = image.rotate(180)
                     image = image.transpose(Image.FLIP_LEFT_RIGHT)
-                    image.save(os.path.join(self.dir4,"screenshot.png"))
+                    #image.save(os.path.join(self.dir4,"screenshot.png"))
+                    t_img = lambda image,path : threading.Thread(target = saveimage  , args=(image,path )).start()
+                    t_img(image, os.path.join(self.dir4,"screenshot.png")) 
                     #convert back to wxBitmap
                     data = image.tobytes()
                     image3 = wx.Bitmap().FromBuffer(ScrWidth,ScrHeight,data)
@@ -94,9 +130,12 @@ def print_preview(self,event):
     _, PanelHeight = self.m_panel32.GetSize()
     PanelWidth = round(float(PanelHeight)/1754.0*1240.0)
     #only select first page and display it on the bitmap
-    self.allimages_v = self.allimages_v[0].resize((PanelWidth, PanelHeight), PIL.Image.ANTIALIAS)
-    image2 = wx.Image( self.allimages_v.size)
-    image2.SetData( self.allimages_v.tobytes() )
+    
+    image = PIL.Image.open(self.allimages_v[0])
+    image = image.resize((PanelWidth, PanelHeight), PIL.Image.ANTIALIAS)
+    image2 = wx.Image( image.size)
+    image2.SetData( image.tobytes() )
+    
     bitmapimage = wx.Bitmap(image2)
     self.m_bitmap3.SetBitmap(bitmapimage)
     self.Layout()
@@ -107,15 +146,16 @@ def preview_refresh(self):
     _, PanelHeight = self.m_panel32.GetSize()
     PanelWidth = round(float(PanelHeight)/1754.0*1240.0)
     #only select first page and display it on the bitmap
-    self.allimages_v = self.allimages_v[0].resize((PanelWidth, PanelHeight), PIL.Image.ANTIALIAS) 
-    image2 = wx.Image( self.allimages_v.size)
-    image2.SetData( self.allimages_v.tobytes() )
+    image = PIL.Image.open(self.allimages_v[0])
+    image = image.resize((PanelWidth, PanelHeight), PIL.Image.ANTIALIAS) 
+    image2 = wx.Image( image.size)
+    image2.SetData( image.tobytes() )
     bitmapimage = wx.Bitmap(image2)
     self.m_bitmap3.SetBitmap(bitmapimage)
     self.Layout()
     
 def notes2paper(self):
-    
+    self.linesep = 5
     N = 1.3
     self.a4page_w  = round(1240*N*self.pdfmultiplier) # in pixels
     self.a4page_h  = round(1754*N*self.pdfmultiplier)
@@ -125,8 +165,7 @@ def notes2paper(self):
     self.allimages   = []
     self.allimages_w = [] #widths
     
-    """
-    """
+    """ Create the cards """
     for i in range(self.nr_questions):
         imagename = f"temporary{i}.png" 
         imagepath = os.path.join(self.dir4, imagename)
@@ -204,7 +243,9 @@ def notes2paper(self):
                     self.image = self.image.resize((int(NearestCol),int(NearestCol/w*h)), PIL.Image.ANTIALIAS)
         #if self.image.size != (0,0):
         try:
-            self.image.save(imagepath)                    
+            #self.image.save(imagepath)
+            t_img = lambda image,path : threading.Thread(target = saveimage  , args=(image,path )).start()
+            t_img(self.image, imagepath)                     
         except:
             print(f"goes wrong for {imagename} \t {self.image}")
             
@@ -215,6 +256,7 @@ def notes2paper(self):
             self.allimages_w.append(self.image.size[0] + 2*self.vertline_thickness + 2*5) 
         else:
             self.allimages_w.append(self.image.size[0])
+            
     # sort images horizontally
     A = np.cumsum(self.allimages_w)
     C = []
@@ -244,34 +286,50 @@ def notes2paper(self):
             self.allimages_w = []
     self.paper_h_list = C
     
+    self.paper_v_widths = []
+    self.paper_v_heights = []
     # combine pics horizontally
     for i,paths in enumerate(self.paper_h_list):
         images = [PIL.Image.open(x) for x in paths]
+        N = len(images)
         try:
+            widths, heights = zip(*(im.size for im in images)) 
             if self.vertline_bool:
-                widths, heights = zip(*(tuple([im.size[0] + 2*self.vertline_thickness + 2*5, im.size[1]]) for im in images)) 
+                total_width = sum(widths) + (N+1)*self.vertline_thickness+2*N*5
             else:
-                widths, heights = zip(*(im.size for im in images)) 
-            max_height = max(heights)
-            total_width = sum(widths)
+                total_width = sum(widths)
+            if self.pdfline_bool:
+                max_height = max(heights) + 2*self.pdfline_thickness+2*self.linesep
+            else:
+                max_height = max(heights)
+            
             self.maxheight = max_height
             
             new_im = PIL.Image.new('RGB', (total_width, max_height), "white")
             #combine images to 1
             x_offset = 0
-            for i,im in enumerate(images):
-                if i == 0 :
-                    im = add_sideborder(self,im,"both")
-                else:
-                    im = add_sideborder(self,im,"right")
-                    #im.show()
+            
+            
+            for j,im in enumerate(images):
+                if  self.vertline_bool == True:        
+                    border = PIL.Image.new("RGB", (self.vertline_thickness , self.maxheight), self.vertline_color)        
+                    new_im.paste(border, (x_offset,0))
+                    x_offset += self.linesep + self.vertline_thickness
                 new_im.paste(im, (x_offset,0))
-                x_offset += im.size[0]
+                x_offset += im.size[0] + self.linesep
+            if self.vertline_bool:
+                new_im.paste(border, (x_offset,0))
                 
             self.image = new_im
-            new_im = add_border(self,new_im,"single")
-            self.paper_h.append(new_im)
-        
+            #new_im = add_border(self,new_im,"single")
+            pathname = os.path.join(self.dir4,f"temporary_p{i}.png")
+            #new_im.save(pathname)
+            t_img = lambda image,path : threading.Thread(target = saveimage  , args=(image,path )).start()
+            t_img(new_im, pathname) 
+            self.paper_h.append(pathname)
+            self.paper_v_widths.append(new_im.size[0])
+            self.paper_v_heights.append(new_im.size[1])
+            
         except: # if only one picture left
         
             #print(images.size)
@@ -284,17 +342,24 @@ def notes2paper(self):
                 images = images.resize((self.a4page_w,int(h*self.a4page_w/w)))
             
             images = add_border(self,images,"single")
-            self.paper_h.append(images)
-          
+            pathname = os.path.join(self.dir4,f"temporary_p{i}.png")
+            #images.save(pathname)
+            t_img = lambda image,path : threading.Thread(target = saveimage  , args=(image,path )).start()
+            t_img(images,pathname) 
+            self.paper_h.append(pathname)
+            self.paper_v_widths.append(new_im.size[0])
+            self.paper_v_heights.append(new_im.size[0])
     #self.paper_h[0].show()    
     # sort images vertically
     D = []
-    self.img_heights = []
-    for img in self.paper_h:
-        if self.pdfline_bool:
-            self.img_heights.append(img.size[1]+self.pdfline_thickness)
-        else:
-            self.img_heights.append(img.size[1])
+    #self.img_heights = []
+    #for path in self.paper_h:
+    #    img = PIL.Image.open(path)
+    #    if self.pdfline_bool:
+    #        self.img_heights.append(img.size[1]+self.pdfline_thickness)
+    #    else:
+    #        self.img_heights.append(img.size[1])
+    self.img_heights = self.paper_v_heights
     
     A = np.cumsum(self.img_heights)
     if self.printpreview == False or self.printpreview == True:
@@ -306,36 +371,61 @@ def notes2paper(self):
                 self.img_heights = self.img_heights[index:] 
                 A = np.cumsum(self.img_heights)    
             else:
-                D.append(self.paper_h)
+                D.append(self.paper_h)                
                 self.img_heights = []
     else: # only look for 1st page (currently not in use)
         index = bisect.bisect_left(A, self.a4page_h) #look for index where value is too large        
         D.append(self.paper_h[:index] )
+        
                
     self.paper_h = D
+    
+    
+    self.widthsperpage = Flatlist_to_List(self.paper_h ,self.paper_v_widths)
+    print(f"widths {self.widthsperpage}")
     
     # combine vertical pictures per page
     self.allimages_v = []
     
-    for i,images in enumerate(self.paper_h):
+    for page_i, images_on_page_i in enumerate(self.paper_h):
+        images = images_on_page_i
+        
         new_im = PIL.Image.new('RGB', (self.a4page_w, self.a4page_h), "white")        
         y_offset = 0
         x_offset = 0
-        try:
-            for im in images:
-                new_im.paste(im, (0,y_offset))
-                y_offset += im.size[1]
-                x_offset += im.size[0]
-            self.combinedwidth = x_offset
-            new_im = add_border(self,new_im,"multi")
-            self.image = new_im
-            new_im = add_margins(self,new_im)
-            self.allimages_v.append(new_im)
-        except: #if images is not an iterable it gives an error, it contains only 1 image so just add
-            new_im.paste(images, (0,y_offset))
-            new_im = add_margins(self,new_im)
-            self.allimages_v.append(new_im)
-    
+        #try:
+        
+        linelengths = calculate_pdflines(self.widthsperpage[page_i])
+        
+        print(linelengths)
+        
+        for j, path in enumerate(images_on_page_i):
+            
+            im = PIL.Image.open(path)
+            line = PIL.Image.new("RGB", (linelengths[j] ,self.pdfline_thickness), self.pdfline_color)  
+            if self.pdfline_bool:
+                new_im.paste(line,(0,y_offset))
+                y_offset += self.linesep
+            
+            new_im.paste(im, (0,y_offset))
+            y_offset += im.size[1]
+            
+            x_offset += im.size[0]
+        new_im.paste(line,(0,y_offset))
+        self.combinedwidth = x_offset
+        
+        self.image = new_im
+        new_im = add_margins(self,new_im)
+        #except: #if images is not an iterable it gives an error, it contains only 1 image so just add
+        #    
+        #    new_im.paste(images, (0,y_offset))
+        #    new_im = add_margins(self,new_im)
+        
+        pathname = os.path.join(self.dir4,f"temporary_h{page_i}.png")
+        #new_im.save(pathname)
+        t_img = lambda image,path : threading.Thread(target = saveimage  , args=(image,path )).start()
+        t_img(new_im,pathname) 
+        self.allimages_v.append(pathname)
     
     
     # imagelist is the list with all image filenames
@@ -344,23 +434,23 @@ def notes2paper(self):
     i = 0
     folder = []
     if self.printpreview == False:
-        for image in imagelist:
-            pathname = os.path.join(self.dir4,f"temporary{i}.png")
-            folder.append(pathname)
-            image.save(pathname)
-            #image.show()
-            i += 1
+        #for image in imagelist:
+        #    pathname = os.path.join(self.dir4,f"temporary{i}.png")
+        #    folder.append(pathname)
+        #    image.save(pathname)
+        #    #image.show()
+        #    i += 1
+        folder = imagelist
         filename = os.path.join(self.dirpdf,f"{self.bookname}.pdf")
         try:
             with open(filename, "wb") as file:
                 file.write(img2pdf.convert([i for i in folder if i.endswith(".png")]))
             self.printsuccessful = True
+            
         except:
             self.printsuccessful = False
             MessageBox(0, "If you have the PDF opened in another file, close it and try it again.", "Warning", ICON_EXCLAIM)
         
-        # remove all temporary files of the form "temporary(...).png"    
-        [os.remove(os.path.join(self.dir4,x)) for x in os.listdir(self.dir4) if ("temporary" in x and os.path.splitext(x)[1]=='.png' )]
         
     else:
         pass
@@ -520,6 +610,53 @@ def add_border(self,img,mode):
     else:
         return img
 
+def add_vertborders(self,background,images):
+    xpos = 0
+    linesep = 5
+    def moveNpaste(self, background, im, xpos, linesep):
+        border = PIL.Image.new("RGB", (self.vertline_thickness , self.maxheight), self.vertline_color)   
+        background.paste(border,(xpos,0))
+        xpos += self.vertline_thickness + linesep
+        background.paste(im,(xpos,0))
+        xpos += linesep
+        return background, xpos    
+    if type(images) == list:
+        if self.vertline_bool == True:                         
+            for im in images:
+                background, xpos = moveNpaste(self,background, im, xpos,linesep)            
+            border = PIL.Image.new("RGB", (self.vertline_thickness , self.maxheight), self.vertline_color)   
+            background.paste(border,(xpos,0))
+    return background
+
+def add_sideborder(self,img,mode):
+    linesep = 5
+    #self.maxheight = img.size[1]
+    if  self.vertline_bool == True:        
+        if mode == "left":
+            new_size =  (img.size[0] + 2*self.vertline_thickness + 2*linesep ,self.maxheight )
+            IMGPOS  = (linesep + self.vertline_thickness , 0)
+            POS = (img.size[0] + self.vertline_thickness+2*linesep  ,0)
+            
+            new_im = PIL.Image.new("RGB", new_size,"white")
+            border = PIL.Image.new("RGB", (self.vertline_thickness , self.maxheight), self.vertline_color)    
+            new_im.paste(img, IMGPOS)
+            new_im.paste(border, (0 ,0))
+            new_im.paste(border, POS)
+        else:
+            new_size =  (img.size[0] + self.vertline_thickness + 3*linesep,self.maxheight )
+            IMGPOS  = (0 , 0)
+            #POS = (img.size[0] + 3*linesep  ,0)
+            POS = (img.size[0] + int(2.8*linesep) ,0)
+            new_im = PIL.Image.new("RGB", new_size,"white")
+            border = PIL.Image.new("RGB", (self.vertline_thickness , self.maxheight), self.vertline_color)    
+            new_im.paste(img, IMGPOS)
+            new_im.paste(border, POS)
+        return new_im
+    else:
+        return img
+
+
+
 def add_sideborder(self,img,mode):
     linesep = 5
     #self.maxheight = img.size[1]
@@ -547,7 +684,6 @@ def add_sideborder(self,img,mode):
     else:
         return img
 
-    
     
 def add_margins(self,img):
     margin = 0.05
