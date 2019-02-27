@@ -156,7 +156,7 @@ def settings_create(self):
                                    'QAline_bool': True,
                                    'pdfline_bool': True ,
                                    'vertline_bool': True,
-                                   'samecolor_bool': True,
+                                   'samecolor_bool': False,
                                    'pdfPageColsPos' : [25 , 50 , 75],
                                    'pdfPageColsChecks' : [False, True, False],
                                    'LaTeXfontsize' : 20,
@@ -427,7 +427,7 @@ class MainFrame(gui.MyFrame):
         else:
             self.m_toolStitch.SetBitmap(wx.Bitmap(self.path_arrow))
         
-        """The following is used to create a mozaic of pictures. There is a question mode and an answer mode
+        """The following is used to create a mozaic of ictures. There is a question mode and an answer mode
         The pics are stored in a list, and when the element of a list is another list it means that particular list is ment to be stitched horizontally
         while all the other elements are stitched vertically
         all it does is switch [a,...,[x]] for [a,...,x] and back to [a,...,[x]] depending on whether the user has pushed a button to change the direction in which the notes should be stitched together.  """
@@ -711,32 +711,47 @@ class MainFrame(gui.MyFrame):
         
     
     def m_colorQAlineOnColourChanged( self, event ):
+        original_color = self.QAline_color
         self.FilePickEvent = False
         RGB = self.m_colorQAline.GetColour()
-        self.QAline_color  = (RGB.Red(),RGB.Green(),RGB.Blue())    
-        settings_set(self)
-        m3.preview_refresh(self)
+        self.QAline_color  = (RGB.Red(),RGB.Green(),RGB.Blue())   
+        if original_color != self.QAline_color:
+            settings_set(self)
+            m3.preview_refresh(self)
         
     def m_colorPDFlineOnColourChanged( self, event ):
+        original_color = self.pdfline_color
         self.FilePickEvent = False
         RGB = self.m_colorPDFline.GetColour()
         self.pdfline_color  = (RGB.Red(),RGB.Green(),RGB.Blue())    
+            
         if self.m_checkBoxSameColor.GetValue() == True:
-            self.vertline_color  = self.pdfline_color 
-            self.m_colorVERTline.SetColour(self.pdfline_color)
-        settings_set(self)
-        m3.preview_refresh(self)
+            if self.vertline_color != original_color or self.pdfline_color != original_color:
+                self.vertline_color  = self.pdfline_color 
+                self.m_colorVERTline.SetColour(self.pdfline_color)
+                settings_set(self)
+                m3.preview_refresh(self)
+        else:
+            if self.pdfline_color != original_color:
+                settings_set(self)
+                m3.preview_refresh(self)
         
     def m_colorVERTlineOnColourChanged( self, event):
+        original_color = self.vertline_color
         if self.m_checkBoxSameColor.GetValue() == True:
             self.vertline_color  = self.pdfline_color 
+            new_color = self.pdfline_color
             self.m_colorVERTline.SetColour(self.pdfline_color)
         else:
             self.FilePickEvent = False
             RGB = self.m_colorVERTline.GetColour()
             self.vertline_color  = (RGB.Red(),RGB.Green(),RGB.Blue())    
-        settings_set(self)
-        m3.preview_refresh(self)
+            new_color = self.vertline_color 
+            
+        if original_color != new_color:
+            #In case you chose the exact same color do nothing
+            settings_set(self)
+            m3.preview_refresh(self)
         
         
         
@@ -748,42 +763,52 @@ class MainFrame(gui.MyFrame):
         if self.printsuccessful == True:
             self.printpreview = True
             p.SwitchPanel(self,0)
+            # remove all temporary files of the form "temporary(...).png"    
+            [os.remove(os.path.join(self.dir4,x)) for x in os.listdir(self.dir4) if ("temporary" in x and os.path.splitext(x)[1]=='.png' )]
             MessageBox(0, " Your PDF has been created!\n Select in the menubar: `Open/Open PDF-notes Folder` to\n open the folder in Windows explorer. ", "Message", MB_ICONINFORMATION)
             
     def m_lineWpdfOnText( self, event ):
+        
         try:            
             if int(self.m_lineWpdf.GetValue()) >= 0:
-                self.pdfline_thickness = int(self.m_lineWpdf.GetValue())
-                settings_set(self)
-                m3.preview_refresh(self)
+                if int(self.m_lineWpdf.GetValue()) != self.pdfline_thickness:
+                    #only execute if the value has changed
+                    self.pdfline_thickness = int(self.m_lineWpdf.GetValue())
+                    settings_set(self)
+                    m3.preview_refresh(self)
         except:
             log.ERRORMESSAGE("Error: invalid entry")
             
     def m_lineWqaOnText( self, event ):
         try:            
             if int(self.m_lineWqa.GetValue()) >= 0:
-                self.QAline_thickness = int(self.m_lineWqa.GetValue())
-                settings_set(self)
-                m3.preview_refresh(self)
+                if int(self.m_lineWqa.GetValue()) != self.QAline_thickness:
+                    self.QAline_thickness = int(self.m_lineWqa.GetValue())
+                    settings_set(self)
+                    m3.preview_refresh(self)
         except:
             log.ERRORMESSAGE("Error: invalid entry")
             
     def m_lineWvertOnText( self, event ):
         try:            
             if int(self.m_lineWvert.GetValue()) >= 0:
-                self.vertline_thickness = int(self.m_lineWvert.GetValue())
-                settings_set(self)
-                m3.preview_refresh(self)
+                if int(self.m_lineWvert.GetValue()) != self.vertline_thickness:
+                    #only execute if the value has changed
+                    self.vertline_thickness = int(self.m_lineWvert.GetValue())
+                    settings_set(self)
+                    m3.preview_refresh(self)
         except:
             log.ERRORMESSAGE("Error: invalid entry")  
     def m_checkBoxSameColorOnCheckBox(self,event):
         self.samecolor_bool = self.m_checkBoxSameColor.IsChecked()
-        if self.samecolor_bool:
-            self.FilePickEvent = False
-            self.vertline_color = self.pdfline_color     
-        self.m_colorVERTline.SetColour(self.vertline_color)     
-        settings_set(self)
-        m3.preview_refresh(self)
+        #check if it has been checked
+        if self.samecolor_bool == True:
+            if self.vertline_color != self.pdfline_color:
+                self.FilePickEvent = False
+                self.vertline_color = self.pdfline_color     
+                self.m_colorVERTline.SetColour(self.vertline_color)     
+                settings_set(self)
+                m3.preview_refresh(self)
         
     #%% Help menu
     def m_richText1OnLeftDown(self,event):
