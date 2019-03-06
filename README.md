@@ -93,6 +93,7 @@ You can also sync two devices. It will automatically display the IP address of t
 
 ### TODO
 #### To add:
+- Multithread the functions that create the flashcards in 'print' mode.
 - Clean up code: make it PEP-8 compliant, add clear docstrings to the functions, perhaps move more code from modules to functions in order to make the modules clearer and shorter.
 - Perhaps use SQLite for data, currently everything is stored as .tex, .txt, .json files in %localappdata%. Although, now it is easy for users to edit manually, easy to delete etc.
 - Customizable colors for Flashbook: the user should be able to choose the color of the temporary and permanent borders.  
