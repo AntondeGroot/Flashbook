@@ -88,24 +88,73 @@ def drawcard(X,Y,legend):
     return PIL.Image.frombytes("RGB", size, raw_data, decoder_name='raw', )
 
 def drawlegend(totalbooks,totalvalues,legendbackup,hatchlist):
-    labels = totalbooks
+    
+    
+    
+    import numpy as np
+    import matplotlib.pyplot as plt
+    import matplotlib.patches as mpatches
+    
+    colors = ["crimson", "purple", "gold"]
+    colors = [list(legendbackup.values())[i][0] for i in range(len(legendbackup.values()))]
+    
+    #f = lambda m,c: plt.plot([],[],marker=m, color=c, ls="none")[0]
+    hatch_it = iter(hatchlist)
+    handles = [mpatches.Patch(facecolor=c,hatch=next(hatch_it),label="hallo") for c in colors]
+    
     tv_it = iter(totalvalues)
+    labels = totalbooks
     labels = [f"{x} -- {next(tv_it)}" for x in totalbooks]
-    colors = [legendbackup[x] for x in totalbooks]
+    legend = plt.legend(handles, labels, loc=2, framealpha=False, frameon=True)
+    #expand=[-5,-5,2,2]
+    fig  = Figure(figsize=[4, 0],dpi=100)
+    fig  = legend.figure
+    fig.canvas.draw()
+    ax = fig.gca()
+    ax.axis('off')
+    ax.get_xaxis().set_visible(False)
+    fig.patch.set_facecolor((254/255,240/255,231/255,1))
+    fig.show()
+    canvas = FigureCanvas(fig)
+    canvas.draw()
+    renderer = canvas.get_renderer()
+    raw_data = renderer.tostring_rgb()
+    size = canvas.get_width_height()
+    return PIL.Image.frombytes("RGB", size, raw_data, decoder_name='raw', )
+    
+    """
+    print(totalbooks,totalvalues,legendbackup,hatchlist)
+    #labels = list(legend.keys())
+    tv_it = iter(totalvalues)
+    labels = [f"{x} -- {next(tv_it)}" for x in list(legendbackup.keys())]
+    colors = [tuple(legendbackup[x][0]) for x in totalbooks]
+    print("\n"*5)
+    print(colors)
+    #f = lambda m,c : plt.plot([],[],marker="s", color=c, ls="none")[0]
+    #handles = [f("s", colors[i]) for i in range(len(colors))]
+    #handles = [mpatches.Patch(facecolor=c,hatch=next(hatch_it),label=next(label_it)) for c in colors]
+    #print(handles)
     
     
-    f = lambda m,c : plt.plot([],[],marker="s", color=c, ls="none")[0]
-    handles = [f("s", colors[i]) for i in range(len(colors))]
+    
+    #f = lambda m,c : plt.plot([],[],marker="s", color=c, ls="none")[0]
+    #handles = [f("s", colors[i]) for i in range(len(colors))]
     hatch_it = iter(hatchlist)
     label_it = iter(labels)
-    handles = [mpatches.Patch(facecolor=c,hatch=next(hatch_it),label=next(label_it)) for c in colors]
+    #handles = [mpatches.Patch(facecolor=c,hatch=next(hatch_it),label=next(label_it)) for c in colors]
+    handles = [mpatches.Patch(facecolor=(1,1,1,1),hatch=next(hatch_it),label=next(label_it)) for c in colors]
+    [print(type(c)) for c in colors]
     #labels = list(legendbackup.keys())
     legend = plt.legend(handles, labels, loc=2, framealpha=1, frameon=False,markerscale=3.6,markerfirst = True,fontsize=15)
+    
+    label_it = iter(labels)
+    #for i,h in enumerate(handles):
+    
     
     height_card = 2
     fig = Figure(figsize=[4, 4],dpi=100)
     fig = legend.figure
-    fig.patch.set_facecolor((254/255,240/255,231/255,1))
+    #fig.patch.set_facecolor((254/255,240/255,231/255,1))
     
     ax = fig.gca()
     ax.axis('off')
@@ -117,7 +166,7 @@ def drawlegend(totalbooks,totalvalues,legendbackup,hatchlist):
     raw_data = renderer.tostring_rgb()
     size = canvas.get_width_height()
     return PIL.Image.frombytes("RGB", size, raw_data, decoder_name='raw', )
-
+    """
 
 def sortsubdata(data):
     temp1 = data[0]
@@ -160,7 +209,7 @@ color = cm.nipy_spectral(np.linspace(0,1,len(totalbooks)))
 
 
 #CREATE LEGEND: colors and hatches (pattern displayed on barplots)
-hatch_it = iter(["","/","-","\\"]*len(totalbooks))  
+hatch_it = iter(["","/////","---","\\\\\\\\\\"]*len(totalbooks))  
 hatchlist = []
 for _ in enumerate(totalbooks):
     hatchlist.append(next(hatch_it))
@@ -192,8 +241,9 @@ colorlist = [legend[x] for x in data_fb[0]]
 im2 = drawcard(data_fb[0],data_fb[1],colorlist)
 colorlist = [legend[x] for x in data_fc[2]]
 im3 = drawcard(data_fc[2],data_fc[3],colorlist)
-#%%
 
+
+"""
 X_it = iter(data_fc[0])
 Y_it  = iter(data_fc[1])
 
@@ -203,8 +253,12 @@ X.sort(key=takeSecond)
 X_fc       = [x[0] for x in X]
 Y_fc       = [x[1] for x in X]
 legend_fc  = [x[2] for x in X]
+"""
+colorlist = [legend[x] for x in data_fc[0]]
+im4 = drawcard(data_fc[0],data_fc[1],colorlist)
+#im4 = drawcard(X_fc,Y_fc,legend_fc)
 
-im4 = drawcard(X_fc,Y_fc,legend_fc)
+#%
 im5 = drawlegend(totalbooks,totalvalues,legendbackup,hatchlist)
 #colors = list(legendbackup.values())
 
