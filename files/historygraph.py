@@ -70,7 +70,16 @@ def textcard(TEXT,width,textpos):
 
 def drawcard(X,Y,legend2):
     legend = [legend2[x] for x in X]
-    
+    print(X)
+    X_it,Y_it,legend_it = iter(X),iter(Y),iter(legend)
+    #sort small to large
+    X2 = [(next(X_it),next(Y_it),next(legend_it)) for _ in X]
+    # sort list with key
+    X2.sort(key=takeSecond)
+    X = [x[0] for x in X2]
+    Y = [x[1] for x in X2]
+    legend = [x[2] for x in X2]
+    print(X)
     
     height_card = 2
     fig = Figure(figsize=[4, height_card],dpi=100)
@@ -235,14 +244,7 @@ txt4 = textcard("Flashcard",2,4).rotate(90, expand = 1)
 
 
 #CREATE IMAGES
-"""
-colorlist = [legend[x] for x in data_fb[2]]
-im1 = drawcard(data_fb[2],data_fb[3],colorlist)
-colorlist = [legend[x] for x in data_fb[0]]
-im2 = drawcard(data_fb[0],data_fb[1],colorlist)
-colorlist = [legend[x] for x in data_fc[2]]
-im3 = drawcard(data_fc[2],data_fc[3],colorlist)
-"""
+
 im1 = drawcard(data_fb[2],data_fb[3],legend)
 im2 = drawcard(data_fb[0],data_fb[1],legend)
 im3 = drawcard(data_fc[2],data_fc[3],legend)
