@@ -68,15 +68,16 @@ def textcard(TEXT,width,textpos):
     size = canvas.get_width_height()
     return PIL.Image.frombytes("RGB", size, raw_data, decoder_name='raw', )
 
-def drawcard(X,Y,legend):
+def drawcard(X,Y,legend2):
+    legend = [legend2[x] for x in X]
     
     
     height_card = 2
     fig = Figure(figsize=[4, height_card],dpi=100)
     fig.patch.set_facecolor((254/255,240/255,231/255,1)) #flashbook theme color rescaled to [0,1]
     ax = fig.gca()
-    for i,_ in enumerate(X):
-        ax.bar(X[i],Y[i],edgecolor = 'black', color = legend[i][0] ,width = 1,  align='center', fill=True,linestyle = '--',snap = False,hatch = hatchlist[i])    
+    for i,x in enumerate(X):
+        ax.bar(X[i],Y[i],edgecolor = 'black', color = legend[i][0] ,width = 1,  align='center', fill=True,linestyle = '--',snap = False,hatch = legend2[x][1])    
     ax.axis('on')
     ax.get_xaxis().set_visible(False)
     
@@ -234,12 +235,18 @@ txt4 = textcard("Flashcard",2,4).rotate(90, expand = 1)
 
 
 #CREATE IMAGES
+"""
 colorlist = [legend[x] for x in data_fb[2]]
 im1 = drawcard(data_fb[2],data_fb[3],colorlist)
 colorlist = [legend[x] for x in data_fb[0]]
 im2 = drawcard(data_fb[0],data_fb[1],colorlist)
 colorlist = [legend[x] for x in data_fc[2]]
 im3 = drawcard(data_fc[2],data_fc[3],colorlist)
+"""
+im1 = drawcard(data_fb[2],data_fb[3],legend)
+im2 = drawcard(data_fb[0],data_fb[1],legend)
+im3 = drawcard(data_fc[2],data_fc[3],legend)
+
 """
 X_it = iter(data_fc[0])
 Y_it  = iter(data_fc[1])
@@ -251,10 +258,10 @@ X_fc       = [x[0] for x in X]
 Y_fc       = [x[1] for x in X]
 legend_fc  = [x[2] for x in X]
 """
-colorlist = [legend[x] for x in data_fc[0]]
-im4 = drawcard(data_fc[0],data_fc[1],colorlist)
+#colorlist = [legend[x] for x in data_fc[0]]
+im4 = drawcard(data_fc[0],data_fc[1],legend)
 #im4 = drawcard(X_fc,Y_fc,legend_fc)
-
+#%%
 #%
 im5 = drawlegend(totalbooks,totalvalues,legendbackup,hatchlist)
 #colors = list(legendbackup.values())
