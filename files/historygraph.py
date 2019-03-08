@@ -95,7 +95,6 @@ def drawlegend(totalbooks,totalvalues,legendbackup,hatchlist):
     import matplotlib.pyplot as plt
     import matplotlib.patches as mpatches
     
-    colors = ["crimson", "purple", "gold"]
     colors = [list(legendbackup.values())[i][0] for i in range(len(legendbackup.values()))]
     
     #f = lambda m,c: plt.plot([],[],marker=m, color=c, ls="none")[0]
@@ -105,7 +104,7 @@ def drawlegend(totalbooks,totalvalues,legendbackup,hatchlist):
     tv_it = iter(totalvalues)
     labels = totalbooks
     labels = [f"{x} -- {next(tv_it)}" for x in totalbooks]
-    legend = plt.legend(handles, labels, loc=2, framealpha=False, frameon=True)
+    legend = plt.legend(handles, labels, loc=2, framealpha=False, frameon=True,markerscale=3.6,markerfirst = True,fontsize=15)
     #expand=[-5,-5,2,2]
     fig  = Figure(figsize=[4, 0],dpi=100)
     fig  = legend.figure
@@ -241,8 +240,6 @@ colorlist = [legend[x] for x in data_fb[0]]
 im2 = drawcard(data_fb[0],data_fb[1],colorlist)
 colorlist = [legend[x] for x in data_fc[2]]
 im3 = drawcard(data_fc[2],data_fc[3],colorlist)
-
-
 """
 X_it = iter(data_fc[0])
 Y_it  = iter(data_fc[1])
