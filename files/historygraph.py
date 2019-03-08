@@ -142,6 +142,8 @@ def sortsubdata(data):
 #% COLLECT ALL DATA
 data_fb = GetValues(timedict_fb)
 data_fc = GetValues(timedict_fc)    
+
+
 # COMBINE DATA
 X = sortsubdata(data_fc) + sortsubdata(data_fb)
 
@@ -164,13 +166,12 @@ for _ in enumerate(totalbooks):
     hatchlist.append(next(hatch_it))
 
 
-legend = {}
-legendtoday = {}
 
+legend = {}
 for i,book in enumerate(totalbooks):   
     legend[book] = tuple((color[i],hatchlist[i] ))
 
-#%%
+
 
 legendbackup = legend    
 #%
@@ -182,12 +183,16 @@ txt2 = textcard(f"Last {10} days", 4,4)
 txt3 = textcard("Flashbook",2,4).rotate(90, expand = 1)
 txt4 = textcard("Flashcard",2,4).rotate(90, expand = 1)
 
-#CREATE IMAGES
-#colorlist = [legend[x] for x in data_fb[2]]
-im1 = drawcard(data_fb[2],data_fb[3],colorlist)
-im2 = drawcard(data_fb[0],data_fb[1],colorlist)
-im3 = drawcard(data_fc[2],data_fc[3],colorlist)
 
+
+#CREATE IMAGES
+colorlist = [legend[x] for x in data_fb[2]]
+im1 = drawcard(data_fb[2],data_fb[3],colorlist)
+colorlist = [legend[x] for x in data_fb[0]]
+im2 = drawcard(data_fb[0],data_fb[1],colorlist)
+colorlist = [legend[x] for x in data_fc[2]]
+im3 = drawcard(data_fc[2],data_fc[3],colorlist)
+#%%
 
 X_it = iter(data_fc[0])
 Y_it  = iter(data_fc[1])
