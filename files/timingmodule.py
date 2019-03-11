@@ -34,7 +34,7 @@ class TimeCount:
         self.book     = bookname
         self.date     = time.strftime("%d%m%y")
         v = type(self)
-        
+        v.count = 0
         if os.path.isfile(self.path):
             try:
                 with open(self.path, 'r') as file:
