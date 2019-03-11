@@ -4,35 +4,7 @@ Created on Thu Mar  7 14:13:09 2019
 
 @author: Anton
 """
-bookname = "book1"
 
-timedict = {}
-count = 120
-#%%
-bookname = "book2"
-
-#date = time.strftime("%d%m%y")
-
-class C: 
-
-    counter = 0
-    
-    def __init__(self): 
-        type(self).counter += 1
-
-    def do(self):
-        type(self).counter -= 1
-
-x = C()
-
-#%%
-
-
-
-
-
-
-#%%
 
 from termcolor import colored
 import time
@@ -40,63 +12,70 @@ import os
 import json
 
 class TimeCount: 
+    """ A Class that is used to register how long a user has been working. 
+    Thiss class will be called whenever mouse events or key events are registered.
+    To limit the use of this class, there are some bounds: since it doesn't need to be called every second
+    nor does it need to open and save a file every second.
+    The goal: register the #minutes a user is using the program, variance in #seconds is insignificant
+    """
+    
     #class attributes
     count = 0
     timelastchecked = time.time()
-    timelastsaved = time.time()
-    threshold1 = 1
-    threshold2 = 5
-    upperbound = 180
+    timelastsaved   = time.time()
+    # bounds in seconds
+    lowerbound = 1      # when to update the count
+    savethreshold = 5      # when to save the current count
+    upperbound = 180    # when to consider the user to be idle
     
-    def __init__(self, bookname):
-        self.path     = os.path.join(os.getenv("LOCALAPPDATA"),"Flashbook","temporary","timecount.json")
+    def __init__(self, bookname, filename):
+        self.path     = os.path.join(os.getenv("LOCALAPPDATA"),"Flashbook","temporary",f"timecount_{filename}.json")
         self.timedict = {}
         self.book     = bookname
         self.date     = time.strftime("%d%m%y")
+        v = type(self)
         
-        #self.timelastsave = self.timelast
-        print(colored(f"selfcount is {self.count}","green"))
         if os.path.isfile(self.path):
             try:
                 with open(self.path, 'r') as file:
                     self.timedict = json.load(file)
-                    print(type(self.timedict))
-                    if self.date in self.timedict.keys():
-                        if self.book in self.timedict[self.date].keys():
-                            type(self).count = self.timedict[self.date][self.book]
-                        else:
-                            self.timedict[self.date][self.book] = count
-                    else:
-                        self.timedict[self.date][self.book] =  count
                 file.close()
-                print(f"count is {type(self).count}")
-            except: #file is corrupted
-                print(colored("file is corrupted","red"))
+                if self.date in self.timedict.keys():
+                    if self.book in self.timedict[self.date].keys():
+                        v.count = self.timedict[self.date][self.book]
+                    else:
+                        self.timedict[self.date][self.book] = v.count
+                else:
+                    self.timedict[self.date] =  {self.book : v.count}
+                
+                
+            except: #file is corrupted: restore the file
+                print(colored("Error: TimeCount file is corrupted","red"))
                 os.remove(self.path)
-                type(self).count = 0 
-                self.timedict[self.date][self.book] = type(self).count
+                v.count = 0 
+                self.timedict[self.date][self.book] = v.count
                 # save
                 with open(self.path, 'w') as file:
                     file.write(json.dumps(self.timedict))
                 file.close()
-                type(self).timelastchecked = time.time()
-                type(self).timelastsaved = time.time()
-            print(colored("FOUND THE FILE",'green'))
+                v.timelastchecked = time.time()
+                v.timelastsaved = time.time()
+        else: #the file will be saved eventually, even if it does not exist yet
+            self.timedict[self.date] = {self.book : v.count}
+            
+    
+    def set_bounds(self,var):
+        if (type(var) == list or type(var) == tuple) and len(var) == 3:
+            var1, var2, var3 = var
+            if type(var1) == int and var1 > 0:
+                type(self).lowerbound = var1
+            if type(var2) == int and var2 > 0:
+                type(self).savethreshold = var2
+            if type(var3) == int and var3 > 0:
+                type(self).upperbound = var3
         else:
-            self.timedict[self.date] = {self.book : type(self).count}
-            print(False)
+            print(colored("Error: input to Class Method should be a list/tuple of length 3","red"))
             
-    def set_threshold1(self,var):
-        if type(var) == int and var > 0:
-            type(self).threshold1 = var
-            
-    def set_threshold2(self,var):
-        if type(var) == int and var > 0:
-            type(self).threshold2 = var
-            
-    def set_upperbound(self,var):
-        if type(var) == int and var > 0:
-            type(self).upperbound = var
     
     def update(self):
         v = type(self)
@@ -104,49 +83,24 @@ class TimeCount:
         timenow  = time.time()
         timedelta = timenow-v.timelastchecked
         
-        if timedelta < v.upperbound: # in seconds
-        
-            if timedelta > v.threshold1: #in seconds
-                
-                print(colored("in time","green"))
-                #print(timedelta)
+        if timedelta < v.upperbound:     # user has not been idle    
+            if timedelta > v.lowerbound:                  
                 #update
-                print(f"typecount = {type(self).count}")
                 v.count +=  timedelta
-                #print(f"timecount is now {type(self).count}\n")
-                v.timelastchecked = time.time()
-                
-                self.timedict[self.date][self.book] = type(self).count
-            
-                if (timenow - v.timelastsaved) > v.threshold2:
-                    print(f"saved {self.book, type(self).count, self.path}")
+                v.timelastchecked = time.time()                
+                self.timedict[self.date][self.book] = round(v.count,2)            
+                if (timenow - v.timelastsaved) > v.savethreshold:
                     with open(self.path, 'w') as file:
                         file.write(json.dumps(self.timedict))
                     file.close()
                     v.timelastsaved = time.time()
-                
-                
-                    #TimeCount(self.book).save()
-        else:
-            #user has been idle for too long, reload count from saved file
+                    
+        else: # user has been idle for too long, reload count from saved file
             with open(self.path, 'r') as file:
                 self.timedict = json.load(file)
                 if self.date in self.timedict.keys():
                     if self.book in self.timedict[self.date].keys():
                         v.count = self.timedict[self.date][self.book]
+            file.close()
             v.timelastchecked = time.time()
             v.timelastsaved = time.time()
-            file.close()
-            #print("too soon")
-
-
-TC = TimeCount("book2")
-for i in range(11):
-    time.sleep(1)
-    TC.update()
-
-time.sleep(20)
-
-for i in range(11):
-    time.sleep(1)
-    TC.update()
