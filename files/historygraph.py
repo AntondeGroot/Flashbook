@@ -21,8 +21,6 @@ import numpy as np
 timedict_fb = {"01": {"Neurofysica 1": 1, "book2": 2, "book3": 3,"book4": 4},"02": {"book1": 10, "book2": 20, "book5": 300},"03": {"book5" : 5}}
 timedict_fc = {"01": {"Book1": 10, "book2": 2, "book3": 3,"book4": 4},"02": {"book1": 10, "book7": 200, "book5": 300},"03": {"book6" : 5}}
 
-
-
 #% FUNCTIONS
 def GetValues(timedict):
     totaldict = {}
@@ -98,9 +96,6 @@ def drawcard(X,Y,legend2):
     return PIL.Image.frombytes("RGB", size, raw_data, decoder_name='raw', )
 
 def drawlegend(totalbooks,totalvalues,legendbackup,hatchlist):
-    
-    
-    
     import numpy as np
     import matplotlib.pyplot as plt
     import matplotlib.patches as mpatches
@@ -109,7 +104,7 @@ def drawlegend(totalbooks,totalvalues,legendbackup,hatchlist):
     
     #f = lambda m,c: plt.plot([],[],marker=m, color=c, ls="none")[0]
     hatch_it = iter(hatchlist)
-    handles = [mpatches.Patch(facecolor=c,hatch=next(hatch_it),label="hallo") for c in colors]
+    handles = [mpatches.Patch(edgecolor='black',facecolor=c,hatch=next(hatch_it),label="hallo") for c in colors]
     
     tv_it = iter(totalvalues)
     labels = totalbooks
@@ -223,13 +218,9 @@ hatchlist = []
 for _ in enumerate(totalbooks):
     hatchlist.append(next(hatch_it))
 
-
-
 legend = {}
 for i,book in enumerate(totalbooks):   
     legend[book] = tuple((color[i],hatchlist[i] ))
-
-
 
 legendbackup = legend    
 #%
@@ -241,35 +232,14 @@ txt2 = textcard(f"Last {10} days", 4,4)
 txt3 = textcard("Flashbook",2,4).rotate(90, expand = 1)
 txt4 = textcard("Flashcard",2,4).rotate(90, expand = 1)
 
-
-
 #CREATE IMAGES
-
 im1 = drawcard(data_fb[2],data_fb[3],legend)
 im2 = drawcard(data_fb[0],data_fb[1],legend)
 im3 = drawcard(data_fc[2],data_fc[3],legend)
-
-"""
-X_it = iter(data_fc[0])
-Y_it  = iter(data_fc[1])
-
-legend_it = iter(list(legend.values()))
-X = [(next(X_it),next(Y_it),next(legend_it)) for x in range(len(data_fc[0]))]
-X.sort(key=takeSecond)
-X_fc       = [x[0] for x in X]
-Y_fc       = [x[1] for x in X]
-legend_fc  = [x[2] for x in X]
-"""
-#colorlist = [legend[x] for x in data_fc[0]]
 im4 = drawcard(data_fc[0],data_fc[1],legend)
-#im4 = drawcard(X_fc,Y_fc,legend_fc)
-#%%
-#%
 im5 = drawlegend(totalbooks,totalvalues,legendbackup,hatchlist)
-#colors = list(legendbackup.values())
 
-
-# COMBINE ALL PICS
+# COMBINE ALL IMAGES TO A MOZAIC
 width = im1.width + im2.width + txt3.width+im5.width
 height = im1.height*2 + txt1.height
 new_im = PIL.Image.new('RGB', (width, height), (254,240,231))
