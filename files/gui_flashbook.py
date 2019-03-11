@@ -619,7 +619,6 @@ class MyFrame ( wx.Frame ):
 		gSizer111.Add( self.m_staticText5111, 0, wx.ALL, 5 )
 		
 		self.m_lineVERT = wx.CheckBox( sbSizer111.GetStaticBox(), wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
-		self.m_lineVERT.SetValue(True) 
 		gSizer111.Add( self.m_lineVERT, 0, wx.ALL, 5 )
 		
 		self.m_staticText6121 = wx.StaticText( sbSizer111.GetStaticBox(), wx.ID_ANY, u"Line Thickness", wx.DefaultPosition, wx.DefaultSize, 0 )
@@ -1066,6 +1065,21 @@ class MyFrame ( wx.Frame ):
 		self.m_CurrentPage11.Bind( wx.EVT_LEAVE_WINDOW, self.m_CurrentPage11OnLeaveWindow )
 		self.Bind( wx.EVT_TOOL, self.m_toolUPOnToolClicked, id = self.m_toolUP.GetId() )
 		self.Bind( wx.EVT_TOOL, self.m_toolDOWNOnToolClicked, id = self.m_toolDOWN.GetId() )
+		self.m_scrolledWindow1.Bind( wx.EVT_KEY_DOWN, self.m_scrolledWindow1OnKeyDown )
+		self.m_scrolledWindow1.Bind( wx.EVT_LEFT_DOWN, self.m_scrolledWindow1OnMouseEvents )
+		self.m_scrolledWindow1.Bind( wx.EVT_LEFT_UP, self.m_scrolledWindow1OnMouseEvents )
+		self.m_scrolledWindow1.Bind( wx.EVT_MIDDLE_DOWN, self.m_scrolledWindow1OnMouseEvents )
+		self.m_scrolledWindow1.Bind( wx.EVT_MIDDLE_UP, self.m_scrolledWindow1OnMouseEvents )
+		self.m_scrolledWindow1.Bind( wx.EVT_RIGHT_DOWN, self.m_scrolledWindow1OnMouseEvents )
+		self.m_scrolledWindow1.Bind( wx.EVT_RIGHT_UP, self.m_scrolledWindow1OnMouseEvents )
+		self.m_scrolledWindow1.Bind( wx.EVT_MOTION, self.m_scrolledWindow1OnMouseEvents )
+		self.m_scrolledWindow1.Bind( wx.EVT_LEFT_DCLICK, self.m_scrolledWindow1OnMouseEvents )
+		self.m_scrolledWindow1.Bind( wx.EVT_MIDDLE_DCLICK, self.m_scrolledWindow1OnMouseEvents )
+		self.m_scrolledWindow1.Bind( wx.EVT_RIGHT_DCLICK, self.m_scrolledWindow1OnMouseEvents )
+		self.m_scrolledWindow1.Bind( wx.EVT_LEAVE_WINDOW, self.m_scrolledWindow1OnMouseEvents )
+		self.m_scrolledWindow1.Bind( wx.EVT_ENTER_WINDOW, self.m_scrolledWindow1OnMouseEvents )
+		self.m_scrolledWindow1.Bind( wx.EVT_MOUSEWHEEL, self.m_scrolledWindow1OnMouseEvents )
+		self.m_bitmapScroll.Bind( wx.EVT_KEY_DOWN, self.m_bitmapScrollOnKeyDown )
 		self.m_bitmapScroll.Bind( wx.EVT_LEFT_DOWN, self.m_bitmapScrollOnLeftDown )
 		self.m_bitmapScroll.Bind( wx.EVT_LEFT_UP, self.m_bitmapScrollOnLeftUp )
 		self.m_bitmapScroll.Bind( wx.EVT_MOTION, self.m_bitmapScrollOnMotion )
@@ -1097,6 +1111,21 @@ class MyFrame ( wx.Frame ):
 		self.m_CurrentPage21.Bind( wx.EVT_TEXT, self.m_CurrentPage21OnText )
 		self.Bind( wx.EVT_TOOL, self.m_toolPlus21OnToolClicked, id = self.m_toolPlus21.GetId() )
 		self.Bind( wx.EVT_TOOL, self.m_toolMin21OnToolClicked, id = self.m_toolMin21.GetId() )
+		self.m_scrolledWindow11.Bind( wx.EVT_KEY_DOWN, self.m_scrolledWindow11OnKeyDown )
+		self.m_scrolledWindow11.Bind( wx.EVT_LEFT_DOWN, self.m_scrolledWindow11OnMouseEvents )
+		self.m_scrolledWindow11.Bind( wx.EVT_LEFT_UP, self.m_scrolledWindow11OnMouseEvents )
+		self.m_scrolledWindow11.Bind( wx.EVT_MIDDLE_DOWN, self.m_scrolledWindow11OnMouseEvents )
+		self.m_scrolledWindow11.Bind( wx.EVT_MIDDLE_UP, self.m_scrolledWindow11OnMouseEvents )
+		self.m_scrolledWindow11.Bind( wx.EVT_RIGHT_DOWN, self.m_scrolledWindow11OnMouseEvents )
+		self.m_scrolledWindow11.Bind( wx.EVT_RIGHT_UP, self.m_scrolledWindow11OnMouseEvents )
+		self.m_scrolledWindow11.Bind( wx.EVT_MOTION, self.m_scrolledWindow11OnMouseEvents )
+		self.m_scrolledWindow11.Bind( wx.EVT_LEFT_DCLICK, self.m_scrolledWindow11OnMouseEvents )
+		self.m_scrolledWindow11.Bind( wx.EVT_MIDDLE_DCLICK, self.m_scrolledWindow11OnMouseEvents )
+		self.m_scrolledWindow11.Bind( wx.EVT_RIGHT_DCLICK, self.m_scrolledWindow11OnMouseEvents )
+		self.m_scrolledWindow11.Bind( wx.EVT_LEAVE_WINDOW, self.m_scrolledWindow11OnMouseEvents )
+		self.m_scrolledWindow11.Bind( wx.EVT_ENTER_WINDOW, self.m_scrolledWindow11OnMouseEvents )
+		self.m_scrolledWindow11.Bind( wx.EVT_MOUSEWHEEL, self.m_scrolledWindow11OnMouseEvents )
+		self.m_bitmapScroll1.Bind( wx.EVT_KEY_DOWN, self.m_bitmapScroll1OnKeyDown )
 		self.m_bitmapScroll1.Bind( wx.EVT_LEFT_DOWN, self.m_bitmapScroll1OnLeftDown )
 		self.m_bitmapScroll1.Bind( wx.EVT_LEFT_UP, self.m_bitmapScroll1OnLeftUp )
 		self.m_bitmapScroll1.Bind( wx.EVT_MOTION, self.m_bitmapScroll1OnMotion )
@@ -1235,6 +1264,15 @@ class MyFrame ( wx.Frame ):
 	def m_toolDOWNOnToolClicked( self, event ):
 		event.Skip()
 	
+	def m_scrolledWindow1OnKeyDown( self, event ):
+		event.Skip()
+	
+	def m_scrolledWindow1OnMouseEvents( self, event ):
+		event.Skip()
+	
+	def m_bitmapScrollOnKeyDown( self, event ):
+		event.Skip()
+	
 	def m_bitmapScrollOnLeftDown( self, event ):
 		event.Skip()
 	
@@ -1290,6 +1328,15 @@ class MyFrame ( wx.Frame ):
 		event.Skip()
 	
 	def m_toolMin21OnToolClicked( self, event ):
+		event.Skip()
+	
+	def m_scrolledWindow11OnKeyDown( self, event ):
+		event.Skip()
+	
+	def m_scrolledWindow11OnMouseEvents( self, event ):
+		event.Skip()
+	
+	def m_bitmapScroll1OnKeyDown( self, event ):
 		event.Skip()
 	
 	def m_bitmapScroll1OnLeftDown( self, event ):
