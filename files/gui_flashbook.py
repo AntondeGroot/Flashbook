@@ -87,6 +87,10 @@ class MyFrame ( wx.Frame ):
 		self.m_checkBoxDebug = wx.MenuItem( self.m_menu3, wx.ID_ANY, u"Debug mode", wx.EmptyString, wx.ITEM_CHECK )
 		self.m_menu3.Append( self.m_checkBoxDebug )
 		
+		self.m_menuItemGraph = wx.MenuItem( self.m_menu3, wx.ID_ANY, u"Show stats graph", wx.EmptyString, wx.ITEM_CHECK )
+		self.m_menu3.Append( self.m_menuItemGraph )
+		self.m_menuItemGraph.Check( True )
+		
 		self.m_menu3.AppendSeparator()
 		
 		self.m_menuResetSettings = wx.MenuItem( self.m_menu3, wx.ID_ANY, u"Reset Settings", wx.EmptyString, wx.ITEM_NORMAL )
@@ -1049,6 +1053,7 @@ class MyFrame ( wx.Frame ):
 		self.Bind( wx.EVT_MENU, self.m_checkBox11OnCheckBox, id = self.m_checkBox11.GetId() )
 		self.Bind( wx.EVT_MENU, self.m_checkBoxCursor11OnCheckBox, id = self.m_checkBoxCursor11.GetId() )
 		self.Bind( wx.EVT_MENU, self.m_checkBoxDebugOnMenuSelection, id = self.m_checkBoxDebug.GetId() )
+		self.Bind( wx.EVT_MENU, self.m_menuItemGraphOnMenuSelection, id = self.m_menuItemGraph.GetId() )
 		self.Bind( wx.EVT_MENU, self.m_menuResetSettingsOnMenuSelection, id = self.m_menuResetSettings.GetId() )
 		self.Bind( wx.EVT_MENU, self.m_menuResetLogOnMenuSelection, id = self.m_menuResetLog.GetId() )
 		self.m_OpenFlashbook.Bind( wx.EVT_BUTTON, self.m_OpenFlashbookOnButtonClick )
@@ -1214,6 +1219,9 @@ class MyFrame ( wx.Frame ):
 		event.Skip()
 	
 	def m_checkBoxDebugOnMenuSelection( self, event ):
+		event.Skip()
+	
+	def m_menuItemGraphOnMenuSelection( self, event ):
 		event.Skip()
 	
 	def m_menuResetSettingsOnMenuSelection( self, event ):
