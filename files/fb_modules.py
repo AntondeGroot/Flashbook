@@ -10,6 +10,7 @@ import PIL
 import wx
 import os
 import fb_functions as f
+import timingmodule as m6
 import program as p
 import log_module as log
 import json
@@ -73,6 +74,7 @@ def dirchanged(self,event):
     picnames = [x for _,x in sorted(zip(nrlist,picnames))]
     self.picnames = picnames
     self.bookname = os.path.basename(path)
+    self.TC = m6.TimeCount(self.bookname,"flashbook")
     self.booknamepath = path.replace(self.dir3,"")[1:]
     self.currentpage = 1
     self.PathBorders = os.path.join(self.dir5, self.bookname + '_borders.txt')
