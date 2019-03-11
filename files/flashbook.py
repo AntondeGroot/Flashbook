@@ -38,6 +38,7 @@ import fc_modules    as m2
 import print_modules as m3
 import sync_modules  as m4
 import pdf_modules   as m5
+import timingmodule  as m6
 import log_module    as log
 import fb_functions    as f
 import fc_functions    as f2
@@ -79,7 +80,9 @@ try:
 except:
     print("no qwindows.dll module found  (#2)")
             
-            
+def SaveTime(self):
+    if hasattr(self,'TC') and self.bookname != '':
+        self.TC.update()       
 def BoxesChecked(self,n):
     CHECKED1 = self.m_checkBox_col1.IsChecked()
     CHECKED2 = self.m_checkBox_col2.IsChecked()
@@ -135,6 +138,7 @@ def settings_get(self):
             self.bordercolors       = settings['bordercolors']
             self.drawborders        = settings['drawborders']
             self.cursor             = settings['cursor']
+        file.close()
     except:
         # Just in case when the settings.txt has been tempered with        
         if os.path.exists(joinpath(self.dirsettings,"settings.txt")):
@@ -327,10 +331,12 @@ class MainFrame(gui.MyFrame):
         m.SetKeyboardShortcuts(self)
         p.run_flashbook(self)
         
+        
     def m_OpenFlashcardOnButtonClick( self, event ):
         """START MAIN PROGRAM : FLASCARD"""
         p.SwitchPanel(self,2)
         p.run_flashcard(self)
+        
         
     def m_OpenTransferOnButtonClick(self,event):
         """START MAIN PROGRAM : WIFI SYNC"""
@@ -615,6 +621,7 @@ class MainFrame(gui.MyFrame):
     
     def m_bitmapScrollOnMouseWheel( self, event ):
         m.mousewheel(self,event)
+        event.Skip()
         
 	# draw borders #===========================================================
     def m_bitmapScrollOnLeftDown( self, event ):
@@ -625,6 +632,8 @@ class MainFrame(gui.MyFrame):
         
     def m_bitmapScrollOnLeftUp( self, event ):
         m.bitmapleftup(self,event)   
+        event.Skip()
+        
 	# help menu #==============================================================
     def m_richText22OnLeftDown( self, event ):
         p.SwitchPanel(self,2) 
@@ -670,19 +679,26 @@ class MainFrame(gui.MyFrame):
     # button events
     def m_buttonCorrectOnButtonClick( self, event ):        
         m2.buttonCorrect(self)
+        SaveTime(self)
+        event.Skip()
     def m_bitmapScroll1OnLeftUp( self, event ):
         m2.buttonCorrect(self)
+        event.Skip()
     
     def m_buttonWrongOnButtonClick( self, event ):
         m2.buttonWrong(self)
+        SaveTime(self)
+        event.Skip()
     def m_bitmapScroll1OnRightUp( self, event ):
-        m2.buttonCorrect(self)    
+        m2.buttonCorrect(self)   
+        event.Skip()
 	
     def m_toolSwitch21OnToolClicked( self, event ):
         m2.switchCard(self)
 	
     def m_bitmapScroll1OnMouseWheel( self, event ):
         m2.switchCard(self)
+        event.Skip()
         
     #%% print the notes
     """ print the notes """
@@ -825,7 +841,31 @@ class MainFrame(gui.MyFrame):
         settings_set(self)
     def m_menuResetLogOnMenuSelection( self, event ):
         [os.remove(os.path.join(self.dir4,x)) for x in os.listdir(self.dir4) if ("logging" in x and os.path.splitext(x)[1]=='.out' )]
-        
+    #%% timecount
+    def m_scrolledWindow1OnMouseEvents( self, event ):
+        SaveTime(self)
+        event.Skip()
+    def m_scrolledWindow1OnKeyDown( self, event ):
+        SaveTime(self)
+        event.Skip()        
+    def m_bitmapScrollOnMouseEvents( self, event ):
+        SaveTime(self)
+        event.Skip()
+    def m_bitmapScrollOnKeyDown( self, event ):
+        SaveTime(self)
+        event.Skip()
+    def m_bitmapScroll1OnKeyDown( self, event ):
+        SaveTime(self)
+        event.Skip()
+    def m_bitmapScroll1OnMouseEvents( self, event ):
+        SaveTime(self)
+        event.Skip()
+    def m_scrolledWindow11OnMouseEvents( self, event ):
+        SaveTime(self)
+        event.Skip()
+    def m_scrolledWindow11OnKeyDown( self, event ):
+        SaveTime(self)
+        event.Skip()
 # start the application
 app = wx.App(False) 
 frame = MainFrame(None)
