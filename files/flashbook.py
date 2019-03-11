@@ -138,6 +138,7 @@ def settings_get(self):
             self.bordercolors       = settings['bordercolors']
             self.drawborders        = settings['drawborders']
             self.cursor             = settings['cursor']
+            self.GraphNdays         = settings['GraphNdays']
         file.close()
     except:
         # Just in case when the settings.txt has been tempered with        
@@ -166,7 +167,8 @@ def settings_create(self):
                                    'LaTeXfontsize' : 20,
                                    'bordercolors' : [[0,0,0],[200,0,0]],
                                    'drawborders' : True,
-                                   'cursor' : False}))
+                                   'cursor' : False,
+                                   'GraphNdays':10}))
             file.close()
             
 def settings_set(self):
@@ -195,7 +197,8 @@ def settings_set(self):
                                'LaTeXfontsize' : self.LaTeXfontsize,
                                'bordercolors' : self.bordercolors,
                                'drawborders' : self.drawborders,
-                               'cursor' : self.cursor}))
+                               'cursor' : self.cursor,
+                               'GraphNdays' :self.GraphNdays}))
         file.close()
 
 def settings_reset(self):
@@ -315,7 +318,7 @@ class MainFrame(gui.MyFrame):
         self.m_checkBoxCursor11.Check(self.cursor)
         self.m_checkBoxDebug.Check(self.debugmode)
         m.setcursor(self)
-                      
+        
     #%% MAIN PROGRAMS
     """ MAIN PROGRAMS """ 
     
