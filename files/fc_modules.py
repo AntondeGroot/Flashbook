@@ -19,6 +19,7 @@ import pylab
 import matplotlib.backends.backend_agg as agg
 #matplotlib.use('TKAgg')
 import fc_functions as f2
+import timingmodule as m6
 import log_module as log
 import program as p
 import json
@@ -180,6 +181,7 @@ def startprogram(self,event):
         self.filename = self.path.replace(f"{self.dir1}","")[1:]   #to remove '\' but not '.tex'
         self.bookname = os.path.splitext(self.filename)[0]         #also remove extension '.tex'
         print(f"book = {self.bookname} ")
+        self.TC = m6.TimeCount(self.bookname,"flashcard")
     except:
         log.ERRORMESSAGE("Error: Couldn't open path")
     self.resumedata = {self.bookname : {'score': self.score, 'index': self.index, 'nr_questions':self.nr_questions}}
