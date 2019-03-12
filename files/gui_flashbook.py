@@ -111,101 +111,132 @@ class MyFrame ( wx.Frame ):
 		bSizer37 = wx.BoxSizer( wx.HORIZONTAL )
 		
 		
-		bSizer37.Add( ( 100, 0), 0, wx.EXPAND, 5 )
+		bSizer37.Add( ( 100, 100), 0, wx.EXPAND, 5 )
 		
-		bSizer71 = wx.BoxSizer( wx.VERTICAL )
+		bSizer71 = wx.BoxSizer( wx.HORIZONTAL )
 		
-		
-		bSizer71.Add( ( 100, 100), 0, 0, 5 )
-		
-		gSizer1 = wx.GridSizer( 0, 2, 0, 0 )
-		
-		gSizer1.SetMinSize( wx.Size( 700,-1 ) ) 
-		bSizer33 = wx.BoxSizer( wx.VERTICAL )
-		
-		self.m_staticText9 = wx.StaticText( self.panel0, wx.ID_ANY, u"Flashbook", wx.DefaultPosition, wx.DefaultSize, 0 )
-		self.m_staticText9.Wrap( -1 )
-		self.m_staticText9.SetFont( wx.Font( 20, 74, 90, 92, False, "Verdana" ) )
-		
-		bSizer33.Add( self.m_staticText9, 0, wx.ALL, 0 )
-		
-		self.m_staticText91 = wx.StaticText( self.panel0, wx.ID_ANY, u"Read a PDF that has been converted to jpg\nand make flashcards / notes while you read", wx.DefaultPosition, wx.DefaultSize, 0 )
-		self.m_staticText91.Wrap( -1 )
-		self.m_staticText91.SetFont( wx.Font( 10, 74, 90, 90, False, "Verdana" ) )
-		
-		bSizer33.Add( self.m_staticText91, 0, wx.ALL, 0 )
+		bSizer481 = wx.BoxSizer( wx.VERTICAL )
 		
 		
-		gSizer1.Add( bSizer33, 1, wx.EXPAND, 5 )
+		bSizer481.Add( ( 100, 100), 0, 0, 5 )
+		
+		fgSizer3 = wx.FlexGridSizer( 0, 2, 0, 0 )
+		fgSizer3.SetFlexibleDirection( wx.HORIZONTAL )
+		fgSizer3.SetNonFlexibleGrowMode( wx.FLEX_GROWMODE_NONE )
+		
+		bSizer332 = wx.BoxSizer( wx.VERTICAL )
+		
+		self.m_staticText92 = wx.StaticText( self.panel0, wx.ID_ANY, u"Flashbook", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_staticText92.Wrap( -1 )
+		self.m_staticText92.SetFont( wx.Font( 20, 74, 90, 92, False, "Verdana" ) )
+		
+		bSizer332.Add( self.m_staticText92, 0, wx.ALL, 0 )
+		
+		self.m_staticText911 = wx.StaticText( self.panel0, wx.ID_ANY, u"Read a PDF that has been converted to jpg\nand make flashcards / notes while you read", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_staticText911.Wrap( -1 )
+		self.m_staticText911.SetFont( wx.Font( 10, 74, 90, 90, False, "Verdana" ) )
+		
+		bSizer332.Add( self.m_staticText911, 0, wx.ALL, 0 )
+		
+		
+		fgSizer3.Add( bSizer332, 1, wx.EXPAND, 5 )
 		
 		self.m_OpenFlashbook = wx.BitmapButton( self.panel0, wx.ID_ANY, wx.ArtProvider.GetBitmap( wx.ART_ADD_BOOKMARK,  ), wx.DefaultPosition, wx.Size( 110,110 ), wx.BU_AUTODRAW )
-		gSizer1.Add( self.m_OpenFlashbook, 0, wx.ALL, 0 )
+		fgSizer3.Add( self.m_OpenFlashbook, 0, wx.ALL, 0 )
 		
-		bSizer34 = wx.BoxSizer( wx.VERTICAL )
+		bSizer343 = wx.BoxSizer( wx.VERTICAL )
 		
-		self.m_staticText10 = wx.StaticText( self.panel0, wx.ID_ANY, u"Flashcard", wx.DefaultPosition, wx.DefaultSize, 0 )
-		self.m_staticText10.Wrap( -1 )
-		self.m_staticText10.SetFont( wx.Font( 20, 74, 90, 92, False, "Verdana" ) )
+		self.m_staticText102 = wx.StaticText( self.panel0, wx.ID_ANY, u"Flashcard", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_staticText102.Wrap( -1 )
+		self.m_staticText102.SetFont( wx.Font( 20, 74, 90, 92, False, "Verdana" ) )
 		
-		bSizer34.Add( self.m_staticText10, 0, wx.ALL, 0 )
+		bSizer343.Add( self.m_staticText102, 0, wx.ALL, 0 )
 		
-		self.m_staticText101 = wx.StaticText( self.panel0, wx.ID_ANY, u"Study the notes you took, either as flashcards\nor just read through your notes.", wx.DefaultPosition, wx.DefaultSize, 0 )
-		self.m_staticText101.Wrap( -1 )
-		self.m_staticText101.SetFont( wx.Font( 10, 74, 90, 90, False, "Verdana" ) )
+		self.m_staticText1011 = wx.StaticText( self.panel0, wx.ID_ANY, u"Study the notes you took, either as flashcards\nor just read through your notes.", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_staticText1011.Wrap( -1 )
+		self.m_staticText1011.SetFont( wx.Font( 10, 74, 90, 90, False, "Verdana" ) )
 		
-		bSizer34.Add( self.m_staticText101, 0, wx.ALL, 0 )
+		bSizer343.Add( self.m_staticText1011, 0, wx.ALL, 0 )
 		
 		
-		gSizer1.Add( bSizer34, 1, wx.EXPAND, 5 )
+		fgSizer3.Add( bSizer343, 1, wx.EXPAND, 5 )
 		
 		self.m_OpenFlashcard = wx.BitmapButton( self.panel0, wx.ID_ANY, wx.NullBitmap, wx.DefaultPosition, wx.Size( 110,110 ), wx.BU_AUTODRAW )
 		self.m_OpenFlashcard.SetDefault() 
-		gSizer1.Add( self.m_OpenFlashcard, 0, wx.ALL, 0 )
+		fgSizer3.Add( self.m_OpenFlashcard, 0, wx.ALL, 0 )
 		
-		bSizer35 = wx.BoxSizer( wx.VERTICAL )
+		bSizer353 = wx.BoxSizer( wx.VERTICAL )
 		
-		self.m_staticText11 = wx.StaticText( self.panel0, wx.ID_ANY, u"Print", wx.DefaultPosition, wx.DefaultSize, 0 )
-		self.m_staticText11.Wrap( -1 )
-		self.m_staticText11.SetFont( wx.Font( 20, 74, 90, 92, False, "Verdana" ) )
+		self.m_staticText113 = wx.StaticText( self.panel0, wx.ID_ANY, u"Print", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_staticText113.Wrap( -1 )
+		self.m_staticText113.SetFont( wx.Font( 20, 74, 90, 92, False, "Verdana" ) )
 		
-		bSizer35.Add( self.m_staticText11, 0, wx.ALL, 0 )
+		bSizer353.Add( self.m_staticText113, 0, wx.ALL, 0 )
 		
-		self.m_staticText111 = wx.StaticText( self.panel0, wx.ID_ANY, u"Combine all the flashcards and save them\nas a PDF. Includes both Question and Answer.", wx.DefaultPosition, wx.DefaultSize, 0 )
-		self.m_staticText111.Wrap( -1 )
-		self.m_staticText111.SetFont( wx.Font( 10, 74, 90, 90, False, "Verdana" ) )
+		self.m_staticText1112 = wx.StaticText( self.panel0, wx.ID_ANY, u"Combine all the flashcards and save them\nas a PDF. Includes both Question and Answer.", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_staticText1112.Wrap( -1 )
+		self.m_staticText1112.SetFont( wx.Font( 10, 74, 90, 90, False, "Verdana" ) )
 		
-		bSizer35.Add( self.m_staticText111, 0, wx.ALL, 0 )
+		bSizer353.Add( self.m_staticText1112, 0, wx.ALL, 0 )
 		
 		
-		gSizer1.Add( bSizer35, 1, wx.EXPAND, 5 )
+		fgSizer3.Add( bSizer353, 1, wx.EXPAND, 5 )
 		
 		self.m_OpenPrint = wx.BitmapButton( self.panel0, wx.ID_ANY, wx.NullBitmap, wx.DefaultPosition, wx.Size( 110,110 ), wx.BU_AUTODRAW )
 		self.m_OpenPrint.SetDefault() 
-		gSizer1.Add( self.m_OpenPrint, 0, wx.ALL, 0 )
+		fgSizer3.Add( self.m_OpenPrint, 0, wx.ALL, 0 )
 		
-		bSizer352 = wx.BoxSizer( wx.VERTICAL )
+		bSizer3521 = wx.BoxSizer( wx.VERTICAL )
 		
-		self.m_staticText112 = wx.StaticText( self.panel0, wx.ID_ANY, u"Synchronize", wx.DefaultPosition, wx.DefaultSize, 0 )
-		self.m_staticText112.Wrap( -1 )
-		self.m_staticText112.SetFont( wx.Font( 20, 74, 90, 92, False, "Verdana" ) )
+		self.m_staticText1121 = wx.StaticText( self.panel0, wx.ID_ANY, u"Synchronize", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_staticText1121.Wrap( -1 )
+		self.m_staticText1121.SetFont( wx.Font( 20, 74, 90, 92, False, "Verdana" ) )
 		
-		bSizer352.Add( self.m_staticText112, 0, wx.ALL, 0 )
+		bSizer3521.Add( self.m_staticText1121, 0, wx.ALL, 0 )
 		
-		self.m_staticText1111 = wx.StaticText( self.panel0, wx.ID_ANY, u"Connect two devices: e.g. your Desktop and Laptop     \nand synchronize the files on both devices.", wx.DefaultPosition, wx.DefaultSize, 0 )
-		self.m_staticText1111.Wrap( -1 )
-		self.m_staticText1111.SetFont( wx.Font( 10, 74, 90, 90, False, "Verdana" ) )
+		self.m_staticText11111 = wx.StaticText( self.panel0, wx.ID_ANY, u"Connect two devices: e.g. your Desktop and Laptop     \nand synchronize the files on both devices.", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_staticText11111.Wrap( -1 )
+		self.m_staticText11111.SetFont( wx.Font( 10, 74, 90, 90, False, "Verdana" ) )
 		
-		bSizer352.Add( self.m_staticText1111, 0, wx.ALL, 0 )
+		bSizer3521.Add( self.m_staticText11111, 0, wx.ALL, 0 )
 		
 		
-		gSizer1.Add( bSizer352, 1, wx.EXPAND, 5 )
+		fgSizer3.Add( bSizer3521, 1, wx.EXPAND, 5 )
 		
 		self.m_OpenTransfer = wx.BitmapButton( self.panel0, wx.ID_ANY, wx.NullBitmap, wx.DefaultPosition, wx.Size( 110,110 ), wx.BU_AUTODRAW )
 		self.m_OpenTransfer.SetDefault() 
-		gSizer1.Add( self.m_OpenTransfer, 0, wx.ALL, 0 )
+		fgSizer3.Add( self.m_OpenTransfer, 0, wx.ALL, 0 )
 		
 		
-		bSizer71.Add( gSizer1, 0, 0, 5 )
+		bSizer481.Add( fgSizer3, 0, wx.EXPAND, 5 )
+		
+		
+		bSizer71.Add( bSizer481, 0, wx.EXPAND, 5 )
+		
+		
+		bSizer71.Add( ( 50, 0), 0, wx.EXPAND, 5 )
+		
+		bSizer471 = wx.BoxSizer( wx.VERTICAL )
+		
+		
+		bSizer471.Add( ( 100, 100), 0, wx.EXPAND, 5 )
+		
+		self.m_panelGraph = wx.Panel( self.panel0, wx.ID_ANY, wx.DefaultPosition, wx.Size( -1,-1 ), wx.TAB_TRAVERSAL )
+		self.m_panelGraph.SetBackgroundColour( wx.Colour( 254, 240, 231 ) )
+		
+		bSizer49 = wx.BoxSizer( wx.VERTICAL )
+		
+		self.m_bitmapGraph = wx.StaticBitmap( self.m_panelGraph, wx.ID_ANY, wx.NullBitmap, wx.DefaultPosition, wx.DefaultSize, 0 )
+		bSizer49.Add( self.m_bitmapGraph, 0, wx.ALL, 0 )
+		
+		
+		self.m_panelGraph.SetSizer( bSizer49 )
+		self.m_panelGraph.Layout()
+		bSizer49.Fit( self.m_panelGraph )
+		bSizer471.Add( self.m_panelGraph, 0, wx.EXPAND |wx.ALL, 0 )
+		
+		
+		bSizer71.Add( bSizer471, 1, wx.EXPAND, 5 )
 		
 		
 		bSizer37.Add( bSizer71, 1, wx.EXPAND, 5 )
