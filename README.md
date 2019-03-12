@@ -71,6 +71,7 @@ Your progress will be saved after each answer given. Although, the 'continue las
 
 Then you can either use your mouse or your arrow keys to: flip the card, indicate your answer is correct / wrong.
 
+## User data
 
 The program will also keep track of you progress and indicate how many minutes you've spend learning and reading the past N days.
 ![alt text](https://github.com/AntondeGroot/Flashbook/blob/master/readme%20images/statsgraph.png)
