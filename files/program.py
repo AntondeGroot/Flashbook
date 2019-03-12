@@ -351,7 +351,7 @@ def set_richtext(self):
                        "\t 7) When all data has been transferred you can safely continue using Flashbook.")
     self.txt.EndFontSize()
     self.Layout()
-    
+import historygraph
 def SwitchPanel(self,n):
     self.m_menuHelp.Enable(True)
     self.panel0.Hide()
@@ -362,7 +362,19 @@ def SwitchPanel(self,n):
     self.panel5.Hide()
     self.panelHelp.Hide()
     if n == 0:
-        self.panel0.Show()        
+        self.panel0.Show() 
+        if self.m_menuItemGraph.IsChecked(): 
+            SHOWIMAGE, imGraph = historygraph.CreateGraph(self)
+            if SHOWIMAGE == True:
+                self.m_panelGraph.Show()
+                image = imGraph
+                image2 = wx.Image( imGraph.size)
+                image2.SetData( image.tobytes() )
+                self.m_bitmapGraph.SetBitmap(wx.Bitmap(image2))
+            else:
+                self.m_panelGraph.Hide()
+        else:
+            self.m_panelGraph.Hide()
     elif n == 1:
         self.panel1.Show()
         #self.panel11.Show()
