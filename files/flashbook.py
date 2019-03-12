@@ -39,6 +39,7 @@ import print_modules as m3
 import sync_modules  as m4
 import pdf_modules   as m5
 import timingmodule  as m6
+import historygraph
 import log_module    as log
 import fb_functions    as f
 import fc_functions    as f2
@@ -139,6 +140,7 @@ def settings_get(self):
             self.drawborders        = settings['drawborders']
             self.cursor             = settings['cursor']
             self.GraphNdays         = settings['GraphNdays']
+            self.Graph_bool         = settings['Graph_bool']
         file.close()
     except:
         # Just in case when the settings.txt has been tempered with        
@@ -168,7 +170,8 @@ def settings_create(self):
                                    'bordercolors' : [[0,0,0],[200,0,0]],
                                    'drawborders' : True,
                                    'cursor' : False,
-                                   'GraphNdays':10}))
+                                   'GraphNdays':10,
+                                   'Graph_bool': True}))
             file.close()
             
 def settings_set(self):
@@ -198,7 +201,8 @@ def settings_set(self):
                                'bordercolors' : self.bordercolors,
                                'drawborders' : self.drawborders,
                                'cursor' : self.cursor,
-                               'GraphNdays' :self.GraphNdays}))
+                               'GraphNdays' :self.GraphNdays,
+                               'Graph_bool': self.Graph_bool}))
         file.close()
 
 def settings_reset(self):
@@ -844,6 +848,24 @@ class MainFrame(gui.MyFrame):
         settings_set(self)
     def m_menuResetLogOnMenuSelection( self, event ):
         [os.remove(os.path.join(self.dir4,x)) for x in os.listdir(self.dir4) if ("logging" in x and os.path.splitext(x)[1]=='.out' )]
+    def m_menuItemGraphOnMenuSelection( self, event ):
+        self.Graph_bool = not self.Graph_bool
+        settings_set(self)
+        if self.panel0.IsShown():
+            if self.m_menuItemGraph.IsChecked(): 
+                SHOWIMAGE, imGraph = historygraph.CreateGraph(self)
+                if SHOWIMAGE == True:
+                    self.m_panelGraph.Show()
+                    image = imGraph
+                    image2 = wx.Image( imGraph.size)
+                    image2.SetData( image.tobytes() )
+                    self.m_bitmapGraph.SetBitmap(wx.Bitmap(image2))
+                else:
+                    self.m_panelGraph.Hide()
+            else:
+                self.m_panelGraph.Hide()
+            self.Layout()
+        
     #%% timecount
     def m_scrolledWindow1OnMouseEvents( self, event ):
         SaveTime(self)
