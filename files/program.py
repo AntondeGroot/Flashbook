@@ -28,6 +28,7 @@ import fb_modules    as m
 import fc_modules    as m2
 import print_modules as m3
 import sync_modules  as m4
+import accelerators_module as m7
 import fb_functions    as f
 import fc_functions    as f2
 import print_functions as f3
@@ -38,6 +39,7 @@ from termcolor import colored
 ICON_EXCLAIM=0x30
 ICON_STOP = 0x10
 MB_ICONINFORMATION = 0x00000040
+MB_YESNO = 0x00000004
 MessageBox = ctypes.windll.user32.MessageBoxW
 
 
@@ -96,7 +98,7 @@ def checkBooks(self,sleeptime):
 
 
 def run_flashbook(self):
-    
+    resetparameters(self)
     print("Welcome to Flashbook , one moment ...")     
     self.m_bitmapScroll.SetBitmap(wx.Bitmap(wx.Image( 1,1 ))) # always empty bitmap, in case someone reruns the program
     self.m_CurrentPage11.SetValue('')
@@ -108,9 +110,11 @@ def run_flashbook(self):
     #short cuts
     ini.initializeparameters(self)
     m.SetKeyboardShortcuts(self)
+    
+    
 
 def run_flashcard(self):    
-    
+    resetparameters(self)
     ini2.initializeparameters(self)
     def initialize2(self):
         # set all directories
@@ -158,25 +162,7 @@ def run_flashcard(self):
     initialize2(self)
     ini2.initializeparameters(self) 
     
-    # set mouse short cuts: 
-    self.m_bitmapScroll.Bind( wx.EVT_MOUSEWHEEL, self.m_toolSwitch21OnToolClicked )
-    self.m_bitmapScroll.Bind( wx.EVT_LEFT_DOWN, self.m_buttonCorrectOnButtonClick)
-    self.m_bitmapScroll.Bind( wx.EVT_RIGHT_DOWN, self.m_buttonWrongOnButtonClick )        
     
-    # set keyboard short cuts: accelerator table        
-    Id_Correct = wx.NewIdRef()
-    Id_Wrong   = wx.NewIdRef() 
-    Id_card    = wx.NewIdRef() 
-    # combine functions with the id
-    self.Bind( wx.EVT_MENU, self.m_buttonCorrectOnButtonClick, id = Id_Correct )
-    self.Bind( wx.EVT_MENU, self.m_buttonWrongOnButtonClick,   id = Id_Wrong   )
-    self.Bind( wx.EVT_MENU, self.m_toolSwitch21OnToolClicked,    id = Id_card    )
-    # combine id with keyboard = now keyboard is connected to functions
-    entries = wx.AcceleratorTable([(wx.ACCEL_NORMAL,  wx.WXK_LEFT, Id_card),
-                                  (wx.ACCEL_NORMAL,  wx.WXK_RIGHT, Id_card ),
-                                  (wx.ACCEL_NORMAL,  wx.WXK_UP, Id_Correct),
-                                  (wx.ACCEL_NORMAL,  wx.WXK_DOWN, Id_Wrong)])
-    self.SetAcceleratorTable(entries)
     f2.SetScrollbars_fc(self)
         
     # answers given 
@@ -353,6 +339,7 @@ def set_richtext(self):
     self.Layout()
 import historygraph
 def SwitchPanel(self,n):
+    
     self.m_menuHelp.Enable(True)
     self.panel0.Hide()
     self.panel1.Hide()
@@ -416,3 +403,20 @@ def set_bitmapbuttons(self):
     #image2 = Img2Bitmap(self.path_arrow,32)
     self.m_toolStitch.SetBitmap(wx.Bitmap(self.path_arrow2))
     
+def resetparameters(self):
+    self.m_bitmapScroll.SetBitmap(wx.Bitmap(wx.Image( 1,1 ))) # always empty bitmap, in case someone reruns the program
+    self.m_bitmapScroll1.SetBitmap(wx.Bitmap(wx.Image( 1,1 ))) # always empty bitmap, in case someone reruns the program
+    #variables for Flashbook
+    selfvars_fb = ['bookname','BorderCoords','colorlist','currentpage','image','imagecopy','tempdictionary','panel_pos','questionmode','zoom']
+    #variables for Flashcard
+    selfvars_fc = ['dir_LaTeX','dir_LaTeX_commands','dir_pics','pic_command','question_command','answer_command','bookname','image','panel_pos','zoom','index','score','nr_questions','mode','cardorder','questions','answers','questions2']
+    for i,var in enumerate(selfvars_fb+selfvars_fc):
+        if hasattr(self,var):
+            delattr(self,var)
+    self.m_CurrentPage21.SetValue('')
+    self.m_TotalPages21.SetValue('')
+    self.m_Score21.SetValue('')
+    #reset icon in flashcard
+    path_repeat    = os.path.join(self.dir7,"repeat.png")
+    id_ = self.m_toolSwitch21.GetId()
+    self.m_toolBar3.SetToolNormalBitmap(id_, wx.Bitmap( path_repeat, wx.BITMAP_TYPE_ANY ))
