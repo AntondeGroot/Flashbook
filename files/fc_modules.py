@@ -32,76 +32,91 @@ MessageBox = ctypes.windll.user32.MessageBoxW
 
 
 def buttonCorrect(self):
-    # initialize
     f2.clearbitmap(self)
-    #import
-    debug = self.debugmode
-    log.DEBUGLOG("test1","test2",debugmode = debug, msg="hallo")
-    runprogram = self.runprogram
-    self.index += 1    
-    if runprogram == True:
-        self.score +=1
-    self.mode = 'Question'
-    self.m_textCtrlMode.SetValue(self.mode)
-    
-    if self.score > self.nr_questions + 1:
-        self.score = self.nr_questions
-    if self.index > (self.nr_questions-1): 
-        self.index = (self.nr_questions-1)
-        f2.remove_stats(self)
+    if self.nr_questions != 0 and hasattr(self,'bookname') and self.bookname != '':
+        # initialize
+        
+        #import
+        debug = self.debugmode
+        log.DEBUGLOG("test1","test2",debugmode = debug, msg="hallo")
+        runprogram = self.runprogram
+        self.index += 1    
+        if runprogram == True:
+            self.score +=1
+        self.mode = 'Question'
+        self.m_textCtrlMode.SetValue(self.mode)
+        
+        if self.score > self.nr_questions + 1:
+            self.score = self.nr_questions
+        if self.index > (self.nr_questions-1): 
+            self.index = (self.nr_questions-1)
+            f2.remove_stats(self)
+            _score_ = round(float(self.score)/self.nr_questions*100,1)
+            MessageBox(0, f"Your score is: {_score_}%", "Result", 1 )     
+            runprogram = False
+            if hasattr(self,'bookname'): # to stop from pop-up windows from appearing after the test is done
+                delattr(self,'bookname')
+            
         _score_ = round(float(self.score)/self.nr_questions*100,1)
-        MessageBox(0, f"Your score is: {_score_}%", "Result", MB_ICONINFORMATION )     
-        runprogram = False 
-    _score_ = round(float(self.score)/self.nr_questions*100,1)
-    self.m_Score21.SetValue(f"{_score_} %")     
-    self.m_CurrentPage21.SetValue(f"{self.index+1}")
-    
-    # update stats
-    if runprogram == True:
-        f2.set_stats(self)
-        f2.save_stats(self)   
-        # display cards
-        f2.displaycard(self)
-        f2.switch_bitmap(self)
-    else:
-        self.m_Score21.SetValue("")     
-        self.m_CurrentPage21.SetValue("")
-        self.m_TotalPages21.SetValue("")
-    #update self.vars accordingly
-    self.runprogram = runprogram
+        self.m_Score21.SetValue(f"{_score_} %")     
+        self.m_CurrentPage21.SetValue(f"{self.index+1}")
+        
+        # update stats
+        if runprogram == True:
+            f2.set_stats(self)
+            f2.save_stats(self)   
+            # display cards
+            f2.displaycard(self)
+            f2.switch_bitmap(self)
+        else:
+            self.m_Score21.SetValue("")     
+            self.m_CurrentPage21.SetValue("")
+            self.m_TotalPages21.SetValue("")
+            p.resetparameters(self)
+        #update self.vars accordingly
+        self.runprogram = runprogram
     
 def buttonWrong(self):
     matplotlib.pyplot.close('all') # otherwise too many pyplot figures will be opened -> memory
     f2.clearbitmap(self)
-    runprogram = self.runprogram
-    
-    self.index += 1
-    self.mode = 'Question'
-    self.m_textCtrlMode.SetValue(self.mode)  
-    if self.index > (self.nr_questions-1):
-        self.index = (self.nr_questions-1)
-        f2.remove_stats(self)
+    if self.nr_questions != 0 and hasattr(self,'bookname') and self.bookname != '':
+        runprogram = self.runprogram
+        
+        self.index += 1
+        print(f"test index{self.index} nrQ{self.nr_questions} score{self.score}")
+        self.mode = 'Question'
+        self.m_textCtrlMode.SetValue(self.mode)  
+        if self.index > (self.nr_questions-1):
+            print(f"end"*10)
+            self.index = (self.nr_questions-1)
+            f2.remove_stats(self)
+            _score_ = round(float(self.score)/self.nr_questions*100,1)
+            MessageBox(0, f"Your score is: {_score_}%", "Result", 1)     
+            runprogram = False
+            if hasattr(self,'bookname'): # to stop from pop-up windows from appearing after the test is done
+                delattr(self,'bookname')
+            
+        if self.score > self.nr_questions+1:
+            self.score = self.nr_questions
+            _score_ = round(float(self.score)/self.nr_questions*100,1)
         _score_ = round(float(self.score)/self.nr_questions*100,1)
-        MessageBox(0, f"Your score is: {_score_}%", "Result", 1)     
-        runprogram = False
-    if self.score > self.nr_questions+1:
-        self.score = self.nr_questions
-        _score_ = round(float(self.score)/self.nr_questions*100,1)
-    self.m_Score21.SetValue(f"{_score_} %")      
-    self.m_CurrentPage21.SetValue(str(self.index+1))
-    
-    ## update stats
-    if runprogram == True:
-        f2.set_stats(self)
-        f2.save_stats(self)    
-        f2.displaycard(self)
-        f2.switch_bitmap(self)
-    f2.SetScrollbars_fc(self)
-    if runprogram == False:
-        self.m_Score21.SetValue("")     
-        self.m_CurrentPage21.SetValue("")
-        self.m_TotalPages21.SetValue("")
-    self.runprogram = runprogram
+        print(self.score,self.nr_questions)
+        self.m_Score21.SetValue(f"{_score_} %")      
+        self.m_CurrentPage21.SetValue(str(self.index+1))
+        
+        ## update stats
+        if runprogram == True:
+            f2.set_stats(self)
+            f2.save_stats(self)    
+            f2.displaycard(self)
+            f2.switch_bitmap(self)
+        f2.SetScrollbars_fc(self)
+        if runprogram == False:
+            self.m_Score21.SetValue("")     
+            self.m_CurrentPage21.SetValue("")
+            self.m_TotalPages21.SetValue("")
+            p.resetparameters(self)
+        self.runprogram = runprogram
         
 def switchCard(self):
     #matplotlib.pyplot.close('all') # otherwise too many pyplot figures will be opened -> memory
