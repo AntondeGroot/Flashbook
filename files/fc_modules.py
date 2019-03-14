@@ -33,7 +33,7 @@ MessageBox = ctypes.windll.user32.MessageBoxW
 
 def buttonCorrect(self):
     f2.clearbitmap(self)
-    if self.nr_questions != 0 and hasattr(self,'bookname') and self.bookname != '':
+    if hasattr(self,'nr_questions') and self.nr_questions != 0 and hasattr(self,'bookname') and self.bookname != '':
         # initialize
         
         #import
@@ -72,14 +72,17 @@ def buttonCorrect(self):
             self.m_Score21.SetValue("")     
             self.m_CurrentPage21.SetValue("")
             self.m_TotalPages21.SetValue("")
-            p.resetparameters(self)
+            #reset pictogram
+            path_repeat    = os.path.join(self.dir7,"repeat.png")
+            id_ = self.m_toolSwitch21.GetId()
+            self.m_toolBar3.SetToolNormalBitmap(id_, wx.Bitmap( path_repeat, wx.BITMAP_TYPE_ANY ))
         #update self.vars accordingly
         self.runprogram = runprogram
     
 def buttonWrong(self):
     matplotlib.pyplot.close('all') # otherwise too many pyplot figures will be opened -> memory
     f2.clearbitmap(self)
-    if self.nr_questions != 0 and hasattr(self,'bookname') and self.bookname != '':
+    if hasattr(self,'nr_questions') and self.nr_questions != 0 and hasattr(self,'bookname') and self.bookname != '':
         runprogram = self.runprogram
         
         self.index += 1
@@ -115,7 +118,10 @@ def buttonWrong(self):
             self.m_Score21.SetValue("")     
             self.m_CurrentPage21.SetValue("")
             self.m_TotalPages21.SetValue("")
-            p.resetparameters(self)
+            #reset pictogram
+            path_repeat    = os.path.join(self.dir7,"repeat.png")
+            id_ = self.m_toolSwitch21.GetId()
+            self.m_toolBar3.SetToolNormalBitmap(id_, wx.Bitmap( path_repeat, wx.BITMAP_TYPE_ANY ))
         self.runprogram = runprogram
         
 def switchCard(self):
