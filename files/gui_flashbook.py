@@ -1148,6 +1148,7 @@ class MyFrame ( wx.Frame ):
 		self.Bind( wx.EVT_TOOL, self.m_toolPlus21OnToolClicked, id = self.m_toolPlus21.GetId() )
 		self.Bind( wx.EVT_TOOL, self.m_toolMin21OnToolClicked, id = self.m_toolMin21.GetId() )
 		self.m_scrolledWindow11.Bind( wx.EVT_KEY_DOWN, self.m_scrolledWindow11OnKeyDown )
+		self.m_scrolledWindow11.Bind( wx.EVT_LEFT_UP, self.m_scrolledWindow11OnLeftUp )
 		self.m_scrolledWindow11.Bind( wx.EVT_LEFT_DOWN, self.m_scrolledWindow11OnMouseEvents )
 		self.m_scrolledWindow11.Bind( wx.EVT_LEFT_UP, self.m_scrolledWindow11OnMouseEvents )
 		self.m_scrolledWindow11.Bind( wx.EVT_MIDDLE_DOWN, self.m_scrolledWindow11OnMouseEvents )
@@ -1161,6 +1162,8 @@ class MyFrame ( wx.Frame ):
 		self.m_scrolledWindow11.Bind( wx.EVT_LEAVE_WINDOW, self.m_scrolledWindow11OnMouseEvents )
 		self.m_scrolledWindow11.Bind( wx.EVT_ENTER_WINDOW, self.m_scrolledWindow11OnMouseEvents )
 		self.m_scrolledWindow11.Bind( wx.EVT_MOUSEWHEEL, self.m_scrolledWindow11OnMouseEvents )
+		self.m_scrolledWindow11.Bind( wx.EVT_MOUSEWHEEL, self.m_scrolledWindow11OnMouseWheel )
+		self.m_scrolledWindow11.Bind( wx.EVT_RIGHT_UP, self.m_scrolledWindow11OnRightUp )
 		self.m_bitmapScroll1.Bind( wx.EVT_KEY_DOWN, self.m_bitmapScroll1OnKeyDown )
 		self.m_bitmapScroll1.Bind( wx.EVT_LEFT_DOWN, self.m_bitmapScroll1OnLeftDown )
 		self.m_bitmapScroll1.Bind( wx.EVT_LEFT_UP, self.m_bitmapScroll1OnLeftUp )
@@ -1179,7 +1182,7 @@ class MyFrame ( wx.Frame ):
 		self.m_bitmapScroll1.Bind( wx.EVT_ENTER_WINDOW, self.m_bitmapScroll1OnMouseEvents )
 		self.m_bitmapScroll1.Bind( wx.EVT_MOUSEWHEEL, self.m_bitmapScroll1OnMouseEvents )
 		self.m_bitmapScroll1.Bind( wx.EVT_MOUSEWHEEL, self.m_bitmapScroll1OnMouseWheel )
-		self.m_bitmapScroll1.Bind( wx.EVT_RIGHT_DOWN, self.m_bitmapScrollOnRightDown )
+		self.m_bitmapScroll1.Bind( wx.EVT_RIGHT_DOWN, self.m_bitmapScroll1OnRightDown )
 		self.m_bitmapScroll1.Bind( wx.EVT_RIGHT_UP, self.m_bitmapScroll1OnRightUp )
 		self.m_buttonCorrect.Bind( wx.EVT_BUTTON, self.m_buttonCorrectOnButtonClick )
 		self.m_buttonWrong.Bind( wx.EVT_BUTTON, self.m_buttonWrongOnButtonClick )
@@ -1372,7 +1375,16 @@ class MyFrame ( wx.Frame ):
 	def m_scrolledWindow11OnKeyDown( self, event ):
 		event.Skip()
 	
+	def m_scrolledWindow11OnLeftUp( self, event ):
+		event.Skip()
+	
 	def m_scrolledWindow11OnMouseEvents( self, event ):
+		event.Skip()
+	
+	def m_scrolledWindow11OnMouseWheel( self, event ):
+		event.Skip()
+	
+	def m_scrolledWindow11OnRightUp( self, event ):
 		event.Skip()
 	
 	def m_bitmapScroll1OnKeyDown( self, event ):
@@ -1393,6 +1405,8 @@ class MyFrame ( wx.Frame ):
 	def m_bitmapScroll1OnMouseWheel( self, event ):
 		event.Skip()
 	
+	def m_bitmapScroll1OnRightDown( self, event ):
+		event.Skip()
 	
 	def m_bitmapScroll1OnRightUp( self, event ):
 		event.Skip()
