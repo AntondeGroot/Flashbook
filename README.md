@@ -97,7 +97,7 @@ You can also sync two devices. It will automatically display the IP address of t
 
 ### TODO
 #### To add:
-- Multithread the functions that create the flashcards in 'print' mode.
+- Multiprocess the functions that create the flashcards in 'print' mode. Python multithreading isn't real multithreading as it just switches rapidly between threads. Multithreading will not speed it up but multiprocessing will.
 - Clean up code: make it PEP-8 compliant, add clear docstrings to the functions, perhaps move more code from modules to functions in order to make the modules clearer and shorter.
 - Perhaps use SQLite for data, currently everything is stored as .tex, .txt, .json files in %localappdata%. Although, now it is easy for users to edit manually, easy to delete etc.
 - Customizable colors for Flashbook: the user should be able to choose the color of the temporary and permanent borders.  
@@ -106,12 +106,12 @@ You can also sync two devices. It will automatically display the IP address of t
 - Improve design: font / colors / borders / icons / ...
 #### Issues:
 
-- you can't switch from **flashcard** to **flashbook** because there is an error in which not all keyeventbindings are undone. Only the arrow keys are succesfully unbound, but the mouse-button events are not unbound for an unknown reason. This prohibits the use of the mouse. Only restarting the program and only opening Flashbook will fix it.
+- \[currently no known issues\]
 
 #### Possible Issues:
 - pdf conversion may not be supported: pdftoppm.exe is called on laptop via miktex. Explicit import needed in spec file? Now this is hopefully accounted for by including poppler.rar in the executables and adding it as 'path variable' if there is no 'pdftoppm.exe' already available. 
 
 - Facebook: drawn borders suddenly shifted up and to the left. This does not affect new borders being drawn (or the final selections), or past selections. Perhaps this is caused by a missing self.Layout() where the page should be redrawn. Perhaps the page is rescaled but the borders aren't.
-- Python multithreading isn't real multithreading as it just switches rapidly between threads. Perhaps incorporate multiprocessing.
+
 
 
