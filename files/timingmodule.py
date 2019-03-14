@@ -26,7 +26,7 @@ class TimeCount:
     # bounds in seconds
     lowerbound = 1      # when to update the count
     savethreshold = 5      # when to save the current count
-    upperbound = 180    # when to consider the user to be idle
+    upperbound = 60    # when to consider the user to be idle
     
     def __init__(self, bookname, filename):
         self.path     = os.path.join(os.getenv("LOCALAPPDATA"),"Flashbook","temporary",f"timecount_{filename}.json")
