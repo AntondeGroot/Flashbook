@@ -701,7 +701,7 @@ class MainFrame(gui.MyFrame):
     def m_bitmapScroll1OnLeftUp( self, event ):
         m2.buttonCorrect(self)
         event.Skip()
-    #anton
+    
     def m_scrolledWindow11OnLeftUp( self, event ):
         m2.buttonCorrect(self)
         event.Skip()
