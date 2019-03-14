@@ -495,7 +495,7 @@ def switch_stitchmode(self): # switch the boolean to opposite
 
 
 def SetKeyboardShortcuts(self):
-    
+    """
     self.SetAcceleratorTable(wx.AcceleratorTable())
     # set keyboard short cuts: accelerator table        
     self.Id_leftkey   = wx.NewIdRef() 
@@ -522,7 +522,7 @@ def SetKeyboardShortcuts(self):
                                   (wx.ACCEL_NORMAL,  wx.WXK_HOME,    self.Id_stitch ),
                                   (wx.ACCEL_NORMAL,  wx.WXK_NUMPAD0, self.Id_stitch )])
     self.SetAcceleratorTable(entries)
-        
+    """    
 
 def RemoveKeyboardShortcuts(self,index): 
     try:
