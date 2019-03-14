@@ -313,8 +313,7 @@ def set_richtext(self):
                        "\t2) A pop-up window will appear with settings, the settings will be implemented if you close the window and the Flashcard program will start.\n"
                         "\t3) If you want to continue a previous session it will supersede all other settings and only use the settings you used last time.\n"
                        "\t4) The total number of questions = 'multiplier' x 'nr questions', in case you want test a subject multiple times.\n"
-                       "\t5) Your progress is saved so that you can stop at any time and continue later.\n" 
-                       "\t6) Be sure to hold your cursor over the image when you use the mouse short cuts.")
+                       "\t5) Your progress is saved so that you can stop at any time and continue later.\n")
     self.txt2.EndFontSize()
     self.Layout()   
     
