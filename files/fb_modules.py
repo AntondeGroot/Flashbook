@@ -459,8 +459,8 @@ def setcursor(self):
         self.SetCursor(wx.Cursor(wx.CURSOR_CROSS))
     else:
         self.SetCursor(wx.Cursor(wx.CURSOR_ARROW))
+        
 def zoomin(self,event):
-    
     try:
         self.zoom += 0.1
         f.LoadPage(self)
@@ -471,8 +471,8 @@ def zoomin(self,event):
         self.Layout()
     except:
         log.ERRORMESSAGE("Error: cannot zoom out")
-def zoomout(self,event):
-    
+        
+def zoomout(self,event):    
     try:
         if round(self.zoom,1) == 0.1:
             self.zoom = self.zoom
@@ -491,59 +491,3 @@ def zoomout(self,event):
 def switch_stitchmode(self): # switch the boolean to opposite
     print("you pressed switch")
     print(str(self.stitchmode_v))
-    
-
-
-def SetKeyboardShortcuts(self):
-    """
-    self.SetAcceleratorTable(wx.AcceleratorTable())
-    # set keyboard short cuts: accelerator table        
-    self.Id_leftkey   = wx.NewIdRef() 
-    self.Id_rightkey  = wx.NewIdRef() 
-    self.Id_upkey     = wx.NewIdRef() 
-    self.Id_downkey   = wx.NewIdRef() 
-    self.Id_enterkey  = wx.NewIdRef()
-    self.Id_stitch    = wx.NewIdRef()
-    
-    # combine functions with the id
-    self.Bind( wx.EVT_MENU, self.m_toolBack11OnToolClicked,     id = self.Id_leftkey  )
-    self.Bind( wx.EVT_MENU, self.m_toolNext11OnToolClicked,     id = self.Id_rightkey )
-    self.Bind( wx.EVT_MENU, self.m_enterselectionOnButtonClick, id = self.Id_enterkey )
-    self.Bind( wx.EVT_MENU, self.m_toolStitchOnButtonClick,     id = self.Id_stitch )
-    self.Bind(wx.EVT_MENU,  self.m_toolUPOnToolClicked,         id = self.Id_upkey)
-    self.Bind(wx.EVT_MENU,  self.m_toolDOWNOnToolClicked,       id = self.Id_downkey)
-    
-    # combine id with keyboard = now keyboard is connected to functions
-    entries = wx.AcceleratorTable([(wx.ACCEL_NORMAL, wx.WXK_LEFT,    self.Id_leftkey),
-                                  (wx.ACCEL_NORMAL,  wx.WXK_RIGHT,   self.Id_rightkey ),
-                                  (wx.ACCEL_NORMAL,  wx.WXK_RETURN,  self.Id_enterkey ),
-                                  (wx.ACCEL_NORMAL,  wx.WXK_UP,      self.Id_upkey),
-                                  (wx.ACCEL_NORMAL,  wx.WXK_DOWN,    self.Id_downkey),
-                                  (wx.ACCEL_NORMAL,  wx.WXK_HOME,    self.Id_stitch ),
-                                  (wx.ACCEL_NORMAL,  wx.WXK_NUMPAD0, self.Id_stitch )])
-    self.SetAcceleratorTable(entries)
-    """    
-
-def RemoveKeyboardShortcuts(self,index): 
-    try:
-        # remove the arrow keys as shortcut by setting the AcceleratorTable again, but without these keys. This overwrites all previous short cuts
-        # combine functions with the id 
-        self.Id_enterkey  = wx.NewIdRef()
-        self.Id_stitch    = wx.NewIdRef()
-        if index == 0:
-            self.Bind( wx.EVT_MENU, self.m_enterselectionOnButtonClick, id = self.Id_enterkey )
-            self.Bind( wx.EVT_MENU, self.m_toolStitchOnButtonClick,     id = self.Id_stitch )
-            # combine id with keyboard = now keyboard is connected to functions
-            entries = wx.AcceleratorTable([(wx.ACCEL_NORMAL, wx.WXK_RETURN,  self.Id_enterkey),
-                                          (wx.ACCEL_NORMAL,  wx.WXK_HOME,    self.Id_stitch ),
-                                          (wx.ACCEL_NORMAL,  wx.WXK_NUMPAD0, self.Id_stitch )])
-        if index == 1:
-            self.Bind( wx.EVT_MENU, self.m_toolStitchOnButtonClick, id = self.Id_stitch )
-            # combine id with keyboard = now keyboard is connected to functions
-            entries = wx.AcceleratorTable([(wx.ACCEL_NORMAL, wx.WXK_HOME,    self.Id_stitch ),
-                                          (wx.ACCEL_NORMAL,  wx.WXK_NUMPAD0, self.Id_stitch )])
-        self.SetAcceleratorTable(entries)
-    except:
-        log.ERRORMESSAGE("Error: cannot unset Accelerator Table")
-
-
