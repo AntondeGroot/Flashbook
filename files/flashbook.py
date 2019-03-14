@@ -39,6 +39,7 @@ import print_modules as m3
 import sync_modules  as m4
 import pdf_modules   as m5
 import timingmodule  as m6
+import accelerators_module as m7
 import historygraph
 import log_module    as log
 import fb_functions    as f
@@ -66,7 +67,8 @@ ICON_EXCLAIM=0x30
 ICON_STOP = 0x10
 MB_ICONINFORMATION = 0x00000040
 MessageBox = ctypes.windll.user32.MessageBoxW
-
+MB_YESNO = 0x00000004
+MB_DEFBUTTON2 = 0x00000100
 """when using Pyinstaller to create the .exe file: it will standardly give an error that it is missing the module 'qwindows.dll'
 since the .exe created by --onefile takes ages to start, i won't be using that option and then module can be found in the folder below
 it is resolved by simply copying the qwindows.dll module next to the .exe file"""
@@ -82,7 +84,7 @@ except:
     print("no qwindows.dll module found  (#2)")
             
 def SaveTime(self):
-    if hasattr(self,'TC') and self.bookname != '':
+    if hasattr(self,'TC') and hasattr(self,'bookname') and self.bookname != '':
         self.TC.update()       
 def BoxesChecked(self,n):
     CHECKED1 = self.m_checkBox_col1.IsChecked()
@@ -322,7 +324,7 @@ class MainFrame(gui.MyFrame):
         self.m_checkBoxCursor11.Check(self.cursor)
         self.m_checkBoxDebug.Check(self.debugmode)
         m.setcursor(self)
-        
+        m7.AcceleratorTableSetup(self,"general","set")
     #%% MAIN PROGRAMS
     """ MAIN PROGRAMS """ 
     
@@ -335,12 +337,14 @@ class MainFrame(gui.MyFrame):
         self.m_bitmapScroll.SetWindowStyleFlag(False)  # first disable the border of the bitmap, otherwise you get a bordered empty bitmap. Enable the border only when there is a bitmap
         setup_sources(self)
         p.SwitchPanel(self,1)      
-        m.SetKeyboardShortcuts(self)
+        m7.AcceleratorTableSetup(self,"flashbook","set")
         p.run_flashbook(self)
         
         
     def m_OpenFlashcardOnButtonClick( self, event ):
         """START MAIN PROGRAM : FLASCARD"""
+        
+        m7.AcceleratorTableSetup(self,"flashcard","set")
         p.SwitchPanel(self,2)
         p.run_flashcard(self)
         
@@ -475,7 +479,13 @@ class MainFrame(gui.MyFrame):
         subprocess.Popen(f"explorer {self.dir3}")
         
     def m_menuItemBackToMainOnMenuSelection( self, event ):
-        p.SwitchPanel(self,0)  
+        if self.panel0.IsShown():
+            val = MessageBox(0, "Are you sure you want to exit?", "Exit",  MB_YESNO | MB_DEFBUTTON2 )
+            # Answer was yes, user wants to exit the app
+            if val == 6: 
+                self.Close()
+        else:
+            p.SwitchPanel(self,0)  
         
     def m_menuItemConvertOnMenuSelection( self, event ):
         
@@ -552,10 +562,10 @@ class MainFrame(gui.MyFrame):
         
     def m_textCtrl2OnEnterWindow( self, event ):
         print("entered window")
-        m.RemoveKeyboardShortcuts(self,0)
+        m7.AcceleratorTableSetup(self,"flashbook","textwindow")
 	
     def m_textCtrl2OnLeaveWindow( self, event ):
-        m.SetKeyboardShortcuts(self)
+        m7.AcceleratorTableSetup(self,"flashbook","set")
     
     def m_btnSelectOnButtonClick( self, event ):
         if hasattr(self,"backupimage"):
@@ -615,10 +625,10 @@ class MainFrame(gui.MyFrame):
         m.arrowscroll(self,event,'down')        
     
     def m_CurrentPage11OnEnterWindow( self, event ):
-        m.RemoveKeyboardShortcuts(self,1)
+        m7.AcceleratorTableSetup(self,"flashbook","pagewindow")
         
     def m_CurrentPage11OnLeaveWindow( self, event ):
-        m.SetKeyboardShortcuts(self)
+        m7.AcceleratorTableSetup(self,"flashbook","set")
         try:
             self.currentpage = int(self.m_CurrentPage11.GetValue())
         except:
@@ -697,7 +707,7 @@ class MainFrame(gui.MyFrame):
         SaveTime(self)
         event.Skip()
     def m_bitmapScroll1OnRightUp( self, event ):
-        m2.buttonCorrect(self)   
+        m2.buttonWrong(self)   
         event.Skip()
 	
     def m_toolSwitch21OnToolClicked( self, event ):
