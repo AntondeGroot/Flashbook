@@ -24,11 +24,6 @@ from datetime import datetime
 import random
 
 
-   
-    
-#timedict_fb = {"01": {"Neurofysica 1": 1, "book2": 2, "book3": 3,"book4": 4},"02": {"book1": 10, "book2": 20, "book5": 300},"03": {"book5" : 5}}
-#timedict_fc = {"01": {"Book1": 10, "book2": 2, "book3": 3,"book4": 4},"02": {"book1": 10, "book7": 200, "book5": 300},"03": {"book6" : 5}}
-
 #% FUNCTIONS
 def GetValues(timedict,datethreshold):
     totaldict = {}
@@ -84,7 +79,7 @@ def textcard(TEXT,width,textpos):
 def drawcard(X,Y,legend2):
     Y = Sec2Min(Y)
     legend = [legend2[x] for x in X]
-    print(X)
+    
     X_it,Y_it,legend_it = iter(X),iter(Y),iter(legend)
     #sort small to large
     X2 = [(next(X_it),next(Y_it),next(legend_it)) for _ in X]
@@ -93,7 +88,6 @@ def drawcard(X,Y,legend2):
     X = [x[0] for x in X2]
     Y = [x[1] for x in X2]
     legend = [x[2] for x in X2]
-    print(X)
     
     height_card = 2
     width_card = 3
@@ -103,6 +97,10 @@ def drawcard(X,Y,legend2):
     for i,x in enumerate(X):
         ax.bar(X[i],Y[i],edgecolor = 'black', color = legend[i][0] ,width = 1,  align='center', fill=True,linestyle = '--',snap = False,hatch = legend2[x][1])    
     ax.axis('on')
+    if Y !=[] and max(Y) < 10:
+        ax.set_ylim(top=10)
+    if Y == []:
+        ax.set_ylim(top=10)
     ax.get_xaxis().set_visible(False)
     
     canvas = FigureCanvas(fig)
@@ -111,6 +109,35 @@ def drawcard(X,Y,legend2):
     raw_data = renderer.tostring_rgb()
     size = canvas.get_width_height()
     return PIL.Image.frombytes("RGB", size, raw_data, decoder_name='raw', )
+
+
+
+def TimeString(var):
+    var = var*60
+    txt = ""
+    hours = int(var/3600)
+    if hours > 0:
+        if len(str(hours)) == 1:
+            txt += f"0{hours}h"
+        else:
+            txt += f"{hours}h"
+        var = var - hours*3600
+        
+    minutes = int(var/60)
+    if minutes > 0 or hours != 0:
+        if len(str(minutes)) == 1 and hours != 0:
+            txt += f"0{minutes}m"
+        else:
+            txt += f"{minutes}m"
+        var = var - minutes*60
+    
+    seconds = int(var)
+    if seconds >= 0:
+        if len(str(seconds)) == 1:
+            txt += f"0{seconds}s"
+        else:
+            txt += f"{seconds}s"
+    return txt
 
 def drawlegend(totalbooks,totalvalues,legendbackup,hatchlist):
     
@@ -122,7 +149,7 @@ def drawlegend(totalbooks,totalvalues,legendbackup,hatchlist):
     import textwrap
     tv_it = iter(totalvalues)
     labels = totalbooks
-    labels = [textwrap.fill(f"{x} ({ round(next(tv_it),1)} minutes)",40) for x in totalbooks]
+    labels = [textwrap.fill(f"{x} ({ TimeString(next(tv_it))})",40) for x in totalbooks]
     legend = plt.legend(handles, labels, loc=2, framealpha=False, frameon=True,markerscale=3.6,markerfirst = True,fontsize=15)
     #expand=[-5,-5,2,2]
     fig  = Figure(figsize=[4, 40],dpi=100)
@@ -241,6 +268,9 @@ def CreateGraph(self):
         new_im.paste
     else:
         new_im = PIL.Image.new('RGB', (0, 0), (254,240,231))
+    
+    VirtualWidth = self.m_panelGraph.GetVirtualSize()[0]
+    new_im = new_im.resize((VirtualWidth, int(new_im.height/new_im.width*VirtualWidth)), PIL.Image.ANTIALIAS)
     BOOL = len(totalvalues) > 0
     return BOOL, new_im
     
