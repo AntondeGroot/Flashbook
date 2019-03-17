@@ -11,6 +11,32 @@ import time
 import os
 import json
 
+class Timing():
+    "Class that displays how long certain parts of code takes to execute."
+    time_0 = time.time()
+    message = ""
+    index = 1
+    def __init__(self, message):
+        v = type(self)
+        v.time_0 = time.time()
+        v.message = message
+    def update(self,message):
+        v = type(self)
+        print(colored(f"{v.index}) {v.message} took {round(time.time()-v.time_0,2)} seconds","red"))        
+        v.time_0 = time.time()
+        v.message = message
+        v.index += 1
+    def reset(self,message):
+        v = type(self)
+        v.time_0 = time.time()
+        v.message = message
+        v.index = 1
+    def stop(self):
+        v = type(self)
+        print(colored(f"{v.index}) {v.message} took {round(time.time()-v.time_0,2)} seconds","red"))        
+        
+
+
 class TimeCount: 
     """ A Class that is used to register how long a user has been working. 
     Thiss class will be called whenever mouse events or key events are registered.
