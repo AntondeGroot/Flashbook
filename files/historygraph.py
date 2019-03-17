@@ -133,7 +133,7 @@ def TimeString(var):
     
     seconds = int(var)
     if seconds >= 0:
-        if len(str(seconds)) == 1:
+        if len(str(seconds)) == 1 and (minutes != 0 or hours != 0):
             txt += f"0{seconds}s"
         else:
             txt += f"{seconds}s"
