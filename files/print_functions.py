@@ -250,7 +250,51 @@ def CreateTextCardPrint(self):
     else:
         var = var + border
     self.imagetext = img.crop((0, 0, var, img.size[1]))
+
+def CreateTextCardPrint2(self,key):
     
+    #if debugmode:
+    #    print("fb=CreateTextCard")
+    TextCard = True    
+    #LaTeXcode = Text2Latex(self)
+    LaTeXcode =  self.textdictionary[key]
+    height_card = math.ceil(len(LaTeXcode)/40)/2
+    fig = Figure(figsize=[8, height_card],dpi=100)
+    ax = fig.gca()
+    ax.plot([0, 0,0, height_card],color = (1,1,1,1))
+    ax.axis('off')
+    ax.text(-0.5, height_card/2,LaTeXcode, fontsize = self.LaTeXfontsize, horizontalalignment='left', verticalalignment='center',wrap = True)
+    
+    canvas = FigureCanvas(fig)
+    canvas.draw()
+    renderer = canvas.get_renderer()
+    raw_data = renderer.tostring_rgb()
+    size = canvas.get_width_height()
+    imagetext = PIL.Image.frombytes("RGB", size, raw_data, decoder_name='raw', )
+    
+    # crop the LaTeX image further
+    border = 30
+    SEARCH = True
+    img = imagetext
+    imginv = ImageOps.invert(img)
+    
+    img_array = np.sum(np.sum(np.array(imginv),2),0) # look where something is not "white" in the x-axis
+    while SEARCH == True:
+        for i in range(len(img_array)):
+            j = len(img_array) - i-1            
+            if SEARCH == True:
+                if img_array[j]!= 0:
+                    SEARCH = False
+                    var = j
+                if j == 0:
+                    SEARCH = False
+                    var = j
+    if var + border >  img.size[0]:
+        var = img.size[0]
+    else:
+        var = var + border
+    imagetext = img.crop((0, 0, var, img.size[1]))
+    return TextCard, imagetext 
 
 
 """
