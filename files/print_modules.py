@@ -24,8 +24,7 @@ from win32api import GetSystemMetrics
 import wx
 import threading
 
-def saveimage(image,path):
-    image.save(path)
+
 
 #ctypes:
 ICON_EXCLAIM=0x30
@@ -98,9 +97,8 @@ def import_screenshot(self,event):
                     image = Image.merge("RGB", (r, g, b))
                     image = image.rotate(180)
                     image = image.transpose(Image.FLIP_LEFT_RIGHT)
-                    #image.save(os.path.join(self.dir4,"screenshot.png"))
-                    t_img = lambda image,path : threading.Thread(target = saveimage  , args=(image,path )).start()
-                    t_img(image, os.path.join(self.dir4,"screenshot.png")) 
+                    image.save(os.path.join(self.dir4,"screenshot.png"))
+                    
                     #convert back to wxBitmap
                     data = image.tobytes()
                     image3 = wx.Bitmap().FromBuffer(ScrWidth,ScrHeight,data)
@@ -164,71 +162,82 @@ def notes2paper(self):
     ## create images
     self.allimages   = []
     self.allimages_w = [] #widths
-    
+    allimages   = [None]*self.nr_questions
+    allimages_w = [None]*self.nr_questions
     """ Create the cards """
     for i in range(self.nr_questions):
         imagename = f"temporary{i}.png" 
         imagepath = os.path.join(self.dir4, imagename)
-        self.image_q = PIL.Image.new('RGB', (0, 0),"white")
-        self.image_a = []
+        image_q = PIL.Image.new('RGB', (0, 0),"white")
+        image_a = []
         for mode in ['Question','Answer']: 
             self.mode = mode
-            self.TextCard = False      
-            self.key = f'{self.mode[0]}{i}'
+            TextCard = False      
+            key = f'{self.mode[0]}{i}'
             try: # try to create a TextCard
-                if self.key in self.textdictionary:
-                    print(f"create textcard for {i}")
-                    f3.CreateTextCardPrint(self)
+                if key in self.textdictionary:
+                    print(f"create textcard for {key}")
+                    #f3.CreateTextCardPrint(self)
+                    TextCard, imagetext = f3.CreateTextCardPrint2(self,key)
+                    #assert TextCard == self.TextCard
+                    #assert imagetext == self.imagetext
+                    self.TextCard = TextCard
+                    self.imagetext = imagetext
                 # if there is a textcard either combine them with a picture or display it on its own
-                if self.TextCard == True: 
-                    if self.key in self.picdictionary:
-                        print(f"create combicard for {i}")
-                        f2.CombinePicText(self)
+                if TextCard == True: 
+                    if key in self.picdictionary:
+                        print(f"create combicard for {key}")
+                        #f2.CombinePicText(self)
+                        image = f2.CombinePicText2(self,key,imagetext)
+                        #assert image == self.image
+                        self.image = image
                         if mode == 'Question':
-                            self.image_q = self.image
+                            image_q = image
                         else:
-                            self.image_a = self.image
+                            image_a = image
                     else:
-                        self.image = self.imagetext                        
+                        image = imagetext                        
                         if mode == 'Question':
-                            self.image_q = self.image
+                            image_q = image
                         else:
-                            self.image_a = self.image
+                            image_a = image
                 else: #if there is no textcard only display the picture
-                    if self.key in self.picdictionary:
-                        path = os.path.join(self.dir2, self.bookname ,self.picdictionary[self.key])
+                    if key in self.picdictionary:
+                        path = os.path.join(self.dir2, self.bookname ,self.picdictionary[key])
                         if os.path.isfile(path):
-                            self.image = PIL.Image.open(path)
+                            image = PIL.Image.open(path)
                         if mode == 'Question':
-                            self.image_q = self.image
+                            image_q = image
                         else:
-                            self.image_a = self.image
+                            image_a = image
             except:
                 log.ERRORMESSAGE("Error: could not display card")  
         
+        #self.image should be different
         #combine question and answer:
-        if self.image_a != []:
-            images = [self.image_q,self.image_a]
+        if image_a != []:
+            images = [image_q,image_a]
             widths, heights = zip(*(i.size for i in images)) 
             total_height = sum(heights)
             max_width = max(widths)
             if self.QAline_bool == True:
                 new_im = PIL.Image.new('RGB', (max_width, total_height + self.QAline_thickness), "white")
-                line = PIL.Image.new('RGB', (self.image_q.size[0], self.QAline_thickness), self.QAline_color)
+                line = PIL.Image.new('RGB', (image_q.size[0], self.QAline_thickness), self.QAline_color)
                 #combine images to 1
                 new_im.paste(images[0], (0,0))
-                new_im.paste(line,(0,self.image_q.size[1]))
-                new_im.paste(images[1], (0,self.image_q.size[1]+self.QAline_thickness))
+                new_im.paste(line,(0,image_q.size[1]))
+                new_im.paste(images[1], (0,image_q.size[1]+self.QAline_thickness))
             else:
                 new_im = PIL.Image.new('RGB', (max_width, total_height), "white")
                 #combine images to 1
                 new_im.paste(images[0], (0,0))
-                new_im.paste(images[1], (0,self.image_q.size[1]))
-            self.image = new_im
+                new_im.paste(images[1], (0,image_q.size[1]))
+            
+            IMG_QA = new_im
             
         else:
-            if self.image_q.size != (0,0): 
-                self.image = self.image_q
+            if image_q.size != (0,0): 
+                IMG_QA = image_q
             else:
                 print("error"*200)
         ##anton
@@ -237,30 +246,31 @@ def notes2paper(self):
             ColumnWidths = [int(col/100*self.a4page_w) for col in columns if col != 0]                       
 
             if len(ColumnWidths) > 0:
-                w,h = self.image.size
+                w,h = IMG_QA.size
                 if w > min(ColumnWidths) and w > 0:
                     NearestCol = min(ColumnWidths, key=lambda x:abs(x-w))
-                    self.image = self.image.resize((int(NearestCol),int(NearestCol/w*h)), PIL.Image.ANTIALIAS)
-        #if self.image.size != (0,0):
+                    IMG_QA = IMG_QA.resize((int(NearestCol),int(NearestCol/w*h)), PIL.Image.ANTIALIAS)
         try:
-            #self.image.save(imagepath)
-            t_img = lambda image,path : threading.Thread(target = saveimage  , args=(image,path )).start()
-            t_img(self.image, imagepath)                     
+            IMG_QA.save(imagepath)
         except:
-            print(f"goes wrong for {imagename} \t {self.image}")
+            print(f"goes wrong for {imagename}")
             
-        self.allimages.append(imagepath)
+        #self.allimages.append(imagepath)
+        allimages[i] = imagepath
         if self.vertline_bool:
             # Keep in mind the extra width needed for the vertical lines
             # Overestimate by 1 vertline_thickness to play it safe:            thickness << width of image
-            self.allimages_w.append(self.image.size[0] + 2*self.vertline_thickness + 2*5) 
+            allimages_w[i] = IMG_QA.size[0] + 2*self.vertline_thickness + 2*5
         else:
-            self.allimages_w.append(self.image.size[0])
+            allimages_w[i] = IMG_QA.size[0] 
             
+    #self.allimages_w = allimages_w
+    #self.allimages = allimages            
     # sort images horizontally
-    A = np.cumsum(self.allimages_w)
+    
+    A = np.cumsum(allimages_w)
     C = []
-    while len(self.allimages_w) != 0:        
+    while len(allimages_w) != 0:        
         """Method:
         Cumsum the widths of images.
         Use bisect to look first instance where the cumsum is too large to fit on a page.
@@ -269,67 +279,65 @@ def notes2paper(self):
         
         index = bisect.bisect_left(A, self.a4page_w) 
         if index == 0 and len(A) != 0: #image is too wide
-            im = self.allimages[0]
+            im = allimages[0]
             C.append(im)
-            self.allimages = self.allimages[1:] 
-            self.allimages_w = self.allimages_w[1:] 
-            A = np.cumsum(self.allimages_w)  
+            allimages = allimages[1:] 
+            allimages_w = allimages_w[1:] 
+            A = np.cumsum(allimages_w)  
             
         elif index != len(A): #image is not too wide
-            C.append(self.allimages[:index])
-            self.allimages = self.allimages[index:] 
-            self.allimages_w = self.allimages_w[index:] 
-            A = np.cumsum(self.allimages_w)  #anton what if it is too wide
-            
+            C.append(allimages[:index])
+            allimages = allimages[index:] 
+            allimages_w = allimages_w[index:] 
+            A = np.cumsum(allimages_w)  #anton what if it is too wide
         elif index == len(A): # image is not too wide AND last in list
-            C.append(self.allimages)
-            self.allimages_w = []
-    self.paper_h_list = C
-    
-    self.paper_v_widths = []
-    self.paper_v_heights = []
+            C.append(allimages)
+            allimages_w = []
+            
+    paper_h_list = C
+    paper_h      = [None] * len(paper_h_list)
+    paper_v_widths = [None] * len(paper_h_list)
+    paper_v_heights = [None] * len(paper_h_list)
     # combine pics horizontally
-    for i,paths in enumerate(self.paper_h_list):
+    for i,paths in enumerate(paper_h_list):
         images = [PIL.Image.open(x) for x in paths]
         N = len(images)
-        try:
-            widths, heights = zip(*(im.size for im in images)) 
-            if self.vertline_bool:
-                total_width = sum(widths) + (N+1)*self.vertline_thickness+2*N*5
-            else:
-                total_width = sum(widths)
-            if self.pdfline_bool:
-                max_height = max(heights) + 2*self.pdfline_thickness+2*self.linesep
-            else:
-                max_height = max(heights)
-            
-            self.maxheight = max_height
-            
-            new_im = PIL.Image.new('RGB', (total_width, max_height), "white")
-            #combine images to 1
-            x_offset = 0
-            
-            
-            for j,im in enumerate(images):
-                if  self.vertline_bool == True:        
-                    border = PIL.Image.new("RGB", (self.vertline_thickness , self.maxheight), self.vertline_color)        
-                    new_im.paste(border, (x_offset,0))
-                    x_offset += self.linesep + self.vertline_thickness
-                new_im.paste(im, (x_offset,0))
-                x_offset += im.size[0] + self.linesep
-            if self.vertline_bool:
+        #try:
+        widths, heights = zip(*(im.size for im in images)) 
+        if self.vertline_bool:
+            total_width = sum(widths) + (N+1)*self.vertline_thickness+2*N*5
+        else:
+            total_width = sum(widths)
+        if self.pdfline_bool:
+            max_height = max(heights) + 2*self.pdfline_thickness+2*self.linesep
+        else:
+            max_height = max(heights)
+        
+        self.maxheight = max_height
+        
+        new_im = PIL.Image.new('RGB', (total_width, max_height), "white")
+        #combine images to 1
+        x_offset = 0
+        
+        
+        for j,im in enumerate(images):
+            if  self.vertline_bool == True:        
+                border = PIL.Image.new("RGB", (self.vertline_thickness , self.maxheight), self.vertline_color)        
                 new_im.paste(border, (x_offset,0))
-                
-            self.image = new_im
-            #new_im = add_border(self,new_im,"single")
-            pathname = os.path.join(self.dir4,f"temporary_p{i}.png")
-            #new_im.save(pathname)
-            t_img = lambda image,path : threading.Thread(target = saveimage  , args=(image,path )).start()
-            t_img(new_im, pathname) 
-            self.paper_h.append(pathname)
-            self.paper_v_widths.append(new_im.size[0])
-            self.paper_v_heights.append(new_im.size[1])
+                x_offset += self.linesep + self.vertline_thickness
+            new_im.paste(im, (x_offset,0))
+            x_offset += im.size[0] + self.linesep
+        if self.vertline_bool:
+            new_im.paste(border, (x_offset,0))
             
+        self.image = new_im
+        #new_im = add_border(self,new_im,"single")
+        pathname = os.path.join(self.dir4,f"temporary_p{i}.png")
+        new_im.save(pathname)
+        paper_h[i] = pathname
+        paper_v_widths[i] = new_im.size[0]
+        paper_v_heights[i] = new_im.size[1]
+        """    
         except: # if only one picture left
         
             #print(images.size)
@@ -343,12 +351,17 @@ def notes2paper(self):
             
             images = add_border(self,images,"single")
             pathname = os.path.join(self.dir4,f"temporary_p{i}.png")
-            #images.save(pathname)
-            t_img = lambda image,path : threading.Thread(target = saveimage  , args=(image,path )).start()
-            t_img(images,pathname) 
-            self.paper_h.append(pathname)
-            self.paper_v_widths.append(new_im.size[0])
-            self.paper_v_heights.append(new_im.size[0])
+            images.save(pathname)
+            
+            paper_h[i] = pathname
+            paper_v_widths[i] = new_im.size[0]
+            paper_v_heights[i] = new_im.size[1]
+        """ 
+    if None in paper_h or None in paper_v_widths:
+        print("NONE DETECTED"*10)
+    paper_h = [x for x in paper_h if x != None]
+    paper_v_widths = [x for x in paper_v_widths if x != None]
+    paper_v_heights = [x for x in paper_v_heights if x != None]
     #self.paper_h[0].show()    
     # sort images vertically
     D = []
@@ -359,35 +372,34 @@ def notes2paper(self):
     #        self.img_heights.append(img.size[1]+self.pdfline_thickness)
     #    else:
     #        self.img_heights.append(img.size[1])
-    self.img_heights = self.paper_v_heights
+    ##self.img_heights = self.paper_v_heights
     
-    A = np.cumsum(self.img_heights)
+    A = np.cumsum(paper_v_heights)
     if self.printpreview == False or self.printpreview == True:
-        while len(self.img_heights) != 0:        
+        while len(paper_v_heights) != 0:        
             index = bisect.bisect_left(A, self.a4page_h) #look for index where value is too large        
             if index != len(A):        
-                D.append(self.paper_h[:index] )
-                self.paper_h = self.paper_h[index:] 
-                self.img_heights = self.img_heights[index:] 
-                A = np.cumsum(self.img_heights)    
+                D.append(paper_h[:index] )
+                paper_h = paper_h[index:] 
+                paper_v_heights = paper_v_heights[index:] 
+                A = np.cumsum(paper_v_heights)    
             else:
-                D.append(self.paper_h)                
-                self.img_heights = []
+                D.append(paper_h)                
+                paper_v_heights = []
     else: # only look for 1st page (currently not in use)
         index = bisect.bisect_left(A, self.a4page_h) #look for index where value is too large        
-        D.append(self.paper_h[:index] )
+        D.append(paper_h[:index] )
         
                
-    self.paper_h = D
+    paper_h = D
     
     
-    self.widthsperpage = Flatlist_to_List(self.paper_h ,self.paper_v_widths)
+    self.widthsperpage = Flatlist_to_List(paper_h ,paper_v_widths)
     print(f"widths {self.widthsperpage}")
     
     # combine vertical pictures per page
-    self.allimages_v = []
-    
-    for page_i, images_on_page_i in enumerate(self.paper_h):
+    imagelist = [None] * len(paper_h)
+    for page_i, images_on_page_i in enumerate(paper_h):
         images = images_on_page_i
         
         new_im = PIL.Image.new('RGB', (self.a4page_w, self.a4page_h), "white")        
@@ -396,8 +408,6 @@ def notes2paper(self):
         #try:
         
         linelengths = calculate_pdflines(self.widthsperpage[page_i])
-        
-        print(linelengths)
         
         for j, path in enumerate(images_on_page_i):
             
@@ -413,38 +423,33 @@ def notes2paper(self):
             x_offset += im.size[0]
         new_im.paste(line,(0,y_offset))
         self.combinedwidth = x_offset
-        
-        self.image = new_im
+    
+        #self.image = new_im
         new_im = add_margins(self,new_im)
         #except: #if images is not an iterable it gives an error, it contains only 1 image so just add
-        #    
+        #    print("anotn pas op"*100)
         #    new_im.paste(images, (0,y_offset))
         #    new_im = add_margins(self,new_im)
         
         pathname = os.path.join(self.dir4,f"temporary_h{page_i}.png")
-        #new_im.save(pathname)
-        t_img = lambda image,path : threading.Thread(target = saveimage  , args=(image,path )).start()
-        t_img(new_im,pathname) 
-        self.allimages_v.append(pathname)
+        new_im.save(pathname)
+        
+        imagelist[page_i] = pathname
     
-    
+    self.allimages_v = imagelist
     # imagelist is the list with all image filenames
-    imagelist = self.allimages_v
+    
     
     i = 0
-    folder = []
+    print(f"imagelist is {imagelist}")
+    #folder = []
     if self.printpreview == False:
-        #for image in imagelist:
-        #    pathname = os.path.join(self.dir4,f"temporary{i}.png")
-        #    folder.append(pathname)
-        #    image.save(pathname)
-        #    #image.show()
-        #    i += 1
-        folder = imagelist
         filename = os.path.join(self.dirpdf,f"{self.bookname}.pdf")
         try:
+        
             with open(filename, "wb") as file:
-                file.write(img2pdf.convert([i for i in folder if i.endswith(".png")]))
+                file.write(img2pdf.convert([im for im in imagelist if im.endswith(".png")]))
+            file.close()
             self.printsuccessful = True
             
         except:
