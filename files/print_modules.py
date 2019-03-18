@@ -535,6 +535,7 @@ def notes2paper(self):
     # combine vertical pictures per page
     TT.update("combine vertical pictures per page")
     imagelist = [None] * len(paper_h)
+    threads = [None] * len(paper_h)
     for page_i, images_on_page_i in enumerate(paper_h):
         images = images_on_page_i
         
@@ -570,10 +571,14 @@ def notes2paper(self):
         #    new_im = add_margins(self,new_im)
         
         pathname = os.path.join(self.dir4,f"temporary_h{page_i}.png")
-        new_im.save(pathname)
+        #new_im.save(pathname)
+        threads[page_i] = threading.Thread(target = saveimage  , args=(new_im,pathname))
+        threads[page_i].start()
+        
         
         imagelist[page_i] = pathname
-    
+    for i in range(len(threads)):
+        threads[i].join()
     self.allimages_v = imagelist
     # imagelist is the list with all image filenames
     
