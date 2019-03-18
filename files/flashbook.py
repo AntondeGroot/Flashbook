@@ -62,6 +62,8 @@ logging.basicConfig(filename=LOG_FILENAME, level=logging.DEBUG)
 logging.info('New session has started')
 """ 
 
+Image.MAX_IMAGE_PIXELS = 1000000000  
+
 #ctypes:
 ICON_EXCLAIM=0x30
 ICON_STOP = 0x10
@@ -166,7 +168,7 @@ def settings_create(self):
                                    'pdfline_bool': True ,
                                    'vertline_bool': True,
                                    'samecolor_bool': False,
-                                   'pdfPageColsPos' : [25 , 50 , 75],
+                                   'pdfPageColsPos' : [25 , 49 , 75],
                                    'pdfPageColsChecks' : [False, True, False],
                                    'LaTeXfontsize' : 20,
                                    'bordercolors' : [[0,0,0],[200,0,0]],
@@ -807,8 +809,11 @@ class MainFrame(gui.MyFrame):
             self.printpreview = True
             p.SwitchPanel(self,0)
             # remove all temporary files of the form "temporary(...).png"    
-            [os.remove(os.path.join(self.dir4,x)) for x in os.listdir(self.dir4) if ("temporary" in x and os.path.splitext(x)[1]=='.png' )]
+            if self.debugmode == False:
+                [os.remove(os.path.join(self.dir4,x)) for x in os.listdir(self.dir4) if ("temporary" in x and os.path.splitext(x)[1]=='.png' )]
             MessageBox(0, " Your PDF has been created!\n Select in the menubar: `Open/Open PDF-notes Folder` to\n open the folder in Windows explorer. ", "Message", MB_ICONINFORMATION)
+            
+            
             
     def m_lineWpdfOnText( self, event ):
         
