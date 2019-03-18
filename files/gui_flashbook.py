@@ -763,19 +763,45 @@ class MyFrame ( wx.Frame ):
 		
 		bSizer23.Add( ( 0, 30), 0, wx.EXPAND, 5 )
 		
-		bSizer351 = wx.BoxSizer( wx.HORIZONTAL )
+		bSizer351 = wx.BoxSizer( wx.VERTICAL )
 		
-		self.m_staticText36 = wx.StaticText( self.m_panel31, wx.ID_ANY, u"Number of pages", wx.DefaultPosition, wx.DefaultSize, 0 )
+		fgSizer4 = wx.FlexGridSizer( 0, 3, 0, 0 )
+		fgSizer4.SetFlexibleDirection( wx.BOTH )
+		fgSizer4.SetNonFlexibleGrowMode( wx.FLEX_GROWMODE_SPECIFIED )
+		
+		self.txtnrcards = wx.StaticText( self.m_panel31, wx.ID_ANY, u"Number of cards for preview:", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.txtnrcards.Wrap( -1 )
+		self.txtnrcards.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), 70, 90, 90, False, "Verdana" ) )
+		
+		fgSizer4.Add( self.txtnrcards, 0, wx.ALL, 5 )
+		
+		self.m_CtrlNrCards = wx.TextCtrl( self.m_panel31, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.Size( 30,-1 ), 0 )
+		fgSizer4.Add( self.m_CtrlNrCards, 0, wx.ALL, 5 )
+		
+		self.m_staticText48 = wx.StaticText( self.m_panel31, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_staticText48.Wrap( -1 )
+		fgSizer4.Add( self.m_staticText48, 0, wx.ALL, 5 )
+		
+		self.m_staticText36 = wx.StaticText( self.m_panel31, wx.ID_ANY, u"Number of pages created:", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.m_staticText36.Wrap( -1 )
 		self.m_staticText36.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
 		
-		bSizer351.Add( self.m_staticText36, 0, wx.ALL, 5 )
+		fgSizer4.Add( self.m_staticText36, 0, wx.ALL, 5 )
 		
 		self.m_TotalPDFPages = wx.TextCtrl( self.m_panel31, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, wx.TE_READONLY )
 		self.m_TotalPDFPages.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
 		self.m_TotalPDFPages.SetMaxSize( wx.Size( 30,-1 ) )
 		
-		bSizer351.Add( self.m_TotalPDFPages, 0, wx.ALL, 5 )
+		fgSizer4.Add( self.m_TotalPDFPages, 0, wx.ALL, 5 )
+		
+		self.m_staticText47 = wx.StaticText( self.m_panel31, wx.ID_ANY, u"(best = 2)", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_staticText47.Wrap( -1 )
+		self.m_staticText47.SetFont( wx.Font( 6, 70, 90, 90, False, "Verdana" ) )
+		
+		fgSizer4.Add( self.m_staticText47, 0, wx.ALL, 8 )
+		
+		
+		bSizer351.Add( fgSizer4, 1, wx.EXPAND, 0 )
 		
 		
 		bSizer23.Add( bSizer351, 0, wx.EXPAND, 5 )
@@ -1210,6 +1236,8 @@ class MyFrame ( wx.Frame ):
 		self.m_checkBox_col2.Bind( wx.EVT_CHECKBOX, self.m_checkBox_col2OnCheckBox )
 		self.m_slider_col3.Bind( wx.EVT_SCROLL_CHANGED, self.m_slider_col3OnScrollChanged )
 		self.m_checkBox_col3.Bind( wx.EVT_CHECKBOX, self.m_checkBox_col3OnCheckBox )
+		self.m_CtrlNrCards.Bind( wx.EVT_TEXT, self.m_CtrlNrCardsOnText )
+		self.m_CtrlNrCards.Bind( wx.EVT_TEXT_ENTER, self.m_CtrlNrCardsOnTextEnter )
 		self.m_PrintFinal.Bind( wx.EVT_BUTTON, self.m_PrintFinalOnButtonClick )
 		self.m_bitmap4.Bind( wx.EVT_LEFT_DOWN, self.m_bitmap4OnLeftDown )
 		self.m_bitmap4.Bind( wx.EVT_LEFT_UP, self.m_bitmap4OnLeftUp )
@@ -1485,6 +1513,12 @@ class MyFrame ( wx.Frame ):
 		event.Skip()
 	
 	def m_checkBox_col3OnCheckBox( self, event ):
+		event.Skip()
+	
+	def m_CtrlNrCardsOnText( self, event ):
+		event.Skip()
+	
+	def m_CtrlNrCardsOnTextEnter( self, event ):
 		event.Skip()
 	
 	def m_PrintFinalOnButtonClick( self, event ):
