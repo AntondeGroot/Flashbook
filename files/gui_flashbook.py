@@ -233,7 +233,7 @@ class MyFrame ( wx.Frame ):
 		self.m_panelGraph.SetSizer( bSizer49 )
 		self.m_panelGraph.Layout()
 		bSizer49.Fit( self.m_panelGraph )
-		bSizer471.Add( self.m_panelGraph, 0, wx.EXPAND |wx.ALL, 0 )
+		bSizer471.Add( self.m_panelGraph, 1, wx.EXPAND |wx.ALL, 0 )
 		
 		
 		bSizer71.Add( bSizer471, 1, wx.EXPAND, 5 )
