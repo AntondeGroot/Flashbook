@@ -111,7 +111,7 @@ You can also sync two devices. It will automatically display the IP address of t
 #### Possible Issues:
 - pdf conversion may not be supported: pdftoppm.exe is called on laptop via miktex. Explicit import needed in spec file? Now this is hopefully accounted for by including poppler.rar in the executables and adding it as 'path variable' if there is no 'pdftoppm.exe' already available. 
 
-- Facebook: drawn borders suddenly shifted up and to the left. This does not affect new borders being drawn (or the final selections), or past selections. Perhaps this is caused by a missing self.Layout() where the page should be redrawn. Perhaps the page is rescaled but the borders aren't.
+- Flashbook: drawn borders suddenly shifted up and to the left. This does not affect new borders being drawn (or the final selections), or past selections. Perhaps this is caused by a missing self.Layout() where the page should be redrawn. Perhaps the page is rescaled but the borders aren't.
 
 
 
