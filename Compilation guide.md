@@ -22,7 +22,7 @@ poppler:
 - [https://simply-python.com/tag/pdftoimage/](https://simply-python.com/tag/pdftoimage/)
 
 
-## Installation
+## Compiling
 
 1. download all the files in the `files` folder
 1. go in command prompt to the relevant folder
