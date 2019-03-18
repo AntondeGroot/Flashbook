@@ -301,6 +301,26 @@ def CombinePicText(self):
     except:
         self.ERROR = True
 
+def CombinePicText2(self,key,imagetext):
+    
+    try:
+        imagepic = PIL.Image.open(os.path.join(self.dir2, self.bookname, self.picdictionary[key]))
+        images = [imagetext,imagepic]
+        
+        widths, heights = zip(*(i.size for i in images))
+        total_height = sum(heights)
+        max_width = max(widths)
+        new_im = PIL.Image.new('RGB', (max_width, total_height), "white")
+        #combine images to 1
+        y_offset = 0
+        for im in images:
+            new_im.paste(im, (0,y_offset))
+            y_offset += im.size[1]
+        
+        return new_im
+    except:
+        pass
+
     
     
 def clearbitmap(self):
