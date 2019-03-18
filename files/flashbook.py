@@ -145,6 +145,7 @@ def settings_get(self):
             self.cursor             = settings['cursor']
             self.GraphNdays         = settings['GraphNdays']
             self.Graph_bool         = settings['Graph_bool']
+            self.NrCardsPreview     = settings['NrCardsPreview']
         file.close()
     except:
         # Just in case when the settings.txt has been tempered with        
@@ -168,14 +169,15 @@ def settings_create(self):
                                    'pdfline_bool': True ,
                                    'vertline_bool': True,
                                    'samecolor_bool': False,
-                                   'pdfPageColsPos' : [25 , 49 , 75],
-                                   'pdfPageColsChecks' : [False, True, False],
+                                   'pdfPageColsPos' : [30 , 46 , 75],
+                                   'pdfPageColsChecks' : [True, True, False],
                                    'LaTeXfontsize' : 20,
                                    'bordercolors' : [[0,0,0],[200,0,0]],
                                    'drawborders' : True,
                                    'cursor' : False,
                                    'GraphNdays':10,
-                                   'Graph_bool': True}))
+                                   'Graph_bool': True,
+                                   'NrCardsPreview':15}))
             file.close()
             
 def settings_set(self):
@@ -206,7 +208,8 @@ def settings_set(self):
                                'drawborders' : self.drawborders,
                                'cursor' : self.cursor,
                                'GraphNdays' :self.GraphNdays,
-                               'Graph_bool': self.Graph_bool}))
+                               'Graph_bool': self.Graph_bool,
+                               'NrCardsPreview': self.NrCardsPreview}))
         file.close()
 
 def settings_reset(self):
@@ -325,6 +328,7 @@ class MainFrame(gui.MyFrame):
         self.m_checkBox11.Check(self.drawborders)
         self.m_checkBoxCursor11.Check(self.cursor)
         self.m_checkBoxDebug.Check(self.debugmode)
+        
         m.setcursor(self)
         m7.AcceleratorTableSetup(self,"general","set")
     #%% MAIN PROGRAMS
@@ -362,6 +366,7 @@ class MainFrame(gui.MyFrame):
         t_panel = lambda self,page : threading.Thread(target = p.SwitchPanel , args=(self,page )).start()
         t_panel(self, 3) 
         settings_get(self)                
+        self.m_CtrlNrCards.SetValue(str(self.NrCardsPreview))
         
         self.m_colorQAline.SetColour(self.QAline_color)
         self.m_colorPDFline.SetColour(self.pdfline_color)
@@ -813,7 +818,19 @@ class MainFrame(gui.MyFrame):
                 [os.remove(os.path.join(self.dir4,x)) for x in os.listdir(self.dir4) if ("temporary" in x and os.path.splitext(x)[1]=='.png' )]
             MessageBox(0, " Your PDF has been created!\n Select in the menubar: `Open/Open PDF-notes Folder` to\n open the folder in Windows explorer. ", "Message", MB_ICONINFORMATION)
             
-            
+    def m_CtrlNrCardsOnText( self, event ):
+        try:
+            var = self.m_CtrlNrCards.GetValue()
+            print(f"var is {var}")
+            if var == "":
+                
+                self.NrCardsPreview = ''
+            elif int(var) > 0:
+                self.NrCardsPreview = int(var)
+            settings_set(self)
+            m3.preview_refresh(self)
+        except:
+            log.ERRORMESSAGE("Error: invalid entry in CtrlNrCardsOnText")
             
     def m_lineWpdfOnText( self, event ):
         
@@ -825,7 +842,7 @@ class MainFrame(gui.MyFrame):
                     settings_set(self)
                     m3.preview_refresh(self)
         except:
-            log.ERRORMESSAGE("Error: invalid entry")
+            log.ERRORMESSAGE("Error: invalid entry in lineWpdf")
             
     def m_lineWqaOnText( self, event ):
         try:            
