@@ -157,11 +157,11 @@ def drawlegend(totalbooks,totalvalues,legendbackup,hatchlist):
     tv_it = iter(totalvalues)
     labels = totalbooks
     labels = [textwrap.fill(f"{x} ({ TimeString(next(tv_it))})",40) for x in totalbooks]
-    legend = plt.legend(handles, labels, loc=2, framealpha=False, frameon=True,markerscale=3.6,markerfirst = True,fontsize=15)
+    legend = plt.legend(handles, labels, loc=2, framealpha=False, frameon=True,markerscale=3.6,markerfirst = True,fontsize=12)
     #expand=[-5,-5,2,2]
     fig  = Figure(figsize=[4, 40],dpi=100)
     fig  = legend.figure
-    fig.set_size_inches(8, 20)
+    fig.set_size_inches(8, 30)
     fig.tight_layout()
     fig.canvas.draw()
     ax = fig.gca()
@@ -177,8 +177,8 @@ def drawlegend(totalbooks,totalvalues,legendbackup,hatchlist):
     img = PIL.Image.frombytes("RGB", size, raw_data, decoder_name='raw', )
     
     #cut down image
-    def cropdirection(img,x):
-        border = 30
+    def cropdirection_r(img,x):
+        border = 5
         backgroundcolor = (254,240,231)
         SEARCH = True
         array = np.array(img)- backgroundcolor
@@ -186,12 +186,12 @@ def drawlegend(totalbooks,totalvalues,legendbackup,hatchlist):
         print(f"length is {len(img_array)}")
         while SEARCH == True:
             for i,pixel in enumerate(img_array):
-                j = len(img_array) - i-1            
+                
+                j = len(img_array) - i-1  
+                
                 if SEARCH == True:
-                    
-                    print(j,img_array[j])
                     if img_array[j] != 0:
-                        
+                        print(j,i,img_array[j])
                         SEARCH = False
                         var = j
                     if j == 0:
@@ -206,9 +206,41 @@ def drawlegend(totalbooks,totalvalues,legendbackup,hatchlist):
         if x == 0:
             img = img.crop((0, 0, var, img.size[1]))
         return img    
+    def cropdirection_l(img,x):
+        border = 5
+        backgroundcolor = (254,240,231)
+        SEARCH = True
+        array = np.array(img)- backgroundcolor
+        img_array = np.sum(np.sum(array,2),x) #summed over x-axis
+        print(f"length is {len(img_array)}")
+        while SEARCH == True:
+            for i,pixel in enumerate(img_array):
+                j = i            
+                if SEARCH == True:                    
+                    if img_array[j] != 0:                        
+                        SEARCH = False
+                        var = j
+                    if j == len(img_array)-1:
+                        SEARCH = False
+                        var = j
+        if var + border >  img.size[x]:
+            var = 0
+        else:
+            var = var - border
+        if x == 1:
+            img = img.crop((0, var, img.size[0], img.size[1]))
+        if x == 0:
+            img = img.crop((var, 0, img.size[0], img.size[1]))
+        return img    
     
-    img = cropdirection(img,0)
-    img = cropdirection(img,1)
+    
+    
+    img = cropdirection_r(img,0)
+    img = cropdirection_r(img,1)
+    img = cropdirection_l(img,0)
+    img = cropdirection_l(img,1)
+    
+    #img.show()
     return img
 
 def sortsubdata(data):
@@ -307,13 +339,21 @@ def CreateGraph(self):
         new_im.paste(im2, (txt3.width+im1.width,txt2.height))
         new_im.paste(im3, (txt3.width,txt1.height+im1.height))
         new_im.paste(im4, (txt3.width+im1.width ,txt2.height+im2.height))
-        new_im.paste(im5, (txt3.width+im1.width+im2.width ,txt2.height-10))
+        new_im.paste(im5, (txt3.width+im1.width+im2.width ,int(txt2.height*1.5)))
         new_im.paste
     else:
         new_im = PIL.Image.new('RGB', (0, 0), (254,240,231))
     
     VirtualWidth = self.m_panelGraph.GetVirtualSize()[0]
-    new_im = new_im.resize((VirtualWidth, int(new_im.height/new_im.width*VirtualWidth)), PIL.Image.ANTIALIAS)
+    VirtualWidth = int(VirtualWidth * 0.95)
+    
+    h = int(new_im.height/new_im.width*VirtualWidth)
+    w = VirtualWidth
+    if h > 440:
+        w = int(w/h*440)
+        h = 440
+    
+    new_im = new_im.resize((w, h), PIL.Image.ANTIALIAS)
     BOOL = len(totalvalues) > 0
     return BOOL, new_im
     
@@ -339,6 +379,6 @@ def testmodule():
     
     legendbackup = legend    
     im = drawlegend(totalbooks,totalvalues,legendbackup,hatchlist)
-    im.show()
+    #im.show()
     
 #testmodule()
