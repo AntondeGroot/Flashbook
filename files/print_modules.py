@@ -557,7 +557,10 @@ def notes2paper(self):
             y_offset += im.size[1]
             
             x_offset += im.size[0]
-        new_im.paste(line,(0,y_offset))
+            lastwidth = im.size[0]
+        if self.pdfline_bool: 
+            line = PIL.Image.new("RGB", (lastwidth ,self.pdfline_thickness), self.pdfline_color)  
+            new_im.paste(line,(0,y_offset))
         self.combinedwidth = x_offset
     
         #self.image = new_im
