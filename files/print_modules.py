@@ -23,7 +23,7 @@ import win32clipboard
 from win32api import GetSystemMetrics
 import wx
 import threading
-
+from timingmodule import Timing
 
 
 #ctypes:
@@ -43,6 +43,10 @@ def ColumnSliders(self):
         LIST.append(self.m_slider_col3.GetValue())
     return LIST
 
+def saveimage(image,path_):
+    im = image
+    path = path_
+    im.save(path)
 
 def Flatlist_to_List(list1,list2):
     x = 0
@@ -151,7 +155,111 @@ def preview_refresh(self):
     bitmapimage = wx.Bitmap(image2)
     self.m_bitmap3.SetBitmap(bitmapimage)
     self.Layout()
+def ThreadQACard(self,i,allimages,allimages_w,threads_save):
+    imagename = f"temporary{i}.png" 
+    imagepath = os.path.join(self.dir4, imagename)
+    image_q = PIL.Image.new('RGB', (0, 0),"white")
+    image_a = []
+    for mode in ['Question','Answer']: 
+        self.mode = mode
+        TextCard = False      
+        key = f'{self.mode[0]}{i}'
+        try: # try to create a TextCard
+            if key in self.textdictionary:
+                print(f"create textcard for {key}")
+                #f3.CreateTextCardPrint(self)
+                TextCard, imagetext = f3.CreateTextCardPrint2(self,key)
+                #assert TextCard == self.TextCard
+                #assert imagetext == self.imagetext
+                self.TextCard = TextCard
+                self.imagetext = imagetext
+            # if there is a textcard either combine them with a picture or display it on its own
+            if TextCard == True: 
+                if key in self.picdictionary:
+                    print(f"create combicard for {key}")
+                    #f2.CombinePicText(self)
+                    image = f2.CombinePicText2(self,key,imagetext)
+                    #assert image == self.image
+                    self.image = image
+                    if mode == 'Question':
+                        image_q = image
+                    else:
+                        image_a = image
+                else:
+                    image = imagetext                        
+                    if mode == 'Question':
+                        image_q = image
+                    else:
+                        image_a = image
+            else: #if there is no textcard only display the picture
+                if key in self.picdictionary:
+                    path = os.path.join(self.dir2, self.bookname ,self.picdictionary[key])
+                    if os.path.isfile(path):
+                        image = PIL.Image.open(path)
+                    if mode == 'Question':
+                        image_q = image
+                    else:
+                        image_a = image
+        except:
+            log.ERRORMESSAGE("Error: could not display card")  
     
+    #self.image should be different
+    #combine question and answer:
+    if image_a != []:
+        images = [image_q,image_a]
+        widths, heights = zip(*(i.size for i in images)) 
+        total_height = sum(heights)
+        max_width = max(widths)
+        if self.QAline_bool == True:
+            new_im = PIL.Image.new('RGB', (max_width, total_height + self.QAline_thickness), "white")
+            line = PIL.Image.new('RGB', (image_q.size[0], self.QAline_thickness), self.QAline_color)
+            #combine images to 1
+            new_im.paste(images[0], (0,0))
+            new_im.paste(line,(0,image_q.size[1]))
+            new_im.paste(images[1], (0,image_q.size[1]+self.QAline_thickness))
+        else:
+            new_im = PIL.Image.new('RGB', (max_width, total_height), "white")
+            #combine images to 1
+            new_im.paste(images[0], (0,0))
+            new_im.paste(images[1], (0,image_q.size[1]))
+        
+        IMG_QA = new_im
+        
+    else:
+        if image_q.size != (0,0): 
+            IMG_QA = image_q
+        else:
+            print("error"*200)
+    ##anton
+    if ColumnSliders(self) != []:
+        columns = ColumnSliders(self)
+        ColumnWidths = [int(col/100*self.a4page_w) for col in columns if col != 0]                       
+
+        if len(ColumnWidths) > 0:
+            w,h = IMG_QA.size
+            if w > min(ColumnWidths) and w > 0:
+                NearestCol = min(ColumnWidths, key=lambda x:abs(x-w))
+                IMG_QA = IMG_QA.resize((int(NearestCol),int(NearestCol/w*h)), PIL.Image.ANTIALIAS)
+    try:
+        #IMG_QA.save(imagepath)
+        threads_save[i] = threading.Thread(target = saveimage  , args=(IMG_QA,imagepath))
+        threads_save[i].start()
+    except:
+        print(f"goes wrong for {imagename}")
+    for t in threads_save:
+        try:
+            t.join()    
+        except:
+            pass
+    #self.allimages.append(imagepath)
+    allimages[i] = imagepath
+    if self.vertline_bool:
+        # Keep in mind the extra width needed for the vertical lines
+        # Overestimate by 1 vertline_thickness to play it safe:            thickness << width of image
+        allimages_w[i] = IMG_QA.size[0] + 2*self.vertline_thickness + 2*5
+    else:
+        allimages_w[i] = IMG_QA.size[0]
+  
 def notes2paper(self):
     self.linesep = 5
     N = 1.3
@@ -162,10 +270,22 @@ def notes2paper(self):
     ## create images
     self.allimages   = []
     self.allimages_w = [] #widths
-    allimages   = [None]*self.nr_questions
-    allimages_w = [None]*self.nr_questions
+    if self.printpreview == True:
+        if self.NrCardsPreview != '':
+            nrQ = int(self.NrCardsPreview)
+        else:
+            nrQ = self.nr_questions
+    else:
+        nrQ = self.nr_questions
+    allimages   = [None]*nrQ
+    allimages_w = [None]*nrQ
+    threads_save = [None]*nrQ
+    
     """ Create the cards """
-    for i in range(self.nr_questions):
+    TT = Timing("Create the QA cards")
+    
+    
+    for i in range(nrQ):
         imagename = f"temporary{i}.png" 
         imagepath = os.path.join(self.dir4, imagename)
         image_q = PIL.Image.new('RGB', (0, 0),"white")
@@ -251,7 +371,9 @@ def notes2paper(self):
                     NearestCol = min(ColumnWidths, key=lambda x:abs(x-w))
                     IMG_QA = IMG_QA.resize((int(NearestCol),int(NearestCol/w*h)), PIL.Image.ANTIALIAS)
         try:
-            IMG_QA.save(imagepath)
+            #IMG_QA.save(imagepath)
+            threads_save[i] = threading.Thread(target = saveimage  , args=(IMG_QA,imagepath))
+            threads_save[i].start()
         except:
             print(f"goes wrong for {imagename}")
             
@@ -262,12 +384,18 @@ def notes2paper(self):
             # Overestimate by 1 vertline_thickness to play it safe:            thickness << width of image
             allimages_w[i] = IMG_QA.size[0] + 2*self.vertline_thickness + 2*5
         else:
-            allimages_w[i] = IMG_QA.size[0] 
+            allimages_w[i] = IMG_QA.size[0]
             
+         
+    
+    for i,thread in enumerate(threads_save):
+        thread.join()
+
+        
     #self.allimages_w = allimages_w
     #self.allimages = allimages            
     # sort images horizontally
-    
+    TT.update("sort images horizontally")
     A = np.cumsum(allimages_w)
     C = []
     while len(allimages_w) != 0:        
@@ -298,7 +426,9 @@ def notes2paper(self):
     paper_h      = [None] * len(paper_h_list)
     paper_v_widths = [None] * len(paper_h_list)
     paper_v_heights = [None] * len(paper_h_list)
+    threads = [None] * len(paper_h_list)
     # combine pics horizontally
+    TT.update("combine pics horizontally")
     for i,paths in enumerate(paper_h_list):
         images = [PIL.Image.open(x) for x in paths]
         N = len(images)
@@ -333,7 +463,9 @@ def notes2paper(self):
         self.image = new_im
         #new_im = add_border(self,new_im,"single")
         pathname = os.path.join(self.dir4,f"temporary_p{i}.png")
-        new_im.save(pathname)
+        #new_im.save(pathname)
+        threads[i] = threading.Thread(target = saveimage  , args=(new_im,pathname))
+        threads[i].start()
         paper_h[i] = pathname
         paper_v_widths[i] = new_im.size[0]
         paper_v_heights[i] = new_im.size[1]
@@ -357,6 +489,8 @@ def notes2paper(self):
             paper_v_widths[i] = new_im.size[0]
             paper_v_heights[i] = new_im.size[1]
         """ 
+    for i in range(len(threads)):
+        threads[i].join()
     if None in paper_h or None in paper_v_widths:
         print("NONE DETECTED"*10)
     paper_h = [x for x in paper_h if x != None]
@@ -364,6 +498,7 @@ def notes2paper(self):
     paper_v_heights = [x for x in paper_v_heights if x != None]
     #self.paper_h[0].show()    
     # sort images vertically
+    TT.update("sort images vertically")
     D = []
     #self.img_heights = []
     #for path in self.paper_h:
@@ -398,6 +533,7 @@ def notes2paper(self):
     print(f"widths {self.widthsperpage}")
     
     # combine vertical pictures per page
+    TT.update("combine vertical pictures per page")
     imagelist = [None] * len(paper_h)
     for page_i, images_on_page_i in enumerate(paper_h):
         images = images_on_page_i
@@ -427,7 +563,6 @@ def notes2paper(self):
         #self.image = new_im
         new_im = add_margins(self,new_im)
         #except: #if images is not an iterable it gives an error, it contains only 1 image so just add
-        #    print("anotn pas op"*100)
         #    new_im.paste(images, (0,y_offset))
         #    new_im = add_margins(self,new_im)
         
@@ -441,9 +576,11 @@ def notes2paper(self):
     
     
     i = 0
+    
     print(f"imagelist is {imagelist}")
     #folder = []
     if self.printpreview == False:
+        TT.update("writing files to pdf")
         filename = os.path.join(self.dirpdf,f"{self.bookname}.pdf")
         try:
         
@@ -455,7 +592,7 @@ def notes2paper(self):
         except:
             self.printsuccessful = False
             MessageBox(0, "If you have the PDF opened in another file, close it and try it again.", "Warning", ICON_EXCLAIM)
-        
+        TT.stop()
         
     else:
         pass
@@ -737,7 +874,6 @@ def startprogram(self,event):
         log.ERRORMESSAGE("Error: finding questions/answers")
 
     ## dialog display              
-    self.nr_questions = self.nr_cards
     self.chrono = True
     self.multiplier = 1    
     # display nr of questions and current index of questions            
