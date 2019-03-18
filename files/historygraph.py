@@ -329,7 +329,7 @@ def CreateGraph(self):
         
         # COMBINE ALL IMAGES TO A MOZAIC
         width = im1.width + im2.width + txt3.width+im5.width
-        height = max(im1.height*2 + txt1.height, im5.height)
+        height = max(im1.height*2 + txt1.height, im5.height+txt2.height)
         new_im = PIL.Image.new('RGB', (width, height), (254,240,231))
         new_im.paste(txt1, (txt3.width,0))
         new_im.paste(txt3, (0,txt1.height))
@@ -344,12 +344,12 @@ def CreateGraph(self):
     else:
         new_im = PIL.Image.new('RGB', (0, 0), (254,240,231))
     
+    #resize horizontally
     VirtualWidth = self.m_panelGraph.GetVirtualSize()[0]
     VirtualWidth = int(VirtualWidth * 0.95)
-    
     h = int(new_im.height/new_im.width*VirtualWidth)
     w = VirtualWidth
-    if h > 440:
+    if h > 440:#resize vertically
         w = int(w/h*440)
         h = 440
     
