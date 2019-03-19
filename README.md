@@ -106,7 +106,6 @@ You can also sync two devices. It will automatically display the IP address of t
 - Improve design: font / colors / borders / icons / ...
 #### Issues:
 
-- Apparently my laptop doesn't convert all PDFs while my desktop converts all PDFs to jpgs. It states that no more PDFs need to be converted when it should actually mention some error.
 - Synching needs to be improved. First send a list of all filenames this will avoid unnecessary connections.
 
 #### Possible Issues:
