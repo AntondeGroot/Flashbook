@@ -6,6 +6,7 @@ Created on Sat Jan  5 12:41:59 2019
 """
 
 import os
+from pathlib import Path
 import PIL
 from pdf2image import convert_from_path
 from pdf2image import convert_from_bytes
@@ -64,14 +65,14 @@ def ConvertPDF_to_JPG(self, PDFdir, tempdir, JPGdir):
     i = 1
     for _, item in enumerate(pdfs2send):
         #Get file name and dir names
-        pdfname = os.path.splitext(item)[0] #exclude file extension
-        tempdir_ppm = os.path.join(tempdir, pdfname)
-        os.makedirs(tempdir_ppm)
-        origin_dir = os.path.join(PDFdir, item)
-        target_dir = os.path.join(JPGdir, pdfname)
+        pdfname = Path(item).stem #exclude file extension
+        tempdir_ppm = Path(tempdir, pdfname)
+        tempdir_ppm.mkdir()
+        origin_dir = Path(PDFdir, item)
+        target_dir = Path(JPGdir, pdfname)
         
-        if not os.path.exists(target_dir):
-            os.makedirs(target_dir)                
+        if not target_dir.exists():
+            target_dir.mkdir()
         try:
             os.listdir(target_dir)
         except:
@@ -88,9 +89,9 @@ def ConvertPDF_to_JPG(self, PDFdir, tempdir, JPGdir):
                 and then converts the .ppm files to .jpg files.
                 """
                 #Try to convert
-                convert_from_path(origin_dir, dpi=170, output_folder = tempdir_ppm)
+                convert_from_path(str(origin_dir), dpi=170, output_folder = str(tempdir_ppm))
                 if os.listdir(tempdir_ppm) == []:
-                    convert_from_bytes(open(origin_dir, 'rb').read(), output_folder = tempdir_ppm)         
+                    convert_from_bytes(open(origin_dir, 'rb').read(), output_folder = str(tempdir_ppm))
                 if os.listdir(tempdir_ppm) == []:
                     t_MBox(0, 0, f'The file "{pdfname}.pdf" could not be converted to JPG.\nPlease use an online PDF converter instead.\nThen place the JPG files in a map folder named after the book in {JPGdir}', "Error", ICON_STOP)                    
                 if os.listdir(tempdir_ppm) != []:
@@ -99,8 +100,8 @@ def ConvertPDF_to_JPG(self, PDFdir, tempdir, JPGdir):
                     #Save the JPG files
                     DirList = os.listdir(tempdir_ppm)
                     for filename in DirList:
-                        pagepath = os.path.join(tempdir_ppm, filename)
-                        page_i = PIL.Image.open(pagepath)
+                        pagepath = Path(tempdir_ppm, filename)
+                        page_i = PIL.Image.open(str(pagepath))
                         filename = os.path.join(target_dir, pdfname)
                         nr = "0"*(4-len(f"{i}"))+f"{i}"
                         page_i.save(f'{filename}-{nr}.jpg', 'JPEG')
