@@ -221,7 +221,7 @@ def ShowPage(self):
         image2.SetData( self.pageimage.tobytes() )
         
         self.m_bitmapScroll.SetBitmap(wx.Bitmap(image2))
-        with open(str(Path(self.tempdir, self.bookname +'.txt')), 'w') as output:   
+        with open(Path(self.tempdir, self.bookname +'.txt'), 'w') as output:   
             if self.currentpage == 'prtscr' and hasattr(self,'currentpage_backup'):
                 self.currentpage = self.currentpage_backup
             output.write(f"{self.currentpage}")
