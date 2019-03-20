@@ -9,6 +9,7 @@ import img2pdf
 import print_initialization as ini3
 import json
 import numpy as np
+from pathlib import Path
 import os
 from PIL import Image
 import PIL
@@ -101,7 +102,7 @@ def import_screenshot(self,event):
                     image = Image.merge("RGB", (r, g, b))
                     image = image.rotate(180)
                     image = image.transpose(Image.FLIP_LEFT_RIGHT)
-                    image.save(os.path.join(self.dir4,"screenshot.png"))
+                    image.save(str(Path(self.tempdir,"screenshot.png")))
                     
                     #convert back to wxBitmap
                     data = image.tobytes()
@@ -155,110 +156,7 @@ def preview_refresh(self):
     bitmapimage = wx.Bitmap(image2)
     self.m_bitmap3.SetBitmap(bitmapimage)
     self.Layout()
-def ThreadQACard(self,i,allimages,allimages_w,threads_save):
-    imagename = f"temporary{i}.png" 
-    imagepath = os.path.join(self.dir4, imagename)
-    image_q = PIL.Image.new('RGB', (0, 0),"white")
-    image_a = []
-    for mode in ['Question','Answer']: 
-        self.mode = mode
-        TextCard = False      
-        key = f'{self.mode[0]}{i}'
-        try: # try to create a TextCard
-            if key in self.textdictionary:
-                print(f"create textcard for {key}")
-                #f3.CreateTextCardPrint(self)
-                TextCard, imagetext = f3.CreateTextCardPrint2(self,key)
-                #assert TextCard == self.TextCard
-                #assert imagetext == self.imagetext
-                self.TextCard = TextCard
-                self.imagetext = imagetext
-            # if there is a textcard either combine them with a picture or display it on its own
-            if TextCard == True: 
-                if key in self.picdictionary:
-                    print(f"create combicard for {key}")
-                    #f2.CombinePicText(self)
-                    image = f2.CombinePicText2(self,key,imagetext)
-                    #assert image == self.image
-                    self.image = image
-                    if mode == 'Question':
-                        image_q = image
-                    else:
-                        image_a = image
-                else:
-                    image = imagetext                        
-                    if mode == 'Question':
-                        image_q = image
-                    else:
-                        image_a = image
-            else: #if there is no textcard only display the picture
-                if key in self.picdictionary:
-                    path = os.path.join(self.dir2, self.bookname ,self.picdictionary[key])
-                    if os.path.isfile(path):
-                        image = PIL.Image.open(path)
-                    if mode == 'Question':
-                        image_q = image
-                    else:
-                        image_a = image
-        except:
-            log.ERRORMESSAGE("Error: could not display card")  
-    
-    #self.image should be different
-    #combine question and answer:
-    if image_a != []:
-        images = [image_q,image_a]
-        widths, heights = zip(*(i.size for i in images)) 
-        total_height = sum(heights)
-        max_width = max(widths)
-        if self.QAline_bool == True:
-            new_im = PIL.Image.new('RGB', (max_width, total_height + self.QAline_thickness), "white")
-            line = PIL.Image.new('RGB', (image_q.size[0], self.QAline_thickness), self.QAline_color)
-            #combine images to 1
-            new_im.paste(images[0], (0,0))
-            new_im.paste(line,(0,image_q.size[1]))
-            new_im.paste(images[1], (0,image_q.size[1]+self.QAline_thickness))
-        else:
-            new_im = PIL.Image.new('RGB', (max_width, total_height), "white")
-            #combine images to 1
-            new_im.paste(images[0], (0,0))
-            new_im.paste(images[1], (0,image_q.size[1]))
-        
-        IMG_QA = new_im
-        
-    else:
-        if image_q.size != (0,0): 
-            IMG_QA = image_q
-        else:
-            print("error"*200)
-    ##anton
-    if ColumnSliders(self) != []:
-        columns = ColumnSliders(self)
-        ColumnWidths = [int(col/100*self.a4page_w) for col in columns if col != 0]                       
 
-        if len(ColumnWidths) > 0:
-            w,h = IMG_QA.size
-            if w > min(ColumnWidths) and w > 0:
-                NearestCol = min(ColumnWidths, key=lambda x:abs(x-w))
-                IMG_QA = IMG_QA.resize((int(NearestCol),int(NearestCol/w*h)), PIL.Image.ANTIALIAS)
-    try:
-        #IMG_QA.save(imagepath)
-        threads_save[i] = threading.Thread(target = saveimage  , args=(IMG_QA,imagepath))
-        threads_save[i].start()
-    except:
-        print(f"goes wrong for {imagename}")
-    for t in threads_save:
-        try:
-            t.join()    
-        except:
-            pass
-    #self.allimages.append(imagepath)
-    allimages[i] = imagepath
-    if self.vertline_bool:
-        # Keep in mind the extra width needed for the vertical lines
-        # Overestimate by 1 vertline_thickness to play it safe:            thickness << width of image
-        allimages_w[i] = IMG_QA.size[0] + 2*self.vertline_thickness + 2*5
-    else:
-        allimages_w[i] = IMG_QA.size[0]
   
 def notes2paper(self):
     self.linesep = 5
@@ -287,7 +185,7 @@ def notes2paper(self):
     
     for i in range(nrQ):
         imagename = f"temporary{i}.png" 
-        imagepath = os.path.join(self.dir4, imagename)
+        imagepath = str(Path(self.tempdir, imagename))
         image_q = PIL.Image.new('RGB', (0, 0),"white")
         image_a = []
         for mode in ['Question','Answer']: 
@@ -323,9 +221,9 @@ def notes2paper(self):
                             image_a = image
                 else: #if there is no textcard only display the picture
                     if key in self.picdictionary:
-                        path = os.path.join(self.dir2, self.bookname ,self.picdictionary[key])
-                        if os.path.isfile(path):
-                            image = PIL.Image.open(path)
+                        path = Path(self.picsdir, self.bookname ,self.picdictionary[key])
+                        if path.is_file():
+                            image = PIL.Image.open(str(path))
                         if mode == 'Question':
                             image_q = image
                         else:
@@ -462,7 +360,7 @@ def notes2paper(self):
             
         self.image = new_im
         #new_im = add_border(self,new_im,"single")
-        pathname = os.path.join(self.dir4,f"temporary_p{i}.png")
+        pathname = str(Path(self.tempdir,f"temporary_p{i}.png"))
         #new_im.save(pathname)
         threads[i] = threading.Thread(target = saveimage  , args=(new_im,pathname))
         threads[i].start()
@@ -482,7 +380,7 @@ def notes2paper(self):
                 images = images.resize((self.a4page_w,int(h*self.a4page_w/w)))
             
             images = add_border(self,images,"single")
-            pathname = os.path.join(self.dir4,f"temporary_p{i}.png")
+            pathname = str(Path(self.tempdir,f"temporary_p{i}.png"))
             images.save(pathname)
             
             paper_h[i] = pathname
@@ -570,7 +468,7 @@ def notes2paper(self):
         #    new_im.paste(images, (0,y_offset))
         #    new_im = add_margins(self,new_im)
         
-        pathname = os.path.join(self.dir4,f"temporary_h{page_i}.png")
+        pathname = str(Path(self.tempdir,f"temporary_h{page_i}.png"))
         #new_im.save(pathname)
         threads[page_i] = threading.Thread(target = saveimage  , args=(new_im,pathname))
         threads[page_i].start()
@@ -649,24 +547,25 @@ def dirchanged(self,event):
                        
         picnames = [x for _,x in sorted(zip(nrlist,picnames))]
         self.picnames = picnames
-        self.bookname = path.replace(f"{self.dir3}","")[1:]#to remove '\'
+        self.bookname = path.relative_to(self.booksdir)
         self.currentpage = 1
         
-        self.PathBorders = os.path.join(self.dir5, self.bookname +'_borders.txt')
+        self.PathBorders = Path(self.bordersdir, self.bookname +'_borders.txt')
         
-        if os.path.exists(os.path.join(self.temp_dir, self.bookname +'.txt')):
-            file = open(os.path.join(self.temp_dir, self.bookname+'.txt'), 'r')
+        bookpath = Path(self.tempdir, self.bookname +'.txt')
+        if bookpath.exists():
+            file = bookpath.open(mode = 'r')
             self.currentpage = int(float(file.read()))    
         
         #create empty dictionary if it doesn't exist
-        if not os.path.exists(self.PathBorders): #notna
+        if not self.PathBorders.exists: #notna
             with open(self.PathBorders, 'w') as file:
                 file.write(json.dumps({})) 
                 
         self.nr_pics = nr_pics
-        dirpath = os.path.join(self.dir2,self.bookname)
-        if not os.path.exists(dirpath):
-            os.makedirs(dirpath)
+        dirpath = Path(self.picsdir,self.bookname)
+        if not dirpath.exists():
+            dirpath.mkdirs()
         
         self.m_CurrentPage.SetValue(str(self.currentpage))
         self.m_textCtrl5.SetValue(str(self.nr_pics))
@@ -680,7 +579,7 @@ def dirchanged(self,event):
             self.dictionary = {}
             print("no drawn rects found for this file, continue")
         try:
-            self.jpgdir = os.path.join(self.dir3, self.bookname, self.picnames[self.currentpage-1])
+            self.jpgdir = str(Path(self.booksdir, self.bookname, self.picnames[self.currentpage-1]))
             self.pageimage = PIL.Image.open(self.jpgdir)
             self.pageimagecopy = self.pageimage
             self.width, self.height = self.pageimage.size
@@ -704,48 +603,6 @@ def dirchanged(self,event):
         log.ERRORMESSAGE("Error: could not load image")
 
 
-
-
-
-
-    
-
-def SetKeyboardShortcuts(self):
-    try:# look if Id's already exist
-        # combine functions with the id
-        self.Bind( wx.EVT_MENU, self.m_toolBackOnToolClicked,       id = self.Id_leftkey  )
-        self.Bind( wx.EVT_MENU, self.m_toolNextOnToolClicked,       id = self.Id_rightkey )
-        self.Bind( wx.EVT_MENU, self.m_enterselectionOnButtonClick, id = self.Id_enterkey )
-        # combine id with keyboard = now keyboard is connected to functions
-        entries = wx.AcceleratorTable([(wx.ACCEL_NORMAL,  wx.WXK_LEFT, self.Id_leftkey),
-                                      (wx.ACCEL_NORMAL,  wx.WXK_RIGHT, self.Id_rightkey),
-                                      (wx.ACCEL_NORMAL,  wx.WXK_RETURN, self.Id_enterkey)])
-        self.SetAcceleratorTable(entries)
-    except:
-        # set keyboard short cuts: accelerator table        
-        self.Id_leftkey   = wx.NewIdRef() 
-        self.Id_rightkey  = wx.NewIdRef() 
-        self.Id_enterkey  = wx.NewIdRef()
-        # combine functions with the id
-        self.Bind( wx.EVT_MENU, self.m_toolBackOnToolClicked,       id = self.Id_leftkey  )
-        self.Bind( wx.EVT_MENU, self.m_toolNextOnToolClicked,       id = self.Id_rightkey )
-        self.Bind( wx.EVT_MENU, self.m_enterselectionOnButtonClick, id = self.Id_enterkey )
-        
-        # combine id with keyboard = now keyboard is connected to functions
-        entries = wx.AcceleratorTable([(wx.ACCEL_NORMAL,  wx.WXK_LEFT, self.Id_leftkey),
-                                      (wx.ACCEL_NORMAL,  wx.WXK_RIGHT, self.Id_rightkey ),
-                                      (wx.ACCEL_NORMAL,  wx.WXK_RETURN, self.Id_enterkey )])
-        self.SetAcceleratorTable(entries)
-
-def RemoveKeyboardShortcuts(self):
-    # combine functions with the id        
-    self.Unbind( wx.EVT_MENU, self.m_toolBackOnToolClicked,       id = self.Id_leftkey  )
-    self.Unbind( wx.EVT_MENU, self.m_toolNextOnToolClicked,       id = self.Id_rightkey )
-    self.Unbind( wx.EVT_MENU, self.m_enterselectionOnButtonClick, id = self.Id_enterkey )
-    # empty acceleratortable?
-    self.SetAcceleratorTable()
-
-
 def add_border(self,img,mode):
     if self.pdfline_bool == True:
         if mode == "single":
@@ -760,23 +617,6 @@ def add_border(self,img,mode):
     else:
         return img
 
-def add_vertborders(self,background,images):
-    xpos = 0
-    linesep = 5
-    def moveNpaste(self, background, im, xpos, linesep):
-        border = PIL.Image.new("RGB", (self.vertline_thickness , self.maxheight), self.vertline_color)   
-        background.paste(border,(xpos,0))
-        xpos += self.vertline_thickness + linesep
-        background.paste(im,(xpos,0))
-        xpos += linesep
-        return background, xpos    
-    if type(images) == list:
-        if self.vertline_bool == True:                         
-            for im in images:
-                background, xpos = moveNpaste(self,background, im, xpos,linesep)            
-            border = PIL.Image.new("RGB", (self.vertline_thickness , self.maxheight), self.vertline_color)   
-            background.paste(border,(xpos,0))
-    return background
 
 def add_sideborder(self,img,mode):
     linesep = 5
@@ -861,7 +701,7 @@ def startprogram(self,event):
         if self.FilePickEvent == True:
             self.path     = self.fileDialog.GetPath()            
             self.filename = self.fileDialog.GetFilename()
-            self.bookname = self.filename.replace(".tex","")
+            self.bookname = Path(self.filename).stem
     except:
         log.ERRORMESSAGE("Error: Couldn't open path")
     try:
