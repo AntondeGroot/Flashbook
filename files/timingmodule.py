@@ -5,7 +5,7 @@ Created on Thu Mar  7 14:13:09 2019
 @author: Anton
 """
 
-
+from pathlib import Path
 from termcolor import colored
 import time
 import os
@@ -55,13 +55,13 @@ class TimeCount:
     upperbound = 60    # when to consider the user to be idle
     
     def __init__(self, bookname, filename):
-        self.path     = os.path.join(os.getenv("LOCALAPPDATA"),"Flashbook","temporary",f"timecount_{filename}.json")
+        self.path     = Path(os.getenv("LOCALAPPDATA"),"Flashbook","temporary",f"timecount_{filename}.json")
         self.timedict = {}
         self.book     = bookname
         self.date     = time.strftime("%d%m%y")
         v = type(self)
         v.count = 0
-        if os.path.isfile(self.path):
+        if self.path.is_file():
             try:
                 with open(self.path, 'r') as file:
                     self.timedict = json.load(file)
@@ -77,7 +77,8 @@ class TimeCount:
                 
             except: #file is corrupted: restore the file
                 print(colored("Error: TimeCount file is corrupted","red"))
-                os.remove(self.path)
+                # remove
+                self.path.unlink() 
                 v.count = 0 
                 self.timedict[self.date][self.book] = v.count
                 # save
