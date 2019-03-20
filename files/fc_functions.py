@@ -13,6 +13,7 @@ import program as p
 import log_module as log
 import random
 import re
+from pathlib import Path
 from termcolor import colored
 import wx
 ## figures: the following makes sure there are no figures popping up
@@ -20,16 +21,7 @@ import wx
 import pylab
 pylab.ioff() 
 from matplotlib.figure import Figure
-from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
-
-    
-## setting up relevant paths
-datadir = os.getenv("LOCALAPPDATA")
-dir7    = os.path.join(datadir, "Flashbook", "resources")
-path_add   = os.path.join(dir7,"add.png")
-path_min   = os.path.join(dir7,"min.png")
-path_repeat    = os.path.join(dir7,"repeat.png")
-path_repeat_na = os.path.join(dir7,"repeat_na.png")
+from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas 
 
 """DEFINED FUNCTIONS -- short overview
 #   contains(1)               - to find if a string is contained in a list of strings
@@ -75,7 +67,6 @@ def save_stats(self):
             except:
                 dictionary = {}
         with open(self.statsdir, 'w') as file:
-            print(dictionary)
             dictionary[self.bookname] = value            
             file.write(json.dumps(dictionary) )
     except: #key was not in the dictionary
@@ -257,6 +248,8 @@ def remove_pics(string, pic_command):
 
 
 def switch_bitmap(self):
+    path_repeat_na = Path(self.resourcedir,"repeat_na.png")
+    path_repeat = Path(self.resourcedir,"repeat.png")
     """Display a bitmap indicating whether or not you can flip over the flashcard
     Check if there is an answer card, if not changes mode back to question.
     source:   https://stackoverflow.com/questions/27957257/how-to-change-bitmap1-for-toolbartoolbase-object-in-wxpython"""
@@ -269,11 +262,11 @@ def switch_bitmap(self):
                 self.mode = 'Question'
                 self.SwitchCard = False        
                 id_ = self.m_toolSwitch21.GetId()
-                self.m_toolBar3.SetToolNormalBitmap(id_, wx.Bitmap( path_repeat_na, wx.BITMAP_TYPE_ANY ))        
+                self.m_toolBar3.SetToolNormalBitmap(id_, wx.Bitmap( str(path_repeat_na), wx.BITMAP_TYPE_ANY ))        
             else:
                 self.SwitchCard = True
                 id_ = self.m_toolSwitch21.GetId()
-                self.m_toolBar3.SetToolNormalBitmap(id_, wx.Bitmap( path_repeat, wx.BITMAP_TYPE_ANY ))
+                self.m_toolBar3.SetToolNormalBitmap(id_, wx.Bitmap( str(path_repeat), wx.BITMAP_TYPE_ANY ))
         except:
             log.ERRORMESSAGE("Error: could not switch bitmap #2")
     except:
@@ -285,7 +278,7 @@ def switch_bitmap(self):
 def CombinePicText(self):
     self.ERROR = False
     try:
-        imagepic = PIL.Image.open(os.path.join(self.dir2, self.bookname, self.picdictionary[self.key]))
+        imagepic = PIL.Image.open(str(Path(self.picsdir, self.bookname, self.picdictionary[self.key])))
         images = [self.imagetext,imagepic]
         
         widths, heights = zip(*(i.size for i in images))
@@ -304,7 +297,7 @@ def CombinePicText(self):
 def CombinePicText2(self,key,imagetext):
     
     try:
-        imagepic = PIL.Image.open(os.path.join(self.dir2, self.bookname, self.picdictionary[key]))
+        imagepic = PIL.Image.open(str(Path(self.picsdir, self.bookname, self.picdictionary[key])))
         images = [imagetext,imagepic]
         
         widths, heights = zip(*(i.size for i in images))
@@ -353,7 +346,7 @@ def displaycard(self):
                 ShowPage(self)
         else: #if there is no textcard only display the picture
             try:
-                self.image = PIL.Image.open(os.path.join(self.dir2,self.bookname,self.picdictionary[self.key]))
+                self.image = PIL.Image.open(str(Path(self.picsdir,self.bookname,self.picdictionary[self.key])))
                 ShowPage(self)
             except:
                 pass
@@ -405,7 +398,7 @@ def LoadFlashCards(self,USERINPUT):
             self.questions.append(self.letterfile[self.q_hookpos[N]+1:end_q_index])
             self.answers.append(self.letterfile[self.a_hookpos[N]+1:end_a_index])        
         # replace user defined commands, found in a separate file                  
-        file = open(os.path.join(self.dir_LaTeX_commands, "usercommands.txt"), 'r')
+        file = open(str(Path(self.notesdir, "usercommands.txt")), 'r')
         newcommand_line_lst = file.readlines()
         # start reading after "###" because I defined that as the end of the notes
         index = []
