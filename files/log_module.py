@@ -5,15 +5,15 @@ Created on Fri Feb 22 22:44:48 2019
 @author: Anton
 """
 
-
+from pathlib import Path
 import logging
 import traceback
 import os
 from termcolor import colored
 
 def ERRORMESSAGE(msg):
-    path = os.path.join(os.getenv("LOCALAPPDATA"),'FlashBook','temporary')
-    LOG_FILENAME = os.path.join(path,'logging_traceback.out')
+    basepath = Path(os.getenv("LOCALAPPDATA"),'FlashBook','temporary')
+    LOG_FILENAME = Path(basepath,'logging_traceback.out')
     logging.basicConfig(filename=LOG_FILENAME, level=logging.DEBUG)
     logging.debug('New session has started')
     print(colored(f"{msg}\n",'red',attrs=['underline']))
@@ -22,8 +22,8 @@ def ERRORMESSAGE(msg):
     logging.shutdown()
     
 def DEBUGLOG(*args, debugmode = False,msg = ''):
-    path = os.path.join(os.getenv("LOCALAPPDATA"),'FlashBook','temporary')
-    LOG_FILENAME = os.path.join(path,'logging_traceback.out')
+    basepath = Path(os.getenv("LOCALAPPDATA"),'FlashBook','temporary')
+    LOG_FILENAME = Path(basepath,'logging_traceback.out')
     logging.basicConfig(filename=LOG_FILENAME, level=logging.DEBUG)
     logging.debug('New session has started')
     logging.info("DEBUGLOG")
