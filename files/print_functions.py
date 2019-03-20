@@ -12,6 +12,7 @@ import math
 from PIL import ImageOps
 #matplotlib.use('Agg')
 import pylab
+from pathlib import Path
 import fb_functions    as f
 import fc_functions    as f2
 import log_module      as log
@@ -157,9 +158,8 @@ def SetScrollbars(self):
 def LoadPage(self): 
     
     try:
-        self.jpgdir = os.path.join(self.dir3, self.bookname, self.picnames[self.currentpage-1])
-        print(self.jpgdir)
-        self.pageimage = PIL.Image.open(self.jpgdir)
+        self.jpgdir = str(Path(self.booksdir, self.bookname, self.picnames[self.currentpage-1]))
+        self.pageimage = PIL.Image.open(str(self.jpgdir))
         self.pageimagecopy = self.pageimage
         self.width, self.height = self.pageimage.size
         #rescale
@@ -190,7 +190,7 @@ def ShowPage(self): # no error
         
         ##
         self.m_bitmapScroll.SetBitmap(wx.Bitmap(image2))
-        with open(os.path.join(self.temp_dir, self.bookname +'.txt'), 'w') as output:   
+        with open(str(Path(self.tempdir, self.bookname +'.txt')), 'w') as output:   
             output.write(f"{self.currentpage}")
     except:
         log.ERRORMESSAGE("Error: cannot show page")
@@ -297,77 +297,7 @@ def CreateTextCardPrint2(self,key):
     return TextCard, imagetext 
 
 
-"""
-def CombinePics(self,directory):
-    images = list(map(PIL.Image.open, directory))   
-    widths, heights = zip(*(i.size for i in images))
-    total_height = sum(heights)
-    max_width = max(widths)
-    new_im = PIL.Image.new('RGB', (max_width, total_height), "white")
-    # combine images to 1
-    x_offset = 0
-    for im in images:
-        new_im.paste(im, (0,x_offset))
-        x_offset += im.size[1]
-    new_im.save(directory[0])
-    #only save first picture (combined pic) the rest will be removed.
-    for i,item in enumerate(directory):
-        if i!=0:
-            try:
-                os.remove(item)
-            except:
-                pass
-"""
-        
-def CombinePicText_h(self):
     
-    self.allimages_h = []
-    
-    for _, images in enumerate(self.allimages):    
-        
-        widths, heights = zip(*(i.size for i in images))
-        
-        max_height = max(heights)
-        total_width = sum(widths)
-        
-        new_im = PIL.Image.new('RGB', (total_width, max_height), "white")
-        #combine images to 1
-        x_offset = 0
-        for im in images:
-            new_im.paste(im, (x_offset,0))
-            x_offset += im.size[0]
-        self.image = new_im
-        self.allimages_h.append(new_im)
-    
-    self.allimages_h[0].show()
-    
-def CombinePicText_v(self):    
-    
-    self.allimages_v = []
-    
-    for i,images in enumerate(self.allimages):   
-        
-        new_im = PIL.Image.new('RGB', (self.a4page_w, self.a4page_h), "white")
-        #combine images to 1
-        y_offset = 0
-        try:
-            for im in images:
-                new_im.paste(im, (0,y_offset))
-                y_offset += im.size[1]
-            self.image = new_im
-            self.allimages_v.append(new_im)
-        except: #if images is not an iterable it gives an error, it contains only 1 image so just add
-            new_im.paste(images, (0,y_offset))
-            self.allimages_v.append(new_im)
-    
-    self.allimages_v[0].show()
-    
-    
-        
-    
-
-    
-
 
 #%% turn user LaTeX macro into useable LaTeX code
 
@@ -382,7 +312,7 @@ def Text2Latex(self):
     usertext = self.usertext
     # find all user defined commands in a separate file
     # start reading after "###" because I defined that as the end of the notes    
-    file1 = open(os.path.join(self.dir1, r"usercommands.txt"), 'r')
+    file1 = Path(self.notesdir,"usercommands.txt").open(mode = 'r')
     newcommand_line_lst = file1.readlines()
     
     index = []
