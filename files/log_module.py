@@ -14,7 +14,7 @@ from termcolor import colored
 def ERRORMESSAGE(msg):
     basepath = Path(os.getenv("LOCALAPPDATA"),'FlashBook','temporary')
     LOG_FILENAME = Path(basepath,'logging_traceback.out')
-    logging.basicConfig(filename=LOG_FILENAME, level=logging.DEBUG)
+    logging.basicConfig(filename=str(LOG_FILENAME), level=logging.DEBUG)
     logging.debug('New session has started')
     print(colored(f"{msg}\n",'red',attrs=['underline']))
     ErrorMessage = traceback.format_exc()
@@ -24,7 +24,7 @@ def ERRORMESSAGE(msg):
 def DEBUGLOG(*args, debugmode = False,msg = ''):
     basepath = Path(os.getenv("LOCALAPPDATA"),'FlashBook','temporary')
     LOG_FILENAME = Path(basepath,'logging_traceback.out')
-    logging.basicConfig(filename=LOG_FILENAME, level=logging.DEBUG)
+    logging.basicConfig(filename=str(LOG_FILENAME), level=logging.DEBUG)
     logging.debug('New session has started')
     logging.info("DEBUGLOG")
     logging.debug("error anton")
