@@ -13,6 +13,7 @@ import wx
 import matplotlib
 import math
 import PIL
+from pathlib import Path
 import re
 import textwrap
 import pylab
@@ -73,9 +74,9 @@ def buttonCorrect(self):
             self.m_CurrentPage21.SetValue("")
             self.m_TotalPages21.SetValue("")
             #reset pictogram
-            path_repeat    = os.path.join(self.dir7,"repeat.png")
+            path_repeat    = Path(self.resourcedir,"repeat.png")
             id_ = self.m_toolSwitch21.GetId()
-            self.m_toolBar3.SetToolNormalBitmap(id_, wx.Bitmap( path_repeat, wx.BITMAP_TYPE_ANY ))
+            self.m_toolBar3.SetToolNormalBitmap(id_, wx.Bitmap( str(path_repeat), wx.BITMAP_TYPE_ANY ))
         #update self.vars accordingly
         self.runprogram = runprogram
     
@@ -86,11 +87,10 @@ def buttonWrong(self):
         runprogram = self.runprogram
         
         self.index += 1
-        print(f"test index{self.index} nrQ{self.nr_questions} score{self.score}")
+        #print(f"test index{self.index} nrQ{self.nr_questions} score{self.score}")
         self.mode = 'Question'
         self.m_textCtrlMode.SetValue(self.mode)  
         if self.index > (self.nr_questions-1):
-            print(f"end"*10)
             self.index = (self.nr_questions-1)
             f2.remove_stats(self)
             _score_ = round(float(self.score)/self.nr_questions*100,1)
@@ -103,7 +103,6 @@ def buttonWrong(self):
             self.score = self.nr_questions
             _score_ = round(float(self.score)/self.nr_questions*100,1)
         _score_ = round(float(self.score)/self.nr_questions*100,1)
-        print(self.score,self.nr_questions)
         self.m_Score21.SetValue(f"{_score_} %")      
         self.m_CurrentPage21.SetValue(str(self.index+1))
         
@@ -119,9 +118,9 @@ def buttonWrong(self):
             self.m_CurrentPage21.SetValue("")
             self.m_TotalPages21.SetValue("")
             #reset pictogram
-            path_repeat    = os.path.join(self.dir7,"repeat.png")
+            path_repeat    = Path(self.resourcedir,"repeat.png")
             id_ = self.m_toolSwitch21.GetId()
-            self.m_toolBar3.SetToolNormalBitmap(id_, wx.Bitmap( path_repeat, wx.BITMAP_TYPE_ANY ))
+            self.m_toolBar3.SetToolNormalBitmap(id_, wx.Bitmap( str(path_repeat), wx.BITMAP_TYPE_ANY ))
         self.runprogram = runprogram
         
 def switchCard(self):
@@ -169,7 +168,7 @@ def switchCard(self):
         else: #only display picture
             if self.key in self.picdictionary: # there is a picture
                 try:
-                    self.jpgdir = os.path.join(self.dir2,self.bookname,self.picdictionary[self.key])
+                    self.jpgdir = str(Path(self.picsdir,self.bookname,self.picdictionary[self.key]))
                     self.image = PIL.Image.open(self.jpgdir) 
                     f2.ShowPage(self)
                 except:
@@ -197,18 +196,18 @@ def startprogram(self,event):
     
     # open file
     try:
-        self.path = event.GetPath()
-        print(f"path = {self.path}")
-        self.filename = self.path.replace(f"{self.dir1}","")[1:]   #to remove '\' but not '.tex'
-        self.bookname = os.path.splitext(self.filename)[0]         #also remove extension '.tex'
+        eventpath = event.GetPath()
+        print(f"path = {eventpath}")
+        self.filename = Path(eventpath).name
+        self.bookname = Path(eventpath).stem
         print(f"book = {self.bookname} ")
         self.TC = m6.TimeCount(self.bookname,"flashcard")
     except:
         log.ERRORMESSAGE("Error: Couldn't open path")
     self.resumedata = {self.bookname : {'score': self.score, 'index': self.index, 'nr_questions':self.nr_questions}}
     try:
-        if os.path.exists(self.path):
-            file = open(self.path, 'r')
+        if Path(eventpath).exists():
+            file = open(eventpath, 'r')
             self.letterfile = str(file.read())
         
         # positions of Questions and Answers
