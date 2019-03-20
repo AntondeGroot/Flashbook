@@ -9,13 +9,14 @@ import wx
 import wx.xrc
 import wx.richtext
 import os
+from pathlib import Path
 
-datadir = os.getenv("LOCALAPPDATA")
-dir0 = datadir+r"\Flashbook"
-dir7 = dir0 + r"\resources"
-path_add = os.path.join(dir7,"add.png")
-path_min = os.path.join(dir7,"min.png")
-path_switch = os.path.join(dir7,"repeat.png")
+
+basedir     = Path(os.getenv("LOCALAPPDATA"),"Flashbook")
+resourcedir = str(Path(basedir ,"resources"))
+path_add    = str(Path(resourcedir,"add.png"))
+path_min    = str(Path(resourcedir,"min.png"))
+path_switch = str(Path(resourcedir,"repeat.png"))
 
 
 ###########################################################################
