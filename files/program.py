@@ -11,6 +11,7 @@ joinpath = os.path.join
 import json
 import shutil
 import PIL
+from pathlib import Path
 #-------------------------------------------------------------------- gui
 import threading
 import wx
@@ -66,11 +67,11 @@ def checkBooks(self,sleeptime):
     
     pdfnames = [os.path.splitext(x)[0] for x in os.listdir(self.dirpdfbook) if os.path.splitext(x)[1] == '.pdf']
     """Look for all final folders""" 
-    for root, dirs, _ in os.walk(self.dir3, topdown = False):
+    for root, dirs, _ in os.walk(str(self.booksdir), topdown = False):
         for name in dirs:
             if name in pdfnames:
                 library.append(name)
-                if os.path.basename(root) != os.path.basename(self.dir3): #If it is not the dir you start in
+                if os.path.basename(root) != self.booksdir.name: #If it is not the dir you start in
                     categories.append(f'{os.path.basename(root).upper()} - {name}')
                     pathlib.append(os.path.join(os.path.basename(root),name))    
                 else:
@@ -85,7 +86,7 @@ def checkBooks(self,sleeptime):
     self.nr_books = len(library)
     
     if len(library) == 0:
-        MessageBox(0, f"Welcome new user! \n\nNo converted books were found in directory {self.dir3} \n\nGo to the menubar of the app:  `Open/Book PDF folder`\nPlace a PDF file there and click on Convert\n\nIf the conversion fails: you need to use an online PDF converter since all image manipulations are done to jpg files.", "Welcome to Flashbook", ICON_EXCLAIM)
+        MessageBox(0, f"Welcome new user! \n\nNo converted books were found in directory {self.booksdir} \n\nGo to the menubar of the app:  `Open/Book PDF folder`\nPlace a PDF file there and click on Convert\n\nIf the conversion fails: you need to use an online PDF converter since all image manipulations are done to jpg files.", "Welcome to Flashbook", ICON_EXCLAIM)
     else:
         print("the following books were found:")
         for name in categories:
@@ -106,10 +107,10 @@ def run_flashbook(self):
     ##
     self.stayonpage = False
     self.resetselection = False
-    self.m_dirPicker11.SetInitialDirectory(self.dir3)
+    self.m_dirPicker11.SetInitialDirectory(str(self.booksdir))
     #short cuts
     ini.initializeparameters(self)
-    m.SetKeyboardShortcuts(self)
+    #m.SetKeyboardShortcuts(self) anton set it to the correct one
     
     
 
@@ -119,27 +120,19 @@ def run_flashcard(self):
     def initialize2(self):
         # set all directories
                 
-        self.m_filePicker21.SetInitialDirectory(self.dir1+'\.') #for filepicker you can't just set a directory like dirPicker, in this case it should end in "\." so that it has to look for files, otherwise it will see a folder as a file...
-        os.chdir(self.dir1)        
+        self.m_filePicker21.SetInitialDirectory(str(self.notesdir)+'\.') #for filepicker you can't just set a directory like dirPicker, in this case it should end in "\." so that it has to look for files, otherwise it will see a folder as a file...
+        os.chdir(self.notesdir)        
         
-        dirs = [self.dir0,self.dir1,self.dir2,self.dir3,self.dir4,self.dir5,self.dir6]        
+        dirs = [self.appdir,self.notesdir,self.picsdir,self.booksdir,self.tempdir,self.bordersdir,self.resourcedir]        
         print("="*90)
-        print(f"\nThe files will be saved to the following directory: {self.dir0}\n")
+        print(f"\nThe files will be saved to the following directory: {self.appdir}\n")
         
-        for item in dirs:
-            if not os.path.exists(item):
-                os.makedirs(item)
-                
-        self.csv_dir = self.dir0+'/date.csv'
-        self.file_exists = os.path.isfile(self.csv_dir)       
+        for dir_ in dirs:
+            if not dir_.exists():
+                dir_.mkdir()
         
-        
-        
-        for item in dirs:
-            if not os.path.exists(item):
-                os.makedirs(item)
         # unpack png images used in the gui
-        resources.resourceimages(self.dir6,self.dir1) 
+        resources.resourceimages(self.resourcedir,self.notesdir) 
     
     #%%
     
@@ -183,7 +176,8 @@ def run_flashcard(self):
         # main program, does all of the preprocessing
         m2.startprogram(self,event)
         event.Skip()
-        
+
+      
 def get_IP(self,event):
     with open(os.path.join(self.dirIP,'IPadresses.txt'),'r') as file:
         data = json.load(file)
@@ -255,7 +249,7 @@ def set_richtext(self):
     self.txt.WriteText("  Taking Notes:\n")
     self.txt.EndFontSize()
     self.txt.EndBold()    
-    imagepath = os.path.join(self.dir7,"mouseicon.png")
+    imagepath = str(Path(self.resourcedir,"mouseicon.png"))
     image = PIL.Image.open(imagepath, mode='r').convert('RGB')
     image2 = wx.Image( image.size)
     image2.SetData( image.tobytes() )
@@ -268,7 +262,7 @@ def set_richtext(self):
                         "        4) You switch modes when you confirm your selection\n"
                         "        5) 'Reset selection' resets both Question and Answer cards\n")
     
-    imagepath = os.path.join(self.dir7,"arrowhelp.png")
+    imagepath = str(Path(self.resourcedir,"arrowhelp.png"))
     image = PIL.Image.open(imagepath, mode='r').convert('RGB')
     image2 = wx.Image( image.size)
     image2.SetData( image.tobytes() )
@@ -298,12 +292,14 @@ def set_richtext(self):
     self.txt2.EndFontSize()
     self.txt2.EndBold()
     self.txt2.WriteText("\t"*32+"(left click to close window)\n")
-    imagepath = os.path.join(self.dir7,"mouseicon2.png")
+    
+    imagepath = str(Path(self.resourcedir,"mouseicon2.png"))
     image = PIL.Image.open(imagepath, mode='r').convert('RGB')
     image2 = wx.Image( image.size)
     image2.SetData( image.tobytes() )
     self.txt2.WriteImage(wx.Bitmap(image2))
-    imagepath = os.path.join(self.dir7,"arrowkeys.png")
+    
+    imagepath = str(Path(self.resourcedir,"arrowkeys.png"))
     image = PIL.Image.open(imagepath, mode='r').convert('RGB')
     image2 = wx.Image( image.size)
     image2.SetData( image.tobytes() )
@@ -380,27 +376,28 @@ def SwitchPanel(self,n):
     
 def set_bitmapbuttons(self):
     
-    def Img2Bitmap(path,size):    
+    def Img2Bitmap(path,size): 
+        path = str(path)
         image = PIL.Image.open(path, mode='r')
         image = image.resize((size, size), PIL.Image.ANTIALIAS) 
         image2 = wx.Image( image.size)
         image2.SetData( image.tobytes() )
         return image2
     
-    image2 = Img2Bitmap(self.path_fb,105)
+    image2 = Img2Bitmap(str(self.path_fb),105)
     self.m_OpenFlashbook.SetBitmap(wx.Bitmap(image2))
     
-    image2 = Img2Bitmap(self.path_fc,105)
+    image2 = Img2Bitmap(str(self.path_fc),105)
     self.m_OpenFlashcard.SetBitmap(wx.Bitmap(image2))
     
-    image2 = Img2Bitmap(self.path_pr,105)
+    image2 = Img2Bitmap(str(self.path_pr),105)
     self.m_OpenPrint.SetBitmap(wx.Bitmap(image2))
     
-    image2 = Img2Bitmap(self.path_wifi,105)
+    image2 = Img2Bitmap(str(self.path_wifi),105)
     self.m_OpenTransfer.SetBitmap(wx.Bitmap(image2))
     
     #image2 = Img2Bitmap(self.path_arrow,32)
-    self.m_toolStitch.SetBitmap(wx.Bitmap(self.path_arrow2))
+    self.m_toolStitch.SetBitmap(wx.Bitmap(str(self.path_arrow2)))
     
 def resetparameters(self):
     self.m_bitmapScroll.SetBitmap(wx.Bitmap(wx.Image( 1,1 ))) # always empty bitmap, in case someone reruns the program
@@ -416,6 +413,6 @@ def resetparameters(self):
     self.m_TotalPages21.SetValue('')
     self.m_Score21.SetValue('')
     #reset icon in flashcard
-    path_repeat    = os.path.join(self.dir7,"repeat.png")
+    path_repeat    = Path(self.resourcedir,"repeat.png")
     id_ = self.m_toolSwitch21.GetId()
-    self.m_toolBar3.SetToolNormalBitmap(id_, wx.Bitmap( path_repeat, wx.BITMAP_TYPE_ANY ))
+    self.m_toolBar3.SetToolNormalBitmap(id_, wx.Bitmap( str(path_repeat), wx.BITMAP_TYPE_ANY ))
