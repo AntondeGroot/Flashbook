@@ -8,9 +8,6 @@ import fc_functions as f2
 import wx
 
 def initializeparameters(self):
-    self.dir_LaTeX          = self.dir1
-    self.dir_LaTeX_commands = self.dir1
-    self.dir_pics           = self.dir2
     # some commands used to create the flashcards and seperate elements: question/answer/picture
     # this way it will remain clear for the user so that he could manually change an entry.
     self.pic_command      = "\pic{"
