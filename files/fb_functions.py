@@ -11,6 +11,7 @@ import os
 import math
 #matplotlib.use('Agg')
 import pylab
+from pathlib import Path
 import re
 import json
 import PIL
@@ -164,8 +165,8 @@ def LoadPage(self):
     if self.debugmode:
         print("fb=LoadPage")
     try:
-        self.jpgdir = os.path.join(self.dir3, self.booknamepath, self.picnames[self.currentpage-1])
-        print(self.jpgdir)
+        self.jpgdir = str(Path(self.booksdir, self.booknamepath, self.picnames[self.currentpage-1]))
+        
         if self.stayonpage == False:
             self.pageimage = PIL.Image.open(self.jpgdir)
             self.pageimagecopy = self.pageimage
@@ -220,7 +221,7 @@ def ShowPage(self):
         image2.SetData( self.pageimage.tobytes() )
         
         self.m_bitmapScroll.SetBitmap(wx.Bitmap(image2))
-        with open(os.path.join(self.temp_dir, self.bookname +'.txt'), 'w') as output:   
+        with open(str(Path(self.tempdir, self.bookname +'.txt')), 'w') as output:   
             if self.currentpage == 'prtscr' and hasattr(self,'currentpage_backup'):
                 self.currentpage = self.currentpage_backup
             output.write(f"{self.currentpage}")
@@ -238,12 +239,11 @@ def ResetQuestions(self): # no errors
 
 def CombinePics(self,directory):
     if self.debugmode:
-        print("fb=CombinePics")
+        print("fb=Combine pics")
     i = 0
     # combine horizontal pictures horizontally. They can be recognized as [] within a [] such that [vert,[hor,hor],vert,[hor,hor,hor]]
     for im in directory:
         if type(im) is list:
-            print(im)
             images = list(map(PIL.Image.open, im))   
             widths, heights = zip(*(i.size for i in images))
             max_height = max(heights)
@@ -258,7 +258,7 @@ def CombinePics(self,directory):
             for j,img in enumerate(im):
                 if j!= 0:
                     try:
-                        os.remove(img)
+                        Path(img).unlink()
                     except:
                         pass
             directory[i] = im[0]
@@ -278,10 +278,10 @@ def CombinePics(self,directory):
         x_offset += im.size[1]
     new_im.save(directory[0])
     #only save first picture (combined pic) the rest will be removed.
-    for k,path in enumerate(directory):
-        if k!=0:
+    for k, item in enumerate(directory):
+        if k != 0:
             try:
-                os.remove(path)
+                Path(item).unlink()
             except:
                 pass
             
@@ -341,7 +341,7 @@ def CombinePicText(self,directory):
     try:
         if self.debugmode:
             print("fb=CombinePicText")
-        if os.path.exists(directory):
+        if Path(directory).exists():
             imagepic = PIL.Image.open(directory)
             images   = [self.imagetext, imagepic]
             
@@ -379,7 +379,7 @@ def ShowInPopup(self,event,mode):
     except:
         pass
     try:
-        CombinePicText(self,directory)
+        CombinePicText(self,Path(directory))
     except:
         try:
             self.image = self.imagetext
@@ -421,7 +421,7 @@ def Text2Latex(self):
     # find all user defined commands in a separate file
     # start reading after "###" because I defined that as the end of the notes    
     usertext = self.usertext
-    file1 = open(os.path.join(self.dir1, r"usercommands.txt"), 'r')
+    file1 = open(str(Path(self.notesdir, r"usercommands.txt")), 'r')
     newcommand_line_lst = file1.readlines()
     
     index = []
