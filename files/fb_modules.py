@@ -15,7 +15,7 @@ import program as p
 import log_module as log
 import json
 import ctypes
-
+from pathlib import Path
 #ctypes:
 ICON_EXCLAIM=0x30
 ICON_STOP = 0x10
@@ -33,9 +33,9 @@ def dirchanged(self,event):
     self.scrollpos = self.scrollpos_reset
     
     #Keep track of "nrlist" which is a 4 digit nr 18-> "0018" so that it is easily sorted in other programs
-    path = event.GetPath()
+    eventpath = Path(event.GetPath())
     nrlist = []
-    picnames = [pic for pic in os.listdir(path) if os.path.splitext(pic)[1] == '.jpg']
+    picnames = [str(pic) for pic in eventpath.iterdir() if pic.suffix == '.jpg']
     self.nr_pics = len(picnames)
     
     if self.nr_pics == 0:
@@ -73,24 +73,25 @@ def dirchanged(self,event):
             nrlist.append("0"*(4-len_nr) + f"{picname[I:F]}")
     picnames = [x for _,x in sorted(zip(nrlist,picnames))]
     self.picnames = picnames
-    self.bookname = os.path.basename(path)
+    self.bookname = eventpath.name
     self.TC = m6.TimeCount(self.bookname,"flashbook")
-    self.booknamepath = path.replace(self.dir3,"")[1:]
+    self.booknamepath = eventpath.relative_to(self.booksdir)
     self.currentpage = 1
-    self.PathBorders = os.path.join(self.dir5, self.bookname + '_borders.txt')
-    path_file = os.path.join(self.temp_dir, self.bookname + '.txt')
-    if os.path.exists(path_file):
-        file = open(path_file, 'r')
+    self.PathBorders = Path(self.bordersdir, self.bookname + '_borders.txt')
+    path_file = Path(self.tempdir, self.bookname + '.txt')
+    if path_file.exists():
+        file = path_file.open(mode = 'r')
         self.currentpage = int(float(file.read()))    
     
     #Create empty dictionary if it doesn't exist
-    if not os.path.exists(self.PathBorders):
-        with open(self.PathBorders, 'w') as file:
+    if not self.PathBorders.exists():
+        with open(str(self.PathBorders), 'w') as file:
             file.write(json.dumps({})) 
     
-    book_dir = os.path.join(self.dir2,self.bookname)
-    if not os.path.exists(book_dir):
-        os.makedirs(book_dir)
+    book_dir = Path(self.picsdir,self.bookname)
+    if not book_dir.exists():
+        book_dir.mkdir()
+        
     
     self.m_CurrentPage11.SetValue(str(self.currentpage))
     self.m_TotalPages11.SetValue(str(self.nr_pics))
@@ -104,8 +105,8 @@ def dirchanged(self,event):
         self.dictionary = {}
         print("No drawn rects found for this file, continue")
     try: 
-        self.jpgdir    = os.path.join(self.dir3, self.booknamepath, self.picnames[self.currentpage-1])
-        print(self.booknamepath,self.dir3)
+        self.jpgdir    = str(Path(self.booksdir, self.booknamepath, self.picnames[self.currentpage-1]))
+        print(self.booknamepath,self.booksdir)
         self.pageimage = PIL.Image.open(self.jpgdir)
         self.pageimagecopy = self.pageimage
         self.width, self.height = self.pageimage.size
@@ -161,16 +162,16 @@ def bitmapleftup(self,event):
         img = np.array(img)            
         img = img[y0:y1,x0:x1]
         img = PIL.Image.fromarray(img)
-        find = True
-        while find == True:
+        FIND = True
+        while FIND == True:
             rand_nr = str(randint(0, 9999)).rjust(4, "0") #The number must be of length 4: '0006' must be a possible result.
             if self.stayonpage == False:
                 picname =  f"{self.bookname}_{self.currentpage}_{rand_nr}.jpg" 
             else:
                 picname =  f"{self.bookname}_prtscr_{rand_nr}.jpg"
-            filename = os.path.join(self.dir2, self.bookname, picname)    
-            if not os.path.exists(filename):
-                find = False
+            filename = Path(self.picsdir, self.bookname, picname)    
+            if not filename.exists():
+                FIND = False
         img.save(filename)
         
         """The list will look like the following:
@@ -178,7 +179,7 @@ def bitmapleftup(self,event):
         So that first the horizontal [] within the list will be combined first, 
         then everythying will be combined vertically."""
         
-        dir_ = os.path.join(self.dir2,self.bookname,picname)
+        dir_ = str(Path(self.picsdir,self.bookname,picname))
         if self.questionmode == True:
             if self.stitchmode_v == True:
                 self.pic_question.append(picname)  
@@ -206,7 +207,7 @@ def bitmapleftup(self,event):
                     self.pic_answer_dir.append([dir_])  
                 #restore stitchmode to default
                 self.stitchmode_v =  True            
-                self.m_toolStitch.SetBitmap(wx.Bitmap(self.path_arrow2))
+                self.m_toolStitch.SetBitmap(wx.Bitmap(str(self.path_arrow2)))
         f.ShowPage(self)     
         
 def panel4_bitmapleftup(self,event):
@@ -222,7 +223,7 @@ def panel4_bitmapleftup(self,event):
     
     if abs(x1-x0)>2 and abs(y1-y0)>2:            
         # cut down image
-        img = PIL.Image.open(os.path.join(self.dir4,"screenshot.png"))
+        img = PIL.Image.open(str(Path(self.tempdir,"screenshot.png")))
         img = np.array(img)            
         img = img[y0:y1,x0:x1]
         img = PIL.Image.fromarray(img)
@@ -306,7 +307,7 @@ def selectionentered(self,event):
                 f.ShowInPopup(self,event,"Answer")                    
                 # save the user inputs in .tex file
                 if len(self.pdf_question) != 0:
-                    with open(os.path.join(self.dir1, self.bookname +'.tex'), 'a') as output: # the mode "a" appends to the file    
+                    with open(str(Path(self.notesdir, self.bookname +'.tex')), 'a') as output: # the mode "a" appends to the file    
                         output.write(r"\quiz{" + str(self.pdf_question) + "}")
                         output.write(r"\ans{"  + str(self.pdf_answer)   + "}"+"\n")
                 #reset all
@@ -390,12 +391,12 @@ def resetselection(self,event):
     #  remove all temporary pictures taken
     if len(self.pic_answer_dir) > 0:
         for pic in self.pic_answer_dir:
-            if os.path.exists(pic):
-                os.remove(pic)
+            if Path(pic).exists():
+                Path(pic).unlink()
     if len(self.pic_question_dir) > 0:
         for pic in self.pic_question_dir:
-            if type(pic) == str and os.path.exists(pic):
-                os.remove(pic)
+            if type(pic) == str and Path(pic).exists():
+                Path(pic).unlink()
     #reset all values:
     self.tempdictionary = {}
     f.ResetQuestions(self)        
@@ -488,6 +489,3 @@ def zoomout(self,event):
     except:
         log.ERRORMESSAGE("Error: cannot zoom in")
 
-def switch_stitchmode(self): # switch the boolean to opposite
-    print("you pressed switch")
-    print(str(self.stitchmode_v))
