@@ -8,16 +8,12 @@ import print_functions as f
 import wx
 
 def initializeparameters(self):
-    self.dir_LaTeX          = self.dir1
-    self.dir_LaTeX_commands = self.dir1
-    self.dir_pics           = self.dir2
     # some commands used to create the flashcards and seperate elements: question/answer/picture
     # this way it will remain clear for the user so that he could manually change an entry.
     self.pic_command      = "\pic{"
     self.question_command = r'\\quiz{'
     self.answer_command   = r"\\ans{"
-
-    #self.m_dirPicker1.SetInitialDirectory(self.dir3) #set initial directory
+    
     # initialize variables:
     self.bookname       = ''
     self.BorderCoords   = []         
