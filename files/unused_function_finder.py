@@ -20,19 +20,26 @@ pyfiles = [os.path.join(dir_path,f) for f in files if (os.path.isfile(f) and os.
 
 # search all files for defined functions
 funclist  = {}
+forbiddenlist = {}
 for _, pyfile in enumerate(pyfiles):
     with open(pyfile, 'r') as file:
         lines = file.readlines()
     file.close()
     for line_index, line in enumerate(lines):
-        if all([(word in line) for word in ['def','(',')',':']]):
-            for k,char in enumerate(line):
-                if char == "(":
-                    
-                    index0 = [m.start() for m in re.finditer('def', line )][0]+4        
-                    f = line[index0:k]
-                    if f not in funclist.keys():
-                        funclist[f] = [0,Path(pyfile).name,line_index]
+        if all([(symb in line) for symb in ['def','(',')',':']]):
+    
+            k = [m.start() for m in re.finditer('\(', line )][0]
+            index0 = [m.start() for m in re.finditer('def', line )][0]+4        
+            f = line[index0:k]
+            if f not in funclist.keys() and f not in forbiddenlist.keys():                        
+                funclist[f] = [0,Path(pyfile).name,line_index]
+            else:
+                try:
+                    funclist.pop(f)
+                    forbiddenlist[f] = 0
+                except:
+                    pass
+
 
 # search all files for occurances when the function was used and not just defined
 for _, pyfile in enumerate(pyfiles):
@@ -40,10 +47,12 @@ for _, pyfile in enumerate(pyfiles):
         lines = file.readlines()
     file.close()
     for _, line in enumerate(lines):        
-        for word in funclist:
+        for word in funclist.keys():
             if word in line and 'def' not in line:
+                #print(f"word = {word}")
                 count = funclist[word][0]+1
                 funclist[word] = [count]+funclist[word][1:]
+
 # lay out:
 filenamelen = 0
 funcnamelen = 0
