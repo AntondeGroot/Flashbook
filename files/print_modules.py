@@ -195,8 +195,7 @@ def notes2paper(self):
             try: # try to create a TextCard
                 if key in self.textdictionary:
                     print(f"create textcard for {key}")
-                    #f3.CreateTextCardPrint(self)
-                    TextCard, imagetext = f3.CreateTextCardPrint2(self,key)
+                    TextCard, imagetext = f3.CreateTextCardPrint(self,key)
                     #assert TextCard == self.TextCard
                     #assert imagetext == self.imagetext
                     self.TextCard = TextCard
@@ -205,8 +204,7 @@ def notes2paper(self):
                 if TextCard == True: 
                     if key in self.picdictionary:
                         print(f"create combicard for {key}")
-                        #f2.CombinePicText(self)
-                        image = f2.CombinePicText2(self,key,imagetext)
+                        image = f2.CombinePicText_fc(self,key,imagetext)
                         #assert image == self.image
                         self.image = image
                         if mode == 'Question':
@@ -505,103 +503,6 @@ def notes2paper(self):
     self.m_TotalPDFPages.SetValue(str(''))
     self.m_TotalPDFPages.SetValue(str(len(self.allimages_v)))
 
-def dirchanged(self,event):
-    #   INITIALIZE: ACQUIRE ALL INFO NECESSARY
-    print(f"\nThe chosen path is {event.GetPath()}\n")
-    try:
-        path = event.GetPath() 
-        # - keep track of "nrlist" which is a 4 digit nr 18-> "0018" so that it is easily sorted in other programs
-        nrlist = []
-        picnames = [d for d in os.listdir(path) if '.jpg' in d]
-        nr_pics = len(picnames)
-        for i in range(nr_pics):
-            indexlist = []
-            picname = picnames[i]
-            SEARCH = True
-            while SEARCH == True:
-                for j in range(len(picname)): # can't simply use enumerate, we need to work backwards
-                    
-                    k = len(picname)-j-1
-                    
-                    if (f3.is_number(picname[k]) == True) and SEARCH == True:
-                        indexlist.append(k)  
-                    elif (f3.is_number(picname[k]) == False):
-                        if j > 0:
-                            if (f3.is_number(picname[k+1])) == True:
-                                SEARCH = False
-                    elif j == len(picname) - 1:
-                        SEARCH = False
-            indexlist.sort()
-            len_nr = len(indexlist)
-            # I only expect in the order of 1000 pages
-            # make sure you can use the nrlist for later use so you can save the output as 
-            # "Bookname + ****" a sorted 4 digit number
-            if len_nr == 1:
-                nrlist.append("000{}".format(picname[indexlist[0]]))
-            elif len_nr == 0:
-                print(f"found no number for {picname}")
-            else:
-                I = indexlist[0]
-                F = indexlist[-1] + 1
-                nrlist.append("0"*(4-len_nr)+"{}".format(picname[I:F]))
-                       
-        picnames = [x for _,x in sorted(zip(nrlist,picnames))]
-        self.picnames = picnames
-        self.bookname = path.relative_to(self.booksdir)
-        self.currentpage = 1
-        
-        self.PathBorders = Path(self.bordersdir, self.bookname +'_borders.txt')
-        
-        bookpath = Path(self.tempdir, self.bookname +'.txt')
-        if bookpath.exists():
-            file = bookpath.open(mode = 'r')
-            self.currentpage = int(float(file.read()))    
-        
-        #create empty dictionary if it doesn't exist
-        if not self.PathBorders.exists: #notna
-            with open(self.PathBorders, 'w') as file:
-                file.write(json.dumps({})) 
-                
-        self.nr_pics = nr_pics
-        dirpath = Path(self.picsdir,self.bookname)
-        if not dirpath.exists():
-            dirpath.mkdirs()
-        
-        self.m_CurrentPage.SetValue(str(self.currentpage))
-        self.m_textCtrl5.SetValue(str(self.nr_pics))
-        nrlist.sort()
-
-        ## open dictionary if it exists
-        try:
-            with open(self.PathBorders, 'r') as file:
-                self.dictionary = json.load(file)
-        except:
-            self.dictionary = {}
-            print("no drawn rects found for this file, continue")
-        try:
-            self.jpgdir = str(Path(self.booksdir, self.bookname, self.picnames[self.currentpage-1]))
-            self.pageimage = PIL.Image.open(self.jpgdir)
-            self.pageimagecopy = self.pageimage
-            self.width, self.height = self.pageimage.size
-        except:
-            log.ERRORMESSAGE("Error: could not load scrolled window")
-        
-        #try to draw borders, but if there are no borders, do nothing
-        if self.drawborders == True:                    
-            f3.drawCoordinates(self)
-             
-        try:
-            image2 = wx.Image( self.width, self.height )
-            image2.SetData( self.pageimage.tobytes() )
-            self.m_bitmapScroll.SetBitmap(wx.Bitmap(image2))
-            f3.SetScrollbars(self)
-            
-
-        except:
-            log.ERRORMESSAGE("Error: could not load scrolled window")
-    except:
-        log.ERRORMESSAGE("Error: could not load image")
-
 
 def add_border(self,img,mode):
     if self.pdfline_bool == True:
@@ -695,7 +596,6 @@ def startprogram(self,event):
     self.answers     = []
     self.questions2  = []
     
-    f3.SetScrollbars(self)    
     # open file
     try:
         if self.FilePickEvent == True:
