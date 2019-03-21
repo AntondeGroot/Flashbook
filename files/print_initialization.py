@@ -27,5 +27,3 @@ def initializeparameters(self):
     self.panel_pos      = (0,0)        
     self.questionmode   = True
     self.zoom           = 1.0
-    f.ResetQuestions(self)
-    f.SetScrollbars(self)
