@@ -720,7 +720,6 @@ class MainFrame(gui.MyFrame):
 	
     def m_bitmapScroll1OnMouseWheel( self, event ):
         m2.switchCard(self)
-        event.Skip()
         
     #%% print the notes
     """ print the notes """
