@@ -157,20 +157,22 @@ def switchCard(self):
                 print(f"\n\nwe have key {self.key} for picdictionary {self.picdictionary}\n\n")
             if self.key in self.picdictionary:
                 try: # to combine text with picture
-                    f2.CombinePicText(self)
-                    f2.ShowPage(self)     
+                    key = self.key
+                    imagetext = self.imagetext
+                    f2.CombinePicText_fc(self,key,imagetext)
+                    f2.ShowPage_fc(self)     
                 except:
                     log.ERRORMESSAGE("Error: cannot combine pic with text")
             else: #only display text
                 self.image = self.imagetext
-                f2.ShowPage(self)
+                f2.ShowPage_fc(self)
         # there is no text: but is there a picture?
         else: #only display picture
             if self.key in self.picdictionary: # there is a picture
                 try:
                     self.jpgdir = str(Path(self.picsdir,self.bookname,self.picdictionary[self.key]))
                     self.image = PIL.Image.open(self.jpgdir) 
-                    f2.ShowPage(self)
+                    f2.ShowPage_fc(self)
                 except:
                     pass
             # you don't need to check for: "no Text & no picture" because switch_bitmap already takes care of that.
