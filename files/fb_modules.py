@@ -116,7 +116,8 @@ def dirchanged(self,event):
     #Draw borders if they exist
     try:
         if self.drawborders == True:                    
-            f.drawCoordinates(self)
+            pageimage = self.pageimage
+            self.pageimage = f.drawCoordinates(self,pageimage)
     except:
         log.ERRORMESSAGE("Error: could not draw borders")
                   
@@ -208,7 +209,7 @@ def bitmapleftup(self,event):
                 #restore stitchmode to default
                 self.stitchmode_v =  True            
                 self.m_toolStitch.SetBitmap(wx.Bitmap(str(self.path_arrow2)))
-        f.ShowPage(self)     
+        f.ShowPage_fb(self)     
         
 def panel4_bitmapleftup(self,event):
     self.BoolCropped = True
@@ -287,7 +288,7 @@ def selectionentered(self,event):
                 
                 # remove temporary borders
                 self.pageimage = self.pageimagecopy
-                f.ShowPage(self)
+                f.ShowPage_fb(self)
                 if self.stayonpage == False: # if screenshot mode
                     with open(self.PathBorders, 'w') as file:
                             file.write(json.dumps(self.dictionary)) 
@@ -405,7 +406,7 @@ def resetselection(self,event):
     self.m_textCtrl2.SetValue("")
     # update drawn borders
     f.LoadPage(self)
-    f.ShowPage(self)
+    f.ShowPage_fb(self)
     self.resetselection = False
     
 def switchpage(self,event):
@@ -418,7 +419,7 @@ def switchpage(self,event):
         self.currentpage = pagenumber
         print(self.currentpage)
         f.LoadPage(self)
-        f.ShowPage(self)
+        f.ShowPage_fb(self)
     except:
         log.ERRORMESSAGE("Error: invalid page number")
     self.Layout()
@@ -432,7 +433,7 @@ def nextpage(self,event):
             if not self.currentpage > self.nr_pics-1:
                 self.currentpage = self.currentpage+1
         f.LoadPage(self)
-        f.ShowPage(self)
+        f.ShowPage_fb(self)
         f.SetScrollbars(self)
     except:
         log.ERRORMESSAGE("Error: can't click on next")
@@ -446,7 +447,7 @@ def previouspage(self,event):
             if not self.currentpage == 1:
                 self.currentpage = self.currentpage-1    
         f.LoadPage(self)
-        f.ShowPage(self)
+        f.ShowPage_fb(self)
         f.SetScrollbars(self)            
     except:
         log.ERRORMESSAGE("Error: can't click on back")
@@ -465,7 +466,7 @@ def zoomin(self,event):
     try:
         self.zoom += 0.1
         f.LoadPage(self)
-        f.ShowPage(self)
+        f.ShowPage_fb(self)
         f.SetScrollbars(self)
         percentage = int(self.zoom*100)
         self.m_Zoom11.SetValue(f"{percentage}%")
@@ -480,7 +481,7 @@ def zoomout(self,event):
         else:
             self.zoom += -0.1
         f.LoadPage(self)
-        f.ShowPage(self)
+        f.ShowPage_fb(self)
         f.SetScrollbars(self)
         percentage = int(self.zoom*100)
         self.m_Zoom11.SetValue(f"{percentage}%")
