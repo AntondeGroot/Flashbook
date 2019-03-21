@@ -92,8 +92,8 @@ def load_stats(self):
             self.index = self.resumedata[self.bookname]['index']
             self.nr_questions = self.resumedata[self.bookname]['nr_questions']
             self.cardorder = self.resumedata[self.bookname]['cardorder']
-            _score_ = round(float(self.score)/self.nr_questions*100,1)
-            self.m_Score21.SetValue(f"{_score_} %")    
+            score = round(float(self.score)/self.nr_questions*100,1)
+            self.m_Score21.SetValue(f"{score} %")    
     except:
         print("no stats found for this book, continue")
         
@@ -274,28 +274,9 @@ def switch_bitmap(self):
         log.ERRORMESSAGE("Error: could not switch bitmap #1")
     
 
-    
-def CombinePicText(self):
-    self.ERROR = False
-    try:
-        imagepic = PIL.Image.open(str(Path(self.picsdir, self.bookname, self.picdictionary[self.key])))
-        images = [self.imagetext,imagepic]
-        
-        widths, heights = zip(*(i.size for i in images))
-        total_height = sum(heights)
-        max_width = max(widths)
-        new_im = PIL.Image.new('RGB', (max_width, total_height), "white")
-        #combine images to 1
-        y_offset = 0
-        for im in images:
-            new_im.paste(im, (0,y_offset))
-            y_offset += im.size[1]
-        self.image = new_im
-    except:
-        self.ERROR = True
 
-def CombinePicText2(self,key,imagetext):
-    
+def CombinePicText_fc(self,key,imagetext):
+    self.ERROR = False
     try:
         imagepic = PIL.Image.open(str(Path(self.picsdir, self.bookname, self.picdictionary[key])))
         images = [imagetext,imagepic]
@@ -312,7 +293,7 @@ def CombinePicText2(self,key,imagetext):
         
         return new_im
     except:
-        pass
+        self.ERROR = True
 
     
     
@@ -337,17 +318,19 @@ def displaycard(self):
         if self.TextCard == True: 
             if self.key in self.picdictionary:
                 try:
-                    CombinePicText(self)
-                    ShowPage(self)
+                    imagetext = self.imagetext
+                    key = self.key
+                    CombinePicText_fc(self,key,imagetext)
+                    ShowPage_fc(self)
                 except:
                     pass
             else:
                 self.image = self.imagetext
-                ShowPage(self)
+                ShowPage_fc(self)
         else: #if there is no textcard only display the picture
             try:
                 self.image = PIL.Image.open(str(Path(self.picsdir,self.bookname,self.picdictionary[self.key])))
-                ShowPage(self)
+                ShowPage_fc(self)
             except:
                 pass
     except:
@@ -537,7 +520,7 @@ def LoadFlashCards(self,USERINPUT):
     except:
        log.ERRORMESSAGE("Error: couldn't pick file, LoadFlashCards error")
     
-def ShowPage(self):
+def ShowPage_fc(self):
     try:
         width, height = self.image.size
         image2 = wx.Image( width, height )
