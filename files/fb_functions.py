@@ -132,10 +132,10 @@ def drawRec(self,layer,color): # no errors
     layer = np.uint8(layer)
     return layer        
 
-def drawCoordinates(self): # no errors
+def drawCoordinates(self,pageimage): # no errors
     if self.debugmode:
         print("fb=drawCoordinates")
-    img = np.array(self.pageimage)
+    img = np.array(pageimage)
     img = np.uint8(img)
     try:#try to look if there already exists borders that need to be drawn
         coordinatelist = self.dictionary[f'page {self.currentpage}']
@@ -155,7 +155,8 @@ def drawCoordinates(self): # no errors
     except:
         pass
     #export image
-    self.pageimage = PIL.Image.fromarray(img)
+    pageimage = PIL.Image.fromarray(img)
+    return pageimage
     
 def SetScrollbars(self): 
     scrollWin = self.m_scrolledWindow1
@@ -201,9 +202,9 @@ def ShowPrintScreen(self): # no error
     
     
 
-def ShowPage(self): 
+def ShowPage_fb(self): 
     if self.debugmode:
-        print("fb=ShowPage")
+        print("fb=ShowPage_fb")
     try:
         # update
         self.m_CurrentPage11.SetValue(str(self.currentpage))
@@ -213,7 +214,8 @@ def ShowPage(self):
         self.pageimage = self.pageimage.resize((self.width, self.height), PIL.Image.ANTIALIAS)
         try:   #draw borders if they exist
             if self.drawborders == True:
-                drawCoordinates(self)
+                pageimage = self.pageimage
+                self.pageimage = drawCoordinates(self,pageimage)
         except:
             pass
         
@@ -237,12 +239,12 @@ def ResetQuestions(self): # no errors
     self.pic_answer_dir   = []
     self.usertext         = ''
 
-def CombinePics(self,directory):
+def CombinePics(self,directorylist):
     if self.debugmode:
         print("fb=Combine pics")
     i = 0
     # combine horizontal pictures horizontally. They can be recognized as [] within a [] such that [vert,[hor,hor],vert,[hor,hor,hor]]
-    for im in directory:
+    for im in directorylist:
         if type(im) is list:
             images = list(map(PIL.Image.open, im))   
             widths, heights = zip(*(i.size for i in images))
@@ -261,12 +263,12 @@ def CombinePics(self,directory):
                         Path(img).unlink()
                     except:
                         pass
-            directory[i] = im[0]
+            directorylist[i] = im[0]
             
         i += 1
     
     #combine pictures vertically    
-    images = list(map(PIL.Image.open, directory))   
+    images = list(map(PIL.Image.open, directorylist))   
     widths, heights = zip(*(i.size for i in images))
     total_height = sum(heights)
     max_width = max(widths)
@@ -276,9 +278,9 @@ def CombinePics(self,directory):
     for im in images:
         new_im.paste(im, (0,x_offset))
         x_offset += im.size[1]
-    new_im.save(directory[0])
+    new_im.save(directorylist[0])
     #only save first picture (combined pic) the rest will be removed.
-    for k, item in enumerate(directory):
+    for k, item in enumerate(directorylist):
         if k != 0:
             try:
                 Path(item).unlink()
@@ -305,11 +307,11 @@ def CreateTextCard(self):
         renderer = canvas.get_renderer()
         raw_data = renderer.tostring_rgb()
         size = canvas.get_width_height()
-        self.imagetext = PIL.Image.frombytes("RGB", size, raw_data, decoder_name='raw', )
+        imagetext = PIL.Image.frombytes("RGB", size, raw_data, decoder_name='raw', )
         # crop the LaTeX image further
         border = 30
         SEARCH = True
-        img = self.imagetext
+        img = imagetext
         imginv = ImageOps.invert(img)
         
         img_array = np.sum(np.sum(np.array(imginv),2),0) # look where something is not "white" in the x-axis
@@ -336,7 +338,7 @@ def CreateTextCard(self):
 
 
 
-def CombinePicText(self,directory):
+def CombinePicText_fb(self,directory):
     self.ERROR = False
     try:
         if self.debugmode:
@@ -379,7 +381,7 @@ def ShowInPopup(self,event,mode):
     except:
         pass
     try:
-        CombinePicText(self,Path(directory))
+        CombinePicText_fb(self,Path(directory))
     except:
         try:
             self.image = self.imagetext
