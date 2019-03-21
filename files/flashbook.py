@@ -536,7 +536,7 @@ class MainFrame(gui.MyFrame):
         try:
             print(f"checkbox is {self.drawborders}")
             self.pageimage = self.pageimagecopy # reset image
-            f.ShowPage(self)
+            f.ShowPage_fb(self)
             self.Layout()
         except:# a book hasn't been opened
             pass    
