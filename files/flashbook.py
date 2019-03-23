@@ -8,25 +8,31 @@ try:
     del app
 except:
     pass
-
 #------------------------------------------------------------------- general
 import os
 import json
+from pathlib import Path
+import PIL
 import shutil
 import subprocess 
-import PIL
+import sys
 import time
-#-------------------------------------------------------------------- gui
 import threading
 import wx
 import wx.adv as adv
 import wx.richtext
 import wx.html as html
 import wx._html
-import gui_flashbook as gui
-import ctypes # pop up messages
-import logging
+import platform
+_platform = platform.system()
+if _platform == 'Windows':
+    import ctypes # pop up messages
+    import wmi            # for IPaddress: WindowsManagementInstrumentation
+    import win32clipboard #
+    from win32api import GetSystemMetrics    
+    
 #------------------------------------------------------------------- modules
+import gui_flashbook as gui
 import program as p
 import fb_initialization as ini 
 import fc_initialization as ini2 
@@ -44,19 +50,9 @@ import log_module    as log
 import fb_functions    as f
 import fc_functions    as f2
 import print_functions as f3
-#from print_modules import notes2paper
-#--- for colored error messages ------------------------------------- debugging
-from termcolor import colored
-import win32clipboard
-from win32api import GetSystemMetrics
-from PIL import Image
-import wmi # for IPaddress
-import sys
-from pathlib import Path
 
 sys.setrecursionlimit(5000)
-Image.MAX_IMAGE_PIXELS = 1000000000  
-
+PIL.Image.MAX_IMAGE_PIXELS = 1000000000  
 #ctypes:
 ICON_EXCLAIM=0x30
 ICON_STOP = 0x10
@@ -98,8 +94,10 @@ def BoxesChecked(self,n):
     
 #% path to resources: 
 def setup_sources(self):
-    
-    bdir = Path(os.getenv("LOCALAPPDATA"),"Flashbook")
+    if _platform == 'Windows':
+        bdir = Path(os.getenv("LOCALAPPDATA"),"Flashbook")
+    elif _platform == 'Linux':
+        pass
     rdir = Path(bdir,"resources")
     self.appdir         = bdir
     self.path_add     = Path(rdir,"add.png")
