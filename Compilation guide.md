@@ -21,6 +21,7 @@ poppler:
 - [https://stackoverflow.com/questions/1681208/python-platform-independent-way-to-modify-path-environment-variable](https://stackoverflow.com/questions/1681208/python-platform-independent-way-to-modify-path-environment-variable)
 - [https://simply-python.com/tag/pdftoimage/](https://simply-python.com/tag/pdftoimage/)
 
+in Linux(https://gist.github.com/frfahim/73c0fad6350332cef7a653bcd762f08d)
 
 ## Compiling
 
