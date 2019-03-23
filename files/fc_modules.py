@@ -35,11 +35,8 @@ MessageBox = ctypes.windll.user32.MessageBoxW
 def buttonCorrect(self):
     f2.clearbitmap(self)
     if hasattr(self,'nr_questions') and self.nr_questions != 0 and hasattr(self,'bookname') and self.bookname != '':
-        # initialize
-        
         #import
-        debug = self.debugmode
-        log.DEBUGLOG("test1","test2",debugmode = debug, msg="hallo")
+        log.DEBUGLOG("test1","test2",debugmode = self.debugmode, msg="hallo")
         runprogram = self.runprogram
         self.index += 1    
         if runprogram == True:
@@ -85,9 +82,7 @@ def buttonWrong(self):
     f2.clearbitmap(self)
     if hasattr(self,'nr_questions') and self.nr_questions != 0 and hasattr(self,'bookname') and self.bookname != '':
         runprogram = self.runprogram
-        
         self.index += 1
-        #print(f"test index{self.index} nrQ{self.nr_questions} score{self.score}")
         self.mode = 'Question'
         self.m_textCtrlMode.SetValue(self.mode)  
         if self.index > (self.nr_questions-1):
@@ -127,8 +122,7 @@ def switchCard(self):
     #matplotlib.pyplot.close('all') # otherwise too many pyplot figures will be opened -> memory
     f2.clearbitmap(self)
     if self.runprogram == True:
-        
-        # change mode Q-> A
+        # change mode Q <-> A
         if self.mode == 'Question': 
             self.mode = 'Answer'
         else:
@@ -203,6 +197,8 @@ def startprogram(self,event):
         self.filename = Path(eventpath).name
         self.bookname = Path(eventpath).stem
         print(f"book = {self.bookname} ")
+        if hasattr(self,'TC'):
+            delattr(self,'TC')
         self.TC = m6.TimeCount(self.bookname,"flashcard")
     except:
         log.ERRORMESSAGE("Error: Couldn't open path")
