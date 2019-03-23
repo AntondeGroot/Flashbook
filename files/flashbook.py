@@ -920,11 +920,13 @@ class MainFrame(gui.MyFrame):
     def m_scrolledWindow11OnKeyDown( self, event ):
         SaveTime(self)
         event.Skip()
-# start the application
-app = wx.App(False) 
-frame = MainFrame(None)
-frame.Show(True)
-app.MainLoop()
-del app
+        
+if __name__ == "__main__":
+    # start the application
+    app = wx.App(False) 
+    frame = MainFrame(None)
+    frame.Show(True)
+    app.MainLoop()
+    del app
 
 
