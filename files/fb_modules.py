@@ -36,9 +36,9 @@ def dirchanged(self,event):
     eventpath = Path(event.GetPath())
     nrlist = []
     picnames = [str(pic) for pic in eventpath.iterdir() if pic.suffix == '.jpg']
-    self.nr_pics = len(picnames)
+    self.totalpages = len(picnames)
     
-    if self.nr_pics == 0:
+    if self.totalpages == 0:
         MessageBox(0, " The selected folder does not contain any images!", "Error", MB_ICONINFORMATION)
     
     for _, picname in enumerate(picnames):
@@ -94,7 +94,7 @@ def dirchanged(self,event):
         
     
     self.m_CurrentPage11.SetValue(str(self.currentpage))
-    self.m_TotalPages11.SetValue(str(self.nr_pics))
+    self.m_TotalPages11.SetValue(str(self.totalpages))
     nrlist.sort()
     
     #Open dictionary if it exists
@@ -241,9 +241,9 @@ def selectionentered(self,event):
         if self.m_textCtrl2.GetValue() != '' or len(self.pic_question) > 0:
             if self.questionmode == True:
                 # change mode to answer
-                self.usertext = self.m_textCtrl2.GetValue()
-                self.pdf_question = self.usertext
-                self.usertext = f.Text2Latex(self)
+                usertext = self.m_textCtrl2.GetValue()
+                self.pdf_question = usertext
+                self.usertext = f.text_to_latex(self,usertext)
                 self.questionmode = False
                 self.m_textCtrl1.SetValue("Answer:")
                 self.m_textCtrl2.SetValue("")
@@ -267,9 +267,9 @@ def selectionentered(self,event):
                 f.ShowInPopup(self,event,"Question")
                  
             else:
-                self.usertext = self.m_textCtrl2.GetValue()
-                self.pdf_answer = self.usertext
-                self.usertext = f.Text2Latex(self)
+                usertext = self.m_textCtrl2.GetValue()
+                self.pdf_answer = usertext
+                self.usertext = f.text_to_latex(self,usertext)
                 self.questionmode = True
                 self.m_textCtrl1.SetValue("Question:")
                 self.m_textCtrl2.SetValue("")
@@ -350,42 +350,57 @@ def arrowscroll(self,event,direction):
         
 def mousewheel(self,event):
     scrollWin = self.m_scrolledWindow1
+    
+    def scroll_end_of_page(scrollWin):
+        scrollWin.SetScrollPos(wx.VERTICAL, scrollWin.GetScrollPos(1) + 150, False) #orientation, value, refresh? # 150 is overkill, but it means the new page starts definitely at the bottom of the scroll bar
+        scrollWin.Scroll(scrollWin.GetScrollPos(1) + 150, scrollWin.GetScrollPos(1))
+    def scroll_begin_of_page(scrollWin):
+        scrollWin.SetScrollPos(wx.VERTICAL, 0, False) #orientation, value, refresh? # 150 is overkill, but it means the new page starts definitely at the bottom of the scroll bar
+        scrollWin.Scroll(0, scrollWin.GetScrollPos(1))
+    def reset_scrollpos(self):
+        #make it a little more difficult to scroll once you switched a page
+        self.scrollpos = self.scrollpos_reset 
+        
     self.scrollpos.append(scrollWin.GetScrollPos(0))
     self.scrollpos.pop(0)
-    if self.debugmode:
-        print(f"scroll pos = {self.scrollpos}")
-    self.WheelRot = event.GetWheelRotation()   # get rotation from mouse wheel
-    Hvirt= self.m_scrolledWindow1.GetVirtualSize()[1]
-    Hclnt = self.m_scrolledWindow1.GetClientSize()[1]
-    if Hclnt < Hvirt: # there is a scrollbar
-        if len(set(self.scrollpos)) == 1: # you've reached either the beginning or end of the document: all elements are the same
-            if self.scrollpos[0] == 0:             # beginning
-                if self.WheelRot > 0:
-                    self.scrollpos = self.scrollpos_reset     # make it a little more difficult to scroll back once you scrolled a page
-                    self.m_toolBack11OnToolClicked(self)
-                    if self.currentpage != 1:
-                        scrollWin.SetScrollPos(wx.VERTICAL, scrollWin.GetScrollPos(1) + 150, False) #orientation, value, refresh? # 150 is overkill, but it means the new page starts definitely at the bottom of the scroll bar
-                        scrollWin.Scroll(scrollWin.GetScrollPos(1) + 150, scrollWin.GetScrollPos(1))
-                    else:
-                        scrollWin.SetScrollPos(wx.VERTICAL, 0, False) #orientation, value, refresh? # 150 is overkill, but it means the new page starts definitely at the bottom of the scroll bar
-                        scrollWin.Scroll(0, scrollWin.GetScrollPos(1))
-                    
-            elif self.WheelRot < 0:              # end of page
-                self.scrollpos = self.scrollpos_reset 
-                self.m_toolNext11OnToolClicked(self)
-    else:# there is no scrollbar
-        if self.WheelRot > 0:
-            self.m_toolBack11OnToolClicked(self)
+    #set booleans
+    wheel_rotation  = event.GetWheelRotation()   # get rotation from mouse wheel
+    wheel_scrollsup = wheel_rotation > 0 
+    wheel_scrollsdown = wheel_rotation < 0
+    virtualsize = scrollWin.GetVirtualSize()[1]
+    realsize    = scrollWin.GetClientSize()[1]
+    scrollbar_exists = realsize < virtualsize
+    topofpage = (len(set(self.scrollpos)) == 1 and self.scrollpos[0] == 0)
+    bottomofpage = (len(set(self.scrollpos)) == 1 and self.scrollpos[0] != 0)
+    
+    if scrollbar_exists:
+        if topofpage and wheel_scrollsup:
+            reset_scrollpos(self)
             if self.currentpage != 1:
-                scrollWin.SetScrollPos(wx.VERTICAL, scrollWin.GetScrollPos(1) + 150, False) #orientation, value, refresh? # 150 is overkill, but it means the new page starts definitely at the bottom of the scroll bar
-                scrollWin.Scroll(scrollWin.GetScrollPos(1) + 150, scrollWin.GetScrollPos(1))
+                self.m_toolBack11OnToolClicked(self)
+                scroll_end_of_page(scrollWin)
             else:
-                scrollWin.SetScrollPos(wx.VERTICAL, 0, False) #orientation, value, refresh? # 150 is overkill, but it means the new page starts definitely at the bottom of the scroll bar
-                scrollWin.Scroll(0, scrollWin.GetScrollPos(1))
-        elif self.WheelRot < 0:
-            self.scrollpos = self.scrollpos_reset 
+                scroll_begin_of_page(scrollWin)
+                
+        elif bottomofpage and wheel_scrollsdown:
+            reset_scrollpos(self)
+            if self.currentpage < self.totalpages:
+                self.m_toolNext11OnToolClicked(self)
+                scroll_begin_of_page(scrollWin)
+            else:
+                pass    
+    else:# there is no scrollbar
+        if wheel_scrollsup:
+            reset_scrollpos(self)
+            if self.currentpage != 1:
+                self.m_toolBack11OnToolClicked(self)
+                scroll_end_of_page(scrollWin)
+            else:
+                scroll_begin_of_page(scrollWin)
+        elif wheel_scrollsdown:
+            reset_scrollpos(self)
             self.m_toolNext11OnToolClicked(self)
-    event.Skip()                               # necessary to use other functions after this one is used
+    event.Skip() # necessary to use other functions after this one is used
     
 def resetselection(self,event):
     self.resetselection = True
@@ -414,8 +429,8 @@ def switchpage(self,event):
         pagenumber = self.currentpage
         if pagenumber < 1:
             pagenumber = 1
-        if pagenumber > self.nr_pics:
-            pagenumber = self.nr_pics
+        if pagenumber > self.totalpages:
+            pagenumber = self.totalpages
         self.currentpage = pagenumber
         print(self.currentpage)
         f.LoadPage(self)
@@ -430,8 +445,8 @@ def nextpage(self,event):
             self.currentpage = self.currentpage_backup
             print(f" page is now{self.currentpage}")
         else:
-            if not self.currentpage > self.nr_pics-1:
-                self.currentpage = self.currentpage+1
+            if self.currentpage < self.totalpages:
+                self.currentpage += 1
         f.LoadPage(self)
         f.ShowPage_fb(self)
         f.SetScrollbars(self)
@@ -444,8 +459,8 @@ def previouspage(self,event):
         if self.currentpage == 'prtscr':
             self.currentpage = self.currentpage_backup
         else:
-            if not self.currentpage == 1:
-                self.currentpage = self.currentpage-1    
+            if self.currentpage > 1:
+                self.currentpage -= 1    
         f.LoadPage(self)
         f.ShowPage_fb(self)
         f.SetScrollbars(self)            
