@@ -171,11 +171,11 @@ def LoadPage(self):
             self.pageimagecopy = self.pageimage
         if self.resetselection == True:
             self.pageimage = self.pageimagecopy
-        self.width, self.height = self.pageimage.size
+        width, height = self.pageimage.size
         #rescale
-        self.width, self.height = self.pageimagecopy.size #so that it doesn't rescale it everytime ShowPage() is used
-        self.width , self.height = int(self.width*self.zoom) , int(self.height*self.zoom)
-        self.pageimage = self.pageimage.resize((self.width, self.height), PIL.Image.ANTIALIAS)
+        width, height = self.pageimagecopy.size #so that it doesn't rescale it everytime ShowPage() is used
+        width , height = int(width*self.zoom) , int(height*self.zoom)
+        self.pageimage = self.pageimage.resize((width, height), PIL.Image.ANTIALIAS)
     except:
         log.ERRORMESSAGE("Error: cannot load page")
     
@@ -184,11 +184,11 @@ def ShowPrintScreen(self): # no error
         # update
         self.m_CurrentPage11.SetValue("PrtScr")
         #rescale image
-        self.width, self.height = self.pageimagecopy.size #so that it doesn't rescale it everytime ShowPage() is used
-        self.width, self.height = int(self.width*self.zoom) , int(self.height*self.zoom)
-        self.pageimage = self.pageimage.resize((self.width, self.height), PIL.Image.ANTIALIAS)
+        width, height = self.pageimagecopy.size #so that it doesn't rescale it everytime ShowPage() is used
+        width, height = int(width*self.zoom) , int(height*self.zoom)
+        self.pageimage = self.pageimage.resize((width, height), PIL.Image.ANTIALIAS)
         
-        image2 = wx.Image( self.width, self.height )
+        image2 = wx.Image( width, height )
         image2.SetData( self.pageimage.tobytes() )
         
         ##
@@ -207,9 +207,9 @@ def ShowPage_fb(self):
         # update
         self.m_CurrentPage11.SetValue(str(self.currentpage))
         #rescale image
-        self.width, self.height = self.pageimagecopy.size #so that it doesn't rescale it everytime ShowPage() is used
-        self.width, self.height = int(self.width*self.zoom) , int(self.height*self.zoom)
-        self.pageimage = self.pageimage.resize((self.width, self.height), PIL.Image.ANTIALIAS)
+        width, height = self.pageimagecopy.size #so that it doesn't rescale it everytime ShowPage() is used
+        width, height = int(width*self.zoom) , int(height*self.zoom)
+        self.pageimage = self.pageimage.resize((width, height), PIL.Image.ANTIALIAS)
         try:   #draw borders if they exist
             if self.drawborders == True:
                 pageimage = self.pageimage
@@ -217,7 +217,7 @@ def ShowPage_fb(self):
         except:
             pass
         
-        image2 = wx.Image( self.width, self.height )
+        image2 = wx.Image( width, height )
         image2.SetData( self.pageimage.tobytes() )
         
         self.m_bitmapScroll.SetBitmap(wx.Bitmap(image2))
