@@ -98,60 +98,58 @@ def is_number(s):
         return False
 
 
-def drawRec(self,layer,color): # no errors
+def drawrect(self,layer,linecolor): # no errors
     if self.debugmode:
         print("fb=drawRec")
     x0 , y0 = self.cord1
     x1 , y1 = self.cord2
     #rename coordinates if square isn't drawn from top left to bottom right.
     if x0 > x1:
-        c = x0
-        x0 = x1
-        x1 = c
+        x0, x1 = x1, x0
     if y0 > y1:
-        c = y0
-        y0 = y1
-        y1 = c    
+        y0, y1 = y1, y0
     #rescale
     x0 = int(x0*self.zoom)
     y0 = int(y0*self.zoom)
     x1 = int(x1*self.zoom)
-    y1 = int(y1*self.zoom)
-    #    
+    y1 = int(y1*self.zoom)  
         
     width = abs(x0 - x1)
     height = abs(y0 - y1)
     #  Vertical lines   #
-    layer[y0:y1,x0] = np.tile(color,[height,1])
-    layer[y0:y1,x1] = np.tile(color,[height,1])
+    layer[y0:y1,x0] = np.tile(linecolor,[height,1])
+    layer[y0:y1,x1] = np.tile(linecolor,[height,1])
     #  horizontal       #
-    layer[y0,x0:x1] = np.tile(color,[width,1])
-    layer[y1,x0:x1] = np.tile(color,[width,1])
+    layer[y0,x0:x1] = np.tile(linecolor,[width,1])
+    layer[y1,x0:x1] = np.tile(linecolor,[width,1])
     #  transform layer  #
     layer = np.array(layer)
     layer = np.uint8(layer)
     return layer        
+
+
+
 
 def drawCoordinates(self,pageimage): # no errors
     if self.debugmode:
         print("fb=drawCoordinates")
     img = np.array(pageimage)
     img = np.uint8(img)
+    
     try:#try to look if there already exists borders that need to be drawn
         coordinatelist = self.dictionary[f'page {self.currentpage}']
         for coord in coordinatelist:    
             self.cord1 = coord[0:2]
             self.cord2 = coord[2:]
-            img = drawRec(self,img,self.colorlist[0])
+            img = drawrect(self,img,self.colorlist[0])
     except:
         pass
-    
     try:    #there won't always be tempdict borders, so try and otherwise go further
         coordinatelist = self.tempdictionary[f'page {self.currentpage}']
         for coord in coordinatelist:    
             self.cord1 = coord[0:2]
             self.cord2 = coord[2:]
-            img = drawRec(self,img,self.colorlist[1])
+            img = drawrect(self,img,self.colorlist[1])
     except:
         pass
     #export image
@@ -227,6 +225,7 @@ def ShowPage_fb(self):
             if self.currentpage == 'prtscr' and hasattr(self,'currentpage_backup'):
                 self.currentpage = self.currentpage_backup
             output.write(f"{self.currentpage}")
+        output.close()
     except:
         log.ERRORMESSAGE("Error: cannot show page")
         
@@ -293,7 +292,6 @@ def CreateTextCard(self):
         if self.debugmode:
             print("fb=CreateTextCard")
         self.TextCard = True    
-        #LaTeXcode = Text2Latex(self)
         LaTeXcode = self.usertext
         height_card = math.ceil(len(LaTeXcode)/40)/2
         fig = Figure(figsize=[8, height_card], dpi=100)
@@ -413,7 +411,7 @@ def ShowInPopup(self,event,mode):
 
 
 
-def Text2Latex(self):
+def text_to_latex(self,usertext):
     """EXAMPLE:
     defined command = " \secpar{x}{t}}   " for the second partial derivative of a wrt b
     nr = #arguments = 2 which are (a,b)
@@ -422,41 +420,41 @@ def Text2Latex(self):
     """
     # find all user defined commands in a separate file
     # start reading after "###" because I defined that as the end of the notes    
-    usertext = self.usertext
-    file1 = open(str(Path(self.notesdir, r"usercommands.txt")), 'r')
-    newcommand_line_lst = file1.readlines()
+    with open(Path(self.notesdir,"usercommands.txt"),'r') as file1:
+        newcommand_line_lst = file1.readlines()
+        commandsfile = file1.readlines()
+    file1.close()
     
-    index = []
-    for i,commandline in enumerate(newcommand_line_lst):
-        if "###" in commandline:
+    index = 0
+    for i,line in enumerate(commandsfile):
+        if "###" in line:
             index = i+1
     # remove the lines that precede the ###     
-    newcommand_line_lst[:index]=[]
+    newcommand_line_lst[:index] = []
+    commandsfile[:index] = []
     # only look at lines containing "newcommand"
-    newcommand_line_lst = [x for x in newcommand_line_lst if ("newcommand"  in x)]
+    commands = [line for line in commandsfile if ("newcommand"  in line)]
     
     ###  how to replace a user defined command with a command that is known in latex ###
     
     # check for all commands
-    for i,newcommand_line in enumerate(newcommand_line_lst):
+    for _, command_line in enumerate(commands):
         # extract all the data from a commandline
-        definition_start = fc.findchar('{',newcommand_line,0)
-        definition_end   = fc.findchar('}',newcommand_line,0)
+        definition_start = fc.findchar('{',command_line,0)
+        definition_end   = fc.findchar('}',command_line,0)
         
-        num_start = fc.findchar('\[',newcommand_line,"")
-        num_end   = fc.findchar('\]',newcommand_line,"")
+        num_start = fc.findchar('\[',command_line,"")
+        num_end   = fc.findchar('\]',command_line,"")
         
-        latex_start = fc.findchar('{',newcommand_line,1)   
-        latex_end   = fc.findchar('}',newcommand_line,-1)
+        latex_start = fc.findchar('{',command_line,1)   
+        latex_end   = fc.findchar('}',command_line,-1)
         # find the commands explicitly
-        defined_command = newcommand_line[definition_start+1:definition_end]     ## finds \secpar        
-        LaTeX_command   = newcommand_line[latex_start+1:latex_end] ## finds \frac{\partial^2 #1}{\partial #2^2}
-        nr_arg = int(newcommand_line[int(num_start[0]+1):int(num_end[0])])            
+        defined_command = command_line[definition_start+1:definition_end]     ## finds \secpar        
+        LaTeX_command   = command_line[latex_start+1:latex_end] ## finds \frac{\partial^2 #1}{\partial #2^2}
+        nr_arg = int(command_line[int(num_start[0]+1):int(num_end[0])])            
         
         while defined_command in usertext:
-            Q = usertext
-            #replace all the commands
-            usertext = replacecommands(defined_command, LaTeX_command, Q, nr_arg)              
+            usertext = replacecommands(defined_command, LaTeX_command, usertext, nr_arg)              
     return usertext
 
 
