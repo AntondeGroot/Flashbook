@@ -74,6 +74,8 @@ def dirchanged(self,event):
     picnames = [x for _,x in sorted(zip(nrlist,picnames))]
     self.picnames = picnames
     self.bookname = eventpath.name
+    if hasattr(self,'TC'):
+        delattr(self,'TC')
     self.TC = m6.TimeCount(self.bookname,"flashbook")
     self.booknamepath = eventpath.relative_to(self.booksdir)
     self.currentpage = 1
