@@ -58,9 +58,11 @@ def CreateTextCardPrint(self,key):
                 if img_array[j]!= 0:
                     SEARCH = False
                     var = j
+                    break
                 if j == 0:
                     SEARCH = False
                     var = j
+                    break
     if var + border >  img.size[0]:
         var = img.size[0]
     else:
