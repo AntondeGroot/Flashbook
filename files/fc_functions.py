@@ -15,6 +15,7 @@ import random
 import re
 from pathlib import Path
 from termcolor import colored
+import numpy as np
 import wx
 ## figures: the following makes sure there are no figures popping up
 #  make sure it is inactive, otherwise possible qwindows error might occur: https://stackoverflow.com/questions/26970002/matplotlib-cant-suppress-figure-window
@@ -30,6 +31,64 @@ from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 #   find_arguments(5)         - finds all the arguments for a certain command
 #   replace_allcommands(4)    - replaces user defined commands into LaTeX commands that are known.
 """
+
+def cropimage(img,x,backgroundcolor,border):
+    SEARCH1 = True
+    SEARCH2 = True
+    var1 = 0
+    var2 = 0
+    var3 = 0
+    var4 = 0
+    array = np.array(img)- backgroundcolor
+    img_array = np.sum(np.sum(array,2),x) #summed over x-axis
+    print(f"length is {len(img_array)}")
+    while (SEARCH1 or SEARCH2):
+        for i,pixel in enumerate(img_array):
+            j = len(img_array) - i - 1
+            pixel1 = img_array[i]
+            pixel2 = img_array[j]
+            print(pixel1)
+            if pixel1 != 0:
+                if SEARCH1:
+                    var1 = i
+                    SEARCH1 = False
+                var3 = i
+            if pixel2 != 0:
+                if SEARCH2:
+                    var2 = j
+                    SEARCH2 = False
+                var4 = j
+            # if from both directions the border is found
+            if var1 != 0 and var2 != 0:
+                SEARCH1 = False
+                SEARCH2 = False
+                break
+            # if they both meat in the middle, the whole image has been scanned
+            # and can be stopped
+            if j <= i: 
+                if var4 == 0:
+                    var2 = var3
+                if var3 == 0:
+                    var1 = var4
+                SEARCH1 = False
+                SEARCH2 = False
+                break
+    if var2 + border >  img.size[x]:
+        var2 = img.size[x]
+    else:
+        var2 = var2 + border
+        
+    if var1-border < 0:
+        var1 = 0
+    else:
+        var1 = var1 - border
+    if x == 1:
+        img = img.crop((0, var1, img.size[0], var2))
+    if x == 0:
+        img = img.crop((var1, 0, var2, img.size[1]))
+    
+    return img    
+
 
 def is_number(s):
     try:
