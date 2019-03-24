@@ -240,6 +240,7 @@ def find_arguments(hookpos, sentence, defined_command, nr_arguments):
                     argcount += 1
                     if argcount == nr_arguments:
                         SEARCH = False
+                        break
                     argclose_index.append(k+cstr_start-1) #save closing indices
     arguments = []
     for i in range(nr_arguments):
@@ -263,6 +264,7 @@ def replace_allcommands(defined_command, LaTeX_command, Question, nr_arg):
     
             if not A[0]: # quits if the index is empty
                 SEARCH = False
+                break
             else:
                 index1 = find_arguments(cmd_start,Question ,defined_command,nr_arg)[1][0]-length_c
                 index2 = find_arguments(cmd_start,Question,defined_command,nr_arg)[2][1]+1
@@ -279,6 +281,7 @@ def replace_allcommands(defined_command, LaTeX_command, Question, nr_arg):
             # only needs to do this once for the entire string
             Question = Question.replace(defined_command,LaTeX_command)
             SEARCH = False
+            break
     
     return Question
 
