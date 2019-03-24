@@ -55,8 +55,10 @@ def dirchanged(self,event):
                     if j > 0:
                         if (f.is_number(picname[k+1])) == True:
                             SEARCH = False
+                            break
                 elif j == name_len - 1: #EOS
                     SEARCH = False
+                    break
         indexlist.sort()
         len_nr = len(indexlist)
         
