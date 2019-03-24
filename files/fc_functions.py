@@ -240,7 +240,6 @@ def find_arguments(hookpos, sentence, defined_command, nr_arguments):
                     argcount += 1
                     if argcount == nr_arguments:
                         SEARCH = False
-                        break
                     argclose_index.append(k+cstr_start-1) #save closing indices
     arguments = []
     for i in range(nr_arguments):
@@ -524,7 +523,9 @@ def LoadFlashCards(self,USERINPUT):
                 if T_F2 == True:
                     self.picdictionary.update({f'A{i}': picname})
                 SEARCH2 = T_F2      
-                
+    except:
+        log.ERRORMESSAGE("Error: couldn't create Cards, LoadFlashCards error")
+    try:        
         """CARD ORDER"""
         ## determine cardorder based on user given input
         if USERINPUT == False:
@@ -579,8 +580,9 @@ def LoadFlashCards(self,USERINPUT):
                 self.textdictionary.update({f'Q{i}' : self.questions2[i]})
             if self.answers2[i] != '':
                self.textdictionary.update({f'A{i}' : self.answers2[i]})
+        
     except:
-       log.ERRORMESSAGE("Error: couldn't pick file, LoadFlashCards error")
+       log.ERRORMESSAGE("Error: couldn't put the cards in a specific order, LoadFlashCards error")
     
 def ShowPage_fc(self):
     try:
