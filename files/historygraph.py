@@ -326,4 +326,4 @@ def testmodule():
     im = drawlegend(totalbooks,totalvalues,legendbackup,hatchlist)
     #im.show()
     
-testmodule()
+#testmodule()
