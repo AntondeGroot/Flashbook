@@ -1,0 +1,437 @@
+%% Based on a TeXnicCenter-Template, which was
+%% created by Christoph Börensen
+%% and slightly modified by Tino Weinkauf.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\documentclass[a4paper,12pt]{scrartcl} %This is a special class provided by the KOMA script, which does a lot of adjustments to adapt the standard LaTeX classes to european habits, change to [a4paper,12pt,twoside] for doublesided layout
+
+
+%########################### Preferences #################################
+
+
+% ******** vmargin settings *********
+\usepackage{vmargin} %This give you full control over the used page arae, it maybe not the idea od Latex to do so, but I wanted to reduce to amount of white space on the page
+\setpapersize{A4}
+\setmargins{3.5cm}%			% left edge
+					 {1.5cm}%     % Rand, top edge
+           {14.7cm}%		% text width
+           {23.42cm}%   % text hight
+           {14pt}%			% header hight
+           {1cm}%   	  % header distance
+           {0pt}%				% footer hight
+           {2cm}%    	  % footer distance         
+
+% ********* Font definiton ************
+\usepackage{t1enc} % as usual
+\usepackage[latin1]{inputenc} % as usual
+\usepackage{times}		
+\usepackage{mathptmx}  	%mathematical fonts for use with times, I encountered some problems using this package togather with pdftex, which I was not able to resolve
+
+% ********* Graphics definition *******
+\usepackage[pdftex]{graphicx} % required to import graphic files
+\usepackage{color} %allows to mark some entries in the tables with color
+\usepackage{eso-pic} % these two are required to add the little picture on top of every page
+\usepackage{everyshi} % these two are required to add the little picture on top of every page
+\renewcommand{\floatpagefraction}{0.7} %default:0.5 allows two big pictures on one page
+
+%********** Enybeling Hyperlinks *******
+\usepackage[pdfborder=000]{hyperref}% this enables jumping from a reference and table of content in the pdf file to its target
+
+% ********* Table layout **************
+\usepackage{booktabs}	  	%design of table, has an excellent documentation
+\usepackage{lscape}			%use this if you want to rotate the table together with the lines around the table
+
+% ********* Caption Layout ************
+\usepackage{ccaption} % allows special formating of the captions
+\DeclareOldFontCommand{\bf}{\normalfont\bfseries}{\mathbf} %# because this is an old font command no longer used, redefine it
+\captionnamefont{\bf\footnotesize\sffamily} % defines the font of the caption name (e.g. Figure: or Table:)
+\captiontitlefont{\footnotesize\sffamily} % defines the font of the caption text (same as above, but not bold)
+\setlength{\abovecaptionskip}{0mm} %lowers the distace of captions to the figure
+
+
+%******* user inputs personal inputs ******
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage[section]{placeins}
+\usepackage{cite}
+\usepackage{paralist}
+% HOW TO PUT MATLAB CODE IN LATEX: http://tex.stackexchange.com/questions/75116/what-can-i-use-to-typeset-matlab-code-in-my-document
+\usepackage{listings}
+\usepackage{color} %red, green, blue, yellow, cyan, magenta, black, white
+\definecolor{mygreen}{RGB}{28,172,0} % color values Red, Green, Blue
+\definecolor{mylilas}{RGB}{170,55,241}
+
+% ********* Header and Footer **********
+% This is something to play with forever. I use here the advanced settings of the KOMA script
+
+\usepackage{scrpage2} %header and footer using the options for the KOMA script
+\renewcommand{\headfont}{\footnotesize\sffamily} % font for the header
+\renewcommand{\pnumfont}{\footnotesize\sffamily} % font for the pagenumbers
+
+
+
+
+%the following lines define the pagestyle for the main document
+\defpagestyle{cb}{%
+(\textwidth,0pt)% sets the border line above the header
+{\pagemark\hfill\headmark\hfill}% doublesided, left page
+{\hfill\headmark\hfill\pagemark}% doublesided, right page
+{\hfill\headmark\hfill\pagemark}%  onesided
+(\textwidth,1pt)}% sets the border line below the header
+%
+{(\textwidth,1pt)% sets the border line above the footer
+{{\it Federation Confidential}\hfill Anton de Groot}% doublesided, left page
+{Anton de Groot\hfill{\textit{Radboud University}}}% doublesided, right page
+{Anton de Groot\hfill{\textit{Radboud University}}} % one sided printing
+(\textwidth,0pt)% sets the border line below the footer
+}
+
+%this defines the page style for the first pages: all empty
+%\renewpagestyle{plain}%
+%	{(\textwidth,0pt)%
+%		{\hfill}{\hfill}{\hfill}%
+%	(\textwidth,0pt)}%
+%	{(\textwidth,0pt)%	
+%		{\hfill}{\hfill}{\hfill}%
+%	(\textwidth,0pt)}
+
+%********** Footnotes **********
+\renewcommand{\footnoterule}{\rule{5cm}{0.2mm} \vspace{0.3cm}} %increases the distance of footnotes from the text
+\deffootnote[1em]{1em}{1em}{\textsuperscript{\normalfont\thefootnotemark}} %some moe formattion on footnotes
+
+%################ End Preferences, Begin Document #####################
+
+
+
+
+\pagestyle{plain} % on headers or footers on the first page
+
+\thispagestyle{empty}
+
+
+\begin{document}
+
+\begin{center}
+
+
+
+\vspace{4cm}
+
+% There might be better solutions for the title page, giving all distances and sizes manually was simply the easiest solution
+
+{\Huge Path Integral Control }
+
+\vspace{.25cm}
+
+{\Huge with history dependent basis functions}
+
+
+
+
+
+
+\vspace{1cm}
+
+{\Large Anton de Groot}%as this is an english text I didn't load the german package, this would ease the use of special characters
+\vspace{1cm}
+
+{\Large \today} %adds the current date
+
+
+\vspace{1cm}
+
+\begin{figure}[h]
+    \centering
+		\includegraphics[width=15cm]{kaft8.png}
+	\label{fig:logo}
+\end{figure}
+
+\vspace{\fill}
+
+aammdegroot@gmail.com
+
+\end{center}
+\newpage
+
+%%The following loads the picture on top of every page, the numbers in \put() define the position on the page:
+%\AddToShipoutPicture{\setlength\unitlength{0.1mm}\put(604,2522){\includegraphics[width=1.5cm]{logo.jpg}}}
+
+\pagestyle{cb} % now we want to have headers and footers
+\thispagestyle{empty}
+\tableofcontents
+
+\newpage
+
+
+
+
+\lstset{language=Matlab,%
+    %basicstyle=\color{red},
+    breaklines=true,%
+    morekeywords={matlab2tikz},
+    keywordstyle=\color{blue},%
+    morekeywords=[2]{1}, keywordstyle=[2]{\color{black}},
+    identifierstyle=\color{black},%
+    stringstyle=\color{mylilas},
+    commentstyle=\color{mygreen},%
+    showstringspaces=false,%without this there will be a symbol in the places where there is a space
+    numbers=left,%
+    numberstyle={\tiny \color{black}},% size of the numbers
+    numbersep=9pt, % this defines how far the numbers are from the text
+    emph=[1]{for,end,break,if,else},emphstyle=[1]\color{red}, %some words to emphasise
+    %emph=[2]{word1,word2}, emphstyle=[2]{style},    
+}
+
+
+
+
+
+
+\section{Introduction}
+
+%\textbf{In this research}
+
+This research was conducted to explore whether it is possible to successfully apply time dependent basis functions to a specific problem which involves multi-task learning. In general it is not trivial to find the optimal control to a given scenario, certainly when it involves solving multiple tasks at once. To find the optimal control Path Integral Control theory (PIC) will be used. PIC formulates an optimal control in terms of a cost associated with a path taken and an end-cost, the successfulness of a taken path. In our daily lives we would like to avoid obstacles that are in our paths, but we also do not want to swerve excessively. PIC theory will provide an algorithmic description to accomplish this.
+
+%\textbf{In this thesis - generalize}
+
+In this thesis we can imagine a drone trying to fly through a gap in a wall. The algorithm as defined in section \ref{sec:algorithm} will compute an optimal control function, such that the drone will fly through one of two gaps with a high percentage of success. Then a constant drift term will be added, a constant breeze trying to push the drone away from the gaps. The drone then needs to learn 2 tasks: to fly through the gap, and to adjust for the wind and perhaps utilize it to its advantage. If the drift term is too large the drone will not be able to fight against the drift. If not a single path ends up through a gap, that is to say, not a single target is reached, then the algorithm in section \ref{sec:algorithm} cannot be applied and is therefore not able to learn.\footnote{In addition all end-costs will be infinite and there will not even be a measure of 'better performance'.} This is the only constraint on the magnitude of the drift term. The direction of the drift term is not known and is per path randomly chosen to be either positive or negative.
+
+The model without basis functions has inputs that are only dependent on its current position to determine what the control function should be. This means that there is no input that informs us about the drift term.
+Time dependent basis functions, however, may give us an insight into what the drift term might be if we keep record of our past steps. The model with history dependent basis functions might then, in principle, be able to learn about the drift and use it to its advantage to lower the control cost and use it to drift towards its target.
+
+%\textbf{Goal of the thesis - specify}
+
+In summary: the goal of this thesis is to see if history dependent basis functions are able to learn a so called multi-task problem.
+
+
+\newpage
+\section{Theory}
+\subsection{Basis functions}
+
+In the case of linear regression, where we want to approximate a certain function given some inputs we can write it in the form:\cite{Bishop138}
+
+\begin{equation} u(\vec{x},\vec{\omega})=\sum\limits_{i=1}^{D}\omega_i\phi_i(x) \end{equation}  
+
+where $\phi_i$ is a so called basis function and $u(x)$ will be our control function. There is a plethora of basis functions; in fourier series a combination of sines and cosines can approximate certain functions. So in this case the basis functions could be sines, but other options also include polynomials such that $\sum\limits_0^3 \phi_i(x)=1+x+x^2+x^3$. In this thesis I will mostly look at the hyperbolic tangent function of the form: $\phi_i(x)=\tanh(xb_i+c_i)$
+
+This basis function is chosen because we would like to have a basis function that does not result in a control term that can grow infinitely large, as it is not physically possible to exert such a force. This can be the case for polynomial basis functions. There is only one fixed point per basis function for hyperbolic tangents, but infinitely many stable and unstable fixed points if we choose sinusoidal basis functions.
+
+
+\subsection{Delay lines and history dependent basis functions}
+
+Delay lines repeat what the past few positions were. For example the current position $x(t_i)$ for $N$ different paths will be a vector, a generalized position $X$ will then be a matrix consisting of $n$ past positions
+\begin{equation} X(t_i)=\begin{pmatrix}
+	\vec{x}(t_i)& \vec{x}(t_{i-1})&\ldots&\vec{x}(t_{i-n})
+\end{pmatrix}\end{equation}
+The position $X(t_i)$ is then used in basis functions of the form $\tanh(\vec{X}b_j+c_j)$.
+ 
+
+
+\subsection{Taken's embedding theorem}
+%% start referencing Embedding Theorem
+The goal is to learn based on $O(f(x_1,x_2,\ldots,x_N))$ where $O$ is the model which is determined by some unknown function $f$. Taken's embedding theorem states we can determine this $f$ by conducting several measurements of its state at different times. However, it should be noted that Taken's theorem applies to deterministic cases to determine strange attractors.\cite{embedding} In this case we ignore that it should be deterministic and apply it to a stochastic scenario. A model in this case could be of the form $\dot{x}=b+u+\zeta$. The delay lines are then the equivalent of taking multiple consecutive measurements.\cite{embedding}
+%% end referencing Embedding Theorem
+
+
+%$\begin{matrix} Delay1(t)& = &x(t-1)\\
+%																Delay2(t)& = &Delay1(t-1)\\
+%																\vdots& & \vdots\\
+	%															DelayN(t)& = &DelayN-1(t-1)\end{matrix}$
+
+
+
+\newpage
+\subsection{The algorithm}\label{sec:algorithm}
+
+In order to compute the trajectory of a certain path in discrete time, we can express the displacement $dX$ as the following equation: 
+
+
+
+
+\begin{compactitem}
+\item[] \begin{equation} dX = bdt + \sigma(udt + \rho dW),  \end{equation}\label{eq:dynamics}
+
+\end{compactitem}
+
+
+
+where $b$ is a drift term, which is either plus or minus a certain constant value. This means that the wind is blowing constantly in the same direction for an entire path, but that the wind direction for different paths might blow in opposite directions. $U$ is the aforementioned control term. This can be any arbitrary Markov control\cite{septhesis}, i.e. a stochastic control in discrete time. And $dW$ is a stochastic variable, $\rho$ and $\sigma$ are positive real constants. Which can be rewritten to the form:
+
+
+\begin{compactitem}
+\item[] \begin{equation} \dot{X} = b + u + \xi  \end{equation}
+
+\end{compactitem}
+where $\rho$ and $\sigma$ are set to 1 and where $\xi$ equals:
+
+
+\begin{equation} \xi=\frac{dW}{dt} \end{equation}
+
+To be able to use Path Integral Control theory we must use a certain path cost, defined as:
+
+
+\begin{equation} S^u(t) =\int\limits_{t_i}^{t_f}V (\tau,X^u(\tau)) + \frac{1}{2}u(\tau,X^u(\tau))^2 d\tau+\int\limits_{t_i}^{t_f}u(\tau,X^u(\tau))dW
+ \end{equation}
+%% start reference to Sep page 11
+Note that the cost S depends on future values of X and is therefore not adaptive.\cite{septhesis} It also includes a stochastic integral with respect to Brownian motion. This is somewhat unusual because the stochastic integral vanishes when taking the expected value, as is done in equations (\ref{eq:NewA}),(\ref{eq:NewY}). However when performing a change of measure with a drift u, such a term appears naturally.\cite{septhesis}
+%% end reference to Sep
+
+
+The function $V(\tau,X(\tau))$ is a cost-function associated with a certain position. This cost-function will be infinite when it coincides with the wall at time $t_f$ and zero otherwise, for all other timesteps $t\neq t_f$ this will also be zero. This means that a path is only punished by this term by the result it yields: success or failure. This cost term is called the end-cost $\Phi(X(t_f))$.
+
+
+
+\begin{equation} \label{eq:totalcost} S^u(t) = \Phi(X^u(t_f)) + \int\limits_{t_i}^{t_f} \frac{1}{2}u(\tau,X^u(\tau))^2 d\tau+\int\limits_{t_i}^{t_f}u(\tau,X^u(\tau))dW
+ \end{equation}
+
+
+
+
+The second term in the above equation: $\int u^2 d\tau$, means that any large control functions will be punished. The last term in the equation that reads: $\int udW$, indicates that the deviation from a certain path by the product of the control times a stochastic variable cannot be too large either.
+
+It can be shown that if you assume the optimal controller $u^\star$ to be of the parametrized form:\cite{seppaper}
+
+\begin{equation} u^\star(x,t)=A^\star(t)h(x,t) \end{equation}
+
+that this leads to equation \ref{eq:Ahf}. Where $h$ is the $k$-dimensional basis functions applied to $x$ and the parameters constituting the parameters $A\in \mathbb{R}^{N\times k}$
+
+Solving this equation will then lead to:
+
+\begin{equation} \label{eq:Ahf} A(t)\langle hf' \rangle (t) = \langle uf'\rangle(t) + \lim\limits_{r\rightarrow t}\left\langle \frac{\int_{t}^{r} f'(\tau) dW(\tau)}{r-t}\right\rangle \end{equation}
+
+\begin{equation} \label{eq:NewA} A = \left(\langle uh'\rangle + \langle  h(dW+u)\rangle\right) \langle hh' \rangle^{-1} \end{equation}
+
+
+%for any process we have \begin{equation}\label{eq:NewY} \langle Y\rangle(t) = E[\alpha u Y (t)] \end{equation}
+
+\begin{equation} \label{eq:NewU} u(x,t) = A(t)h(x,t) \end{equation} 
+
+
+
+We now have almost everything we need to start applying the algorithm. We also need a measure of performance for this we first need the weight of a path:\cite{septhesis}
+
+
+\begin{equation} \alpha^u = \frac{e^{-S^u_{t_0}}}{\mathbb{E}\left[e^{-S^u_{t_0}}\right]}  \end{equation}
+
+and the fraction of effective samples which is
+
+\begin{equation} \lambda^u = \frac{1}{\mathbb{E}\left[(\alpha^u)^2\right]} = \frac{1}{1+var\left((\alpha^u)^2\right)} \hspace{1cm} 0\leq \lambda^u\leq 1 \end{equation}
+
+So if we can compute $A$ we can also compute the control $u(x,t)$ after which we can compute a new $A$. Here the term $\int dW$ is a stochastic integral with $dW$ brownian noise.
+
+
+
+\newpage
+
+\subsection{The algorithm written in Matlab}
+
+The function in figure~\ref{functioncode} is used to calculate the terms $h(dW+u)$ and the term $h$ in equation~\ref{eq:NewA}. The term $h(x)$ is a matrix with length \textsl{"the number of paths"}, and width \textsl{"the number of basisfunctions"}. Furthermore the terms $b,c$ are zero mean random variables. The variables $c_{ij}$ are the same for every path $i$ but different per basisfunction $j$, whereas the variables $b_{ij}$ are different for every path and basisfunction. The steps in line 3 and 4 are there to cut matrix of width 1 down to a vector. \footnote{and var1? or something else?}
+
+
+\begin{figure}[!htb]%[h]
+    %\centering
+		\includegraphics[width=10cm]{code_function_large.png}
+	\label{functioncode}
+	\caption{The function used in the algorithm}
+\end{figure}
+
+The algorithm described in figure~\ref{main} is only one iteration of the algorithm. The whole algorithm needs to be put in a loop to keep on finding new expressions for $A$ in equation~\ref{eq:NewA} which can be used to find a new and hopefully better control term in equation~\ref{eq:NewU}.
+
+\subsubsection{the main algorithm}
+The variable $X$ in line 18 is a matrix consisting of the vector of the current positions $x$ in the first column followed by the subsequent delaylines expressed in a matrix.
+
+Only the successful paths ending in one of the gaps are eventually important. So in line 21 we only look if a path ends in a gap and give it the value 1, otherwise it is 0. In line 28 we multiply this with the pathcosts. Doing it this way we can avoid using infinities in the end-cost $\Phi(X(t_f))$ as we saw in equation~\ref{eq:totalcost} 
+
+\begin{figure}[!htb]%[h]
+    %\centering
+		\includegraphics[width=15cm]{code_main_large.png}
+	\label{main}
+	\caption{The main algorithm, written in Matlab.}
+\end{figure}
+
+
+
+
+
+
+
+
+
+
+
+
+\newpage
+
+\section{Discussion of the results}
+
+
+
+
+During the experiment I looked at two scenarios. In the first scenario an extra drift term is multiplied to the control term which is represented by the symbol $\sigma$ in equation \ref{eq:dynamics}, and in the second scenario an extra drift term is added which is represented by the symbol $b$ in the same equation.
+
+As it turns out the algorithm cannot improve when the drift is multiplied with the control. There is no difference between using 0 and 4 delay lines and it is unable to learn.\footnote{why is this? Expand on this} So I took a look at the situation where the drift was just the added term Drift*dt.
+
+When I used 15 basisfunctions and looked at 0 and 4 delay lines the cases where I used delay lines worked a lot better. The next thing to consider is when you are using delay lines you are in principle using more basisfunctions, could this simply be a case of just using more basisfunctions? As it turns out a lot of the difference can be explained by using more basisfunctions, but not all of it. So what had to be checked is if using 50 basisfunctions without any delay lines works differently from using 50 basisfunctions spread out over the original input line and the 4 delay lines with 10 basisfunctions for each line.\footnote{explain what a delay line is}
+
+\begin{figure}[!htb]
+    \centering
+		\includegraphics[width=15cm]{results1.png}
+	\label{fig:logo1}
+	\caption{Comparing 4 delay lines with 0 delay lines when there is no drift term}
+\end{figure}
+
+\begin{figure}[!htb]
+    \centering
+		\includegraphics[width=15cm]{results2.png}
+	\label{fig:logo2}
+	\caption{Comparing 4 delay lines with 0 delay lines when there is a strong drift term}
+\end{figure}
+
+The result of which is that for sufficient iterations of the algorithm\footnote{i.e. 80+ iterations} they will both converge to the same result in terms of effective sample size and the same success rate. But when looked at the first 50 iterations the delay lines go faster to a higher success rate than when no delay lines are used, the effective sample size however does not differ significantly from one another.
+
+Because an earlier version of the algorithm there was a suspicion that there was a fundamental different behavior when we added a large drift term. In those instances we would see that the algorithm learned The difference between now and the previous situation where we saw that the effective sample size and success ratio went down to zero after a few iterations. Whereas after 1 or 2 iterations the success ratio was going up. In that scenario there was a significant difference between using delay lines and no delay lines, where for no delay lines the Effss went to zero in the case for delay lines the effss didn't go to zero but remained constant. The problem here however was that the Effss didn't go up after a random initialization and the success rate went to zero. This means that the algorithm was not learning. The problem was a bug in the update rules for the algorithm which caused overfitting if there was no drift term present (meaning the Effss went down even if the success rate was high). A higher drift meant that the Effss went faster to zero after fewer iterations of the algorithm.
+
+This is no longer applicable, there is no more significant difference. The algorithm is completely dependent on rollouts going through the gaps. As long as even a single rollout goes through a gap the algorithm can learn to improve itself to increase the success rate. If there are no successfull rollouts then the algorithm will break down since it inverts a matrix consisting of components that are dependent on the amount of successful rollouts it would then try to invert a zero-matrix causing errors. 
+
+It can be concluded that the algorithm using delay lines works significantly faster than the algorithm without delay lines.
+
+
+\newpage
+\appendix
+\section*{Appendices}
+\addcontentsline{toc}{section}{Appendices}
+\renewcommand{\thesubsection}{\Alph{subsection}}
+
+
+
+
+\subsection{About the cover page}
+
+The image on the cover page shows what the result is when Path Integral Control is applied. The upper row shows the scenario where there is no drift term and the lower row shows the scenario where there is a strong drift term. On the left side we see the initial unlearned scenario, and on the right side we see the result of applying the algorithm. \cite{seppaper}
+
+
+\newpage
+\newpage
+
+
+
+%\section*{Appendices}
+%\subsection*{I) main programme}
+%\lstinputlisting{main_algorithm.m}
+%\newpage
+%\subsection*{II) programme used to plot the data}
+%\lstinputlisting{data_plotting.m}
+
+
+
+
+\bibliography{mybib}{}
+%\bibliographystyle{ieeetr}
+\bibliographystyle{plainnat}
+
+
+\end{document}
+
+
+
