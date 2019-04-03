@@ -287,7 +287,7 @@ def CreateGraph(self):
         new_im.paste(im5, (txt3.width+im1.width+im2.width ,int(txt2.height*1.5)))
         new_im.paste
     else:
-        new_im = PIL.Image.new('RGB', (0, 0), (254,240,231))
+        new_im = PIL.Image.new('RGB', (1, 1), (254,240,231))
     
     #resize horizontally
     VirtualWidth = self.m_panelGraph.GetVirtualSize()[0]
