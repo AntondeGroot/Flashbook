@@ -242,22 +242,25 @@ def panel4_bitmapleftup(self,event):
 def selectionentered(self,event):
     
     if hasattr(self,'bookname') and self.bookname != '':
-        if self.m_textCtrl2.GetValue() != '' or len(self.pic_question) > 0:
-            if self.questionmode == True:
+        USER_textinput = self.m_textCtrl2.GetValue()
+        PICS_DRAWN = len(self.pic_question) 
+        QUESTION_MODE = self.questionmode
+        if  USER_textinput != '' or PICS_DRAWN > 0:
+            if QUESTION_MODE:
                 # change mode to answer
-                usertext = self.m_textCtrl2.GetValue()
-                self.pdf_question = usertext
+                usertext = USER_textinput
+                self.latex_question = usertext
                 self.usertext = f.text_to_latex(self,usertext)
                 self.questionmode = False
                 self.m_textCtrl1.SetValue("Answer:")
                 self.m_textCtrl2.SetValue("")
                 
                 # check for [[1,2,3]]
-                if len(self.pic_question)>1:
+                if PICS_DRAWN > 1:
                     f.CombinePics(self,self.pic_question_dir)
                     if type(self.pic_question[0]) is list:
                         self.pic_question[0] = self.pic_question[0][0]
-                    self.pdf_question = str(self.pdf_question) + r" \pic{" + "{}".format(self.pic_question[0])+r"}"
+                    self.latex_question = str(self.latex_question) + r" \pic{" + "{}".format(self.pic_question[0])+r"}"
                 else:       
                     print("only horizontal questions")
                     print(len(self.pic_question))
@@ -267,12 +270,12 @@ def selectionentered(self,event):
                             f.CombinePics(self,self.pic_question_dir)
                         else:
                             print("is not a list")
-                        self.pdf_question = str(self.pdf_question) + r" \pic{" + "{}".format(self.pic_question[0])+r"}"
+                        self.latex_question = str(self.latex_question) + r" \pic{" + "{}".format(self.pic_question[0])+r"}"
                 f.ShowInPopup(self,event,"Question")
                  
-            else:
-                usertext = self.m_textCtrl2.GetValue()
-                self.pdf_answer = usertext
+            else:#ANSWER mode
+                usertext = USER_textinput
+                self.latex_answer = usertext
                 self.usertext = f.text_to_latex(self,usertext)
                 self.questionmode = True
                 self.m_textCtrl1.SetValue("Question:")
@@ -300,24 +303,62 @@ def selectionentered(self,event):
                     f.CombinePics(self,self.pic_answer_dir)
                     if type(self.pic_answer[0]) is list:
                         self.pic_answer[0] = self.pic_answer[0][0]
-                    self.pdf_answer = str(self.pdf_answer) + r" \pic{" + "{}".format(self.pic_answer[0])+r"}"                        
+                    self.latex_answer = str(self.latex_answer) + r" \pic{" + "{}".format(self.pic_answer[0])+r"}"                        
                 elif len(self.pic_answer) == 1:
                     if type(self.pic_answer[0]) is list:        
                         f.CombinePics(self,self.pic_answer_dir)
                     else:
                         print("is not a list")                
-                    self.pdf_answer = str(self.pdf_answer) + r" \pic{" + "{}".format(self.pic_answer[0])+r"}"                        
+                    self.latex_answer = str(self.latex_answer) + r" \pic{" + "{}".format(self.pic_answer[0])+r"}"                        
                 
 
                 f.ShowInPopup(self,event,"Answer")                    
                 # save the user inputs in .tex file
-                if len(self.pdf_question) != 0:
+                if len(self.latex_question) != 0:
                     with open(str(Path(self.notesdir, self.bookname +'.tex')), 'a') as output: # the mode "a" appends to the file    
-                        output.write(r"\quiz{" + str(self.pdf_question) + "}")
-                        output.write(r"\ans{"  + str(self.pdf_answer)   + "}"+"\n")
+                        output.write(r"\quiz{" + str(self.latex_question) + "}")
+                        output.write(r"\ans{"  + str(self.latex_answer)   + "}"+"\n")
                 #reset all
                 f.ResetQuestions(self)
+                
+        elif QUESTION_MODE == False:
+            # if in question mode the user only typed in some text and want to save that 
+            self.questionmode = True
+            self.m_textCtrl1.SetValue("Question:")
+            self.m_textCtrl2.SetValue("")
+            self.tempdictionary = {}
+            
+            # remove temporary borders
+            self.pageimage = self.pageimagecopy
+            f.ShowPage_fb(self)
+            
+            
+            if self.stayonpage == False: # if screenshot mode
+                with open(self.PathBorders, 'w') as file:
+                        file.write(json.dumps(self.dictionary)) 
+            if len(self.pic_answer) > 1:
+                f.CombinePics(self,self.pic_answer_dir)
+                if type(self.pic_answer[0]) is list:
+                    self.pic_answer[0] = self.pic_answer[0][0]
+                self.latex_answer = str(self.latex_answer) + r" \pic{" + "{}".format(self.pic_answer[0])+r"}"                        
+            elif len(self.pic_answer) == 1:
+                if type(self.pic_answer[0]) is list:        
+                    f.CombinePics(self,self.pic_answer_dir)
+                else:
+                    print("is not a list")                
+                self.latex_answer = str(self.latex_answer) + r" \pic{" + "{}".format(self.pic_answer[0])+r"}"                        
+            
 
+            f.ShowInPopup(self,event,"Answer")                    
+            # save the user inputs in .tex file
+            if len(self.latex_question) != 0:
+                with open(str(Path(self.notesdir, self.bookname +'.tex')), 'a') as output: # the mode "a" appends to the file    
+                    output.write(r"\quiz{" + str(self.latex_question) + "}")
+                    output.write(r"\ans{"  + str(self.latex_answer)   + "}"+"\n")
+            #reset all
+            f.ResetQuestions(self)
+            
+            
 def arrowscroll(self,event,direction):
     
     scrollWin = self.m_scrolledWindow1
