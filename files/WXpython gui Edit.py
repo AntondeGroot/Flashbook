@@ -5,8 +5,8 @@ output = open(filename2, 'w')
 f = open(filename, 'r')
 read = f.readlines()
 
-#Cpath = r'u"D:\\Anton\\Documents\\' 
-Cpath = r'u"C:\\Users\\Anton\\.spyder-py3\\flashbook\\fin\\Flashbook-master\\gui design\\'
+Cpath = r'u"D:\\Anton\\Documents\\' 
+#Cpath = r'u"C:\\Users\\Anton\\.spyder-py3\\flashbook\\fin\\Flashbook-master\\gui design\\'
 # every first item will be replaced by the one following it.
 org = [
        ".AddSpacer",'.Add',
@@ -24,7 +24,8 @@ org = [
        'self.m_notebook.AddPage( self.m_panel40, u"a page", True )','self.m_notebook.AddPage( self.m_panel40, u"General", False )',
        'self.m_notebook.AddPage( self.m_panel41, u"a page", False )','self.m_notebook.AddPage( self.m_panel41, u"Flashbook", False )',
        'self.m_notebook.AddPage( self.m_panel42, u"a page", False )','self.m_notebook.AddPage( self.m_panel42, u"Flashcard", False )',
-       'self.m_notebook.AddPage( self.m_panel43, u"a page", False )','self.m_notebook.AddPage( self.m_panel43, u"Synchronize", False )'
+       'self.m_notebook.AddPage( self.m_panel43, u"a page", False )','self.m_notebook.AddPage( self.m_panel43, u"Synchronize", False )',
+       'self.m_textCtrlDelBook = wx.TextCtrl( self.m_panel26, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )','self.m_textCtrlDelBook = wx.TextCtrl( self.m_panel26, wx.ID_ANY, data, wx.DefaultPosition, wx.DefaultSize, 0 )'
        ]
 a = []
 for i in read:  
