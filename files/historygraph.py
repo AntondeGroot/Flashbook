@@ -292,6 +292,9 @@ def CreateGraph(self):
     #resize horizontally
     VirtualWidth = self.m_panelGraph.GetVirtualSize()[0]
     VirtualWidth = int(VirtualWidth * 0.95)
+    if new_im.width == 0:
+        #just to avoid /0 errors
+        new_im.width = 1
     h = int(new_im.height/new_im.width*VirtualWidth)
     w = VirtualWidth
     if h > 440:#resize vertically
