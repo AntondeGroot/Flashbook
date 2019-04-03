@@ -230,8 +230,8 @@ def ShowPage_fb(self):
         log.ERRORMESSAGE("Error: cannot show page")
         
 def ResetQuestions(self): # no errors
-    self.pdf_question     = ''
-    self.pdf_answer       = ''
+    self.latex_question     = ''
+    self.latex_answer       = ''
     self.pic_question     = []
     self.pic_answer       = []
     self.pic_question_dir = []
@@ -382,6 +382,7 @@ def ShowInPopup(self,event,mode):
         CombinePicText_fb(self,Path(directory))
     except:
         try:
+            print("Only contains text not image")
             self.image = self.imagetext
         except:
             pass
