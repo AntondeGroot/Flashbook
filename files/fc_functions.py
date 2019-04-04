@@ -41,6 +41,45 @@ MB_DEFBUTTON2 = 0x00000100
 #   replace_allcommands(4)    - replaces user defined commands into LaTeX commands that are known.
 """
 
+def findpicture(self,key):
+    """Instead of just opening the path of a picture
+    Try to find out if the path exists
+    if it does not exist, try to look in all other folders.
+    This problem may occur if you have combined several books.
+    If the picture really doesn't exist, then the user gets notified with a messagebox."""
+    FOUNDPIC = False
+    path = Path(self.picsdir, self.bookname, self.picdictionary[key])
+    if path.exists():
+        imagepic = PIL.Image.open(str(path))
+        FOUNDPIC = True
+    else:
+        folders = os.listdir(self.picsdir)
+        for i,item in enumerate(folders):
+            path = Path(self.picsdir, item, self.picdictionary[key])
+            if path.exists():
+                imagepic = PIL.Image.open(str(path))
+                FOUNDPIC = True
+    if FOUNDPIC == False:
+        """Notify User and create a fake picture with the error message 
+        as replacement for the missing picture."""
+        
+        MessageBox(0, f"Error in line {str(int(key[1:])+1)} mode {key[0]}\nline: {self.picdictionary[key]}\nPicture could not be found in any folder.", "Message", ICON_STOP)
+        LaTeXcode =  "This image does not exist"
+        height_card = math.ceil(len(LaTeXcode)/40)/2
+        fig = Figure(figsize=[8, height_card],dpi=100)
+        ax = fig.gca()
+        ax.plot([0, 0,0, height_card],color = (1,1,1,1))
+        ax.axis('off')
+        ax.text(-0.5, height_card/2,LaTeXcode, fontsize = self.LaTeXfontsize, horizontalalignment='left', verticalalignment='center',wrap = True,color = 'r')    
+        canvas = FigureCanvas(fig)
+        canvas.draw()        
+        renderer = canvas.get_renderer()
+        raw_data = renderer.tostring_rgb()
+        size = canvas.get_width_height()
+        # output
+        imagepic = PIL.Image.frombytes("RGB", size, raw_data, decoder_name = 'raw', )
+    return imagepic
+
 def cropimage(img,x,backgroundcolor,border):
     SEARCH1 = True
     SEARCH2 = True
@@ -348,7 +387,7 @@ def switch_bitmap(self):
 def CombinePicText_fc(self,key,imagetext):
     self.ERROR = False
     try:
-        imagepic = PIL.Image.open(str(Path(self.picsdir, self.bookname, self.picdictionary[key])))
+        imagepic = findpicture(self,key)
         images = [imagetext,imagepic]
         
         widths, heights = zip(*(i.size for i in images))
@@ -399,10 +438,10 @@ def displaycard(self):
                 ShowPage_fc(self)
         else: #if there is no textcard only display the picture
             try:
-                self.image = PIL.Image.open(str(Path(self.picsdir,self.bookname,self.picdictionary[self.key])))
+                self.image = findpicture(self,self.key)
                 ShowPage_fc(self)
             except:
-                pass
+                print("Error: could not load singular picture (no text available)")
     except:
         log.ERRORMESSAGE("Error: could not display card")
 
@@ -431,7 +470,7 @@ def CreateTextCard(self):
         elif self.key[0] == 'Q':
             modekey = 'QUESTION'
         MessageBox(0, f"Error in line {str(int(self.key[1:])+1)} mode {modekey}\nline: {self.textdictionary[self.key]}\nFaulty text or command used.", "Message", ICON_STOP)
-        LaTeXcode =  "Error for this page"
+        LaTeXcode =  "Error for this page: invalid code"
         height_card = math.ceil(len(LaTeXcode)/40)/2
         fig = Figure(figsize=[8, height_card],dpi=100)
         ax = fig.gca()
