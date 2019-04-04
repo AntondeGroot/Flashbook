@@ -51,6 +51,8 @@ import fb_functions    as f
 import fc_functions    as f2
 import print_functions as f3
 
+import random
+import itertools
 
 import math
 import pylab
@@ -102,7 +104,7 @@ def CombineBookTitles(booknames):
     """To combine multiple book titles, since this would otherwise end up in a very long
     name, it will instead only take the first full name and then abbreviate the following
     books to only the first letters of the books."""
-    C = ''
+    C = '_MULTI_'
     for i,string in enumerate(booknames):
         if i==0:
             C += string
@@ -290,8 +292,29 @@ def initialize(self):
     #unpack png images used in the gui
     resources.resourceimages(self.resourcedir,self.notesdir) 
     
-
-
+def save2latexfile(self,files,title):
+    
+    LISTOFLIST = (type(files[0])==list)
+    filepath = Path(self.notesdir,title+'.tex')
+    if filepath.exists():
+        filepath.unlink()
+    if LISTOFLIST:#list of lists of data
+        for i,data in enumerate(files):
+            with open(filepath,'a') as f:
+                if type(data) == list:
+                    for line in data:
+                        f.write(line)
+                f.close()  
+    else:
+        data = files
+        print(f"data = {data[0:20]}")
+        with open(filepath,'a') as f:
+            if type(data) == list:
+                for line in data:
+                    print(f"line = {line}")
+                    f.write(line)
+            f.close()  
+        
     
 """
 ###############################################################################
@@ -443,16 +466,25 @@ class MainFrame(gui.MyFrame):
                             
                             print(nr_lines)
                             print(files)
+                            title = CombineBookTitles(filenames_stem)
                             if btn1 == True: #alphabetically, it's standard alphabetically sorted
-                                title = CombineBookTitles(filenames_stem)
-                                for i,data in enumerate(files):
-                                    with open(Path(self.notesdir,title+'.tex'),'a') as f:
-                                        if type(data) == list:
-                                            for line in data:
-                                                f.write(line)
-                                        f.close()  
-                            if btn2 == True:
-                                pass
+                                save2latexfile(self,files,title)
+                            if btn2 == True:#sort small to largest
+                                nr_lines, files = (list(t) for t in zip(*sorted(zip(nr_lines, files))))#sort based on first list numbers, small to large
+                                save2latexfile(self,files,title)
+                            if btn3 == True:#sort largest to smallest
+                                nr_lines, files = (list(t) for t in zip(*sorted(zip(nr_lines, files))))#sort based on first list numbers, small to garge
+                                nr_lines.reverse()
+                                files.reverse()
+                                save2latexfile(self,files,title)
+                            if btn4 == True:#sort randomly
+                                temp = list(itertools.chain.from_iterable(files))
+                                random.shuffle(temp)
+                                random.shuffle(temp)
+                                files = temp
+                                print("hallo"*100)
+                                save2latexfile(self,files,title)
+                                
     def m_menuItemDelBookOnMenuSelection( self, event ):
         #with wx.FileDialog(self, "Choose which file to delete", wildcard="*.tex",style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST) as fileDialog:
         with wx.FileDialog(self, "Choose which file to delete", wildcard="*.tex",style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST) as fileDialog:
@@ -474,25 +506,39 @@ class MainFrame(gui.MyFrame):
                                         pathlib.append(os.path.join(os.path.basename(root),name))    
                         print(pathlib)
                         print(library)
-                        if pathlib == []:
+                        EXISTS = False
+                        if pathlib == [] and library != []:
                             #if it is not in a subfolder:
                             assert len(library) == 1
                             path2del = library[0]
-                        else:
+                            EXISTS = True
+                        elif pathlib != []:
                             assert len(pathlib) == 1
                             path2del = pathlib[0]
-                        #books jpg pages
-                        folder = Path(self.booksdir,path2del)
-                        [file.unlink() for file in folder.iterdir() if (filename in file.name and file.suffix =='.jpg' )]
+                            EXISTS = True
+                            
+                        if EXISTS:
+                            #books jpg pages
+                            folder = Path(self.booksdir,path2del)
+                            [file.unlink() for file in folder.iterdir() if (filename in file.name and file.suffix =='.jpg' )]
                         #pics
-                        folder = Path(self.picsdir,filename)
-                        [file.unlink() for file in folder.iterdir() if (filename in file.name and file.suffix =='.jpg' )]
+                        try:
+                            folder = Path(self.picsdir,filename)
+                            [file.unlink() for file in folder.iterdir() if (filename in file.name and file.suffix =='.jpg' )]
+                        except:
+                            pass
                         #tempfiles
-                        folder = Path(self.tempdir)
-                        [file.unlink() for file in folder.iterdir() if (filename in file.name and file.suffix =='.txt' )]
+                        try:
+                            folder = Path(self.tempdir)
+                            [file.unlink() for file in folder.iterdir() if (filename in file.name and file.suffix =='.txt' )]
+                        except:
+                            pass
                         #notes latex
-                        folder = Path(self.notesdir)
-                        [file.unlink() for file in folder.iterdir() if (filename in file.name and file.suffix =='.tex' )]
+                        try:
+                            folder = Path(self.notesdir)
+                            [file.unlink() for file in folder.iterdir() if (filename in file.name and file.suffix =='.tex' )]
+                        except:
+                            pass
             else: 
                 print("operation aborted")
                 return None    
