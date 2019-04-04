@@ -71,6 +71,20 @@ class MyFrame ( wx.Frame ):
 		
 		self.m_menubar1.Append( self.m_menuOpen, u"Open" ) 
 		
+		self.m_menu4 = wx.Menu()
+		self.m_menuCombineBooks = wx.MenuItem( self.m_menu4, wx.ID_ANY, u"Combine booknotes", wx.EmptyString, wx.ITEM_NORMAL )
+		self.m_menu4.Append( self.m_menuCombineBooks )
+		
+		self.m_menuNewBook = wx.MenuItem( self.m_menu4, wx.ID_ANY, u"Create empty book", u"Only use this to create 'books'\nwhere you only use screenshots\nas the source material.", wx.ITEM_NORMAL )
+		self.m_menu4.Append( self.m_menuNewBook )
+		
+		self.m_menu4.AppendSeparator()
+		
+		self.m_menuItemDelBook = wx.MenuItem( self.m_menu4, wx.ID_ANY, u"Delete book", wx.EmptyString, wx.ITEM_NORMAL )
+		self.m_menu4.Append( self.m_menuItemDelBook )
+		
+		self.m_menubar1.Append( self.m_menu4, u"Books" ) 
+		
 		self.m_menu2 = wx.Menu()
 		self.m_menuHelp = wx.MenuItem( self.m_menu2, wx.ID_ANY, u"How to use ...", wx.EmptyString, wx.ITEM_CHECK )
 		self.m_menu2.Append( self.m_menuHelp )
@@ -1107,6 +1121,9 @@ class MyFrame ( wx.Frame ):
 		self.Bind( wx.EVT_MENU, self.m_menuItemConvertOnMenuSelection, id = self.m_menuItemConvert.GetId() )
 		self.Bind( wx.EVT_MENU, self.m_menuPDFfolderOnMenuSelection, id = self.m_menuPDFfolder.GetId() )
 		self.Bind( wx.EVT_MENU, self.m_menuItemBackToMainOnMenuSelection, id = self.m_menuItemBackToMain.GetId() )
+		self.Bind( wx.EVT_MENU, self.m_menuCombineBooksOnMenuSelection, id = self.m_menuCombineBooks.GetId() )
+		self.Bind( wx.EVT_MENU, self.m_menuNewBookOnMenuSelection, id = self.m_menuNewBook.GetId() )
+		self.Bind( wx.EVT_MENU, self.m_menuItemDelBookOnMenuSelection, id = self.m_menuItemDelBook.GetId() )
 		self.Bind( wx.EVT_MENU, self.m_menuHelpOnMenuSelection, id = self.m_menuHelp.GetId() )
 		self.Bind( wx.EVT_MENU, self.m_checkBox11OnCheckBox, id = self.m_checkBox11.GetId() )
 		self.Bind( wx.EVT_MENU, self.m_checkBoxCursor11OnCheckBox, id = self.m_checkBoxCursor11.GetId() )
@@ -1270,6 +1287,15 @@ class MyFrame ( wx.Frame ):
 		event.Skip()
 	
 	def m_menuItemBackToMainOnMenuSelection( self, event ):
+		event.Skip()
+	
+	def m_menuCombineBooksOnMenuSelection( self, event ):
+		event.Skip()
+	
+	def m_menuNewBookOnMenuSelection( self, event ):
+		event.Skip()
+	
+	def m_menuItemDelBookOnMenuSelection( self, event ):
 		event.Skip()
 	
 	def m_menuHelpOnMenuSelection( self, event ):
@@ -1770,6 +1796,297 @@ class MyDialog2 ( wx.Dialog ):
 		event.Skip()
 	
 	def m_radioRandomOnRadioButton( self, event ):
+		event.Skip()
+	
+
+###########################################################################
+## Class MyDialog3
+###########################################################################
+
+class MyDialog3 ( wx.Dialog ):
+	
+	def __init__( self, parent, data ):
+		wx.Dialog.__init__ ( self, parent, id = wx.ID_ANY, title = u"Create a new book", pos = wx.DefaultPosition, size = wx.Size( 230,100 ), style = wx.DEFAULT_DIALOG_STYLE )
+		
+		self.SetSizeHints( wx.DefaultSize, wx.DefaultSize )
+		
+		bSizer50 = wx.BoxSizer( wx.VERTICAL )
+		
+		self.m_panel26 = wx.Panel( self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TAB_TRAVERSAL )
+		bSizer53 = wx.BoxSizer( wx.VERTICAL )
+		
+		bSizer57 = wx.BoxSizer( wx.HORIZONTAL )
+		
+		self.m_staticText49 = wx.StaticText( self.m_panel26, wx.ID_ANY, u"Bookname", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_staticText49.Wrap( -1 )
+		self.m_staticText49.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
+		
+		bSizer57.Add( self.m_staticText49, 0, wx.ALL, 5 )
+		
+		self.m_textCtrl23 = wx.TextCtrl( self.m_panel26, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_textCtrl23.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
+		
+		bSizer57.Add( self.m_textCtrl23, 0, wx.ALL, 5 )
+		
+		
+		bSizer53.Add( bSizer57, 1, wx.EXPAND, 5 )
+		
+		bSizer58 = wx.BoxSizer( wx.HORIZONTAL )
+		
+		self.m_buttonDLG3OK = wx.Button( self.m_panel26, wx.ID_OK, u"OK", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_buttonDLG3OK.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
+		
+		bSizer58.Add( self.m_buttonDLG3OK, 0, wx.ALL, 0 )
+		
+		
+		bSizer58.Add( ( 10, 0), 0, wx.EXPAND, 5 )
+		
+		self.m_buttonDLG3Cancel = wx.Button( self.m_panel26, wx.ID_CANCEL, u"Cancel", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_buttonDLG3Cancel.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
+		
+		bSizer58.Add( self.m_buttonDLG3Cancel, 0, wx.ALL, 0 )
+		
+		
+		bSizer53.Add( bSizer58, 1, wx.EXPAND, 5 )
+		
+		
+		self.m_panel26.SetSizer( bSizer53 )
+		self.m_panel26.Layout()
+		bSizer53.Fit( self.m_panel26 )
+		bSizer50.Add( self.m_panel26, 1, wx.EXPAND |wx.ALL, 5 )
+		
+		
+		self.SetSizer( bSizer50 )
+		self.Layout()
+		
+		self.Centre( wx.BOTH )
+		
+		# Connect Events
+		self.m_buttonDLG3OK.Bind( wx.EVT_BUTTON, self.m_buttonDLG3OKOnButtonClick )
+		self.m_buttonDLG3Cancel.Bind( wx.EVT_BUTTON, self.m_buttonDLG3CancelOnButtonClick )
+	
+	def __del__( self ):
+		pass
+	
+	
+	# Virtual event handlers, overide them in your derived class
+	def m_buttonDLG3OKOnButtonClick( self, event ):
+		event.Skip()
+	
+	def m_buttonDLG3CancelOnButtonClick( self, event ):
+		event.Skip()
+	
+
+###########################################################################
+## Class MyDialog4
+###########################################################################
+
+class MyDialog4 ( wx.Dialog ):
+	
+	def __init__( self, parent, data ):
+		wx.Dialog.__init__ ( self, parent, id = wx.ID_ANY, title = u"Warning", pos = wx.DefaultPosition, size = wx.Size( 422,153 ), style = wx.DEFAULT_DIALOG_STYLE )
+		
+		self.SetSizeHints( wx.DefaultSize, wx.DefaultSize )
+		
+		bSizer50 = wx.BoxSizer( wx.VERTICAL )
+		
+		self.m_panel26 = wx.Panel( self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TAB_TRAVERSAL )
+		bSizer53 = wx.BoxSizer( wx.VERTICAL )
+		
+		bSizer57 = wx.BoxSizer( wx.VERTICAL )
+		
+		self.m_staticText49 = wx.StaticText( self.m_panel26, wx.ID_ANY, u"Are you sure you want to delete: ", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_staticText49.Wrap( -1 )
+		self.m_staticText49.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
+		
+		bSizer57.Add( self.m_staticText49, 0, wx.ALL, 5 )
+		
+		self.m_textCtrlDelBook = wx.TextCtrl( self.m_panel26, wx.ID_ANY, data, wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_textCtrlDelBook.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
+		self.m_textCtrlDelBook.SetBackgroundColour( wx.SystemSettings.GetColour( wx.SYS_COLOUR_HIGHLIGHTTEXT ) )
+		self.m_textCtrlDelBook.SetMinSize( wx.Size( 390,-1 ) )
+		
+		bSizer57.Add( self.m_textCtrlDelBook, 1, wx.ALL, 5 )
+		
+		
+		bSizer53.Add( bSizer57, 1, wx.EXPAND, 5 )
+		
+		bSizer68 = wx.BoxSizer( wx.VERTICAL )
+		
+		self.m_staticText52 = wx.StaticText( self.m_panel26, wx.ID_ANY, u"and all related files?        (Except for PDFs)", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_staticText52.Wrap( -1 )
+		self.m_staticText52.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
+		
+		bSizer68.Add( self.m_staticText52, 0, wx.ALL, 5 )
+		
+		
+		bSizer53.Add( bSizer68, 1, wx.EXPAND, 5 )
+		
+		bSizer58 = wx.BoxSizer( wx.HORIZONTAL )
+		
+		
+		bSizer58.Add( ( 0, 0), 1, wx.EXPAND, 5 )
+		
+		self.m_buttonDLG4YES = wx.Button( self.m_panel26, wx.ID_OK, u"Yes", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_buttonDLG4YES.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
+		
+		bSizer58.Add( self.m_buttonDLG4YES, 0, wx.ALL, 0 )
+		
+		
+		bSizer58.Add( ( 10, 0), 0, wx.EXPAND, 5 )
+		
+		self.m_buttonDLG4NO = wx.Button( self.m_panel26, wx.ID_CANCEL, u"No", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_buttonDLG4NO.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
+		
+		bSizer58.Add( self.m_buttonDLG4NO, 0, wx.ALL, 0 )
+		
+		
+		bSizer58.Add( ( 0, 0), 1, wx.EXPAND, 5 )
+		
+		
+		bSizer53.Add( bSizer58, 1, wx.EXPAND, 5 )
+		
+		
+		self.m_panel26.SetSizer( bSizer53 )
+		self.m_panel26.Layout()
+		bSizer53.Fit( self.m_panel26 )
+		bSizer50.Add( self.m_panel26, 1, wx.EXPAND |wx.ALL, 5 )
+		
+		
+		self.SetSizer( bSizer50 )
+		self.Layout()
+		
+		self.Centre( wx.BOTH )
+		
+		# Connect Events
+		self.m_buttonDLG4YES.Bind( wx.EVT_BUTTON, self.m_buttonDLG4YESOnButtonClick )
+		self.m_buttonDLG4NO.Bind( wx.EVT_BUTTON, self.m_buttonDLG4NOOnButtonClick )
+	
+	def __del__( self ):
+		pass
+	
+	
+	# Virtual event handlers, overide them in your derived class
+	def m_buttonDLG4YESOnButtonClick( self, event ):
+		event.Skip()
+	
+	def m_buttonDLG4NOOnButtonClick( self, event ):
+		event.Skip()
+	
+
+###########################################################################
+## Class MyDialog5
+###########################################################################
+
+class MyDialog5 ( wx.Dialog ):
+	
+	def __init__( self, parent, data ):
+		wx.Dialog.__init__ ( self, parent, id = wx.ID_ANY, title = u"Info", pos = wx.DefaultPosition, size = wx.Size( 424,238 ), style = wx.DEFAULT_DIALOG_STYLE )
+		
+		self.SetSizeHints( wx.DefaultSize, wx.DefaultSize )
+		
+		bSizer50 = wx.BoxSizer( wx.VERTICAL )
+		
+		self.m_panel26 = wx.Panel( self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TAB_TRAVERSAL )
+		bSizer53 = wx.BoxSizer( wx.VERTICAL )
+		
+		bSizer57 = wx.BoxSizer( wx.VERTICAL )
+		
+		self.m_staticText49 = wx.StaticText( self.m_panel26, wx.ID_ANY, u"Do you want to combine the following books:", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_staticText49.Wrap( -1 )
+		self.m_staticText49.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
+		
+		bSizer57.Add( self.m_staticText49, 0, wx.ALL, 5 )
+		
+		self.m_textCtrlComBooks = wx.TextCtrl( self.m_panel26, wx.ID_ANY, data, wx.DefaultPosition, wx.Size( -1,70 ), wx.TE_MULTILINE )
+		self.m_textCtrlComBooks.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
+		self.m_textCtrlComBooks.SetBackgroundColour( wx.SystemSettings.GetColour( wx.SYS_COLOUR_HIGHLIGHTTEXT ) )
+		self.m_textCtrlComBooks.SetMinSize( wx.Size( 390,70 ) )
+		self.m_textCtrlComBooks.SetMaxSize( wx.Size( -1,70 ) )
+		
+		bSizer57.Add( self.m_textCtrlComBooks, 1, wx.ALL, 5 )
+		
+		
+		bSizer53.Add( bSizer57, 1, wx.EXPAND, 5 )
+		
+		bSizer68 = wx.BoxSizer( wx.VERTICAL )
+		
+		self.m_staticText52 = wx.StaticText( self.m_panel26, wx.ID_ANY, u"into a new notes file, which can only be used for \nprinting and flashcards.", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_staticText52.Wrap( -1 )
+		self.m_staticText52.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
+		
+		bSizer68.Add( self.m_staticText52, 0, wx.ALL, 5 )
+		
+		
+		bSizer53.Add( bSizer68, 1, wx.EXPAND, 5 )
+		
+		bSizer79 = wx.BoxSizer( wx.HORIZONTAL )
+		
+		self.m_radioDLG5_1 = wx.RadioButton( self.m_panel26, wx.ID_ANY, u"Alphabetically", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_radioDLG5_1.SetValue( True ) 
+		bSizer79.Add( self.m_radioDLG5_1, 0, wx.ALL, 5 )
+		
+		self.m_radioDLG5_2 = wx.RadioButton( self.m_panel26, wx.ID_ANY, u"Small to large", wx.DefaultPosition, wx.DefaultSize, 0 )
+		bSizer79.Add( self.m_radioDLG5_2, 0, wx.ALL, 5 )
+		
+		self.m_radioDLG5_3 = wx.RadioButton( self.m_panel26, wx.ID_ANY, u"Large to small", wx.DefaultPosition, wx.DefaultSize, 0 )
+		bSizer79.Add( self.m_radioDLG5_3, 0, wx.ALL, 5 )
+		
+		self.m_radioDLG5_4 = wx.RadioButton( self.m_panel26, wx.ID_ANY, u"Random", wx.DefaultPosition, wx.DefaultSize, 0 )
+		bSizer79.Add( self.m_radioDLG5_4, 0, wx.ALL, 5 )
+		
+		
+		bSizer53.Add( bSizer79, 1, wx.EXPAND, 5 )
+		
+		bSizer58 = wx.BoxSizer( wx.HORIZONTAL )
+		
+		
+		bSizer58.Add( ( 0, 0), 1, wx.EXPAND, 5 )
+		
+		self.m_buttonDLG4YES = wx.Button( self.m_panel26, wx.ID_OK, u"Yes", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_buttonDLG4YES.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
+		
+		bSizer58.Add( self.m_buttonDLG4YES, 0, wx.ALL, 0 )
+		
+		
+		bSizer58.Add( ( 10, 0), 0, wx.EXPAND, 5 )
+		
+		self.m_buttonDLG4NO = wx.Button( self.m_panel26, wx.ID_CANCEL, u"No", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_buttonDLG4NO.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
+		
+		bSizer58.Add( self.m_buttonDLG4NO, 0, wx.ALL, 0 )
+		
+		
+		bSizer58.Add( ( 0, 0), 1, wx.EXPAND, 5 )
+		
+		
+		bSizer53.Add( bSizer58, 1, wx.EXPAND, 5 )
+		
+		
+		self.m_panel26.SetSizer( bSizer53 )
+		self.m_panel26.Layout()
+		bSizer53.Fit( self.m_panel26 )
+		bSizer50.Add( self.m_panel26, 1, wx.EXPAND |wx.ALL, 5 )
+		
+		
+		self.SetSizer( bSizer50 )
+		self.Layout()
+		
+		self.Centre( wx.BOTH )
+		
+		# Connect Events
+		self.m_buttonDLG4YES.Bind( wx.EVT_BUTTON, self.m_buttonDLG4YESOnButtonClick )
+		self.m_buttonDLG4NO.Bind( wx.EVT_BUTTON, self.m_buttonDLG4NOOnButtonClick )
+	
+	def __del__( self ):
+		pass
+	
+	
+	# Virtual event handlers, overide them in your derived class
+	def m_buttonDLG4YESOnButtonClick( self, event ):
+		event.Skip()
+	
+	def m_buttonDLG4NOOnButtonClick( self, event ):
 		event.Skip()
 	
 
