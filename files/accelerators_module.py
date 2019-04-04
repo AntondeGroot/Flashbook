@@ -107,8 +107,6 @@ def AcceleratorTableSetup(self,mode,submode):
     if mode == "flashbook" and submode == "pagewindow":
         print("ENTERED PAGEWINDOW")
         
-        print(f"ID STITCH: {self.Acc.IDstitch()}")
-        print(f"ID ENTER: {self.Acc.IDenter()}")
         entries = [wx.AcceleratorEntry() for i in range(40)]
         accel = wx.AcceleratorTable(entries)
         #self.SetAcceleratorTable(wx.AcceleratorTable()) 
