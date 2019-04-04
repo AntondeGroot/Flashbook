@@ -468,7 +468,7 @@ def CreateTextCard(self):
             modekey = 'ANSWER'
         elif self.key[0] == 'Q':
             modekey = 'QUESTION'
-        MessageBox(0, f"Error in line {str(int(self.key[1:])+1)} mode {modekey}\nline: {self.textdictionary[self.key]}\nFaulty text or command used.", "Message", ICON_STOP)
+        MessageBox(0, f"Error in line {str(int(self.key[1:])+1)} mode {modekey}\nline: {self.textdictionary[self.key]}\nFaulty text or command used.\nGo to .../Flashbook/files/... and edit it manually.", "Message", ICON_STOP)
         LaTeXcode =  "Error for this page: invalid code"
         height_card = math.ceil(len(LaTeXcode)/40)/2
         fig = Figure(figsize=[8, height_card],dpi=100)
