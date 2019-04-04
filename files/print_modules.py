@@ -184,7 +184,9 @@ def notes2paper(self):
     
     
     for i in range(nrQ):
+        print(f"now at card: {i}")
         imagename = f"temporary{i}.png" 
+        #print(self.textdictionary)
         imagepath = str(Path(self.tempdir, imagename))
         image_q = PIL.Image.new('RGB', (0, 0),"white")
         image_a = []
@@ -192,42 +194,42 @@ def notes2paper(self):
             self.mode = mode
             TextCard = False      
             key = f'{self.mode[0]}{i}'
-            try: # try to create a TextCard
-                if key in self.textdictionary:
-                    print(f"create textcard for {key}")
-                    TextCard, imagetext = f3.CreateTextCardPrint(self,key)
-                    #assert TextCard == self.TextCard
-                    #assert imagetext == self.imagetext
-                    self.TextCard = TextCard
-                    self.imagetext = imagetext
+            #try: # try to create a TextCard
+            if key in self.textdictionary:
+                print(f"create textcard for {key}")
+                TextCard, imagetext = f3.CreateTextCardPrint(self,key)
+                #assert TextCard == self.TextCard
+                #assert imagetext == self.imagetext
+                self.TextCard = TextCard
+                self.imagetext = imagetext
                 # if there is a textcard either combine them with a picture or display it on its own
-                if TextCard == True: 
-                    if key in self.picdictionary:
-                        print(f"create combicard for {key}")
-                        image = f2.CombinePicText_fc(self,key,imagetext)
-                        #assert image == self.image
-                        self.image = image
-                        if mode == 'Question':
-                            image_q = image
-                        else:
-                            image_a = image
+                #if TextCard == True: 
+                if key in self.picdictionary:
+                    print(f"create combicard for {key}")
+                    image = f2.CombinePicText_fc(self,key,imagetext)
+                    #assert image == self.image
+                    self.image = image
+                    if mode == 'Question':
+                        image_q = image
                     else:
-                        image = imagetext                        
-                        if mode == 'Question':
-                            image_q = image
-                        else:
-                            image_a = image
-                else: #if there is no textcard only display the picture
-                    if key in self.picdictionary:
-                        path = Path(self.picsdir, self.bookname ,self.picdictionary[key])
-                        if path.is_file():
-                            image = PIL.Image.open(str(path))
-                        if mode == 'Question':
-                            image_q = image
-                        else:
-                            image_a = image
-            except:
-                log.ERRORMESSAGE("Error: could not display card")  
+                        image_a = image
+                else:
+                    image = imagetext                        
+                    if mode == 'Question':
+                        image_q = image
+                    else:
+                        image_a = image
+            else: #if there is no textcard only display the picture
+                if key in self.picdictionary:
+                    path = Path(self.picsdir, self.bookname ,self.picdictionary[key])
+                    if path.is_file():
+                        image = PIL.Image.open(str(path))
+                    if mode == 'Question':
+                        image_q = image
+                    else:
+                        image_a = image
+            #except:
+            #    log.ERRORMESSAGE("Error: could not display card")  
         
         #self.image should be different
         #combine question and answer:
@@ -255,7 +257,7 @@ def notes2paper(self):
             if image_q.size != (0,0): 
                 IMG_QA = image_q
             else:
-                print("error"*200)
+                print(colored("FATAL error"*5,'red'))
         ##anton
         if ColumnSliders(self) != []:
             columns = ColumnSliders(self)
@@ -609,10 +611,10 @@ def startprogram(self,event):
             file = open(self.path, 'r')
             texfile = file.read()
         
-        self.letterfile = str(texfile)
+        letterfile = str(texfile)
         # positions of Questions and Answers
-        q_pos   = [m.start() for m in re.finditer(self.question_command, self.letterfile)]
-        a_pos   = [m.start() for m in re.finditer(self.answer_command,   self.letterfile)]
+        q_pos   = [m.start() for m in re.finditer(self.question_command, letterfile)]
+        a_pos   = [m.start() for m in re.finditer(self.answer_command,   letterfile)]
         self.q_hookpos = list(np.array(q_pos) + len(self.question_command) - 2)              #position of argument \command{} q_pos indicates where it starts: "\", added the length of the command -2, because it counts 2 extra '\'
         self.a_hookpos = list(np.array(a_pos) + len(self.answer_command)   - 2)
         
@@ -625,5 +627,5 @@ def startprogram(self,event):
     self.chrono = True
     self.multiplier = 1    
     # display nr of questions and current index of questions            
-    f2.LoadFlashCards(self, False)
+    f2.LoadFlashCards(self, False,letterfile)
     notes2paper(self)
