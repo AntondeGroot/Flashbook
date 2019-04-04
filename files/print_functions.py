@@ -35,7 +35,7 @@ MB_DEFBUTTON2 = 0x00000100
 
 
 
-def CreateTextCardPrint(self,key,cardnr):
+def CreateTextCardPrint(self,key):
     
     TextCard = True    
     try:
