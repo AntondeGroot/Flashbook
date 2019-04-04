@@ -153,7 +153,7 @@ def switchCard(self):
                 try: # to combine text with picture
                     key = self.key
                     imagetext = self.imagetext
-                    f2.CombinePicText_fc(self,key,imagetext)
+                    self.image = f2.CombinePicText_fc(self,key,imagetext)
                     f2.ShowPage_fc(self)     
                 except:
                     log.ERRORMESSAGE("Error: cannot combine pic with text")
@@ -164,8 +164,7 @@ def switchCard(self):
         else: #only display picture
             if self.key in self.picdictionary: # there is a picture
                 try:
-                    self.jpgdir = str(Path(self.picsdir,self.bookname,self.picdictionary[self.key]))
-                    self.image = PIL.Image.open(self.jpgdir) 
+                    self.image = f2.findpicture(self,self.key)
                     f2.ShowPage_fc(self)
                 except:
                     pass
