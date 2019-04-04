@@ -206,11 +206,11 @@ def startprogram(self,event):
     try:
         if Path(eventpath).exists():
             file = open(eventpath, 'r')
-            self.letterfile = str(file.read())
+            letterfile = str(file.read())
         
         # positions of Questions and Answers
-        q_pos   = [m.start() for m in re.finditer(self.question_command, self.letterfile)]
-        a_pos   = [m.start() for m in re.finditer(self.answer_command, self.letterfile)]
+        q_pos   = [m.start() for m in re.finditer(self.question_command, letterfile)]
+        a_pos   = [m.start() for m in re.finditer(self.answer_command, letterfile)]
         self.q_hookpos = list(np.array(q_pos)+len(self.question_command)-2)              #position of argument \command{} q_pos indicates where it starts: "\", added the length of the command -2, because it counts 2 extra '\'
         self.a_hookpos = list(np.array(a_pos)+len(self.answer_command)-2)
         
@@ -278,6 +278,6 @@ def startprogram(self,event):
     self.m_CurrentPage21.SetValue(f"{self.index+1}")
     self.m_TotalPages21.SetValue(f"{self.nr_questions}")
         
-    f2.LoadFlashCards(self, True)
+    f2.LoadFlashCards(self, True,letterfile)
     f2.displaycard(self)        
     f2.switch_bitmap(self)
