@@ -263,7 +263,7 @@ def selectionentered(self,event):
                     self.latex_question = str(self.latex_question) + r" \pic{" + "{}".format(self.pic_question[0])+r"}"
                 else:       
                     print("only horizontal questions")
-                    print(len(self.pic_question))
+                    print(f"nr picquestions = {len(self.pic_question)}")
                     if len(self.pic_question) == 1:
                         if type(self.pic_question[0]) is list:
                             
@@ -477,7 +477,6 @@ def switchpage(self,event):
         if pagenumber > self.totalpages:
             pagenumber = self.totalpages
         self.currentpage = pagenumber
-        print(self.currentpage)
         f.LoadPage(self)
         f.ShowPage_fb(self)
     except:
