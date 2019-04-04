@@ -25,7 +25,8 @@ org = [
        'self.m_notebook.AddPage( self.m_panel41, u"a page", False )','self.m_notebook.AddPage( self.m_panel41, u"Flashbook", False )',
        'self.m_notebook.AddPage( self.m_panel42, u"a page", False )','self.m_notebook.AddPage( self.m_panel42, u"Flashcard", False )',
        'self.m_notebook.AddPage( self.m_panel43, u"a page", False )','self.m_notebook.AddPage( self.m_panel43, u"Synchronize", False )',
-       'self.m_textCtrlDelBook = wx.TextCtrl( self.m_panel26, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )','self.m_textCtrlDelBook = wx.TextCtrl( self.m_panel26, wx.ID_ANY, data, wx.DefaultPosition, wx.DefaultSize, 0 )'
+       'self.m_textCtrlDelBook = wx.TextCtrl( self.m_panel26, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )','self.m_textCtrlDelBook = wx.TextCtrl( self.m_panel26, wx.ID_ANY, data, wx.DefaultPosition, wx.DefaultSize, 0 )',
+       'self.m_textCtrlComBooks = wx.TextCtrl( self.m_panel26, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.Size( -1,70 ), wx.TE_MULTILINE )','self.m_textCtrlComBooks = wx.TextCtrl( self.m_panel26, wx.ID_ANY, data, wx.DefaultPosition, wx.Size( -1,70 ), wx.TE_MULTILINE )'
        ]
 a = []
 for i in read:  
