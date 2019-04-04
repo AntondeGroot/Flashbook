@@ -390,7 +390,7 @@ def displaycard(self):
                 try:
                     imagetext = self.imagetext
                     key = self.key
-                    CombinePicText_fc(self,key,imagetext)
+                    self.image = CombinePicText_fc(self,key,imagetext)
                     ShowPage_fc(self)
                 except:
                     pass
