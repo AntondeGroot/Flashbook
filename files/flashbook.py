@@ -51,6 +51,13 @@ import fb_functions    as f
 import fc_functions    as f2
 import print_functions as f3
 
+
+import math
+import pylab
+pylab.ioff() # make sure it is inactive, otherwise possible qwindows error    .... https://stackoverflow.com/questions/26970002/matplotlib-cant-suppress-figure-window
+from matplotlib.figure import Figure
+from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
+
 sys.setrecursionlimit(5000)
 PIL.Image.MAX_IMAGE_PIXELS = 1000000000  
 #ctypes:
@@ -91,6 +98,17 @@ def BoxesChecked(self,n):
     else:
         log.ERRORMESSAGE("Error: invalid entry in BoxesChecked")
         return False
+def CombineBookTitles(booknames):
+    """To combine multiple book titles, since this would otherwise end up in a very long
+    name, it will instead only take the first full name and then abbreviate the following
+    books to only the first letters of the books."""
+    C = ''
+    for i,string in enumerate(booknames):
+        if i==0:
+            C += string
+        else:
+            C += '_'+ ''.join([c for c in string.title() if c.isupper()])
+    return C
     
 #% path to resources: 
 def setup_sources(self):
@@ -386,7 +404,143 @@ class MainFrame(gui.MyFrame):
                 #m3.print_preview(self,event)
                 t_preview = lambda self,evt : threading.Thread(target = m3.print_preview, name = 't_preview' , args=(self,evt )).run()
                 t_preview(self, event) 
-    
+                
+    def m_buttonDLG3OKOnButtonClick( self, event ):
+        print("pressed OK dlg3")
+    def m_buttonDLG3CancelOnButtonClick( self, event ):
+        self.close()
+    def m_menuCombineBooksOnMenuSelection( self, event ):
+        with wx.FileDialog(self, "Choose which file to delete", wildcard="*.tex",style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST|wx.FD_MULTIPLE) as fileDialog:
+            fileDialog.SetPath(str(self.notesdir)+'\.')    
+            if fileDialog.ShowModal() == wx.ID_OK:
+                filepath = fileDialog.GetPaths()
+                if len(filepath) == 1:
+                    MessageBox(0, "You only selected 1 file, try again and select multiple files instead.", "Message", MB_ICONINFORMATION)
+                else:
+                    print(filepath)
+                    
+                    filenames_str = '\n'.join([Path(x).stem for x in filepath])
+                    filenames_stem = [Path(x).stem for x in filepath]
+                    with gui.MyDialog5(self,filenames_str) as dlg:
+                        if dlg.ShowModal() == wx.ID_OK:     
+                            print("success!!")
+                            btn1 = dlg.m_radioDLG5_1.GetValue()
+                            btn2 = dlg.m_radioDLG5_2.GetValue()
+                            btn3 = dlg.m_radioDLG5_3.GetValue()
+                            btn4 = dlg.m_radioDLG5_4.GetValue()
+                            print(btn1,btn2,btn3,btn4)
+                            
+                            nr_lines = []
+                            files = []
+                            for name in filepath:
+                                filename = Path(Path(name).stem).with_suffix('.tex')
+                                file = open(str(Path(self.notesdir, filename)), 'r')
+                                lines = file.readlines()
+                                files.append(lines)
+                                nr_lines.append(len(file.readlines()))
+                                file.close()
+                            
+                            
+                            print(nr_lines)
+                            print(files)
+                            if btn1 == True: #alphabetically, it's standard alphabetically sorted
+                                title = CombineBookTitles(filenames_stem)
+                                for i,data in enumerate(files):
+                                    with open(Path(self.notesdir,title+'.tex'),'a') as f:
+                                        if type(data) == list:
+                                            for line in data:
+                                                f.write(line)
+                                        f.close()  
+                            if btn2 == True:
+                                pass
+    def m_menuItemDelBookOnMenuSelection( self, event ):
+        #with wx.FileDialog(self, "Choose which file to delete", wildcard="*.tex",style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST) as fileDialog:
+        with wx.FileDialog(self, "Choose which file to delete", wildcard="*.tex",style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST) as fileDialog:
+            fileDialog.SetPath(str(self.notesdir)+'\.')    
+            if fileDialog.ShowModal() == wx.ID_OK:
+                print("clicked on OK, filedialog")
+                filepath = fileDialog.GetPath()
+                #filename = fileDialog.GetFilename()
+                filename = Path(filepath).stem
+                with gui.MyDialog4(self,filename) as dlg:
+                    if dlg.ShowModal() == wx.ID_OK:                        
+                        library = []
+                        pathlib = []
+                        for root, dirs, _ in os.walk(str(self.booksdir), topdown = False):
+                            for name in dirs:
+                                if name.lower() in filename.lower():
+                                    library.append(name)
+                                    if os.path.basename(root) != self.booksdir.name: #If it is not the dir you start in
+                                        pathlib.append(os.path.join(os.path.basename(root),name))    
+                        print(pathlib)
+                        print(library)
+                        if pathlib == []:
+                            #if it is not in a subfolder:
+                            assert len(library) == 1
+                            path2del = library[0]
+                        else:
+                            assert len(pathlib) == 1
+                            path2del = pathlib[0]
+                        #books jpg pages
+                        folder = Path(self.booksdir,path2del)
+                        [file.unlink() for file in folder.iterdir() if (filename in file.name and file.suffix =='.jpg' )]
+                        #pics
+                        folder = Path(self.picsdir,filename)
+                        [file.unlink() for file in folder.iterdir() if (filename in file.name and file.suffix =='.jpg' )]
+                        #tempfiles
+                        folder = Path(self.tempdir)
+                        [file.unlink() for file in folder.iterdir() if (filename in file.name and file.suffix =='.txt' )]
+                        #notes latex
+                        folder = Path(self.notesdir)
+                        [file.unlink() for file in folder.iterdir() if (filename in file.name and file.suffix =='.tex' )]
+            else: 
+                print("operation aborted")
+                return None    
+        
+    def m_menuNewBookOnMenuSelection( self, event ):   
+        with gui.MyDialog3(self,None) as dlg: #use this to set the max range of the slider
+            if dlg.ShowModal() == wx.ID_OK:
+                print("closed dlg3, pressed: OK")
+                bookname = dlg.m_textCtrl23.GetValue()
+                if bookname != '':
+                    
+                    LaTeXcode = "intentionally left blank"
+                    height_card = math.ceil(len(LaTeXcode)/40)/2
+                    fig = Figure(figsize=[8, height_card], dpi=100)
+                    ax = fig.gca()
+                    ax.plot([0, 0,0, height_card],color = (1,1,1,1))
+                    ax.axis('off')
+                    ax.text(-0.5, height_card/2, LaTeXcode, fontsize = self.LaTeXfontsize, horizontalalignment = 'left', verticalalignment = 'center', wrap = True)
+                    
+                    canvas = FigureCanvas(fig)
+                    canvas.draw()
+                    renderer = canvas.get_renderer()
+                    raw_data = renderer.tostring_rgb()
+                    size = canvas.get_width_height()
+                    imagetext = PIL.Image.frombytes("RGB", size, raw_data, decoder_name='raw', )
+                    imagetext = f2.cropimage(imagetext,0,(0,0,0),10)
+                    imagetext = f2.cropimage(imagetext,1,(0,0,0),10)
+                    print(bookname)
+                    path = Path(self.booksdir,bookname,bookname+"-0001.jpg")
+                    print(path)
+                    N = 1.3
+                    a4page_w  = round(1240*N) # in pixels
+                    a4page_h  = round(1754*N)
+                    if path.parent.exists() == False:
+                        path.parent.mkdir()                        
+                    IMG = PIL.Image.new('RGB', (a4page_w, a4page_h),"white")
+                    IMG.paste(imagetext,(int(a4page_w/2-imagetext.width/2),100))
+                    if not path.exists:
+                        IMG.save(path)
+                    path = Path(self.notesdir,bookname+".tex") 
+                    open(path, 'a').close()
+            else:
+                print("closed dlg3, pressed: Cancel")
+                
+                
+            
+            
+
     def m_slider_col1OnScrollChanged(self, event):
         self.pdfPageColsPos[0] = self.m_slider_col1.GetValue()
         settings_set(self)
