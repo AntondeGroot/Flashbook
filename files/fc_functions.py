@@ -24,6 +24,15 @@ pylab.ioff()
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas 
 
+import ctypes
+#ctypes:
+ICON_EXCLAIM=0x30
+ICON_STOP = 0x10
+MB_ICONINFORMATION = 0x00000040
+MessageBox = ctypes.windll.user32.MessageBoxW
+MB_YESNO = 0x00000004
+MB_DEFBUTTON2 = 0x00000100
+
 """DEFINED FUNCTIONS -- short overview
 #   contains(1)               - to find if a string is contained in a list of strings
 #   find_hook(2)              - to find a "}" which closes a command
@@ -404,17 +413,34 @@ def CreateTextCard(self):
         pylab.ioff()
         print(f"is pylab interactive? = {pylab.isinteractive()} (after explicitly deactivating it)")
     # acquire text
-    usertext = self.textdictionary[self.key]
-    # display text in a plot
-    height_card = math.ceil(len(usertext)/40)/2
-    figure = Figure(figsize=[8, height_card],dpi=100)
-    ax = figure.gca()
-    ax.plot([0, 0,0, height_card],color = (1,1,1,1))
-    ax.axis('off')
-    ax.text(-0.5, height_card/2,usertext, fontsize = self.LaTeXfontsize, horizontalalignment='left', verticalalignment='center',wrap = True)
-    # convert picture to data
-    canvas = FigureCanvas(figure)
-    canvas.draw()
+    try:
+        usertext = self.textdictionary[self.key]
+        # display text in a plot
+        height_card = math.ceil(len(usertext)/40)/2
+        figure = Figure(figsize=[8, height_card],dpi=100)
+        ax = figure.gca()
+        ax.plot([0, 0,0, height_card],color = (1,1,1,1))
+        ax.axis('off')
+        ax.text(-0.5, height_card/2,usertext, fontsize = self.LaTeXfontsize, horizontalalignment='left', verticalalignment='center',wrap = True)
+        # convert picture to data
+        canvas = FigureCanvas(figure)
+        canvas.draw()
+    except:
+        if self.key[0] == 'A':
+            modekey = 'ANSWER'
+        elif self.key[0] == 'Q':
+            modekey = 'QUESTION'
+        MessageBox(0, f"Error in line {str(int(self.key[1:])+1)} mode {modekey}\nline: {self.textdictionary[self.key]}\nFaulty text or command used.", "Message", ICON_STOP)
+        LaTeXcode =  "Error for this page"
+        height_card = math.ceil(len(LaTeXcode)/40)/2
+        fig = Figure(figsize=[8, height_card],dpi=100)
+        ax = fig.gca()
+        ax.plot([0, 0,0, height_card],color = (1,1,1,1))
+        ax.axis('off')
+        ax.text(-0.5, height_card/2,LaTeXcode, fontsize = self.LaTeXfontsize, horizontalalignment='left', verticalalignment='center',wrap = True,color = 'r')    
+        canvas = FigureCanvas(fig)
+        canvas.draw()
+    
     renderer = canvas.get_renderer()
     raw_data = renderer.tostring_rgb()
     size = canvas.get_width_height()
@@ -422,13 +448,14 @@ def CreateTextCard(self):
     self.TextCard = True
     self.imagetext = PIL.Image.frombytes("RGB", size, raw_data, decoder_name = 'raw', )
 
-def LoadFlashCards(self,USERINPUT):
+def LoadFlashCards(self,USERINPUT,letterfile):
     """
     USERINPUT: boolean, 
     - TRUE it will ask the user for input to determine
            the order in which the cards should be displayed.
     - FALSE, it will display them chronologically without userinput.
     """
+    print(f"nrcards = {self.nr_cards}")
     try:
         if self.debugmode:
             print("f=loadflashcards")
@@ -436,11 +463,11 @@ def LoadFlashCards(self,USERINPUT):
         end_q_index = 0
         end_a_index = 0    
         for N in range(self.nr_cards):   
-            end_q_index = find_hook(self.q_hookpos[N],self.letterfile)
-            end_a_index = find_hook(self.a_hookpos[N],self.letterfile)    
+            end_q_index = find_hook(self.q_hookpos[N],letterfile)
+            end_a_index = find_hook(self.a_hookpos[N],letterfile)    
             # collect all Questions and Answers
-            self.questions.append(self.letterfile[self.q_hookpos[N]+1:end_q_index])
-            self.answers.append(self.letterfile[self.a_hookpos[N]+1:end_a_index])        
+            self.questions.append(letterfile[self.q_hookpos[N]+1:end_q_index])
+            self.answers.append(letterfile[self.a_hookpos[N]+1:end_a_index])        
         # replace user defined commands, found in a separate file                  
         file = open(str(Path(self.notesdir, "usercommands.txt")), 'r')
         newcommand_line_lst = file.readlines()
