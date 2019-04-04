@@ -23,22 +23,47 @@ import re
 pylab.ioff() # make sure it is inactive, otherwise possible qwindows error    .... https://stackoverflow.com/questions/26970002/matplotlib-cant-suppress-figure-window
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
+import ctypes
+#ctypes:
+ICON_EXCLAIM=0x30
+ICON_STOP = 0x10
+MB_ICONINFORMATION = 0x00000040
+MessageBox = ctypes.windll.user32.MessageBoxW
+MB_YESNO = 0x00000004
+MB_DEFBUTTON2 = 0x00000100
 
 
 
 
-def CreateTextCardPrint(self,key):
-    TextCard = True    
-    LaTeXcode =  self.textdictionary[key]
-    height_card = math.ceil(len(LaTeXcode)/40)/2
-    fig = Figure(figsize=[8, height_card],dpi=100)
-    ax = fig.gca()
-    ax.plot([0, 0,0, height_card],color = (1,1,1,1))
-    ax.axis('off')
-    ax.text(-0.5, height_card/2,LaTeXcode, fontsize = self.LaTeXfontsize, horizontalalignment='left', verticalalignment='center',wrap = True)
+def CreateTextCardPrint(self,key,cardnr):
     
-    canvas = FigureCanvas(fig)
-    canvas.draw()
+    TextCard = True    
+    try:
+        LaTeXcode =  self.textdictionary[key]
+        height_card = math.ceil(len(LaTeXcode)/40)/2
+        fig = Figure(figsize=[8, height_card],dpi=100)
+        ax = fig.gca()
+        ax.plot([0, 0,0, height_card],color = (1,1,1,1))
+        ax.axis('off')
+        ax.text(-0.5, height_card/2,LaTeXcode, fontsize = self.LaTeXfontsize, horizontalalignment='left', verticalalignment='center',wrap = True)    
+        canvas = FigureCanvas(fig)
+        canvas.draw()
+    except:
+        if key[0] == 'A':
+            modekey = 'ANSWER'
+        elif key[0] == 'Q':
+            modekey = 'QUESTION'
+        MessageBox(0, f"Error in line {str(int(key[1:])+1)} mode {modekey}\nline: {self.textdictionary[key]}\nFaulty text or command used.", "Message", ICON_STOP)
+        LaTeXcode =  "Error for this page"
+        height_card = math.ceil(len(LaTeXcode)/40)/2
+        fig = Figure(figsize=[8, height_card],dpi=100)
+        ax = fig.gca()
+        ax.plot([0, 0,0, height_card],color = (1,1,1,1))
+        ax.axis('off')
+        ax.text(-0.5, height_card/2,LaTeXcode, fontsize = self.LaTeXfontsize, horizontalalignment='left', verticalalignment='center',wrap = True,color = 'r')    
+        canvas = FigureCanvas(fig)
+        canvas.draw()
+    
     renderer = canvas.get_renderer()
     raw_data = renderer.tostring_rgb()
     size = canvas.get_width_height()
