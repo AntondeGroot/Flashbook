@@ -95,7 +95,6 @@ def cropimage(img,x,backgroundcolor,border):
             j = len(img_array) - i - 1
             pixel1 = img_array[i]
             pixel2 = img_array[j]
-            print(pixel1)
             if pixel1 != 0:
                 if SEARCH1:
                     var1 = i
