@@ -2345,7 +2345,7 @@ class MyDialog8 ( wx.Dialog ):
 		
 		fgSizer5.Add( self.m_staticText55, 0, wx.ALL, 5 )
 		
-		self.m_textCtrl24 = wx.TextCtrl( self.m_panel32, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_textCtrl24 = wx.TextCtrl( self.m_panel32, wx.ID_ANY, data[0], wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.m_textCtrl24.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
 		self.m_textCtrl24.SetMinSize( wx.Size( 400,-1 ) )
 		
@@ -2357,7 +2357,7 @@ class MyDialog8 ( wx.Dialog ):
 		
 		fgSizer5.Add( self.m_staticText56, 0, wx.ALL, 5 )
 		
-		self.m_textCtrl25 = wx.TextCtrl( self.m_panel32, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_textCtrl25 = wx.TextCtrl( self.m_panel32, wx.ID_ANY, data[1], wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.m_textCtrl25.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
 		self.m_textCtrl25.SetMinSize( wx.Size( 400,-1 ) )
 		
