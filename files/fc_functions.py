@@ -409,82 +409,114 @@ def clearbitmap(self):
     """to clear it: just display a 1x1 empty bitmap"""
     self.m_bitmapScroll1.SetBitmap(wx.Bitmap(wx.Image( 1,1 )))
 
+def TryCreateTextCard(self):
+    # try to create a TextCard
+    if self.key in self.textdictionary:
+        try:
+            TextCard, imagetext = CreateTextCard(self,self.key,'flashcard')
+        except:
+            log.ERRORMESSAGE("Error: could not create textcard")
+def TryCombinePicText(self,key):
+    if key in self.picdictionary:
+        try:
+            imagetext = self.imagetext
+            self.image = CombinePicText_fc(self,key,imagetext)
+        except:
+            pass
+    else:
+        self.image = self.imagetext
+        
+def TryOnlyTextPic(self):
+    try:
+        self.image = findpicture(self,self.key)
+        ShowPage_fc(self)
+    except:
+        print("Error: could not load singular picture (no text available)")
+        
 def displaycard(self):
-    if self.debugmode:
-        print("f=displaycard")
     try:
         self.TextCard = False
         self.key = f'{self.mode[0]}{self.cardorder[self.index]}'
-        
         # try to create a TextCard
-        if self.key in self.textdictionary:
-            try:
-                CreateTextCard(self)
-            except:
-                log.ERRORMESSAGE("Error: could not create textcard")
+        TryCreateTextCard(self)
         # if there is a textcard either combine them with a picture or display it on its own
         if self.TextCard == True: 
-            if self.key in self.picdictionary:
-                try:
-                    imagetext = self.imagetext
-                    key = self.key
-                    self.image = CombinePicText_fc(self,key,imagetext)
-                    ShowPage_fc(self)
-                except:
-                    pass
-            else:
-                self.image = self.imagetext
-                ShowPage_fc(self)
+            TryCombinePicText(self,self.key)
         else: #if there is no textcard only display the picture
-            try:
-                self.image = findpicture(self,self.key)
-                ShowPage_fc(self)
-            except:
-                print("Error: could not load singular picture (no text available)")
+            TryOnlyTextPic(self)
+        ShowPage_fc(self)
     except:
         log.ERRORMESSAGE("Error: could not display card")
+        
+def PILimage_to_Bitmap(image): 
+    """ PIL image to wxBitmap """
+    image2 = wx.Image( image.size)
+    image2.SetData( image.tobytes() )
+    image2 = wx.Bitmap(image2)
+    return image2
 
-def CreateTextCard(self):
-    if self.debugmode:
-        print("f=createtextcard")
-        print(f"is pylab interactive? = {pylab.isinteractive()}")
-        pylab.ioff()
-        print(f"is pylab interactive? = {pylab.isinteractive()} (after explicitly deactivating it)")
-    # acquire text
+
+def CreateSingularCard(self,mode):
+    self.mode = mode
     try:
-        usertext = self.textdictionary[self.key]
+        self.TextCard = False
+        self.key = f'{self.mode[0]}{self.cardorder[self.index]}'
+        # try to create a TextCard
+        TryCreateTextCard(self)
+        # if there is a textcard either combine them with a picture or display it on its own
+        if self.TextCard == True: 
+            TryCombinePicText(self,self.key)
+        else: #if there is no textcard only display the picture
+            TryOnlyTextPic(self)
+        return self.image
+    except:
+        log.ERRORMESSAGE("Error: could not display card")
+    
+
+def CreateTextCard(self,key,mode):    
+    try:
+        if mode == 'flashbook':
+            usertext = self.usertext
+        if mode == 'flashcard':
+            # acquire text
+            usertext = self.textdictionary[key]
         # display text in a plot
         height_card = math.ceil(len(usertext)/40)/2
         figure = Figure(figsize=[8, height_card],dpi=100)
         ax = figure.gca()
-        ax.plot([0, 0,0, height_card],color = (1,1,1,1))
+        ax.plot([0, 0, 0, height_card],color = (1,1,1,1))
         ax.axis('off')
         ax.text(-0.5, height_card/2,usertext, fontsize = self.LaTeXfontsize, horizontalalignment='left', verticalalignment='center',wrap = True)
-        # convert picture to data
+        # convert picture to data, if the text is illegitimate the error will occur in canvas.draw()
         canvas = FigureCanvas(figure)
         canvas.draw()
     except:
-        if self.key[0] == 'A':
-            modekey = 'ANSWER'
-        elif self.key[0] == 'Q':
-            modekey = 'QUESTION'
-        MessageBox(0, f"Error in line {str(int(self.key[1:])+1)} mode {modekey}\nline: {self.textdictionary[self.key]}\nFaulty text or command used.\nGo to .../Flashbook/files/... and edit it manually.", "Message", ICON_STOP)
+        if mode == 'flashbook':
+            MessageBox(0, f"Error in text given by user.\nFaulty text or something mistakingly seen as a command used.\nGo to .../Flashbook/files/... and edit it manually.", "Message", ICON_STOP)
+        if mode == 'flashcard':
+            if key[0] == 'A':
+                modekey = 'ANSWER'
+            elif key[0] == 'Q':
+                modekey = 'QUESTION'
+            MessageBox(0, f"Error in line {str(int(key[1:])+1)} mode {modekey}\nline: {self.textdictionary[key]}\nFaulty text or command used.\nGo to .../Flashbook/files/... and edit it manually.", "Message", ICON_STOP)
         LaTeXcode =  "Error for this page: invalid code"
         height_card = math.ceil(len(LaTeXcode)/40)/2
         fig = Figure(figsize=[8, height_card],dpi=100)
         ax = fig.gca()
-        ax.plot([0, 0,0, height_card],color = (1,1,1,1))
+        ax.plot([0, 0, 0, height_card],color = (1,1,1,1))
         ax.axis('off')
         ax.text(-0.5, height_card/2,LaTeXcode, fontsize = self.LaTeXfontsize, horizontalalignment='left', verticalalignment='center',wrap = True,color = 'r')    
         canvas = FigureCanvas(fig)
         canvas.draw()
-    
+        
     renderer = canvas.get_renderer()
     raw_data = renderer.tostring_rgb()
     size = canvas.get_width_height()
     # output
-    self.TextCard = True
-    self.imagetext = PIL.Image.frombytes("RGB", size, raw_data, decoder_name = 'raw', )
+    TextCard = True
+    imagetext = PIL.Image.frombytes("RGB", size, raw_data, decoder_name = 'raw', )
+    
+    return TextCard, imagetext
 
 def LoadFlashCards(self,USERINPUT,letterfile):
     """
