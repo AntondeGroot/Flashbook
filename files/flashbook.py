@@ -745,11 +745,17 @@ class MainFrame(gui.MyFrame):
             self.mode = modereset
             
             with gui.MyDialog6(self,data) as dlg:
-                if dlg.ShowModal() == wx.ID_OK:     
+                if dlg.ShowModal() == wx.ID_OK:   
+                    f2.DeleteCurrentCard(self)
                     print(f"index = {self.cardorder[self.index]}")
                     print(f"cardorder = {self.cardorder}")
                     #it might occur multiple times
-                    print([x for x in self.cardorder if x != self.cardorder[self.index]])
+                    self.cardorder = [x for x in self.cardorder if x != self.cardorder[self.index]]
+                    self.nr_cards = len(self.cardorder)
+                    self.nr_questions -= 1
+                    self.m_TotalPages21.SetValue(f"{self.nr_questions}")
+                    f2.displaycard(self)
+                    self.Refresh()
                     print("success!!")
         elif self.SwitchCard == False: #there is only a Question card
             
@@ -758,15 +764,43 @@ class MainFrame(gui.MyFrame):
             
             with gui.MyDialog7(self,BMP_q) as dlg:
                 if dlg.ShowModal() == wx.ID_OK:  
-                    
-                    print("success!!")
+                    f2.DeleteCurrentCard(self)
+                    self.cardorder = [x for x in self.cardorder if x != self.cardorder[self.index]]
+                    self.nr_cards = len(self.cardorder)
+                    self.nr_questions -= 1
+                    self.m_TotalPages21.SetValue(f"{self.nr_questions}")
+                    f2.displaycard(self)
+                    self.Refresh()
                 
     def m_menuEditCardOnMenuSelection( self, event ):
         trueindex = self.cardorder[self.index]
-        data = [self.questions[trueindex],self.answers[trueindex]]
+        
+        data = [self.questions_raw[trueindex],self.answers_raw[trueindex]]
         
         with gui.MyDialog8(self,data) as dlg:
-            if dlg.ShowModal() == wx.ID_OK:     
+            if dlg.ShowModal() == wx.ID_OK:
+                question = dlg.m_textCtrl24.GetValue()
+                answer   = dlg.m_textCtrl25.GetValue()
+                #open file
+                with open(Path(self.notesdir,self.filename),'r') as file:
+                    flines = file.readlines()
+                    file.close()
+                #make changes
+                if question == '':
+                    flines.pop(trueindex)
+                    f2.DeleteCurrentCard(self)
+                    self.cardorder = [x for x in self.cardorder if x != self.cardorder[self.index]]
+                    self.nr_cards = len(self.cardorder)
+                    self.nr_questions -= 1
+                    self.m_TotalPages21.SetValue(f"{self.nr_questions}")
+                    f2.displaycard(self)
+                    self.Refresh()
+                else:
+                    flines[trueindex] = r"\quiz{"+str(question)+"}"+r"\ans{"+str(answer)+"}"+"\n"
+                    #save changes
+                    with open(str(Path(self.notesdir, self.filename)), 'w') as output: 
+                        for line in flines:
+                            output.write(line)
                 print("success!!")
                 
     def m_menuPreviousCardOnMenuSelection( self, event ):
