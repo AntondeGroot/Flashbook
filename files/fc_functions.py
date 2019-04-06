@@ -540,6 +540,21 @@ def CreateTextCard(self,mode,arg1):
         imagetext = None
     return bool_textcard, imagetext
 
+def DeleteCurrentCard(self):
+    trueindex = self.cardorder[self.index]
+    #open file
+    with open(Path(self.notesdir,self.filename),'r') as file:
+        flines = file.readlines()
+        file.close()
+    #make changes                    
+    flines.pop(trueindex)
+    #save changes
+    with open(str(Path(self.notesdir, self.filename)), 'w') as output: 
+        for line in flines:
+            output.write(line)    
+    set_stats(self)
+    save_stats(self)
+    print("success!!")
 
 def LoadFlashCards(self,USERINPUT,letterfile):
     """
@@ -555,12 +570,20 @@ def LoadFlashCards(self,USERINPUT,letterfile):
         # find the closing '}' for a command                                         
         end_q_index = 0
         end_a_index = 0    
+        self.questions_raw = []
+        self.answers_raw = []
         for N in range(self.nr_cards):   
             end_q_index = find_hook(self.q_hookpos[N],letterfile)
             end_a_index = find_hook(self.a_hookpos[N],letterfile)    
             # collect all Questions and Answers
             self.questions.append(letterfile[self.q_hookpos[N]+1:end_q_index])
-            self.answers.append(letterfile[self.a_hookpos[N]+1:end_a_index])        
+            self.answers.append(letterfile[self.a_hookpos[N]+1:end_a_index]) 
+            print(letterfile[self.q_hookpos[N]+1:end_q_index])
+            print()
+            #store the unedited questions and answers. This will be used when the user wants to edit the original Q and A
+            self.questions_raw.append(letterfile[self.q_hookpos[N]+1:end_q_index])
+            self.answers_raw.append(letterfile[self.a_hookpos[N]+1:end_a_index])
+        
         # replace user defined commands, found in a separate file                  
         file = open(str(Path(self.notesdir, "usercommands.txt")), 'r')
         newcommand_line_lst = file.readlines()
