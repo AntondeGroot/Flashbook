@@ -337,7 +337,7 @@ class MainFrame(gui.MyFrame):
         settings_get(self)
         settings_set(self)
         #settings_set(self)
-        
+        self.m_menubar1.EnableTop(2, False)#disable Flashcard menu
         self.Maximize(True) # open the app window maximized
         t_books = lambda self,delay : threading.Thread(target = p.checkBooks , args=(self,delay )).start()
         t_books(self, 2) 
@@ -482,8 +482,20 @@ class MainFrame(gui.MyFrame):
                                 random.shuffle(temp)
                                 random.shuffle(temp)
                                 files = temp
-                                print("hallo"*100)
                                 save2latexfile(self,files,title)
+                            print()
+                            print(os.listdir(self.notesdir))
+                            print()
+                            print(title)
+                            if title+'.tex' in os.listdir(self.notesdir):
+                                statinfo = os.stat(Path(self.notesdir,title+'.tex'))
+                                if statinfo.st_size > 0 :
+                                    MessageBox(0, f"The books have been succesfully combined!\nAnd it has the filename: {title}", "Info", MB_ICONINFORMATION)
+                                else:
+                                    print("Error: booknotes could not be merged and resulted in an empty file")
+                            else:
+                                print("Error: merged booknotes could not be created or saved!")
+                                
                                 
     def m_menuItemDelBookOnMenuSelection( self, event ):
         #with wx.FileDialog(self, "Choose which file to delete", wildcard="*.tex",style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST) as fileDialog:
@@ -539,6 +551,13 @@ class MainFrame(gui.MyFrame):
                             [file.unlink() for file in folder.iterdir() if (filename in file.name and file.suffix =='.tex' )]
                         except:
                             pass
+                        #final check if it has been deleted and inform user
+                        try:
+                            directories = [os.listdir(x) for x in [Path(self.booksdir,path2del),self.picsdir,self.tempdir,self.notesdir]]
+                        except:
+                            directories = [os.listdir(x) for x in [self.picsdir,self.tempdir,self.notesdir]]
+                        if not any(filename in listdir for listdir in directories):
+                            MessageBox(0, f"The book has been succesfully deleted!", "Info", MB_ICONINFORMATION)
             else: 
                 print("operation aborted")
                 return None    
@@ -712,7 +731,43 @@ class MainFrame(gui.MyFrame):
         p.SwitchPanel(self,1) 
     def m_txtHelpSyncOnLeftDown(self,event):
         p.SwitchPanel(self,5) 
-    
+    #%%Flashcard menu
+    def m_menuDeleteCardOnMenuSelection( self, event ):
+        if self.SwitchCard == True: #there is also an Answer card
+            modereset = self.mode
+            image = f2.CreateSingularCard(self,'Question')
+            BMP_q = f2.PILimage_to_Bitmap(image)
+            
+            image = f2.CreateSingularCard(self,'Answer')
+            BMP_a = f2.PILimage_to_Bitmap(image)
+            
+            data = [BMP_q,BMP_a]
+            self.mode = modereset
+            
+            with gui.MyDialog6(self,data) as dlg:
+                if dlg.ShowModal() == wx.ID_OK:     
+                    print(f"index = {self.cardorder[self.index]}")
+                    print(f"cardorder = {self.cardorder}")
+                    #it might occur multiple times
+                    print([x for x in self.cardorder if x != self.cardorder[self.index]])
+                    print("success!!")
+        elif self.SwitchCard == False: #there is only a Question card
+            
+            image = f2.CreateSingularCard(self,'Question')
+            BMP_q = f2.PILimage_to_Bitmap(image)
+            
+            with gui.MyDialog7(self,BMP_q) as dlg:
+                if dlg.ShowModal() == wx.ID_OK:  
+                    
+                    print("success!!")
+                
+    def m_menuEditCardOnMenuSelection( self, event ):
+        with gui.MyDialog8(self,None) as dlg:
+            if dlg.ShowModal() == wx.ID_OK:     
+                print("success!!")
+                
+    def m_menuPreviousCardOnMenuSelection( self, event ):
+        print("go to previous card")
     
     #%% settings menu
     """ settings menu """
@@ -884,6 +939,7 @@ class MainFrame(gui.MyFrame):
     """ flashcard """
     # main program
     def m_filePicker21OnFileChanged( self, event ):
+        self.m_menubar1.EnableTop(2,True)
         m2.startprogram(self,event)
     
     # button events
