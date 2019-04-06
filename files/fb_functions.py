@@ -420,7 +420,6 @@ def text_to_latex(self,usertext):
     # find all user defined commands in a separate file
     # start reading after "###" because I defined that as the end of the notes    
     with open(Path(self.notesdir,"usercommands.txt"),'r') as file1:
-        newcommand_line_lst = file1.readlines()
         commandsfile = file1.readlines()
     file1.close()
     
@@ -429,7 +428,6 @@ def text_to_latex(self,usertext):
         if "###" in line:
             index = i+1
     # remove the lines that precede the ###     
-    newcommand_line_lst[:index] = []
     commandsfile[:index] = []
     # only look at lines containing "newcommand"
     commands = [line for line in commandsfile if ("newcommand"  in line)]
