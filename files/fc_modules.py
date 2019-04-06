@@ -225,7 +225,6 @@ def startprogram(self,event):
         if Path(eventpath).exists():
             file = open(eventpath, 'r')
             letterfile = str(file.read())
-        self.letterfile = letterfile
         # positions of Questions and Answers
         q_pos   = [m.start() for m in re.finditer(self.question_command, letterfile)]
         a_pos   = [m.start() for m in re.finditer(self.answer_command, letterfile)]
