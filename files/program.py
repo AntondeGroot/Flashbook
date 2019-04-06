@@ -173,6 +173,7 @@ def run_flashcard(self):
         event.Skip()
         
     def m_filePickerOnFileChanged( self, event ): 
+        
         # main program, does all of the preprocessing
         m2.startprogram(self,event)
         event.Skip()
@@ -334,7 +335,7 @@ def set_richtext(self):
     self.Layout()
 import historygraph
 def SwitchPanel(self,n):
-    
+    self.m_menubar1.EnableTop(2, False)#disable Flashcard menu
     self.m_menuHelp.Enable(True)
     self.panel0.Hide()
     self.panel1.Hide()
@@ -374,27 +375,34 @@ def SwitchPanel(self,n):
         self.panelHelp.Show()         
     self.Layout() # force refresh of windows
     
+def Imgpath_to_SquareBitmap(path,size): 
+    path = str(path)
+    image = PIL.Image.open(path, mode='r')
+    image = image.resize((size, size), PIL.Image.ANTIALIAS) 
+    image2 = wx.Image( image.size)
+    image2.SetData( image.tobytes() )
+    image2 = wx.Bitmap(image2)
+    return image2    
+
 def set_bitmapbuttons(self):
     
-    def Img2Bitmap(path,size): 
-        path = str(path)
-        image = PIL.Image.open(path, mode='r')
-        image = image.resize((size, size), PIL.Image.ANTIALIAS) 
-        image2 = wx.Image( image.size)
-        image2.SetData( image.tobytes() )
-        return image2
     
-    image2 = Img2Bitmap(str(self.path_fb),105)
-    self.m_OpenFlashbook.SetBitmap(wx.Bitmap(image2))
     
-    image2 = Img2Bitmap(str(self.path_fc),105)
-    self.m_OpenFlashcard.SetBitmap(wx.Bitmap(image2))
+    #image2 = Img2Bitmap(str(self.path_fb),105)
+    BMP = Imgpath_to_SquareBitmap(str(self.path_fb),105)
+    self.m_OpenFlashbook.SetBitmap(BMP)
     
-    image2 = Img2Bitmap(str(self.path_pr),105)
-    self.m_OpenPrint.SetBitmap(wx.Bitmap(image2))
+    #image2 = Img2Bitmap(str(self.path_fc),105)
+    BMP = Imgpath_to_SquareBitmap(str(self.path_fc),105)
+    self.m_OpenFlashcard.SetBitmap(BMP)
     
-    image2 = Img2Bitmap(str(self.path_wifi),105)
-    self.m_OpenTransfer.SetBitmap(wx.Bitmap(image2))
+    #image2 = Img2Bitmap(str(self.path_pr),105)
+    BMP = Imgpath_to_SquareBitmap(str(self.path_pr),105)
+    self.m_OpenPrint.SetBitmap(BMP)
+    
+    #image2 = Img2Bitmap(str(self.path_wifi),105)
+    BMP = Imgpath_to_SquareBitmap(str(self.path_wifi),105)
+    self.m_OpenTransfer.SetBitmap(BMP)
     
     #image2 = Img2Bitmap(self.path_arrow,32)
     self.m_toolStitch.SetBitmap(wx.Bitmap(str(self.path_arrow2)))
