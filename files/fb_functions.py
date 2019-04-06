@@ -289,8 +289,6 @@ def CombinePics(self,directorylist):
 def CreateTextCard(self):
     self.ERROR = False
     try:
-        if self.debugmode:
-            print("fb=CreateTextCard")
         self.TextCard = True    
         LaTeXcode = self.usertext
         height_card = math.ceil(len(LaTeXcode)/40)/2
