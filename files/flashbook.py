@@ -583,8 +583,8 @@ class MainFrame(gui.MyFrame):
                     raw_data = renderer.tostring_rgb()
                     size = canvas.get_width_height()
                     imagetext = PIL.Image.frombytes("RGB", size, raw_data, decoder_name='raw', )
-                    imagetext = f2.cropimage(imagetext,0,(0,0,0),10)
-                    imagetext = f2.cropimage(imagetext,1,(0,0,0),10)
+                    imagetext = f2.cropimage(imagetext,0)
+                    imagetext = f2.cropimage(imagetext,1)
                     print(bookname)
                     path = Path(self.booksdir,bookname,bookname+"-0001.jpg")
                     print(path)
@@ -762,11 +762,15 @@ class MainFrame(gui.MyFrame):
                     print("success!!")
                 
     def m_menuEditCardOnMenuSelection( self, event ):
-        with gui.MyDialog8(self,None) as dlg:
+        trueindex = self.cardorder[self.index]
+        data = [self.questions[trueindex],self.answers[trueindex]]
+        
+        with gui.MyDialog8(self,data) as dlg:
             if dlg.ShowModal() == wx.ID_OK:     
                 print("success!!")
                 
     def m_menuPreviousCardOnMenuSelection( self, event ):
+        m2.buttonPreviousCard(self)
         print("go to previous card")
     
     #%% settings menu
