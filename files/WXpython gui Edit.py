@@ -30,7 +30,9 @@ org = [
        'self.m_textCtrl51Score = wx.TextCtrl( self.m_panel64, wx.ID_ANY, u"Your score is 100%", wx.DefaultPosition, wx.Size( 200,-1 ), 0|wx.NO_BORDER )','self.m_textCtrl51Score = wx.TextCtrl( self.m_panel64, wx.ID_ANY, data, wx.DefaultPosition, wx.Size( 200,-1 ), 0|wx.NO_BORDER )',
        'self.m_bitmap6 = wx.StaticBitmap( self.m_panel29, wx.ID_ANY, wx.NullBitmap, wx.DefaultPosition, wx.Size( -1,-1 ), wx.SIMPLE_BORDER )','self.m_bitmap6 = wx.StaticBitmap( self.m_panel29, wx.ID_ANY, data[0], wx.DefaultPosition, wx.Size( -1,-1 ), wx.SIMPLE_BORDER )',
 	   'self.m_bitmap7 = wx.StaticBitmap( self.m_panel29, wx.ID_ANY, wx.NullBitmap, wx.DefaultPosition, wx.Size( -1,-1 ), wx.SIMPLE_BORDER )','self.m_bitmap7 = wx.StaticBitmap( self.m_panel29, wx.ID_ANY, data[1], wx.DefaultPosition, wx.Size( -1,-1 ), wx.SIMPLE_BORDER )',
-       'self.m_bitmap8 = wx.StaticBitmap( self.m_panel29, wx.ID_ANY, wx.NullBitmap, wx.DefaultPosition, wx.Size( -1,-1 ), wx.SIMPLE_BORDER )','self.m_bitmap8 = wx.StaticBitmap( self.m_panel29, wx.ID_ANY, data, wx.DefaultPosition, wx.Size( -1,-1 ), wx.SIMPLE_BORDER )'
+       'self.m_bitmap8 = wx.StaticBitmap( self.m_panel29, wx.ID_ANY, wx.NullBitmap, wx.DefaultPosition, wx.Size( -1,-1 ), wx.SIMPLE_BORDER )','self.m_bitmap8 = wx.StaticBitmap( self.m_panel29, wx.ID_ANY, data, wx.DefaultPosition, wx.Size( -1,-1 ), wx.SIMPLE_BORDER )',
+       'self.m_textCtrl24 = wx.TextCtrl( self.m_panel32, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )','self.m_textCtrl24 = wx.TextCtrl( self.m_panel32, wx.ID_ANY, data[0], wx.DefaultPosition, wx.DefaultSize, 0 )',
+       'self.m_textCtrl25 = wx.TextCtrl( self.m_panel32, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )','self.m_textCtrl25 = wx.TextCtrl( self.m_panel32, wx.ID_ANY, data[1], wx.DefaultPosition, wx.DefaultSize, 0 )'
        
        ]
 a = []
