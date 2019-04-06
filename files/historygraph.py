@@ -179,10 +179,9 @@ def drawlegend(totalbooks,totalvalues,legendbackup,hatchlist):
     img = PIL.Image.frombytes("RGB", size, raw_data, decoder_name='raw', )
     
     #cut down image
-    backgroundcolor = (254,240,231)
-    border = 5
-    img = f2.cropimage(img,0,backgroundcolor,border)
-    img = f2.cropimage(img,1,backgroundcolor,border)
+    color = (254,240,231)
+    img = f2.cropimage(img, 0, backgroundcolor = color, border = 5)
+    img = f2.cropimage(img, 1, backgroundcolor = color, border = 5)
 
     
     #img.show()
