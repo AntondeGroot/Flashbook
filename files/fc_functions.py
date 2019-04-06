@@ -48,39 +48,45 @@ def findpicture(self,key):
     This problem may occur if you have combined several books.
     If the picture really doesn't exist, then the user gets notified with a messagebox."""
     FOUNDPIC = False
-    path = Path(self.picsdir, self.bookname, self.picdictionary[key])
-    if path.exists():
-        imagepic = PIL.Image.open(str(path))
-        FOUNDPIC = True
+    imagepic = None
+    if key in self.picdictionary:
+        path = Path(self.picsdir, self.bookname, self.picdictionary[key])
+        if path.exists():
+            imagepic = PIL.Image.open(str(path))
+            FOUNDPIC = True
+        else:
+            folders = os.listdir(self.picsdir)
+            for i,item in enumerate(folders):
+                path = Path(self.picsdir, item, self.picdictionary[key])
+                if path.exists():
+                    imagepic = PIL.Image.open(str(path))
+                    FOUNDPIC = True
+        if FOUNDPIC == False:
+            """Notify User and create a fake picture with the error message 
+            as replacement for the missing picture."""
+            
+            MessageBox(0, f"Error in line {str(int(key[1:])+1)} mode {key[0]}\nline: {self.picdictionary[key]}\nPicture could not be found in any folder.", "Message", ICON_STOP)
+            LaTeXcode =  "This image does not exist"
+            height_card = math.ceil(len(LaTeXcode)/40)/2
+            fig = Figure(figsize=[8, height_card],dpi=100)
+            ax = fig.gca()
+            ax.plot([0, 0,0, height_card],color = (1,1,1,1))
+            ax.axis('off')
+            ax.text(-0.5, height_card/2,LaTeXcode, fontsize = self.LaTeXfontsize, horizontalalignment='left', verticalalignment='center',wrap = True,color = 'r')    
+            canvas = FigureCanvas(fig)
+            canvas.draw()        
+            renderer = canvas.get_renderer()
+            raw_data = renderer.tostring_rgb()
+            size = canvas.get_width_height()
+            # output
+            imagepic = PIL.Image.frombytes("RGB", size, raw_data, decoder_name = 'raw', )
+            FOUNDPIC = True #the user should be informed and shown that the picture does not exist, because it should exist!
     else:
-        folders = os.listdir(self.picsdir)
-        for i,item in enumerate(folders):
-            path = Path(self.picsdir, item, self.picdictionary[key])
-            if path.exists():
-                imagepic = PIL.Image.open(str(path))
-                FOUNDPIC = True
-    if FOUNDPIC == False:
-        """Notify User and create a fake picture with the error message 
-        as replacement for the missing picture."""
-        
-        MessageBox(0, f"Error in line {str(int(key[1:])+1)} mode {key[0]}\nline: {self.picdictionary[key]}\nPicture could not be found in any folder.", "Message", ICON_STOP)
-        LaTeXcode =  "This image does not exist"
-        height_card = math.ceil(len(LaTeXcode)/40)/2
-        fig = Figure(figsize=[8, height_card],dpi=100)
-        ax = fig.gca()
-        ax.plot([0, 0,0, height_card],color = (1,1,1,1))
-        ax.axis('off')
-        ax.text(-0.5, height_card/2,LaTeXcode, fontsize = self.LaTeXfontsize, horizontalalignment='left', verticalalignment='center',wrap = True,color = 'r')    
-        canvas = FigureCanvas(fig)
-        canvas.draw()        
-        renderer = canvas.get_renderer()
-        raw_data = renderer.tostring_rgb()
-        size = canvas.get_width_height()
-        # output
-        imagepic = PIL.Image.frombytes("RGB", size, raw_data, decoder_name = 'raw', )
-    return imagepic
+        #picture does not exist and should not exist, so this is fine
+        pass
+    return FOUNDPIC, imagepic
 
-def cropimage(img,x,backgroundcolor,border):
+def cropimage(img, x, backgroundcolor=(0,0,0), border=10):
     SEARCH1 = True
     SEARCH2 = True
     var1 = 0
@@ -133,7 +139,7 @@ def cropimage(img,x,backgroundcolor,border):
         img = img.crop((0, var1, img.size[0], var2))
     if x == 0:
         img = img.crop((var1, 0, var2, img.size[1]))
-    
+    print(var1,var2,var3,var4)
     return img    
 
 
@@ -383,10 +389,9 @@ def switch_bitmap(self):
     
 
 
-def CombinePicText_fc(self,key,imagetext):
-    self.ERROR = False
-    try:
-        imagepic = findpicture(self,key)
+def CombinePicText_fc(bool_text,imagetext,bool_pic,imagepic):
+    if bool_text and bool_pic:
+        #imagepic = findpicture(self,key)
         images = [imagetext,imagepic]
         
         widths, heights = zip(*(i.size for i in images))
@@ -398,10 +403,15 @@ def CombinePicText_fc(self,key,imagetext):
         for im in images:
             new_im.paste(im, (0,y_offset))
             y_offset += im.size[1]
-        
-        return new_im
-    except:
-        self.ERROR = True
+    elif bool_text and not bool_pic:
+        new_im = imagetext
+    elif not bool_text and bool_pic:
+        new_im = imagepic
+    elif not bool_text and not bool_pic:
+        new_im = PIL.Image.new('RGB', (1, 1), "white")
+        MessageBox(0, f"Error: no Text or Picture exists to combine", "Message", ICON_STOP)
+    return new_im
+    
 
     
     
@@ -409,13 +419,15 @@ def clearbitmap(self):
     """to clear it: just display a 1x1 empty bitmap"""
     self.m_bitmapScroll1.SetBitmap(wx.Bitmap(wx.Image( 1,1 )))
 
-def TryCreateTextCard(self):
-    # try to create a TextCard
-    if self.key in self.textdictionary:
+def TryCreateTextCard(self,key):
+    # try to create a TextCard]
+    key = self.key
+    if key in self.textdictionary:
         try:
-            TextCard, imagetext = CreateTextCard(self,self.key,'flashcard')
+            TextCard, imagetext = CreateTextCard(self,'flashcard',key)
         except:
             log.ERRORMESSAGE("Error: could not create textcard")
+            
 def TryCombinePicText(self,key):
     if key in self.picdictionary:
         try:
@@ -434,19 +446,16 @@ def TryOnlyTextPic(self):
         print("Error: could not load singular picture (no text available)")
         
 def displaycard(self):
-    try:
-        self.TextCard = False
-        self.key = f'{self.mode[0]}{self.cardorder[self.index]}'
-        # try to create a TextCard
-        TryCreateTextCard(self)
-        # if there is a textcard either combine them with a picture or display it on its own
-        if self.TextCard == True: 
-            TryCombinePicText(self,self.key)
-        else: #if there is no textcard only display the picture
-            TryOnlyTextPic(self)
-        ShowPage_fc(self)
-    except:
-        log.ERRORMESSAGE("Error: could not display card")
+    #try:
+    key = f'{self.mode[0]}{self.cardorder[self.index]}'
+    # try to create a TextCard
+    bool_textcard, img_txt = CreateTextCard(self,'flashcard',key)
+    bool_piccard, img_pic  = findpicture(self,key)
+    image = CombinePicText_fc(bool_textcard,img_txt,bool_piccard,img_pic)
+    ShowPage_fc(self,image) 
+    
+    #except:
+    #    log.ERRORMESSAGE("Error: could not display card")
         
 def PILimage_to_Bitmap(image): 
     """ PIL image to wxBitmap """
@@ -459,64 +468,78 @@ def PILimage_to_Bitmap(image):
 def CreateSingularCard(self,mode):
     self.mode = mode
     try:
-        self.TextCard = False
-        self.key = f'{self.mode[0]}{self.cardorder[self.index]}'
+        key = f'{self.mode[0]}{self.cardorder[self.index]}'
         # try to create a TextCard
-        TryCreateTextCard(self)
-        # if there is a textcard either combine them with a picture or display it on its own
-        if self.TextCard == True: 
-            TryCombinePicText(self,self.key)
-        else: #if there is no textcard only display the picture
-            TryOnlyTextPic(self)
-        return self.image
+        bool_textcard, img_text = CreateTextCard(self,'flashcard',key)
+        bool_piccard,  img_pic  = findpicture(self,key)
+        image = CombinePicText_fc(bool_textcard,img_text,bool_piccard,img_pic)
+        #ShowPage_fc(self,image)
+        return image
     except:
         log.ERRORMESSAGE("Error: could not display card")
     
 
-def CreateTextCard(self,key,mode):    
-    try:
-        if mode == 'flashbook':
-            usertext = self.usertext
-        if mode == 'flashcard':
-            # acquire text
-            usertext = self.textdictionary[key]
-        # display text in a plot
-        height_card = math.ceil(len(usertext)/40)/2
-        figure = Figure(figsize=[8, height_card],dpi=100)
-        ax = figure.gca()
-        ax.plot([0, 0, 0, height_card],color = (1,1,1,1))
-        ax.axis('off')
-        ax.text(-0.5, height_card/2,usertext, fontsize = self.LaTeXfontsize, horizontalalignment='left', verticalalignment='center',wrap = True)
-        # convert picture to data, if the text is illegitimate the error will occur in canvas.draw()
-        canvas = FigureCanvas(figure)
-        canvas.draw()
-    except:
-        if mode == 'flashbook':
-            MessageBox(0, f"Error in text given by user.\nFaulty text or something mistakingly seen as a command used.\nGo to .../Flashbook/files/... and edit it manually.", "Message", ICON_STOP)
-        if mode == 'flashcard':
-            if key[0] == 'A':
-                modekey = 'ANSWER'
-            elif key[0] == 'Q':
-                modekey = 'QUESTION'
-            MessageBox(0, f"Error in line {str(int(key[1:])+1)} mode {modekey}\nline: {self.textdictionary[key]}\nFaulty text or command used.\nGo to .../Flashbook/files/... and edit it manually.", "Message", ICON_STOP)
-        LaTeXcode =  "Error for this page: invalid code"
-        height_card = math.ceil(len(LaTeXcode)/40)/2
-        fig = Figure(figsize=[8, height_card],dpi=100)
-        ax = fig.gca()
-        ax.plot([0, 0, 0, height_card],color = (1,1,1,1))
-        ax.axis('off')
-        ax.text(-0.5, height_card/2,LaTeXcode, fontsize = self.LaTeXfontsize, horizontalalignment='left', verticalalignment='center',wrap = True,color = 'r')    
-        canvas = FigureCanvas(fig)
-        canvas.draw()
-        
-    renderer = canvas.get_renderer()
-    raw_data = renderer.tostring_rgb()
-    size = canvas.get_width_height()
-    # output
-    TextCard = True
-    imagetext = PIL.Image.frombytes("RGB", size, raw_data, decoder_name = 'raw', )
-    
-    return TextCard, imagetext
+def CreateTextCard(self,mode,arg1):
+    """This function is used for 2 different purposes
+    1) Flashbook: create a textcard from user input -- this requires user input: self.usertext
+    2) Flashcard: create a textcard from saved data -- this requires a dict key: 'key'
+    The creation of a card can fail because the userinput was incorrect it can see something starting with '\' as LaTeX code
+    when it should not, or if the user used some undefined function.
+    """
+    if (mode == 'flashbook' and self.usertext != '') or (mode == 'flashcard' and arg1 in self.textdictionary):
+        try:
+            if mode == 'flashbook':
+                usertext = arg1
+            if mode == 'flashcard':
+                # acquire text
+                key = arg1                
+                usertext = self.textdictionary[key]
+            # display text in a plot
+            height_card = math.ceil(len(usertext)/40)/2
+            figure = Figure(figsize=[8, height_card],dpi=100)
+            ax = figure.gca()
+            ax.plot([0, 0, 0, height_card],color = (1,1,1,1))
+            ax.axis('off')
+            ax.text(-0.5, height_card/2,usertext, fontsize = self.LaTeXfontsize, horizontalalignment='left', verticalalignment='center',wrap = True)
+            # convert picture to data, if the text is illegitimate the error will occur in canvas.draw()
+            canvas = FigureCanvas(figure)
+            canvas.draw()
+        except:
+            if mode == 'flashbook':
+                MessageBox(0, f"Error in text given by user.\nFaulty text or something mistakingly seen as a command used.\nGo to .../Flashbook/files/... and edit it manually.", "Message", ICON_STOP)
+            if mode == 'flashcard':
+                if key[0] == 'A':
+                    modekey = 'ANSWER'
+                elif key[0] == 'Q':
+                    modekey = 'QUESTION'
+                MessageBox(0, f"Error in line {str(int(key[1:])+1)} mode {modekey}\nline: {self.textdictionary[key]}\nFaulty text or command used.\nGo to .../Flashbook/files/... and edit it manually.", "Message", ICON_STOP)
+            LaTeXcode =  "Error for this page: invalid code"
+            height_card = math.ceil(len(LaTeXcode)/40)/2
+            fig = Figure(figsize=[8, height_card],dpi=100)
+            ax = fig.gca()
+            ax.plot([0, 0, 0, height_card],color = (1,1,1,1))
+            ax.axis('off')
+            ax.text(-0.5, height_card/2,LaTeXcode, fontsize = self.LaTeXfontsize, horizontalalignment='left', verticalalignment='center',wrap = True,color = 'r')    
+            canvas = FigureCanvas(fig)
+            canvas.draw()
+            
+        renderer = canvas.get_renderer()
+        raw_data = renderer.tostring_rgb()
+        size = canvas.get_width_height()
+        # output
+        bool_textcard = True
+        imagetext = PIL.Image.frombytes("RGB", size, raw_data, decoder_name = 'raw', )
+        #crop image
+        print(colored(imagetext.size,"red"))
+        imagetext = cropimage(imagetext,0)
+        imagetext = cropimage(imagetext,1)
+        print(colored(imagetext.size,"red"))
+    else: 
+        #if mode == 'flashcard' but the key is not in dict
+        bool_textcard = False
+        imagetext = None
+    return bool_textcard, imagetext
+
 
 def LoadFlashCards(self,USERINPUT,letterfile):
     """
@@ -681,11 +704,13 @@ def LoadFlashCards(self,USERINPUT,letterfile):
     except:
        log.ERRORMESSAGE("Error: couldn't put the cards in a specific order, LoadFlashCards error")
     
-def ShowPage_fc(self):
+def ShowPage_fc(self,image):
     try:
-        width, height = self.image.size
+        image = cropimage(image,0)
+        image = cropimage(image,1)
+        width, height = image.size
         image2 = wx.Image( width, height )
-        image2.SetData( self.image.tobytes() )        
+        image2.SetData( image.tobytes() )        
         self.m_bitmapScroll1.SetBitmap(wx.Bitmap(image2))        
     except:        
         log.ERRORMESSAGE("Error: cannot show image")
