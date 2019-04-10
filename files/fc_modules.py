@@ -14,6 +14,7 @@ import matplotlib
 import math
 import PIL
 from pathlib import Path
+import random
 import re
 import textwrap
 import pylab
@@ -224,14 +225,9 @@ def startprogram(self,event):
     try:
         if Path(eventpath).exists():
             file = open(eventpath, 'r')
-            letterfile = str(file.read())
-        # positions of Questions and Answers
-        q_pos   = [m.start() for m in re.finditer(self.question_command, letterfile)]
-        a_pos   = [m.start() for m in re.finditer(self.answer_command, letterfile)]
-        self.q_hookpos = list(np.array(q_pos)+len(self.question_command)-2)              #position of argument \command{} q_pos indicates where it starts: "\", added the length of the command -2, because it counts 2 extra '\'
-        self.a_hookpos = list(np.array(a_pos)+len(self.answer_command)-2)
-        
-        self.nr_cards = len(q_pos)
+            letterfile = str(file.read())                    
+        self.q_hookpos , self.a_hookpos = f2.File_to_hookpositions(self,letterfile)
+        self.nr_cards = len(self.q_hookpos)
         
     except:
         log.ERRORMESSAGE("Error: could not find questions/answers")
@@ -297,8 +293,67 @@ def startprogram(self,event):
     self.m_CurrentPage21.SetValue(f"{self.index+1}")
     self.m_TotalPages21.SetValue(f"{self.nr_questions}")
         
-    f2.LoadFlashCards(self, True,letterfile)
+    LoadFlashCards(self, True,letterfile)
     f2.displaycard(self)        
     f2.switch_bitmap(self)
 
-
+def LoadFlashCards(self,USERINPUT,letterfile):
+    """
+    USERINPUT: boolean, 
+    - TRUE it will ask the user for input to determine
+           the order in which the cards should be displayed.
+    - FALSE, it will display them chronologically without userinput.
+    """
+    print(f"nrcards = {self.nr_cards}")
+    try:                                               
+        f2.FindArgumentsCards(self,self.q_hookpos,self.a_hookpos,letterfile)
+        f2.Cards_ReplaceUserCommands(self)
+        f2.SeparatePicsFromCards(self)
+    except:
+        log.ERRORMESSAGE("Error: couldn't create Cards, LoadFlashCards error")
+    try:        
+        """CARD ORDER"""
+        ## determine cardorder based on user given input
+        if USERINPUT == False:
+            self.cardorder = range(self.nr_questions)  
+        else:
+            
+            if not hasattr(self,'continueSession'): #look if variable even exists./ should be initialized
+                self.continueSession = False
+                        
+            if self.continueSession == False:
+                if self.nr_questions < self.nr_cards:   
+                    if self.chrono == True:
+                        self.cardorder = range(self.nr_questions)    
+                    else:
+                        self.cardorder = random.sample(range(self.nr_cards),self.nr_questions) 
+                else: 
+                    ## If there are more questions than cards
+                    # we would like to get every question about the same number of times, to do this we do sampling without
+                    # replacement, then we remove a question if it is immediately repeated.
+                    if self.chrono == True:
+                        self.cardorder = list(range(self.nr_cards))*self.nr_questions
+                        self.cardorder = self.cardorder[:self.nr_questions]
+                    else:
+                        cardorder = []
+                        for i in range(self.nr_cards):   # possibly way larger than needed:
+                            cardorder.append(random.sample(range(self.nr_cards),self.nr_cards))
+                        cardorder = [val for sublist in cardorder for val in sublist]
+                        SEARCH = True
+                        index = 0
+                        # remove duplicate numbers
+                        while SEARCH == True:
+                            if index == len(cardorder)-2:
+                                SEARCH = False
+                            if cardorder[index] == cardorder[index+1]:
+                                del cardorder[index+1]
+                                index += 1
+                            index += 1    
+                        self.cardorder = cardorder[:self.nr_questions] 
+            else:
+                f2.load_stats(self)  
+            
+        f2.Cards_To_TextDicts(self)
+        
+    except:
+       log.ERRORMESSAGE("Error: couldn't put the cards in a specific order, LoadFlashCards error")
