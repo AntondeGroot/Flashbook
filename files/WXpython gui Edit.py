@@ -1,4 +1,7 @@
 
+versionnumber = '1.4.0'
+
+
 filename = "gui_flashbook.py"
 filename2 = "gui_flashbook3.py"
 output = open(filename2, 'w')
@@ -16,6 +19,8 @@ org = [
        '.AddLabelTool','.AddTool',
        '.AppendItem','.Append',
        '.SetSizeHintsSz','.SetSizeHints',
+       'wx.HyperlinkCtrl','wx.adv.HyperlinkCtrl',
+       'wx.HL_DEFAULT_STYLE','wx.adv.HL_DEFAULT_STYLE',
        '50, 1, 100','data, 1, data',
        'SetToolTipString','SetToolTip',
        'def __init__( self, parent )','def __init__( self, parent, data )',
@@ -32,20 +37,39 @@ org = [
 	   'self.m_bitmap7 = wx.StaticBitmap( self.m_panel29, wx.ID_ANY, wx.NullBitmap, wx.DefaultPosition, wx.Size( -1,-1 ), wx.SIMPLE_BORDER )','self.m_bitmap7 = wx.StaticBitmap( self.m_panel29, wx.ID_ANY, data[1], wx.DefaultPosition, wx.Size( -1,-1 ), wx.SIMPLE_BORDER )',
        'self.m_bitmap8 = wx.StaticBitmap( self.m_panel29, wx.ID_ANY, wx.NullBitmap, wx.DefaultPosition, wx.Size( -1,-1 ), wx.SIMPLE_BORDER )','self.m_bitmap8 = wx.StaticBitmap( self.m_panel29, wx.ID_ANY, data, wx.DefaultPosition, wx.Size( -1,-1 ), wx.SIMPLE_BORDER )',
        'self.m_textCtrl24 = wx.TextCtrl( self.m_panel32, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )','self.m_textCtrl24 = wx.TextCtrl( self.m_panel32, wx.ID_ANY, data[0], wx.DefaultPosition, wx.DefaultSize, 0 )',
-       'self.m_textCtrl25 = wx.TextCtrl( self.m_panel32, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )','self.m_textCtrl25 = wx.TextCtrl( self.m_panel32, wx.ID_ANY, data[1], wx.DefaultPosition, wx.DefaultSize, 0 )'
-       
+       'self.m_textCtrl25 = wx.TextCtrl( self.m_panel32, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )','self.m_textCtrl25 = wx.TextCtrl( self.m_panel32, wx.ID_ANY, data[1], wx.DefaultPosition, wx.DefaultSize, 0 )',
+       'self.m_bitmapAbout = wx.StaticBitmap( self.m_panel33, wx.ID_ANY, wx.NullBitmap, wx.DefaultPosition, wx.Size( 100,100 ), 0 )','self.m_bitmapAbout = wx.StaticBitmap( self.m_panel33, wx.ID_ANY, data, wx.DefaultPosition, wx.Size( 100,100 ), 0 )'
        ]
+# sometimes a variable can change for example the Version number, this variable is unknown but everything left and right of it IS known
+# the following will replace it and update it
+fragments = ['self.m_staticText59 = wx.StaticText( self.m_panel33, wx.ID_ANY, ',', wx.DefaultPosition, wx.DefaultSize, 0 )']
+fragments_middle = [f"'Version {versionnumber}'"]
+
 a = []
-for i in read:  
+for string in read:  
     k = 0
     for j in range(int(len(org)/2)):
         # the string.replace() function don't do the change at place
         # it's return a new string with the new changes.
         
-        i = i.replace(org[k],org[k+1])
+        string = string.replace(org[k],org[k+1])
         k += 2
-    a.append(i)
-
+       
+    
+    for j in range(int(len(fragments)/2)): 
+        k = 0
+        if fragments[j] in string and fragments[j+1] in string:
+            # indices
+            leftside = string.find(fragments[j])+len(fragments[j])
+            rightside = string.find(fragments[j+1])
+            # replace
+            var = string[leftside:rightside]     
+            string = string.replace(var,fragments_middle[j])
+            
+            
+            k += 2
+    
+    a.append(string) 
 for page in a:
     #print(page)
     output.write(page)
