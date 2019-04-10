@@ -35,6 +35,43 @@ import wx.richtext
 ###########################################################################
 
 
+# -*- coding: utf-8 -*- 
+
+
+# solving errors: 
+# - path_min /  path_add / path_switch are given a full path string, replace those by their respective variables: path_min,path_add,path_switch
+# - Spacers have changed resulting in an error: replace..Add() with simply Add()
+
+import wx
+import wx.xrc
+import wx.richtext
+import os
+from pathlib import Path
+
+
+basedir     = Path(os.getenv("LOCALAPPDATA"),"Flashbook")
+resourcedir = str(Path(basedir ,"resources"))
+path_add    = str(Path(resourcedir,"add.png"))
+path_min    = str(Path(resourcedir,"min.png"))
+path_switch = str(Path(resourcedir,"repeat.png"))
+
+
+###########################################################################
+## Python code generated with wxFormBuilder (version Jun 17 2015)
+## http://www.wxformbuilder.org/
+##
+## PLEASE DO "NOT" EDIT THIS FILE!
+###########################################################################
+
+import wx
+import wx.xrc
+import wx.richtext
+
+###########################################################################
+## Class MyFrame
+###########################################################################
+
+
 class MyFrame ( wx.Frame ):
 	
 	def __init__( self, parent, data ):
@@ -101,6 +138,11 @@ class MyFrame ( wx.Frame ):
 		self.m_menuHelp = wx.MenuItem( self.m_menuHelpbar, wx.ID_ANY, u"How to use ...", wx.EmptyString, wx.ITEM_CHECK )
 		self.m_menuHelpbar.Append( self.m_menuHelp )
 		
+		self.m_menuHelpbar.AppendSeparator()
+		
+		self.m_menuItemAbout = wx.MenuItem( self.m_menuHelpbar, wx.ID_ANY, u"About ...", wx.EmptyString, wx.ITEM_NORMAL )
+		self.m_menuHelpbar.Append( self.m_menuItemAbout )
+		
 		self.m_menubar1.Append( self.m_menuHelpbar, u"Help" ) 
 		
 		self.m_menuSettings = wx.Menu()
@@ -134,6 +176,8 @@ class MyFrame ( wx.Frame ):
 		
 		self.panel0 = wx.Panel( self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TAB_TRAVERSAL )
 		self.panel0.SetBackgroundColour( wx.Colour( 254, 240, 231 ) )
+		
+		bSizer84 = wx.BoxSizer( wx.VERTICAL )
 		
 		bSizer37 = wx.BoxSizer( wx.HORIZONTAL )
 		
@@ -269,9 +313,24 @@ class MyFrame ( wx.Frame ):
 		bSizer37.Add( bSizer71, 1, wx.EXPAND, 5 )
 		
 		
-		self.panel0.SetSizer( bSizer37 )
+		bSizer84.Add( bSizer37, 1, wx.EXPAND, 5 )
+		
+		bSizer87 = wx.BoxSizer( wx.HORIZONTAL )
+		
+		
+		bSizer87.Add( ( 0, 0), 1, wx.EXPAND, 5 )
+		
+		self.m_staticText63 = wx.StaticText( self.panel0, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_staticText63.Wrap( -1 )
+		bSizer87.Add( self.m_staticText63, 0, wx.ALL, 5 )
+		
+		
+		bSizer84.Add( bSizer87, 0, wx.EXPAND, 5 )
+		
+		
+		self.panel0.SetSizer( bSizer84 )
 		self.panel0.Layout()
-		bSizer37.Fit( self.panel0 )
+		bSizer84.Fit( self.panel0 )
 		bSizer7.Add( self.panel0, 1, wx.EXPAND |wx.ALL, 0 )
 		
 		self.panel1 = wx.Panel( self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TAB_TRAVERSAL )
@@ -491,8 +550,22 @@ class MyFrame ( wx.Frame ):
 		self.m_scrolledWindow11.SetScrollRate( 5, 5 )
 		bSizer51 = wx.BoxSizer( wx.VERTICAL )
 		
+		
+		bSizer51.Add( ( 0, 50), 0, wx.EXPAND, 5 )
+		
+		bSizer82 = wx.BoxSizer( wx.HORIZONTAL )
+		
+		
+		bSizer82.Add( ( 0, 0), 1, wx.EXPAND, 5 )
+		
 		self.m_bitmapScroll1 = wx.StaticBitmap( self.m_scrolledWindow11, wx.ID_ANY, wx.NullBitmap, wx.DefaultPosition, wx.DefaultSize, 0 )
-		bSizer51.Add( self.m_bitmapScroll1, 0, wx.ALL, 5 )
+		bSizer82.Add( self.m_bitmapScroll1, 0, wx.ALL, 5 )
+		
+		
+		bSizer82.Add( ( 0, 0), 1, wx.EXPAND, 5 )
+		
+		
+		bSizer51.Add( bSizer82, 1, wx.EXPAND, 5 )
 		
 		
 		self.m_scrolledWindow11.SetSizer( bSizer51 )
@@ -1140,6 +1213,7 @@ class MyFrame ( wx.Frame ):
 		self.Bind( wx.EVT_MENU, self.m_menuEditCardOnMenuSelection, id = self.m_menuEditCard.GetId() )
 		self.Bind( wx.EVT_MENU, self.m_menuPreviousCardOnMenuSelection, id = self.m_menuPreviousCard.GetId() )
 		self.Bind( wx.EVT_MENU, self.m_menuHelpOnMenuSelection, id = self.m_menuHelp.GetId() )
+		self.Bind( wx.EVT_MENU, self.m_menuItemAboutOnMenuSelection, id = self.m_menuItemAbout.GetId() )
 		self.Bind( wx.EVT_MENU, self.m_checkBox11OnCheckBox, id = self.m_checkBox11.GetId() )
 		self.Bind( wx.EVT_MENU, self.m_checkBoxCursor11OnCheckBox, id = self.m_checkBoxCursor11.GetId() )
 		self.Bind( wx.EVT_MENU, self.m_checkBoxDebugOnMenuSelection, id = self.m_checkBoxDebug.GetId() )
@@ -1323,6 +1397,9 @@ class MyFrame ( wx.Frame ):
 		event.Skip()
 	
 	def m_menuHelpOnMenuSelection( self, event ):
+		event.Skip()
+	
+	def m_menuItemAboutOnMenuSelection( self, event ):
 		event.Skip()
 	
 	def m_checkBox11OnCheckBox( self, event ):
@@ -2460,6 +2537,118 @@ class MyDialogScore ( wx.Dialog ):
 		
 		
 		self.SetSizer( bSizer159 )
+		self.Layout()
+		
+		self.Centre( wx.BOTH )
+	
+	def __del__( self ):
+		pass
+	
+
+###########################################################################
+## Class MyDialogAbout
+###########################################################################
+
+class MyDialogAbout ( wx.Dialog ):
+	
+	def __init__( self, parent, data ):
+		wx.Dialog.__init__ ( self, parent, id = wx.ID_ANY, title = u"About", pos = wx.DefaultPosition, size = wx.Size( 391,139 ), style = wx.DEFAULT_DIALOG_STYLE )
+		
+		self.SetSizeHints( wx.DefaultSize, wx.DefaultSize )
+		
+		bSizer89 = wx.BoxSizer( wx.VERTICAL )
+		
+		self.m_panel33 = wx.Panel( self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TAB_TRAVERSAL )
+		fgSizer6 = wx.FlexGridSizer( 0, 2, 0, 0 )
+		fgSizer6.SetFlexibleDirection( wx.BOTH )
+		fgSizer6.SetNonFlexibleGrowMode( wx.FLEX_GROWMODE_SPECIFIED )
+		
+		bSizer90 = wx.BoxSizer( wx.HORIZONTAL )
+		
+		self.m_bitmapAbout = wx.StaticBitmap( self.m_panel33, wx.ID_ANY, data, wx.DefaultPosition, wx.Size( 100,100 ), 0 )
+		bSizer90.Add( self.m_bitmapAbout, 0, wx.ALL, 5 )
+		
+		bSizer91 = wx.BoxSizer( wx.VERTICAL )
+		
+		self.m_staticText58 = wx.StaticText( self.m_panel33, wx.ID_ANY, u"Flashbook", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_staticText58.Wrap( -1 )
+		self.m_staticText58.SetFont( wx.Font( 9, 74, 93, 92, False, "Verdana" ) )
+		
+		bSizer91.Add( self.m_staticText58, 0, wx.ALL, 0 )
+		
+		self.m_staticText59 = wx.StaticText( self.m_panel33, wx.ID_ANY, 'Version 1.4.0', wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_staticText59.Wrap( -1 )
+		self.m_staticText59.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
+		
+		bSizer91.Add( self.m_staticText59, 0, wx.ALL, 0 )
+		
+		self.m_staticText60 = wx.StaticText( self.m_panel33, wx.ID_ANY, u"Author: Anton de Groot", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_staticText60.Wrap( -1 )
+		self.m_staticText60.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
+		
+		bSizer91.Add( self.m_staticText60, 0, wx.ALL, 0 )
+		
+		bSizer92 = wx.BoxSizer( wx.HORIZONTAL )
+		
+		self.m_staticText61 = wx.StaticText( self.m_panel33, wx.ID_ANY, u"Github: ", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_staticText61.Wrap( -1 )
+		self.m_staticText61.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
+		
+		bSizer92.Add( self.m_staticText61, 0, wx.ALL, 0 )
+		
+		self.m_hyperlink3 = wx.adv.HyperlinkCtrl( self.m_panel33, wx.ID_ANY, u"Flashbook", u"https://github.com/AntondeGroot/Flashbook", wx.DefaultPosition, wx.DefaultSize, wx.adv.HL_DEFAULT_STYLE )
+		self.m_hyperlink3.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
+		
+		bSizer92.Add( self.m_hyperlink3, 0, wx.ALL, 0 )
+		
+		
+		bSizer91.Add( bSizer92, 0, wx.EXPAND, 0 )
+		
+		bSizer93 = wx.BoxSizer( wx.HORIZONTAL )
+		
+		self.m_staticText62 = wx.StaticText( self.m_panel33, wx.ID_ANY, u"Icons:  ", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_staticText62.Wrap( -1 )
+		self.m_staticText62.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
+		
+		bSizer93.Add( self.m_staticText62, 0, wx.ALL, 0 )
+		
+		bSizer94 = wx.BoxSizer( wx.VERTICAL )
+		
+		self.m_hyperlink1 = wx.adv.HyperlinkCtrl( self.m_panel33, wx.ID_ANY, u"doublejdesign", u"http://www.doublejdesign.co.uk", wx.DefaultPosition, wx.DefaultSize, 0 )
+		
+		self.m_hyperlink1.SetHoverColour( wx.SystemSettings.GetColour( wx.SYS_COLOUR_BACKGROUND ) )
+		self.m_hyperlink1.SetNormalColour( wx.SystemSettings.GetColour( wx.SYS_COLOUR_BTNFACE ) )
+		self.m_hyperlink1.SetVisitedColour( wx.SystemSettings.GetColour( wx.SYS_COLOUR_ACTIVEBORDER ) )
+		self.m_hyperlink1.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
+		self.m_hyperlink1.SetForegroundColour( wx.SystemSettings.GetColour( wx.SYS_COLOUR_INACTIVECAPTION ) )
+		
+		bSizer94.Add( self.m_hyperlink1, 0, wx.ALL, 0 )
+		
+		self.m_hyperlink2 = wx.adv.HyperlinkCtrl( self.m_panel33, wx.ID_ANY, u"visualpharm", u"https://www.visualpharm.com/free-icons", wx.DefaultPosition, wx.DefaultSize, wx.adv.HL_DEFAULT_STYLE )
+		self.m_hyperlink2.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
+		
+		bSizer94.Add( self.m_hyperlink2, 0, wx.ALL, 0 )
+		
+		
+		bSizer93.Add( bSizer94, 0, wx.EXPAND, 0 )
+		
+		
+		bSizer91.Add( bSizer93, 0, wx.EXPAND, 0 )
+		
+		
+		bSizer90.Add( bSizer91, 1, wx.EXPAND, 5 )
+		
+		
+		fgSizer6.Add( bSizer90, 1, wx.EXPAND, 5 )
+		
+		
+		self.m_panel33.SetSizer( fgSizer6 )
+		self.m_panel33.Layout()
+		fgSizer6.Fit( self.m_panel33 )
+		bSizer89.Add( self.m_panel33, 1, wx.EXPAND |wx.ALL, 0 )
+		
+		
+		self.SetSizer( bSizer89 )
 		self.Layout()
 		
 		self.Centre( wx.BOTH )
