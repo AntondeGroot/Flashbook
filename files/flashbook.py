@@ -104,7 +104,7 @@ def CombineBookTitles(booknames):
     """To combine multiple book titles, since this would otherwise end up in a very long
     name, it will instead only take the first full name and then abbreviate the following
     books to only the first letters of the books."""
-    C = '_MULTI_'
+    C = 'MULTI_'
     for i,string in enumerate(booknames):
         if i==0:
             C += string
@@ -122,7 +122,7 @@ def setup_sources(self):
     self.appdir         = bdir
     self.path_add     = Path(rdir,"add.png")
     self.path_min     = Path(rdir,"min.png")
-    self.path_icon    = Path(rdir,"open-book1.png")
+    self.path_icon    = Path(rdir,"flashbook_icon.png")
     self.path_fb      = Path(rdir,"flashbook.png")
     self.path_fc      = Path(rdir,"flashcard.png")
     self.path_wifi    = Path(rdir,"wifi.png")
@@ -347,7 +347,7 @@ class MainFrame(gui.MyFrame):
         p.set_bitmapbuttons(self)
         p.set_richtext(self)
         # icon
-        iconimage = wx.Icon(str(self.path_icon), type=wx.BITMAP_TYPE_ANY, desiredWidth=-1, desiredHeight=-1)
+        iconimage = wx.Icon(str(self.path_icon), type=wx.BITMAP_TYPE_ANY, desiredWidth=40, desiredHeight=40)
         self.SetIcon(iconimage)
         p.SwitchPanel(self,0)
         self.printpreview = True
@@ -496,7 +496,18 @@ class MainFrame(gui.MyFrame):
                             else:
                                 print("Error: merged booknotes could not be created or saved!")
                                 
-                                
+    def m_menuItemAboutOnMenuSelection( self, event ):
+        
+        image = PIL.Image.open(str(Path(self.resourcedir,"flashbook_logo.png")))
+        image = image.resize((100, 100), PIL.Image.ANTIALIAS)
+        BMP = f2.PILimage_to_Bitmap(image)
+        
+        data = BMP
+        with gui.MyDialogAbout(self,data) as dlg:
+            if dlg.ShowModal() == wx.ID_OK:
+                pass
+
+                            
     def m_menuItemDelBookOnMenuSelection( self, event ):
         #with wx.FileDialog(self, "Choose which file to delete", wildcard="*.tex",style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST) as fileDialog:
         with wx.FileDialog(self, "Choose which file to delete", wildcard="*.tex",style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST) as fileDialog:
@@ -801,6 +812,23 @@ class MainFrame(gui.MyFrame):
                     with open(str(Path(self.notesdir, self.filename)), 'w') as output: 
                         for line in flines:
                             output.write(line)
+                    print(Path(self.notesdir,self.filename))
+                    
+                    if Path(self.notesdir,self.filename).exists():
+                        file = open(Path(self.notesdir,self.filename), 'r')
+                        letterfile = str(file.read())                    
+                    self.q_hookpos , self.a_hookpos = f2.File_to_hookpositions(self,letterfile)
+                    self.nr_cards = len(self.q_hookpos)
+                    f2.FindArgumentsCards(self,self.q_hookpos,self.a_hookpos,letterfile)
+                    f2.Cards_ReplaceUserCommands(self)
+                    f2.SeparatePicsFromCards(self)
+                    f2.Cards_To_TextDicts(self)
+                    f2.switch_bitmap(self)
+                    image = f2.CreateSingularCard(self,'Question')
+                    
+                    BMP = f2.PILimage_to_Bitmap(image)
+                    self.m_bitmapScroll1.SetBitmap(BMP)
+                    self.Refresh()
                 print("success!!")
                 
     def m_menuPreviousCardOnMenuSelection( self, event ):
