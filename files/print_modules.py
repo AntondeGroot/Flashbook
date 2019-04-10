@@ -16,6 +16,7 @@ import PIL
 import fb_functions as f
 import fc_functions as f2
 import print_functions as f3
+import fc_modules    as m2
 import program as p
 import log_module as log
 import re
@@ -206,7 +207,10 @@ def notes2paper(self):
                 #if TextCard == True: 
                 if key in self.picdictionary:
                     print(f"create combicard for {key}")
-                    image = f2.CombinePicText_fc(self,key,imagetext)
+                    bool_textcard, img_txt = f2.CreateTextCard(self,'flashcard',key)
+                    bool_piccard, img_pic  = f2.findpicture(self,key) 
+                    image = f2.CombinePicText_fc(bool_textcard,img_txt,bool_piccard,img_pic)
+                    #image = f2.CombinePicText_fc(self,key,imagetext)
                     #assert image == self.image
                     self.image = image
                     if mode == 'Question':
@@ -222,7 +226,7 @@ def notes2paper(self):
             else: #if there is no textcard only display the picture
                 if key in self.picdictionary:
                     path = Path(self.picsdir, self.bookname ,self.picdictionary[key])
-                    image = f2.findpicture(self,key)
+                    bool_a , image = f2.findpicture(self,key)
                     #if path.is_file():
                     #image = PIL.Image.open(str(path))
                     if mode == 'Question':
@@ -234,8 +238,19 @@ def notes2paper(self):
         
         #self.image should be different
         #combine question and answer:
+        try:
+            image_q = f2.cropimage(image_q,0)
+            image_q = f2.cropimage(image_q,1)
+            if image_a != []:
+                image_a = f2.cropimage(image_a,0)
+                image_a= f2.cropimage(image_a,0)
+        except:
+            pass
+        
         if image_a != []:
             images = [image_q,image_a]
+            print(image_q)
+            print(image_a)
             widths, heights = zip(*(i.size for i in images)) 
             total_height = sum(heights)
             max_width = max(widths)
@@ -259,6 +274,8 @@ def notes2paper(self):
                 IMG_QA = image_q
             else:
                 print(colored("FATAL error"*5,'red'))
+         
+        
         ##anton
         if ColumnSliders(self) != []:
             columns = ColumnSliders(self)
@@ -522,68 +539,13 @@ def add_border(self,img,mode):
         return img
 
 
-def add_sideborder(self,img,mode):
-    linesep = 5
-    #self.maxheight = img.size[1]
-    if  self.vertline_bool == True:        
-        if mode == "left":
-            new_size =  (img.size[0] + 2*self.vertline_thickness + 2*linesep ,self.maxheight )
-            IMGPOS  = (linesep + self.vertline_thickness , 0)
-            POS = (img.size[0] + self.vertline_thickness+2*linesep  ,0)
-            
-            new_im = PIL.Image.new("RGB", new_size,"white")
-            border = PIL.Image.new("RGB", (self.vertline_thickness , self.maxheight), self.vertline_color)    
-            new_im.paste(img, IMGPOS)
-            new_im.paste(border, (0 ,0))
-            new_im.paste(border, POS)
-        else:
-            new_size =  (img.size[0] + self.vertline_thickness + 3*linesep,self.maxheight )
-            IMGPOS  = (0 , 0)
-            #POS = (img.size[0] + 3*linesep  ,0)
-            POS = (img.size[0] + int(2.8*linesep) ,0)
-            new_im = PIL.Image.new("RGB", new_size,"white")
-            border = PIL.Image.new("RGB", (self.vertline_thickness , self.maxheight), self.vertline_color)    
-            new_im.paste(img, IMGPOS)
-            new_im.paste(border, POS)
-        return new_im
-    else:
-        return img
-
-
-
-def add_sideborder(self,img,mode):
-    linesep = 5
-    #self.maxheight = img.size[1]
-    if  self.vertline_bool == True:        
-        if mode == "both":
-            new_size =  (img.size[0] + 2*self.vertline_thickness + 2*linesep ,self.maxheight )
-            IMGPOS  = (linesep + self.vertline_thickness , 0)
-            POS = (img.size[0] + self.vertline_thickness+2*linesep  ,0)
-            
-            new_im = PIL.Image.new("RGB", new_size,"white")
-            border = PIL.Image.new("RGB", (self.vertline_thickness , self.maxheight), self.vertline_color)    
-            new_im.paste(img, IMGPOS)
-            new_im.paste(border, (0 ,0))
-            new_im.paste(border, POS)
-        else:
-            new_size =  (img.size[0] + self.vertline_thickness + 3*linesep,self.maxheight )
-            IMGPOS  = (0 , 0)
-            #POS = (img.size[0] + 3*linesep  ,0)
-            POS = (img.size[0] + int(2.8*linesep) ,0)
-            new_im = PIL.Image.new("RGB", new_size,"white")
-            border = PIL.Image.new("RGB", (self.vertline_thickness , self.maxheight), self.vertline_color)    
-            new_im.paste(img, IMGPOS)
-            new_im.paste(border, POS)
-        return new_im
-    else:
-        return img
-
     
 def add_margins(self,img):
     margin = 0.05
     margin_pxs = round(margin * self.a4page_w)
     new_im = PIL.Image.new("RGB", (self.a4page_w + 2*margin_pxs, self.a4page_h + 2*margin_pxs),"white")    
     new_im.paste(img, (margin_pxs , margin_pxs))
+    
     return new_im
 
 # main program that does all the preprocessing
@@ -597,7 +559,6 @@ def startprogram(self,event):
     self.mode     = 'Question'    
     self.questions   = []
     self.answers     = []
-    self.questions2  = []
     
     # open file
     try:
@@ -628,5 +589,5 @@ def startprogram(self,event):
     self.chrono = True
     self.multiplier = 1    
     # display nr of questions and current index of questions            
-    f2.LoadFlashCards(self, False,letterfile)
+    m2.LoadFlashCards(self, False,letterfile)
     notes2paper(self)
