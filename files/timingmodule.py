@@ -61,6 +61,8 @@ class TimeCount:
         self.date     = time.strftime("%d%m%y")
         v = type(self)
         v.count = 0
+        
+            
         if self.path.is_file():
             try:
                 with open(self.path, 'r') as file:
@@ -89,7 +91,9 @@ class TimeCount:
                 v.timelastsaved = time.time()
         else: #the file will be saved eventually, even if it does not exist yet
             self.timedict[self.date] = {self.book : v.count}
-            
+            with open(self.path, 'w') as file:
+                file.write(json.dumps(self.timedict))
+            file.close()
     
     def set_bounds(self,var):
         if (type(var) == list or type(var) == tuple) and len(var) == 3:
