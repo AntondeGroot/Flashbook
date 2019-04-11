@@ -357,6 +357,9 @@ class MainFrame(gui.MyFrame):
         self.m_checkBoxDebug.Check(self.debugmode)
         
         m.setcursor(self)
+        
+        
+        
         m7.AcceleratorTableSetup(self,"general","set")
     #%% MAIN PROGRAMS
     """ MAIN PROGRAMS """ 
@@ -421,6 +424,8 @@ class MainFrame(gui.MyFrame):
                 p.SwitchPanel(self,0) 
                 return None    # the user changed their mind
             else:
+                
+                self.SetCursor(wx.Cursor(wx.CURSOR_ARROWWAIT))
                 self.fileDialog = fileDialog
                 self.FilePickEvent = True
                 
@@ -441,10 +446,11 @@ class MainFrame(gui.MyFrame):
                     MessageBox(0, "You only selected 1 file, try again and select multiple files instead.", "Message", MB_ICONINFORMATION)
                 else:
                     print(filepath)
-                    
                     filenames_str = '\n'.join([Path(x).stem for x in filepath])
                     filenames_stem = [Path(x).stem for x in filepath]
-                    with gui.MyDialog5(self,filenames_str) as dlg:
+                    title = CombineBookTitles(filenames_stem)
+                    title_backup = title
+                    with gui.MyDialog5(self,[filenames_str,title]) as dlg:
                         if dlg.ShowModal() == wx.ID_OK:     
                             print("success!!")
                             btn1 = dlg.m_radioDLG5_1.GetValue()
@@ -452,7 +458,9 @@ class MainFrame(gui.MyFrame):
                             btn3 = dlg.m_radioDLG5_3.GetValue()
                             btn4 = dlg.m_radioDLG5_4.GetValue()
                             print(btn1,btn2,btn3,btn4)
-                            
+                            title = dlg.m_textCtrlCombinedFileName.GetValue()
+                            if title == '':#in case the user tries to sabotage the program
+                                title = title_backup
                             nr_lines = []
                             files = []
                             for name in filepath:
@@ -466,7 +474,7 @@ class MainFrame(gui.MyFrame):
                             
                             print(nr_lines)
                             print(files)
-                            title = CombineBookTitles(filenames_stem)
+                            
                             if btn1 == True: #alphabetically, it's standard alphabetically sorted
                                 save2latexfile(self,files,title)
                             if btn2 == True:#sort small to largest
@@ -837,6 +845,17 @@ class MainFrame(gui.MyFrame):
     
     #%% settings menu
     """ settings menu """
+    def m_menuResetGraphOnMenuSelection( self, event ):
+        
+        path = Path(self.tempdir,'timecount_flashbook.json')
+        if path.exists():
+            path.unlink()
+        path = Path(self.tempdir,'timecount_flashcard.json')
+        if path.exists():
+            path.unlink()
+        historygraph.DisplayGraph(self)
+        
+    
     def m_resetselectionOnButtonClick( self, event ):           
         m.resetselection(self,event)
     
@@ -1113,6 +1132,8 @@ class MainFrame(gui.MyFrame):
         
         
     def m_PrintFinalOnButtonClick( self, event ):
+        
+        self.SetCursor(wx.Cursor(wx.CURSOR_ARROWWAIT))
         self.printsuccessful = False
         self.printpreview    = False
         self.FilePickEvent   = False
@@ -1125,6 +1146,7 @@ class MainFrame(gui.MyFrame):
                 folder = self.tempdir
                 [file.unlink() for file in folder.iterdir() if ("temporary" in file.name and file.suffix =='.png' )]
             MessageBox(0, " Your PDF has been created!\n Select in the menubar: `Open/Open PDF-notes Folder` to\n open the folder in Windows explorer. ", "Message", MB_ICONINFORMATION)
+            self.SetCursor(wx.Cursor(wx.CURSOR_ARROW))
             
     def m_CtrlNrCardsOnText( self, event ):
         try:
@@ -1135,6 +1157,7 @@ class MainFrame(gui.MyFrame):
                 self.NrCardsPreview = ''
             elif int(var) > 0:
                 self.NrCardsPreview = int(var)
+                
             settings_set(self)
             m3.preview_refresh(self)
         except:
@@ -1202,20 +1225,7 @@ class MainFrame(gui.MyFrame):
     def m_menuItemGraphOnMenuSelection( self, event ):
         self.Graph_bool = not self.Graph_bool
         settings_set(self)
-        if self.panel0.IsShown():
-            if self.m_menuItemGraph.IsChecked(): 
-                SHOWIMAGE, imGraph = historygraph.CreateGraph(self)
-                if SHOWIMAGE == True:
-                    self.m_panelGraph.Show()
-                    image = imGraph
-                    image2 = wx.Image( imGraph.size)
-                    image2.SetData( image.tobytes() )
-                    self.m_bitmapGraph.SetBitmap(wx.Bitmap(image2))
-                else:
-                    self.m_panelGraph.Hide()
-            else:
-                self.m_panelGraph.Hide()
-            self.Layout()
+        historygraph.DisplayGraph(self)
         
     #%% timecount
     def m_scrolledWindow1OnMouseEvents( self, event ):
