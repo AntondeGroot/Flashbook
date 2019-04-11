@@ -14,6 +14,7 @@ Created on Fri Mar  8 21:18:48 2019
 import fc_functions as f2
 import PIL
 import pylab
+import wx
 
 pylab.ioff() 
 import os
@@ -303,6 +304,23 @@ def CreateGraph(self):
     new_im = new_im.resize((w, h), PIL.Image.ANTIALIAS)
     BOOL = len(totalvalues) > 0
     return BOOL, new_im
+
+def DisplayGraph(self):
+    if self.panel0.IsShown():
+        if self.m_menuItemGraph.IsChecked(): 
+            SHOWIMAGE, imGraph = CreateGraph(self)
+            if SHOWIMAGE == True:
+                self.m_panelGraph.Show()
+                image = imGraph
+                image2 = wx.Image( imGraph.size)
+                image2.SetData( image.tobytes() )
+                self.m_bitmapGraph.SetBitmap(wx.Bitmap(image2))
+            else:
+                self.m_panelGraph.Hide()
+        else:
+            self.m_panelGraph.Hide()
+        self.Layout()
+
     
 def testmodule():
     
