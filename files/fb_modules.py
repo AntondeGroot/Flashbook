@@ -1,359 +1,551 @@
 # -*- coding: utf-8 -*-
 """
 Created on Fri Sep 14 13:26:43 2018
-
 @author: Anton
 """
-
-import os
+from random import randint
+from termcolor import colored
 import numpy as np
 import PIL
-from termcolor import colored
 import wx
-import matplotlib
-import math
-import PIL
-from pathlib import Path
-import random
-import re
-import textwrap
-import pylab
-import matplotlib.backends.backend_agg as agg
-#matplotlib.use('TKAgg')
-import fc_functions as f2
+import os
+import fb_functions as f
 import timingmodule as m6
-import log_module as log
 import program as p
+import log_module as log
 import json
 import ctypes
-import gui_flashbook as gui
-
+from pathlib import Path
+#ctypes:
+ICON_EXCLAIM=0x30
+ICON_STOP = 0x10
 MB_ICONINFORMATION = 0x00000040
 MessageBox = ctypes.windll.user32.MessageBoxW
 
 
-
-def buttonCorrect(self):
-    f2.clearbitmap(self)
-    if hasattr(self,'nr_questions') and self.nr_questions != 0 and hasattr(self,'bookname') and self.bookname != '':
-        #import
-        log.DEBUGLOG("test1","test2",debugmode = self.debugmode, msg="hallo")
-        runprogram = self.runprogram
-        self.index += 1    
-        if runprogram == True:
-            self.score +=1
-        self.mode = 'Question'
-        self.m_textCtrlMode.SetValue(self.mode)
+def dirchanged(self,event):
+    
+    """For scrolling: only remember last few positions, append and pop 
+    if the numbers repeat [0,...,0] or [X,...,X] then you know you've reached either 
+    the beginning or the end of the window: then flip page"""
+    
+    self.scrollpos_reset = [5, 4, 3, 2, 1]     
+    self.scrollpos = self.scrollpos_reset
+    
+    #Keep track of "nrlist" which is a 4 digit nr 18-> "0018" so that it is easily sorted in other programs
+    eventpath = Path(event.GetPath())
+    nrlist = []
+    picnames = [str(pic) for pic in eventpath.iterdir() if pic.suffix == '.jpg']
+    self.totalpages = len(picnames)
+    
+    if self.totalpages == 0:
+        MessageBox(0, " The selected folder does not contain any images!", "Error", MB_ICONINFORMATION)
+    
+    for _, picname in enumerate(picnames):
         
-        if self.score > self.nr_questions + 1:
-            self.score = self.nr_questions
-        if self.index > (self.nr_questions-1): 
-            self.index = (self.nr_questions-1)
-            f2.remove_stats(self)
-            _score_ = round(float(self.score)/self.nr_questions*100,1)
-            #MessageBox(0, f"Your score is: {_score_}%", "Result", 1 )    
-            message = f"Your score is: {_score_}%"
-            with gui.MyDialogScore(self,message) as dlg:
-                if dlg.ShowModal() == wx.ID_OK:    
-                    print("finished")
-            self.m_menubar1.EnableTop(2,False)
-            runprogram = False
-            if hasattr(self,'bookname'): # to stop from pop-up windows from appearing after the test is done
-                delattr(self,'bookname')
-            
-        _score_ = round(float(self.score)/self.nr_questions*100,1)
-        self.m_Score21.SetValue(f"{_score_} %")     
-        self.m_CurrentPage21.SetValue(f"{self.index+1}")
+        SEARCH    = True
+        name_len  = len(picname)
+        indexlist = []
+        while SEARCH == True:
+            for j in range(name_len):
+                k = name_len - j - 1                
+                if (f.is_number(picname[k]) == True) and SEARCH == True:
+                    indexlist.append(k)  
+                elif (f.is_number(picname[k]) == False):
+                    if j > 0:
+                        if (f.is_number(picname[k+1])) == True:
+                            SEARCH = False
+                            break
+                elif j == name_len - 1: #EOS
+                    SEARCH = False
+                    break
+        indexlist.sort()
+        len_nr = len(indexlist)
         
-        # update stats
-        if runprogram == True:
-            f2.set_stats(self)
-            f2.save_stats(self)   
-            # display cards
-            f2.displaycard(self)
-            f2.switch_bitmap(self)
+        # I only expect in the order of 1000 pages
+        # make sure you can use the nrlist for later use so you can save the output as 
+        # "Bookname + ****" a sorted 4 digit number
+        if len_nr == 1:
+            nrlist.append("000{}".format(picname[indexlist[0]]))
+        elif len_nr == 0:
+            print(f"found no number for {picname}")
         else:
-            self.m_Score21.SetValue("")     
-            self.m_CurrentPage21.SetValue("")
-            self.m_TotalPages21.SetValue("")
-            #reset pictogram
-            path_repeat    = Path(self.resourcedir,"repeat.png")
-            id_ = self.m_toolSwitch21.GetId()
-            self.m_toolBar3.SetToolNormalBitmap(id_, wx.Bitmap( str(path_repeat), wx.BITMAP_TYPE_ANY ))
-        #update self.vars accordingly
-        self.runprogram = runprogram
+            I = indexlist[0]
+            F = indexlist[-1] + 1
+            nrlist.append("0"*(4-len_nr) + f"{picname[I:F]}")
+    picnames = [x for _,x in sorted(zip(nrlist,picnames))]
+    self.picnames = picnames
+    self.bookname = eventpath.name
+    if hasattr(self,'TC'):
+        delattr(self,'TC')
+    self.TC = m6.TimeCount(self.bookname,"flashbook")
+    self.booknamepath = eventpath.relative_to(self.booksdir)
+    self.currentpage = 1
+    self.PathBorders = Path(self.bordersdir, self.bookname + '_borders.txt')
+    path_file = Path(self.tempdir, self.bookname + '.txt')
+    if path_file.exists():
+        file = path_file.open(mode = 'r')
+        self.currentpage = int(float(file.read()))    
     
-def buttonWrong(self):
-    matplotlib.pyplot.close('all') # otherwise too many pyplot figures will be opened -> memory
-    f2.clearbitmap(self)
-    if hasattr(self,'nr_questions') and self.nr_questions != 0 and hasattr(self,'bookname') and self.bookname != '':
-        runprogram = self.runprogram
-        self.index += 1
-        self.mode = 'Question'
-        self.m_textCtrlMode.SetValue(self.mode)  
-        if self.index > (self.nr_questions-1):
-            self.index = (self.nr_questions-1)
-            f2.remove_stats(self)
-            _score_ = round(float(self.score)/self.nr_questions*100,1)
-            #MessageBox(0, f"Your score is: {_score_}%", "Result", 1) 
-            message = f"Your score is: {_score_}%"
-            with gui.MyDialogScore(self,message) as dlg:
-                if dlg.ShowModal() == wx.ID_OK:    
-                    print("finished")
-            self.m_menubar1.EnableTop(2,False)
-            runprogram = False
-            if hasattr(self,'bookname'): # to stop from pop-up windows from appearing after the test is done
-                delattr(self,'bookname')
-            
-        if self.score > self.nr_questions+1:
-            self.score = self.nr_questions
-            _score_ = round(float(self.score)/self.nr_questions*100,1)
-        _score_ = round(float(self.score)/self.nr_questions*100,1)
-        self.m_Score21.SetValue(f"{_score_} %")      
-        self.m_CurrentPage21.SetValue(str(self.index+1))
-        
-        ## update stats
-        if runprogram == True:
-            f2.set_stats(self)
-            f2.save_stats(self)    
-            f2.displaycard(self)
-            f2.switch_bitmap(self)
-        f2.SetScrollbars_fc(self)
-        if runprogram == False:
-            self.m_Score21.SetValue("")     
-            self.m_CurrentPage21.SetValue("")
-            self.m_TotalPages21.SetValue("")
-            #reset pictogram
-            path_repeat    = Path(self.resourcedir,"repeat.png")
-            id_ = self.m_toolSwitch21.GetId()
-            self.m_toolBar3.SetToolNormalBitmap(id_, wx.Bitmap( str(path_repeat), wx.BITMAP_TYPE_ANY ))
-        self.runprogram = runprogram
-
-def buttonPreviousCard(self):
-    f2.clearbitmap(self)
-    if hasattr(self,'nr_questions') and self.nr_questions != 0 and hasattr(self,'bookname') and self.bookname != '':
-        runprogram = self.runprogram
-        if self.index != 0:
-            self.index -= 1
-        if self.score != 0:
-            self.score -= 1
-        self.mode = 'Question'
-        self.m_textCtrlMode.SetValue(self.mode)  
-        _score_ = round(float(self.score)/self.nr_questions*100,1)
-        self.m_Score21.SetValue(f"{_score_} %")      
-        self.m_CurrentPage21.SetValue(str(self.index+1))
-        
-        ## update stats
-        if runprogram == True:
-            f2.set_stats(self)
-            f2.save_stats(self)    
-            f2.displaycard(self)
-            f2.switch_bitmap(self)
-        f2.SetScrollbars_fc(self)
-        if runprogram == False:
-            self.m_Score21.SetValue("")     
-            self.m_CurrentPage21.SetValue("")
-            self.m_TotalPages21.SetValue("")
-            #reset pictogram
-            path_repeat    = Path(self.resourcedir,"repeat.png")
-            id_ = self.m_toolSwitch21.GetId()
-            self.m_toolBar3.SetToolNormalBitmap(id_, wx.Bitmap( str(path_repeat), wx.BITMAP_TYPE_ANY ))
-        self.runprogram = runprogram
-
-        
-def switchCard(self):
-    #matplotlib.pyplot.close('all') # otherwise too many pyplot figures will be opened -> memory
-    f2.clearbitmap(self)
-    try:
-        if self.runprogram == True:
-            # change mode Q <-> A
-            if self.mode == 'Question': 
-                self.mode = 'Answer'
-            else:
-                self.mode = 'Question'
-            self.m_textCtrlMode.SetValue(self.mode)
-            # check if there is an answer: if not switch_bitmap sets the mode back to 'question'
-            f2.switch_bitmap(self) 
-            AbsoluteIndex = self.cardorder[self.index] 
-            key = f'{self.mode[0]}{AbsoluteIndex}' #e.g. Q12 is a key
-            
-            
-            # if there are no answer cards, then don't switch card: the self.key makes sure this happens
-            if f'A{AbsoluteIndex}' not in self.textdictionary:
-                self.m_textCtrlMode.SetValue(self.mode)
-                key = f'{self.mode[0]}{AbsoluteIndex}'            
-            bool_textcard, img_txt = f2.CreateTextCard(self,'flashcard',key)
-            bool_piccard, img_pic  = f2.findpicture(self,key) 
-            image = f2.CombinePicText_fc(bool_textcard,img_txt,bool_piccard,img_pic)
-            f2.ShowPage_fc(self,image)
-            # you don't need to check for: "no Text & no picture" because switch_bitmap already takes care of that.
-            f2.SetScrollbars_fc(self)
-    except:
-        pass
-
-def startprogram(self,event): 
-    """main program that does all the preprocessing"""
-    self.runprogram   = True
-    self.nr_questions = 0
-    self.zoom   = 1
-    self.chrono = False
-    self.index  = 0
-    self.score  = 0
-       
-    self.mode = 'Question'
-    self.m_textCtrlMode.SetValue(self.mode)
-        
-    self.questions   = []
-    self.answers     = []
-    self.questions2 = []
+    #Create empty dictionary if it doesn't exist
+    if not self.PathBorders.exists():
+        with open(str(self.PathBorders), 'w') as file:
+            file.write(json.dumps({})) 
     
-    f2.SetScrollbars_fc(self)
-    
-    # open file
-    try:
-        eventpath = event.GetPath()
-        print(f"path = {eventpath}")
-        self.filename = Path(eventpath).name
-        self.bookname = Path(eventpath).stem
-        print(f"book = {self.bookname} ")
-        if hasattr(self,'TC'):
-            delattr(self,'TC')
-        self.TC = m6.TimeCount(self.bookname,"flashcard")
-    except:
-        log.ERRORMESSAGE("Error: Couldn't open path")
-    self.resumedata = {self.bookname : {'score': self.score, 'index': self.index, 'nr_questions':self.nr_questions}}
-    try:
-        if Path(eventpath).exists():
-            file = open(eventpath, 'r')
-            letterfile = str(file.read())                    
-        self.q_hookpos , self.a_hookpos = f2.File_to_hookpositions(self,letterfile)
-        self.nr_cards = len(self.q_hookpos)
+    book_dir = Path(self.picsdir,self.bookname)
+    if not book_dir.exists():
+        book_dir.mkdir()
         
-    except:
-        log.ERRORMESSAGE("Error: could not find questions/answers")
-
-
-    #open dialog window
-    """open My dialog, don't forget to add two parameters to "def __init__( self, parent,MaxValue,Value )" within MyDialog 
-    and use these values to set the slider as you wish. Don't forget to add "self.Destroy" when you press the button"""
     
-    data = self.nr_cards
-    if data == 1:
-        data = 2
+    self.m_CurrentPage11.SetValue(str(self.currentpage))
+    self.m_TotalPages11.SetValue(str(self.totalpages))
+    nrlist.sort()
+    
+    #Open dictionary if it exists
     try:
-        with open(self.statsdir, 'r') as file:    
-            dictionary = json.load(file)
+        with open(self.PathBorders, 'r') as file:
+            self.dictionary = json.load(file)
     except:
-        dictionary = {}
-    if self.bookname in dictionary:
+        self.dictionary = {}
+        print("No drawn rects found for this file, continue")
+    try: 
+        self.jpgdir    = str(Path(self.booksdir, self.booknamepath, self.picnames[self.currentpage-1]))
+        print(self.booknamepath,self.booksdir)
+        self.pageimage = PIL.Image.open(self.jpgdir)
+        self.pageimagecopy = self.pageimage
+        self.width, self.height = self.pageimage.size
+    except:
+        log.ERRORMESSAGE("Error : could not load scrolled window 1")
+        
+    #Draw borders if they exist
+    try:
+        if self.drawborders == True:                    
+            pageimage = self.pageimage
+            self.pageimage = f.drawCoordinates(self,pageimage)
+    except:
+        log.ERRORMESSAGE("Error: could not draw borders")
+                  
+    try:
+        image2 = wx.Image( self.width, self.height )
+        image2.SetData( self.pageimage.tobytes() )
+        self.m_bitmapScroll.SetBitmap(wx.Bitmap(image2))
+        f.SetScrollbars(self)
+    except:
+        log.ERRORMESSAGE("Error: could not load scrolled window 2")
+    self.Layout()
+    
+def bitmapleftup(self,event):
+    if self.cursor == False:
+        self.SetCursor(wx.Cursor(wx.CURSOR_ARROW))
+    self.panel_pos2 = self.m_bitmapScroll.ScreenToClient(wx.GetMousePosition())
+    
+    x0, y0 = self.panel_pos
+    x1, y1 = self.panel_pos2
+    #rescale
+    x0 = int(x0/self.zoom)
+    y0 = int(y0/self.zoom)
+    x1 = int(x1/self.zoom)
+    y1 = int(y1/self.zoom)
+    
+    if abs(x1-x0)>2 and abs(y1-y0)>2:            
+        self.BorderCoords = [x0,y0,x1,y1]
+        #save all borders in dict
         try:
-            with gui.MyDialog2(self,data) as dlg: #use this to set the max range of the slider
-                dlg.ShowModal()
-                self.nr_questions = dlg.m_slider1.GetValue()   
-                self.chrono = dlg.m_radioChrono.GetValue()                    
-                self.continueSession = dlg.m_radioYes.GetValue()
-                self.multiplier = dlg.m_textCtrl11.GetValue()
-                
-                # you cannot continue when the questions are randomly chosen
-                if self.chrono == False:
-                    self.continueSession = False
-                
-            if self.continueSession == True:
-                print("continue session")
-                f2.load_stats(self)
-            else:
-                print("don't continue session")
-                f2.remove_stats(self)
-            
+            #dict key exists, so you should append its value
+            val = self.tempdictionary[f'page {self.currentpage}']
+            val.append(self.BorderCoords)
+            self.tempdictionary[f'page {self.currentpage}'] = val
         except:
-            log.ERRORMESSAGE("Error: Couldn't open Dialog window nr 1")
+            #dict key does not exist, just add the value to the new key
+            self.tempdictionary.update({f'page {self.currentpage}' : [self.BorderCoords]})
+            
+        #crop image
+        if self.stayonpage == False:
+            img = PIL.Image.open(self.jpgdir)
+        else:
+            img = self.pageimage
+        img = np.array(img)            
+        img = img[y0:y1,x0:x1]
+        img = PIL.Image.fromarray(img)
+        FIND = True
+        while FIND == True:
+            rand_nr = str(randint(0, 9999)).rjust(4, "0") #The number must be of length 4: '0006' must be a possible result.
+            if self.stayonpage == False:
+                picname =  f"{self.bookname}_{self.currentpage}_{rand_nr}.jpg" 
+            else:
+                picname =  f"{self.bookname}_prtscr_{rand_nr}.jpg"
+            filename = Path(self.picsdir, self.bookname, picname)    
+            if not filename.exists():
+                FIND = False
+        img.save(filename)
+        
+        """The list will look like the following:
+        [vert1 [hor1,hor2,hor3],vert2,vert3,[hor4,hor5]]
+        So that first the horizontal [] within the list will be combined first, 
+        then everythying will be combined vertically."""
+        
+        dir_ = str(Path(self.picsdir,self.bookname,picname))
+        if self.questionmode == True:
+            if self.stitchmode_v == True:
+                self.pic_question.append(picname)  
+                self.pic_question_dir.append(dir_)  
+            else:
+                try:
+                    self.pic_question[-1].append(picname)  
+                    self.pic_question_dir[-1].append(dir_)  
+                except:
+                    self.pic_question.append([picname])  
+                    self.pic_question_dir.append([dir_])  
+                #restore stitchmode to default
+                self.stitchmode_v =  True            
+                self.m_toolStitch.SetBitmap(wx.Bitmap(self.path_arrow2))
+        else:
+            if self.stitchmode_v == True:
+                self.pic_answer.append(picname)  
+                self.pic_answer_dir.append(dir_)    
+            else:
+                try:
+                    self.pic_answer[-1].append(picname)  
+                    self.pic_answer_dir[-1].append(dir_) 
+                except:
+                    self.pic_answer.append([picname])  
+                    self.pic_answer_dir.append([dir_])  
+                #restore stitchmode to default
+                self.stitchmode_v =  True            
+                self.m_toolStitch.SetBitmap(wx.Bitmap(str(self.path_arrow2)))
+        f.ShowPage_fb(self)     
+        
+def panel4_bitmapleftup(self,event):
+    self.BoolCropped = True
+    self.SetCursor(wx.Cursor(wx.CURSOR_ARROW))
+    self.panel4_pos2 = self.m_bitmap4.ScreenToClient(wx.GetMousePosition())
+    
+    x0, y0 = self.panel4_pos
+    x1, y1 = self.panel4_pos2
+    #rescale
+    x0, y0 = int(x0), int(y0)
+    x1, y1 = int(x1), int(y1)
+    
+    if abs(x1-x0)>2 and abs(y1-y0)>2:            
+        # cut down image
+        img = PIL.Image.open(str(Path(self.tempdir,"screenshot.png")))
+        img = np.array(img)            
+        img = img[y0:y1,x0:x1]
+        img = PIL.Image.fromarray(img)
+        self.pageimagecopy = img
+        self.pageimage = img
+        # show current page
+        f.ShowPrintScreen(self)     
+    
+
+   
+def selectionentered(self,event):
+    
+    if hasattr(self,'bookname') and self.bookname != '':
+        USER_textinput = self.m_textCtrl2.GetValue()
+        PICS_DRAWN = len(self.pic_question) 
+        QUESTION_MODE = self.questionmode
+        if  USER_textinput != '' or PICS_DRAWN > 0:
+            if QUESTION_MODE:
+                # change mode to answer
+                usertext = USER_textinput
+                self.latex_question = usertext
+                self.usertext = f.text_to_latex(self,usertext)
+                self.questionmode = False
+                self.m_textCtrl1.SetValue("Answer:")
+                self.m_textCtrl2.SetValue("")
+                
+                # check for [[1,2,3]]
+                if PICS_DRAWN > 1:
+                    f.CombinePics(self,self.pic_question_dir)
+                    if type(self.pic_question[0]) is list:
+                        self.pic_question[0] = self.pic_question[0][0]
+                    self.latex_question = str(self.latex_question) + r" \pic{" + "{}".format(self.pic_question[0])+r"}"
+                else:       
+                    print("only horizontal questions")
+                    print(f"nr picquestions = {len(self.pic_question)}")
+                    if len(self.pic_question) == 1:
+                        if type(self.pic_question[0]) is list:
+                            
+                            f.CombinePics(self,self.pic_question_dir)
+                        else:
+                            print("is not a list")
+                        self.latex_question = str(self.latex_question) + r" \pic{" + "{}".format(self.pic_question[0])+r"}"
+                f.ShowInPopup(self,event,"Question")
+                 
+            else:#ANSWER mode
+                usertext = USER_textinput
+                self.latex_answer = usertext
+                self.usertext = f.text_to_latex(self,usertext)
+                self.questionmode = True
+                self.m_textCtrl1.SetValue("Question:")
+                self.m_textCtrl2.SetValue("")
+                
+                # save everything
+                findic = self.dictionary
+                tempdic = self.tempdictionary
+                for key in list(tempdic):      # go over all keys
+                    for value in tempdic[key]: # go over all values
+                        if key in findic:      # if already exists: just add value
+                            findic[key].append(value)
+                        else:                  # if not, add key and value, where key = pagenr and value is rectangle coordinates
+                            findic.update({key : [value]})
+                self.dictionary = findic
+                self.tempdictionary = {}
+                
+                # remove temporary borders
+                self.pageimage = self.pageimagecopy
+                f.ShowPage_fb(self)
+                if self.stayonpage == False: # if screenshot mode
+                    with open(self.PathBorders, 'w') as file:
+                            file.write(json.dumps(self.dictionary)) 
+                if len(self.pic_answer) > 1:
+                    f.CombinePics(self,self.pic_answer_dir)
+                    if type(self.pic_answer[0]) is list:
+                        self.pic_answer[0] = self.pic_answer[0][0]
+                    self.latex_answer = str(self.latex_answer) + r" \pic{" + "{}".format(self.pic_answer[0])+r"}"                        
+                elif len(self.pic_answer) == 1:
+                    if type(self.pic_answer[0]) is list:        
+                        f.CombinePics(self,self.pic_answer_dir)
+                    else:
+                        print("is not a list")                
+                    self.latex_answer = str(self.latex_answer) + r" \pic{" + "{}".format(self.pic_answer[0])+r"}"                        
+                
+
+                f.ShowInPopup(self,event,"Answer")                    
+                # save the user inputs in .tex file
+                if len(self.latex_question) != 0:
+                    with open(str(Path(self.notesdir, self.bookname +'.tex')), 'a') as output: # the mode "a" appends to the file    
+                        output.write(r"\quiz{" + str(self.latex_question) + "}")
+                        output.write(r"\ans{"  + str(self.latex_answer)   + "}"+"\n")
+                #reset all
+                f.ResetQuestions(self)
+                
+        elif QUESTION_MODE == False:
+            # if in question mode the user only typed in some text and want to save that 
+            self.questionmode = True
+            self.m_textCtrl1.SetValue("Question:")
+            self.m_textCtrl2.SetValue("")
+            self.tempdictionary = {}
+            
+            # remove temporary borders
+            self.pageimage = self.pageimagecopy
+            f.ShowPage_fb(self)
+            
+            
+            if self.stayonpage == False: # if screenshot mode
+                with open(self.PathBorders, 'w') as file:
+                        file.write(json.dumps(self.dictionary)) 
+            if len(self.pic_answer) > 1:
+                f.CombinePics(self,self.pic_answer_dir)
+                if type(self.pic_answer[0]) is list:
+                    self.pic_answer[0] = self.pic_answer[0][0]
+                self.latex_answer = str(self.latex_answer) + r" \pic{" + "{}".format(self.pic_answer[0])+r"}"                        
+            elif len(self.pic_answer) == 1:
+                if type(self.pic_answer[0]) is list:        
+                    f.CombinePics(self,self.pic_answer_dir)
+                else:
+                    print("is not a list")                
+                self.latex_answer = str(self.latex_answer) + r" \pic{" + "{}".format(self.pic_answer[0])+r"}"                        
+            
+
+            f.ShowInPopup(self,event,"Answer")                    
+            # save the user inputs in .tex file
+            if len(self.latex_question) != 0:
+                with open(str(Path(self.notesdir, self.bookname +'.tex')), 'a') as output: # the mode "a" appends to the file    
+                    output.write(r"\quiz{" + str(self.latex_question) + "}")
+                    output.write(r"\ans{"  + str(self.latex_answer)   + "}"+"\n")
+            #reset all
+            f.ResetQuestions(self)
+            
+            
+def arrowscroll(self,event,direction):
+    
+    scrollWin = self.m_scrolledWindow1
+    if direction == 'down':    
+        newpos = scrollWin.GetScrollPos(1)+1
+    elif direction == 'up':     
+        newpos = scrollWin.GetScrollPos(1)-1
+    
+    # check if you should go to the next/previous page
+    
+    self.scrollpos.append(scrollWin.GetScrollPos(0))
+    self.scrollpos.pop(0)
+    
+    if len(set(self.scrollpos)) == 1: # you've reached either the beginning or end of the document
+        if self.scrollpos[0] == 0:             # beginning
+            if direction == 'up':
+                self.scrollpos = self.scrollpos_reset     # make it a little more difficult to scroll back once you scrolled a page
+                self.m_toolBack11OnToolClicked(self)
+                
+                if self.currentpage != 1:
+                    scrollWin.SetScrollPos(wx.VERTICAL,scrollWin.GetScrollPos(1)+150,False) #orientation, value, refresh?  # 150 is overkill, but it means the new page starts definitely at the bottom of the scroll bar
+                    scrollWin.Scroll(scrollWin.GetScrollPos(1)+150,scrollWin.GetScrollPos(1))
+                else:
+                    scrollWin.SetScrollPos(wx.VERTICAL,0,False) #orientation, value, refresh?  # 150 is overkill, but it means the new page starts definitely at the bottom of the scroll bar
+                    scrollWin.Scroll(0,scrollWin.GetScrollPos(1))
+        else:                                  # end of page
+            if direction == 'down':
+                self.scrollpos = self.scrollpos_reset 
+                self.m_toolNext11OnToolClicked(self)
     else:
-        try:
-            with gui.MyDialog(self,data) as dlg: #'data' sets the max range of the slider
-                dlg.ShowModal()
-                self.nr_questions = dlg.m_slider1.GetValue()                        
-                self.chrono = dlg.m_radioChrono.GetValue()
-                self.continueSession = False
-                self.multiplier = dlg.m_textCtrl11.GetValue()
-        except:
-            log.ERRORMESSAGE("Error: Couldn't open Dialog window nr 2")
-            
-    # if you want to use all cards twice or 1.5 times for the quiz: then exclude invalid selections of this multiplier
-    try:
-        self.multiplier = float(self.multiplier)
-    except:
-        log.ERRORMESSAGE("Error: entered multiplier was not a number, continue as if multiplier = 1")
-        self.multiplier = 1
-    if self.multiplier <= 0:
-        self.multiplier = 1
-    if self.multiplier != 1:
-        self.nr_questions = math.ceil(float(self.multiplier)*self.nr_questions)
+        # change scrollbar    
+        scrollWin.Scroll(wx.VERTICAL,newpos)
+    event.Skip() # necessary to use another function after this one                               
         
-    # display nr of questions and current index of questions            
-    self.m_CurrentPage21.SetValue(f"{self.index+1}")
-    self.m_TotalPages21.SetValue(f"{self.nr_questions}")
+def mousewheel(self,event):
+    scrollWin = self.m_scrolledWindow1
+    
+    def scroll_end_of_page(scrollWin):
+        scrollWin.SetScrollPos(wx.VERTICAL, scrollWin.GetScrollPos(1) + 150, False) #orientation, value, refresh? # 150 is overkill, but it means the new page starts definitely at the bottom of the scroll bar
+        scrollWin.Scroll(scrollWin.GetScrollPos(1) + 150, scrollWin.GetScrollPos(1))
+    def scroll_begin_of_page(scrollWin):
+        scrollWin.SetScrollPos(wx.VERTICAL, 0, False) #orientation, value, refresh? # 150 is overkill, but it means the new page starts definitely at the bottom of the scroll bar
+        scrollWin.Scroll(0, scrollWin.GetScrollPos(1))
+    def reset_scrollpos(self):
+        #make it a little more difficult to scroll once you switched a page
+        self.scrollpos = self.scrollpos_reset 
         
-    LoadFlashCards(self, True,letterfile)
-    f2.displaycard(self)        
-    f2.switch_bitmap(self)
-
-def LoadFlashCards(self,USERINPUT,letterfile):
-    """
-    USERINPUT: boolean, 
-    - TRUE it will ask the user for input to determine
-           the order in which the cards should be displayed.
-    - FALSE, it will display them chronologically without userinput.
-    """
-    print(f"nrcards = {self.nr_cards}")
-    try:                                               
-        f2.FindArgumentsCards(self,self.q_hookpos,self.a_hookpos,letterfile)
-        f2.Cards_ReplaceUserCommands(self)
-        f2.SeparatePicsFromCards(self)
-    except:
-        log.ERRORMESSAGE("Error: couldn't create Cards, LoadFlashCards error")
-    try:        
-        """CARD ORDER"""
-        ## determine cardorder based on user given input
-        if USERINPUT == False:
-            self.cardorder = range(self.nr_questions)  
-        else:
-            
-            if not hasattr(self,'continueSession'): #look if variable even exists./ should be initialized
-                self.continueSession = False
-                        
-            if self.continueSession == False:
-                if self.nr_questions < self.nr_cards:   
-                    if self.chrono == True:
-                        self.cardorder = range(self.nr_questions)    
-                    else:
-                        self.cardorder = random.sample(range(self.nr_cards),self.nr_questions) 
-                else: 
-                    ## If there are more questions than cards
-                    # we would like to get every question about the same number of times, to do this we do sampling without
-                    # replacement, then we remove a question if it is immediately repeated.
-                    if self.chrono == True:
-                        self.cardorder = list(range(self.nr_cards))*self.nr_questions
-                        self.cardorder = self.cardorder[:self.nr_questions]
-                    else:
-                        cardorder = []
-                        for i in range(self.nr_cards):   # possibly way larger than needed:
-                            cardorder.append(random.sample(range(self.nr_cards),self.nr_cards))
-                        cardorder = [val for sublist in cardorder for val in sublist]
-                        SEARCH = True
-                        index = 0
-                        # remove duplicate numbers
-                        while SEARCH == True:
-                            if index == len(cardorder)-2:
-                                SEARCH = False
-                            if cardorder[index] == cardorder[index+1]:
-                                del cardorder[index+1]
-                                index += 1
-                            index += 1    
-                        self.cardorder = cardorder[:self.nr_questions] 
+    self.scrollpos.append(scrollWin.GetScrollPos(0))
+    self.scrollpos.pop(0)
+    #set booleans
+    wheel_rotation  = event.GetWheelRotation()   # get rotation from mouse wheel
+    wheel_scrollsup = wheel_rotation > 0 
+    wheel_scrollsdown = wheel_rotation < 0
+    virtualsize = scrollWin.GetVirtualSize()[1]
+    realsize    = scrollWin.GetClientSize()[1]
+    scrollbar_exists = realsize < virtualsize
+    topofpage = (len(set(self.scrollpos)) == 1 and self.scrollpos[0] == 0)
+    bottomofpage = (len(set(self.scrollpos)) == 1 and self.scrollpos[0] != 0)
+    
+    if scrollbar_exists:
+        if topofpage and wheel_scrollsup:
+            reset_scrollpos(self)
+            if self.currentpage != 1:
+                self.m_toolBack11OnToolClicked(self)
+                scroll_end_of_page(scrollWin)
             else:
-                f2.load_stats(self)  
-            
-        f2.Cards_To_TextDicts(self)
-        
+                scroll_begin_of_page(scrollWin)
+                
+        elif bottomofpage and wheel_scrollsdown:
+            reset_scrollpos(self)
+            if self.currentpage < self.totalpages:
+                self.m_toolNext11OnToolClicked(self)
+                scroll_begin_of_page(scrollWin)
+            else:
+                pass    
+    else:# there is no scrollbar
+        if wheel_scrollsup:
+            reset_scrollpos(self)
+            if self.currentpage != 1:
+                self.m_toolBack11OnToolClicked(self)
+                scroll_end_of_page(scrollWin)
+            else:
+                scroll_begin_of_page(scrollWin)
+        elif wheel_scrollsdown:
+            reset_scrollpos(self)
+            self.m_toolNext11OnToolClicked(self)
+    event.Skip() # necessary to use other functions after this one is used
+    
+def resetselection(self,event):
+    self.resetselection = True
+    #  remove all temporary pictures taken
+    if len(self.pic_answer_dir) > 0:
+        for pic in self.pic_answer_dir:
+            if Path(pic).exists():
+                Path(pic).unlink()
+    if len(self.pic_question_dir) > 0:
+        for pic in self.pic_question_dir:
+            if type(pic) == str and Path(pic).exists():
+                Path(pic).unlink()
+    #reset all values:
+    self.tempdictionary = {}
+    f.ResetQuestions(self)        
+    self.questionmode = True
+    self.m_textCtrl1.SetValue("Question:")
+    self.m_textCtrl2.SetValue("")
+    # update drawn borders
+    f.LoadPage(self)
+    f.ShowPage_fb(self)
+    self.resetselection = False
+    
+def switchpage(self,event):
+    try:
+        pagenumber = self.currentpage
+        if pagenumber < 1:
+            pagenumber = 1
+        if pagenumber > self.totalpages:
+            pagenumber = self.totalpages
+        self.currentpage = pagenumber
+        f.LoadPage(self)
+        f.ShowPage_fb(self)
     except:
-       log.ERRORMESSAGE("Error: couldn't put the cards in a specific order, LoadFlashCards error")
+        log.ERRORMESSAGE("Error: invalid page number")
+    self.Layout()
+    
+def nextpage(self,event):
+    try:
+        if self.currentpage == 'prtscr':
+            self.currentpage = self.currentpage_backup
+            print(f" page is now{self.currentpage}")
+        else:
+            if self.currentpage < self.totalpages:
+                self.currentpage += 1
+        f.LoadPage(self)
+        f.ShowPage_fb(self)
+        f.SetScrollbars(self)
+    except:
+        log.ERRORMESSAGE("Error: can't click on next")
+    self.Layout()
+    
+def previouspage(self,event):    
+    try:
+        if self.currentpage == 'prtscr':
+            self.currentpage = self.currentpage_backup
+        else:
+            if self.currentpage > 1:
+                self.currentpage -= 1    
+        f.LoadPage(self)
+        f.ShowPage_fb(self)
+        f.SetScrollbars(self)            
+    except:
+        log.ERRORMESSAGE("Error: can't click on back")
+    self.Layout()
+    
+def setcursor(self):
+    #lf = event.GetEventObject()
+    cursor = self.m_checkBoxCursor11.IsChecked()
+    self.cursor = cursor
+    if cursor == True:
+        self.SetCursor(wx.Cursor(wx.CURSOR_CROSS))
+    else:
+        self.SetCursor(wx.Cursor(wx.CURSOR_ARROW))
+        
+def zoomin(self,event):
+    try:
+        self.zoom += 0.1
+        f.LoadPage(self)
+        f.ShowPage_fb(self)
+        f.SetScrollbars(self)
+        percentage = int(self.zoom*100)
+        self.m_Zoom11.SetValue(f"{percentage}%")
+        self.Layout()
+    except:
+        log.ERRORMESSAGE("Error: cannot zoom out")
+        
+def zoomout(self,event):    
+    try:
+        if round(self.zoom,1) == 0.1:
+            self.zoom = self.zoom
+        else:
+            self.zoom += -0.1
+        f.LoadPage(self)
+        f.ShowPage_fb(self)
+        f.SetScrollbars(self)
+        percentage = int(self.zoom*100)
+        self.m_Zoom11.SetValue(f"{percentage}%")
+        self.panel1.Refresh() # to remove the remnants of a larger bitmap when the page shrinks
+        self.Layout()
+    except:
+        log.ERRORMESSAGE("Error: cannot zoom in")
+
