@@ -143,8 +143,11 @@ def print_preview(self,event):
     bitmapimage = wx.Bitmap(image2)
     self.m_bitmap3.SetBitmap(bitmapimage)
     self.Layout()
+    self.SetCursor(wx.Cursor(wx.CURSOR_ARROW))
     
 def preview_refresh(self):
+    
+    self.SetCursor(wx.Cursor(wx.CURSOR_ARROWWAIT))
     notes2paper(self)
     #startprogram(self,event)
     _, PanelHeight = self.m_panel32.GetSize()
@@ -157,6 +160,8 @@ def preview_refresh(self):
     bitmapimage = wx.Bitmap(image2)
     self.m_bitmap3.SetBitmap(bitmapimage)
     self.Layout()
+    self.SetCursor(wx.Cursor(wx.CURSOR_ARROW))
+    
 
   
 def notes2paper(self):
@@ -172,6 +177,8 @@ def notes2paper(self):
     if self.printpreview == True:
         if self.NrCardsPreview != '':
             nrQ = int(self.NrCardsPreview)
+            if self.NrCardsPreview > self.nr_questions:
+                nrQ = self.nr_questions
         else:
             nrQ = self.nr_questions
     else:
@@ -503,6 +510,7 @@ def notes2paper(self):
     
     print(f"imagelist is {imagelist}")
     #folder = []
+    self.SetCursor(wx.Cursor(wx.CURSOR_ARROW))
     if self.printpreview == False:
         TT.update("writing files to pdf")
         filename = os.path.join(self.dirpdf,f"{self.bookname}.pdf")
