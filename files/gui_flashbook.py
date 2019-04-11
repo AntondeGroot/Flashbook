@@ -26,46 +26,6 @@ path_switch = str(Path(resourcedir,"repeat.png"))
 ## PLEASE DO "NOT" EDIT THIS FILE!
 ###########################################################################
 
-import wx
-import wx.xrc
-import wx.richtext
-
-###########################################################################
-## Class MyFrame
-###########################################################################
-
-
-# -*- coding: utf-8 -*- 
-
-
-# solving errors: 
-# - path_min /  path_add / path_switch are given a full path string, replace those by their respective variables: path_min,path_add,path_switch
-# - Spacers have changed resulting in an error: replace..Add() with simply Add()
-
-import wx
-import wx.xrc
-import wx.richtext
-import os
-from pathlib import Path
-
-
-basedir     = Path(os.getenv("LOCALAPPDATA"),"Flashbook")
-resourcedir = str(Path(basedir ,"resources"))
-path_add    = str(Path(resourcedir,"add.png"))
-path_min    = str(Path(resourcedir,"min.png"))
-path_switch = str(Path(resourcedir,"repeat.png"))
-
-
-###########################################################################
-## Python code generated with wxFormBuilder (version Jun 17 2015)
-## http://www.wxformbuilder.org/
-##
-## PLEASE DO "NOT" EDIT THIS FILE!
-###########################################################################
-
-import wx
-import wx.xrc
-import wx.richtext
 
 ###########################################################################
 ## Class MyFrame
@@ -162,8 +122,11 @@ class MyFrame ( wx.Frame ):
 		
 		self.m_menuSettings.AppendSeparator()
 		
-		self.m_menuResetSettings = wx.MenuItem( self.m_menuSettings, wx.ID_ANY, u"Reset Settings", wx.EmptyString, wx.ITEM_NORMAL )
+		self.m_menuResetSettings = wx.MenuItem( self.m_menuSettings, wx.ID_ANY, u"Reset settings", wx.EmptyString, wx.ITEM_NORMAL )
 		self.m_menuSettings.Append( self.m_menuResetSettings )
+		
+		self.m_menuResetGraph = wx.MenuItem( self.m_menuSettings, wx.ID_ANY, u"Reset graph", wx.EmptyString, wx.ITEM_NORMAL )
+		self.m_menuSettings.Append( self.m_menuResetGraph )
 		
 		self.m_menuResetLog = wx.MenuItem( self.m_menuSettings, wx.ID_ANY, u"Reset log file", wx.EmptyString, wx.ITEM_NORMAL )
 		self.m_menuSettings.Append( self.m_menuResetLog )
@@ -1219,6 +1182,7 @@ class MyFrame ( wx.Frame ):
 		self.Bind( wx.EVT_MENU, self.m_checkBoxDebugOnMenuSelection, id = self.m_checkBoxDebug.GetId() )
 		self.Bind( wx.EVT_MENU, self.m_menuItemGraphOnMenuSelection, id = self.m_menuItemGraph.GetId() )
 		self.Bind( wx.EVT_MENU, self.m_menuResetSettingsOnMenuSelection, id = self.m_menuResetSettings.GetId() )
+		self.Bind( wx.EVT_MENU, self.m_menuResetGraphOnMenuSelection, id = self.m_menuResetGraph.GetId() )
 		self.Bind( wx.EVT_MENU, self.m_menuResetLogOnMenuSelection, id = self.m_menuResetLog.GetId() )
 		self.m_OpenFlashbook.Bind( wx.EVT_BUTTON, self.m_OpenFlashbookOnButtonClick )
 		self.m_OpenFlashcard.Bind( wx.EVT_BUTTON, self.m_OpenFlashcardOnButtonClick )
@@ -1415,6 +1379,9 @@ class MyFrame ( wx.Frame ):
 		event.Skip()
 	
 	def m_menuResetSettingsOnMenuSelection( self, event ):
+		event.Skip()
+	
+	def m_menuResetGraphOnMenuSelection( self, event ):
 		event.Skip()
 	
 	def m_menuResetLogOnMenuSelection( self, event ):
@@ -2088,7 +2055,7 @@ class MyDialog4 ( wx.Dialog ):
 class MyDialog5 ( wx.Dialog ):
 	
 	def __init__( self, parent, data ):
-		wx.Dialog.__init__ ( self, parent, id = wx.ID_ANY, title = u"Info", pos = wx.DefaultPosition, size = wx.Size( 459,238 ), style = wx.DEFAULT_DIALOG_STYLE|wx.STAY_ON_TOP )
+		wx.Dialog.__init__ ( self, parent, id = wx.ID_ANY, title = u"Info", pos = wx.DefaultPosition, size = wx.Size( 468,303 ), style = wx.DEFAULT_DIALOG_STYLE|wx.STAY_ON_TOP )
 		
 		self.SetSizeHints( wx.DefaultSize, wx.DefaultSize )
 		
@@ -2105,7 +2072,7 @@ class MyDialog5 ( wx.Dialog ):
 		
 		bSizer57.Add( self.m_staticText49, 0, wx.ALL, 5 )
 		
-		self.m_textCtrlComBooks = wx.TextCtrl( self.m_panel26, wx.ID_ANY, data, wx.DefaultPosition, wx.Size( -1,70 ), wx.TE_MULTILINE )
+		self.m_textCtrlComBooks = wx.TextCtrl( self.m_panel26, wx.ID_ANY, data[0], wx.DefaultPosition, wx.Size( -1,70 ), wx.TE_MULTILINE )
 		self.m_textCtrlComBooks.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
 		self.m_textCtrlComBooks.SetBackgroundColour( wx.SystemSettings.GetColour( wx.SYS_COLOUR_HIGHLIGHTTEXT ) )
 		self.m_textCtrlComBooks.SetMinSize( wx.Size( 430,70 ) )
@@ -2152,6 +2119,20 @@ class MyDialog5 ( wx.Dialog ):
 		
 		
 		bSizer53.Add( bSizer79, 1, wx.EXPAND, 5 )
+		
+		bSizer185 = wx.BoxSizer( wx.VERTICAL )
+		
+		self.m_staticText125 = wx.StaticText( self.m_panel26, wx.ID_ANY, u"Combined filename :", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_staticText125.Wrap( -1 )
+		self.m_staticText125.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
+		
+		bSizer185.Add( self.m_staticText125, 0, wx.ALL, 5 )
+		
+		self.m_textCtrlCombinedFileName = wx.TextCtrl( self.m_panel26, wx.ID_ANY, data[1], wx.DefaultPosition, wx.Size( 430,-1 ), 0 )
+		bSizer185.Add( self.m_textCtrlCombinedFileName, 0, wx.ALL, 5 )
+		
+		
+		bSizer53.Add( bSizer185, 1, wx.EXPAND, 5 )
 		
 		bSizer58 = wx.BoxSizer( wx.HORIZONTAL )
 		
