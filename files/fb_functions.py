@@ -130,25 +130,25 @@ def drawrect(self,layer,linecolor): # no errors
 
 
 
-def drawCoordinates(self,pageimage): # no errors
+def drawCoordinates(self,pageimage): 
     if self.debugmode:
         print("fb=drawCoordinates")
     img = np.array(pageimage)
     img = np.uint8(img)
-    
+    key = f'page {self.currentpage}'
     try:#try to look if there already exists borders that need to be drawn
-        coordinatelist = self.dictionary[f'page {self.currentpage}']
-        for coord in coordinatelist:    
-            self.cord1 = coord[0:2]
-            self.cord2 = coord[2:]
+        coordinatelist = self.dictionary[key]
+        for coordinates in coordinatelist:    
+            self.cord1 = coordinates[0:2]
+            self.cord2 = coordinates[2:]
             img = drawrect(self,img,self.colorlist[0])
     except:
         pass
     try:    #there won't always be tempdict borders, so try and otherwise go further
-        coordinatelist = self.tempdictionary[f'page {self.currentpage}']
-        for coord in coordinatelist:    
-            self.cord1 = coord[0:2]
-            self.cord2 = coord[2:]
+        coordinatelist = self.tempdictionary[key]
+        for coordinates in coordinatelist:    
+            self.cord1 = coordinates[0:2]
+            self.cord2 = coordinates[2:]
             img = drawrect(self,img,self.colorlist[1])
     except:
         pass
@@ -161,8 +161,6 @@ def SetScrollbars(self):
     scrollWin.SetScrollbars(int(20*self.zoom),int(20*self.zoom),int(100*self.zoom),int(100*self.zoom) )
 
 def LoadPage(self): 
-    if self.debugmode:
-        print("fb=LoadPage")
     try:
         self.jpgdir = str(Path(self.booksdir, self.booknamepath, self.picnames[self.currentpage-1]))
         
@@ -230,8 +228,8 @@ def ShowPage_fb(self):
         log.ERRORMESSAGE("Error: cannot show page")
         
 def ResetQuestions(self): # no errors
-    self.latex_question     = ''
-    self.latex_answer       = ''
+    self.latex_question   = ''
+    self.latex_answer     = ''
     self.pic_question     = []
     self.pic_answer       = []
     self.pic_question_dir = []
@@ -243,9 +241,9 @@ def CombinePics(self,directorylist):
         print("fb=Combine pics")
     i = 0
     # combine horizontal pictures horizontally. They can be recognized as [] within a [] such that [vert,[hor,hor],vert,[hor,hor,hor]]
-    for im in directorylist:
-        if type(im) is list:
-            images = list(map(PIL.Image.open, im))   
+    for imagelist in directorylist:
+        if type(imagelist) is list:
+            images = list(map(PIL.Image.open, imagelist))   
             widths, heights = zip(*(i.size for i in images))
             max_height = max(heights)
             total_width = sum(widths)
@@ -254,15 +252,12 @@ def CombinePics(self,directorylist):
             for img in images:
                 new_im.paste(img, (x_offset,0))
                 x_offset += img.size[0]
-            new_im.save(im[0])
+            new_im.save(imagelist[0])
             
-            for j,img in enumerate(im):
-                if j!= 0:
-                    try:
-                        Path(img).unlink()
-                    except:
-                        pass
-            directorylist[i] = im[0]
+            for j, image in enumerate(imagelist):
+                if j!= 0 and Path(image).exists():#remove superfluous images                    
+                    Path(image).unlink()
+            directorylist[i] = imagelist[0]
             
         i += 1
     
@@ -270,7 +265,7 @@ def CombinePics(self,directorylist):
     images = list(map(PIL.Image.open, directorylist))   
     widths, heights = zip(*(i.size for i in images))
     total_height = sum(heights)
-    max_width = max(widths)
+    max_width    = max(widths)
     new_im = PIL.Image.new('RGB', (max_width, total_height), "white")
     # combine images to 1
     x_offset = 0
@@ -279,12 +274,10 @@ def CombinePics(self,directorylist):
         x_offset += im.size[1]
     new_im.save(directorylist[0])
     #only save first picture (combined pic) the rest will be removed.
-    for k, item in enumerate(directorylist):
-        if k != 0:
-            try:
-                Path(item).unlink()
-            except:
-                pass
+    for k, image in enumerate(directorylist):
+        if k != 0 and Path(image).exists():
+            Path(image).unlink()
+
             
 def CreateTextCard(self):
     self.ERROR = False
@@ -369,7 +362,6 @@ def ShowInPopup(self,event,mode):
             directory = self.pic_question_dir[0]
         image = PIL.Image.open(directory)
         self.image = image
-        #image.show()
     except:
         log.ERRORMESSAGE("Error: could not open file in popup")
     try:
