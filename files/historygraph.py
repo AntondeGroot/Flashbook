@@ -214,13 +214,13 @@ def Sec2Min(listing):
 def CreateGraph(self):
     datethreshold = self.GraphNdays
     try:
-        with open(str(Path(self.tempdir,"timecount_flashbook.json")), 'r') as file:
+        with open(str(Path(self.dirsettings,"timecount_flashbook.json")), 'r') as file:
             timedict_fb = json.load(file)
         file.close()
     except:
         timedict_fb = {}
     try:
-        with open(str(Path(self.tempdir,"timecount_flashcard.json")), 'r') as file2:
+        with open(str(Path(self.dirsettings,"timecount_flashcard.json")), 'r') as file2:
             timedict_fc = json.load(file2)
         file2.close()
     except:
