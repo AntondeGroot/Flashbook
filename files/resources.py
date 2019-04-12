@@ -50,12 +50,12 @@ def resourceimages(directory1,directory2):
     namelist = ["add.png","min.png","flashbook_icon.png",'flashbook_logo.png',"repeat.png","repeat_na.png","flashbook.png","flashcard.png","print.png","arrow.png","arrow2.png","mouseicon.png","arrowhelp.png","mouseicon2.png","arrowkeys.png","wifi.png","convert.png","folder.png"]
 
 
-    for i in range(len(images)):
+    for name_i,image_i in zip(namelist,images):
         try:
-            path = os.path.join(directory1, namelist[i]) # if png image doesn't yet exist then save png image
+            path = os.path.join(directory1, name_i) # if png image doesn't yet exist then save png image
             if not os.path.exists(path):
                 fh = open(path, "wb")
-                fh.write(base64.b64decode(images[i]))
+                fh.write(base64.b64decode(image_i))
                 fh.close()
         except:
             pass
