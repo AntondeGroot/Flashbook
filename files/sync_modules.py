@@ -66,8 +66,8 @@ def recvall(sock, n):
 def sendmessage(HOST,PORT,self):
     
     dirlist    = os.listdir(self.basedir)
-    appendDir  = ["pics","resources"]   # dont overwrite files in these directories
-    excludeDir = ["IPadresses","books"] # exclude this directory from synchronizing
+    appendDir  = ["pics"]   # dont overwrite files in these directories
+    excludeDir = ["IPadresses","books","resources"] # exclude this directory from synchronizing
     
     dirlist = [x for x in dirlist if x not in excludeDir]
     def Socket_send(HOST, PORT, message):
