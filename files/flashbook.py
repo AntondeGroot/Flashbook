@@ -847,10 +847,10 @@ class MainFrame(gui.MyFrame):
     """ settings menu """
     def m_menuResetGraphOnMenuSelection( self, event ):
         
-        path = Path(self.tempdir,'timecount_flashbook.json')
+        path = Path(self.dirsettings,'timecount_flashbook.json')
         if path.exists():
             path.unlink()
-        path = Path(self.tempdir,'timecount_flashcard.json')
+        path = Path(self.dirsettings,'timecount_flashcard.json')
         if path.exists():
             path.unlink()
         historygraph.DisplayGraph(self)
