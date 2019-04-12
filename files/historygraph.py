@@ -15,6 +15,7 @@ import fc_functions as f2
 import PIL
 import pylab
 import wx
+import textwrap
 
 pylab.ioff() 
 import os
@@ -50,9 +51,6 @@ def GetValues(timedict,datethreshold):
                     totaldict[book] += value
                 else:
                     totaldict[book] = value
-    totaldict
-    
-    
     
     totalbooks = [book for book in totaldict.keys()]
     totalvalues = [value for value in totaldict.values()]
@@ -87,7 +85,7 @@ def textcard(TEXT,width,textpos):
     return PIL.Image.frombytes("RGB", size, raw_data, decoder_name='raw', )
 
 def drawcard(X,Y,legend2):
-    Y = Sec2Min(Y)
+    Y = Sec2Min(Y) #the Y-axis has a scale in Minutes
     legend = [legend2[x] for x in X]
     
     X_it,Y_it,legend_it = iter(X),iter(Y),iter(legend)
@@ -102,12 +100,15 @@ def drawcard(X,Y,legend2):
     height_card = 2
     width_card = 3
     fig = Figure(figsize=[width_card, height_card],dpi=100)
-    fig.patch.set_facecolor((254/255,240/255,231/255,1)) #flashbook theme color rescaled to [0,1]
+    fig.patch.set_facecolor( (254/255, 240/255, 231/255, 1) ) #flashbook theme color rescaled to [0,1]
     ax = fig.gca()
     for i,x in enumerate(X):
-        ax.bar(X[i],Y[i],edgecolor = 'black', color = legend[i][0] ,width = 1,  align='center', fill=True,linestyle = '--',snap = False,hatch = legend2[x][1])    
+        ax.bar(X[i],Y[i],edgecolor = 'black', color=legend[i][0] ,width = 1,  align='center', fill=True,linestyle = '--', snap=False, hatch=legend2[x][1])    
     ax.axis('on')
-    if Y !=[] and max(Y) < 10:
+    
+    #Set limit of Y axis:
+    #The maximum of the Y-axis should be 10 Minutes unless it has been surpassed
+    if Y !=[] and max(Y) < 10: 
         ax.set_ylim(top=10)
     if Y == []:
         ax.set_ylim(top=10)
@@ -121,90 +122,90 @@ def drawcard(X,Y,legend2):
     return PIL.Image.frombytes("RGB", size, raw_data, decoder_name='raw', )
 
 
-
-def TimeString(var):
-    var = var*60
+def TimeString(seconds): 
+    """Convert nr Seconds to a string of one of the following formats: 
+        if it contains Hours:   at least | '01Hours00Minutes00Seconds' |  a leading '0'
+        if it contains Minutes: at least | '1Minutes00Seconds'         | no leading '0'
+        if it contains Seconds: at least | '1Seconds'                  | no leading '0'
+        
+        The variable Seconds will get subtracted unless we can no longer subtract [HOURS] and [MINUTES] and we know that the remainder is [SECONDS]
+    """
     txt = ""
-    hours = int(var/3600)
+    
+    hours = int(seconds/3600)
     if hours > 0:
         if len(str(hours)) == 1:
             txt += f"0{hours}h"
         else:
             txt += f"{hours}h"
-        var = var - hours*3600
-        
-    minutes = int(var/60)
+        seconds = seconds - hours*3600 
+    
+    minutes = int(seconds/60)
     if minutes > 0 or hours != 0:
         if len(str(minutes)) == 1 and hours != 0:
             txt += f"0{minutes}m"
         else:
             txt += f"{minutes}m"
-        var = var - minutes*60
-    
-    seconds = int(var)
+        seconds = seconds - minutes*60
+        
+    seconds = int(seconds) #round off
     if seconds >= 0:
         if len(str(seconds)) == 1 and (minutes != 0 or hours != 0):
             txt += f"0{seconds}s"
         else:
             txt += f"{seconds}s"
+    
     return txt
 
-def drawlegend(totalbooks,totalvalues,legendbackup,hatchlist):
+def drawlegend(totalbooks, totalvalues, legendbackup, hatchlist):
     
-    colors = [list(legendbackup.values())[i][0] for i in range(len(legendbackup.values()))]
+    colors = [legend_item[0] for i,legend_item in enumerate(legendbackup.values())] #legend_item = (color , hatch)
     
-    #f = lambda m,c: plt.plot([],[],marker=m, color=c, ls="none")[0]
     hatch_it = iter(hatchlist)
     handles = [mpatches.Patch(edgecolor='black',facecolor=c,hatch=next(hatch_it),label="hallo") for c in colors]
-    import textwrap
-    tv_it = iter(totalvalues)
+    
+    totalvalue_it  = iter(totalvalues)
     labels = totalbooks
-    labels = [textwrap.fill(f"{x} ({ TimeString(next(tv_it))})",40) for x in totalbooks]
-    legend = plt.legend(handles, labels, loc=2, framealpha=False, frameon=True,markerscale=3.6,markerfirst = True,fontsize=12)
-    #expand=[-5,-5,2,2]
-    fig  = Figure(figsize=[4, 40],dpi=100)
-    fig  = legend.figure
-    fig.set_size_inches(8, 30)
+    labels = [textwrap.fill(f"{x} ({ TimeString(next(totalvalue_it))})",40) for x in totalbooks]
+    legend = plt.legend( handles, labels, loc=2, framealpha=False, frameon=True, markerscale=3.6, markerfirst=True, fontsize=12 )
+    
+    fig = Figure( figsize=[4, 40], dpi=100 )
+    fig = legend.figure
+    fig.set_size_inches( 8, 30 )
     fig.tight_layout()
     fig.canvas.draw()
     ax = fig.gca()
     ax.axis('off')
     ax.get_xaxis().set_visible(False)
-    fig.patch.set_facecolor((254/255,240/255,231/255,1))
-    #fig.show()
+    fig.patch.set_facecolor( (254/255, 240/255, 231/255, 1) )
     canvas = FigureCanvas(fig)
     canvas.draw()
     renderer = canvas.get_renderer()
     raw_data = renderer.tostring_rgb()
     size = canvas.get_width_height()
     img = PIL.Image.frombytes("RGB", size, raw_data, decoder_name='raw', )
-    
     #cut down image
-    color = (254,240,231)
+    color = ( 254, 240, 231 )
     img = f2.cropimage(img, 0, backgroundcolor = color, border = 5)
     img = f2.cropimage(img, 1, backgroundcolor = color, border = 5)
-
     
-    #img.show()
     return img
 
 def sortsubdata(data):
-    temp1 = data[0]
-    temp2 = data[1]
-    totalbooks2 = []
-    totalvalues2 = []
+    totalbooks = []
+    totalvalues = []
     #first order FC entries, then FB then combine the two
-    for i,x in enumerate(temp1):
-        if x not in totalbooks2:
-            totalbooks2.append(x)
-            totalvalues2.append(temp2[i])
+    for book,value in zip(data[0],data[1]):
+        if book not in totalbooks:
+            totalbooks.append(book)
+            totalvalues.append(value)
     
-    tb_it = iter(totalbooks2)
-    tv_it = iter(totalvalues2)
-    X2 = [(next(tb_it),next(tv_it)) for _ in totalbooks2]
-    #%
-    # sort list with key
-    X2.sort(key=takeSecond)
+    books_it  = iter(totalbooks)
+    values_it = iter(totalvalues)
+    
+    X2 = [(next(books_it),next(values_it)) for _ in totalbooks] #[('book1',t1) , ... , ('bookN',tN)]
+    # sort list with 'key', this way we can sort the list by the second element: the amount of time spend
+    X2.sort( key=takeSecond )
     return X2
 
 def Sec2Min(listing):   
@@ -228,22 +229,21 @@ def CreateGraph(self):
     #% COLLECT ALL DATA
     data_fb = GetValues(timedict_fb,datethreshold)
     data_fc = GetValues(timedict_fc,datethreshold)    
-    
     # COMBINE DATA
-    X = sortsubdata(data_fc) + sortsubdata(data_fb)
+    sortedDATA = sortsubdata(data_fc) + sortsubdata(data_fb) #prioritize Flashcard statistics over Flashbook: (10s,1s) + (2s,20s) = > (1,10,2,20) ordered from small to large
     
     totalvalues = []
-    totalbooks = []
-    for i,x in enumerate(X):
-        if x[0] not in totalbooks:
-            totalbooks.append(x[0])
-            totalvalues.append(x[1]/60)     
+    totalbooks  = []
+    for i,data in enumerate(sortedDATA):
+        book = data[0]
+        value = data[1]
+        if book not in totalbooks:
+            totalbooks.append(book)
+            totalvalues.append(value)
+            
     if len(totalvalues) > 0:
-        #variable n should be number of curves to plot (I skipped this earlier thinking that it is obvious when looking at picture - sorry my bad mistake xD): n=len(array_of_curves_to_plot)
-        
-        lvlC = np.linspace(0.03,0.97,len(totalbooks))
-        #random.shuffle(lvlC)
-        color = cm.Paired(lvlC)
+        #Set Colormap
+        lvlC = np.linspace(0.03, 0.97, len(totalbooks)) #to exclude colors like Black from appearing in the legend
         color = cm.nipy_spectral(lvlC)           
         
         #CREATE LEGEND: colors and hatches (pattern displayed on barplots)
@@ -251,13 +251,12 @@ def CreateGraph(self):
         hatchlist = []
         for _ in enumerate(totalbooks):
             hatchlist.append(next(hatch_it))
-        
+            
+        #Associate a book with: a color and a hatch pattern.
         legend = {}
         for i,book in enumerate(totalbooks):   
             legend[book] = tuple((color[i],hatchlist[i] ))
-        
         legendbackup = legend    
-        
         
         #CREATE TEXT IMAGES
         txt1 = textcard("Today",3.5,2)
@@ -276,31 +275,33 @@ def CreateGraph(self):
         width = im1.width + im2.width + txt3.width+im5.width
         height = max(im1.height*2 + txt1.height, im5.height+txt2.height)
         new_im = PIL.Image.new('RGB', (width, height), (254,240,231))
-        new_im.paste(txt1, (txt3.width,0))
-        new_im.paste(txt3, (0,txt1.height))
-        new_im.paste(txt4, (0,txt1.height+txt3.height))
-        new_im.paste(txt2, (txt3.width + txt1.width,0))
-        new_im.paste(im1, (txt3.width,txt1.height))
-        new_im.paste(im2, (txt3.width+im1.width,txt2.height))
-        new_im.paste(im3, (txt3.width,txt1.height+im1.height))
-        new_im.paste(im4, (txt3.width+im1.width ,txt2.height+im2.height))
-        new_im.paste(im5, (txt3.width+im1.width+im2.width ,int(txt2.height*1.5)))
+        new_im.paste( txt1, (txt3.width , 0))
+        new_im.paste( txt3, (0 , txt1.height))
+        new_im.paste( txt4, (0 , txt1.height+txt3.height))
+        new_im.paste( txt2, (txt3.width + txt1.width , 0 ))
+        new_im.paste( im1,  (txt3.width , txt1.height))
+        new_im.paste( im2,  (txt3.width+im1.width , txt2.height))
+        new_im.paste( im3,  (txt3.width , txt1.height+im1.height))
+        new_im.paste( im4,  (txt3.width+im1.width , txt2.height+im2.height))
+        new_im.paste( im5,  (txt3.width+im1.width+im2.width , int(txt2.height*1.5)))
         new_im.paste
     else:
-        new_im = PIL.Image.new('RGB', (1, 1), (254,240,231))
+        new_im = PIL.Image.new('RGB', (1, 1), (254, 240, 231))
     
     #resize horizontally
     VirtualWidth = self.m_panelGraph.GetVirtualSize()[0]
     VirtualWidth = int(VirtualWidth * 0.95)
-    if new_im.width == 0:
-        #just to avoid /0 errors
+    if new_im.width == 0: #just to avoid /0 errors
         new_im.width = 1
     h = int(new_im.height/new_im.width*VirtualWidth)
     w = VirtualWidth
-    if h > 440:#resize vertically
+    
+    #resize vertically
+    if h > 440:
         w = int(w/h*440)
         h = 440
     
+    #output
     new_im = new_im.resize((w, h), PIL.Image.ANTIALIAS)
     BOOL = len(totalvalues) > 0
     return BOOL, new_im
