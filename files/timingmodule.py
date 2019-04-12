@@ -55,7 +55,7 @@ class TimeCount:
     upperbound = 60    # when to consider the user to be idle
     
     def __init__(self, bookname, filename):
-        self.path     = Path(os.getenv("LOCALAPPDATA"),"Flashbook","temporary",f"timecount_{filename}.json")
+        self.path     = Path(os.getenv("LOCALAPPDATA"),"Flashbook","settings",f"timecount_{filename}.json")
         self.timedict = {}
         self.book     = bookname
         self.date     = time.strftime("%d%m%y")
