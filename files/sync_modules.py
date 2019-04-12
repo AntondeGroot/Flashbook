@@ -7,7 +7,7 @@ Created on Thu Jan  3 12:09:00 2019
 
 #!/usr/bin/env python3
 
-from pathlib import Path
+
 # sources: https://stackoverflow.com/questions/17667903/python-socket-receive-large-amount-of-data
 from termcolor import colored
 # Get IP address
@@ -101,7 +101,7 @@ def sendmessage(HOST,PORT,self):
         i = 0
         for filepath_abs in filelist:
             i += 1
-            fname = str(Path(filepath_abs.parent.name, filepath_abs.name))
+            fname = os.path.join(os.path.split(os.path.dirname(filepath_abs))[-1],os.path.basename(filepath_abs))
             if i%3==0:
                 self.m_txtStatus.SetValue(f"Transferring . \t{fname}")
             if i%3==1:
@@ -111,7 +111,7 @@ def sendmessage(HOST,PORT,self):
             stats = os.stat(filepath_abs)
             # last time file was modified
             creation_time = time.strftime('%y-%m-%d %H:%M:%S',time.gmtime(stats.st_mtime))
-            filepath_rel = str(Path(filepath_abs).relavite_to(self.basedir))
+            filepath_rel = os.path.relpath(filepath_abs, self.basedir)           
             # send mode:
             # it keeps sending information that includes the name of the file, the server processes this
             # the server then sends back the name of the file. If the name matches the name of the file that was sent: we know the transfer was successful.
