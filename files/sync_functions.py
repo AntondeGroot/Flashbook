@@ -29,7 +29,7 @@ def CheckServerStatus(HOST,PORT):
     BOOL = False
     try:
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-            s.settimeout(1)
+            s.settimeout(0.5)
             s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
             s.connect((HOST,PORT))
             message = json.dumps({'establish connection': ''}).encode('utf-8')            
@@ -80,6 +80,16 @@ def recvall(sock, n):
         data += packet
     return data
 
+
+def Socket_send(HOST, PORT, message):
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        s.connect((HOST,PORT))
+        send_msg(s, message)
+        data = recv_msg(s)
+        #print(' received' ,repr(data))
+        return data
+
 import os
 import time
 import base64
@@ -87,7 +97,9 @@ import struct
 import pickle
 import json
 
-def GetDataList(basedir,appenDir,excludeDir):
+
+
+def GetDataList(basedir,appendDir,excludeDir,mode,PICKLE):
     X = os.listdir(basedir)
     TransferDir = [x for x in X if x not in excludeDir]
     dirs_to_overwrite = [os.path.join(basedir,dirx) for dirx in TransferDir if dirx not in appendDir]
@@ -103,29 +115,81 @@ def GetDataList(basedir,appenDir,excludeDir):
         path = os.path.relpath(path,basedir)
         files.append(path)
         
-    fileslist_w  = []
-    mtimes_w = []    
+    fileslist_w  = []    
     for dir_ in dirs_to_overwrite:
         for root, dirs, files in os.walk(dir_, topdown=True):
             for name in files:       
                 #variables
                 path = os.path.join(root, name)
                 relpath = os.path.relpath(path,basedir)
+                mtime = int(os.path.getmtime(path))
                 #store
-                mtimes_w.append(int(os.path.getmtime(path)))    
-                fileslist_w.append(relpath)
+                if mode == "relative":
+                    relpath = os.path.relpath(path,basedir)
+                    fileslist_w.append(tuple((relpath,mtime)))    
+                elif mode == "absolute":
+                    fileslist_w.append(path)    
                 
     fileslist_a  = []
-    for dir_ in dirs_to_overwrite:
+    for dir_ in dirs_to_append:
         for root, dirs, files in os.walk(dir_, topdown=True):
             for name in files:       
                 #variables
                 path = os.path.join(root, name)
-                relpath = os.path.relpath(path,basedir)
+                if mode == "relative":
+                    relpath = os.path.relpath(path,basedir)
+                    fileslist_a.append(relpath)    
+                elif mode == "absolute":
+                    fileslist_a.append(path)    
                 #store    
-                fileslist_a.append(relpath)    
+                
            
-    #pickle it so you can send it over Sockets
-    msg = pickle.dumps([[fileslist_w,mtimes_w],fileslist_a])
+    #pickle it so you an send it over Sockets
+    msg = {'overwritefiles': fileslist_w,'appendfiles': fileslist_a}
+    
     return msg
 
+
+def SEND(key,dict_data,HOST,PORT):
+    
+    # send mode:
+    # it keeps sending information that includes the name of the file, the server processes this
+    # the server then sends back the name of the file. If the name matches the name of the file that was sent: we know the transfer was successful.
+    #%%
+    TRYSEND = True
+    while TRYSEND == True:
+        print("loop1")
+        # send file name, mode , creation time
+        message = json.dumps({key: dict_data}).encode('utf-8')
+        data = Socket_send(HOST,PORT,message)
+        #print(f"data = {data}")
+        if data != None and data != []:
+            if data.decode('utf-8')!= None and data.decode('utf-8')!= '':
+                TRYSEND = False
+                return data
+
+            #else:
+            #    TRYSEND = False
+            #    return None
+def SendGroupOfFiles(self,filelist,N,HOST,PORT):
+    #filelist has absolutepaths
+    sublist = {}
+    for i,file in enumerate(filelist):
+        filepath_rel = os.path.relpath(file, self.basedir)
+        
+        #load data
+        bytesfile = open(file, 'rb').read()
+        bytesfile = f4.bytes2string(bytesfile)
+        #put in dict
+        sublist[filepath_rel] = bytesfile
+        key = 'sendtoServer'
+        dict_data = sublist
+        
+        if len(sublist) == N:
+            #send    
+            SEND(key,dict_data,HOST,PORT)#send because you have N items
+            sublist = {}
+        elif i == len(filelist)-1:
+            #send
+            SEND(key,dict_data,HOST,PORT)#send because you have last items
+                
