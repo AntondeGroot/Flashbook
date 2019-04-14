@@ -19,67 +19,44 @@ import socket
 import struct
 import time
 import datetime as dt
+import sync_functions  as f4
 import threading
 import ctypes
 import json
 import wx
 import wx.richtext
-
-
 import base64
 
-def bytes2string(byt):
-    str1 = base64.b64encode(byt)
-    str2 = json.dumps(str1.decode()).replace("'",'"')[1:-1]
-    return str2
 
-def string2bytes(string):
-    return base64.b64decode(string)
+MB_ICONINFORMATION = 0x00000040
 
-def send_msg(sock, msg):
-    # Prefix each message with a 4-byte length (network byte order)
-    msg = struct.pack('>I', len(msg)) + msg
-    sock.sendall(msg)
 
-def recv_msg(sock):
-    # Read message length and unpack it into an integer
-    raw_msglen = recvall(sock, 4)
-    if not raw_msglen:
-        return None
-    msglen = struct.unpack('>I', raw_msglen)[0]
-    # Read the message data
-    return recvall(sock, msglen)
-
-def recvall(sock, n):
-    # Helper function to recv n bytes or return None if EOF is hit
-    data = b''
-    while len(data) < n:
-        try:
-            packet = sock.recv(n - len(data))
-        except:
-            packet = []
-        if not packet:
-            return None
-        data += packet
-    return data
-
-def sendmessage(HOST,PORT,self):
+def clientprocedure(HOST,PORT,self):
     
-    dirlist    = os.listdir(self.basedir)
-    appendDir  = ["pics"]   # dont overwrite files in these directories
-    excludeDir = ["IPadresses","books","resources"] # exclude this directory from synchronizing
     
-    dirlist = [x for x in dirlist if x not in excludeDir]
-    def Socket_send(HOST, PORT, message):
-        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-            s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-            s.connect((HOST,PORT))
-            send_msg(s, message)
-            data = recv_msg(s)
-            #print(' received' ,repr(data))
+    
+    msg = f4.GetDataList(self.basedir, self.appendDir, self.excludeDir, mode='relative', PICKLE=True)
+    data_in = f4.SEND('compare',msg,HOST,PORT)
+    if data_in != None and data_in != b'':
+        datadict = json.loads(data_in.decode('utf-8'))
+        if 'sendtoServer' in datadict.keys():
+            paths_rel = datadict['data']
             
-            return data
-        
+            paths_abs = [os.path.join(self.basedir,x) for x in paths_rel]
+            N = 2
+            f4.SendGroupOfFiles(self,paths_abs,N,HOST,PORT)
+            
+            
+        elif 'finished' in datadict.keys():
+            f4.SEND('finished','',HOST,PORT)
+            print("Client -> Server is done")
+            
+    print("really stopped")        
+    #print(f"data from compare from server: {data_in}")
+    #send all the relpaths and mtimes
+    
+    
+    """
     for subdir in dirlist:
         print(f"directory is {subdir}")
         filelist = []
@@ -87,15 +64,10 @@ def sendmessage(HOST,PORT,self):
         print(f"mode = {mode}")
         walkdir = os.path.join(self.basedir , subdir)
         
-        #% get subdirectories
-        if os.path.isdir(walkdir):    
-            for root,dirs,files in os.walk(walkdir,topdown = False):
-                for name in files:
-                    filelist.append(os.path.join(root, name))
-                for name in dirs:
-                    print(os.path.join(root, name))
-        elif os.path.isfile(walkdir):
-            filelist.append(walkdir)
+        
+        
+        
+        
         
         #%%
         i = 0
@@ -151,13 +123,13 @@ def sendmessage(HOST,PORT,self):
                             if datadict['name'] == filepath_rel:
                                 command = json.loads(data.decode('utf-8'))['command']                            
                 
-                                """Server sends data back indicating how the file should be transfered Client <-> Server
-                                the data starts with bytes: "sendClientToServer" or "sendServerToClient" + the file"""
+                                ""Server sends data back indicating how the file should be transfered Client <-> Server
+                                the data starts with bytes: "sendClientToServer" or "sendServerToClient" + the file""
                             
                                 if command == 'sendClientToServer':  
                                     # send data
                                     bytesfile = open(filepath_abs, 'rb').read()
-                                    bytesfile = bytes2string(bytesfile)
+                                    bytesfile = f4.bytes2string(bytesfile)
                                     
                                     message = json.dumps({'name': filepath_rel, 'data': bytesfile , 'command' : 'sendClientToServer'}).encode('utf-8')
                                     data2 = Socket_send(HOST, PORT, message)  
@@ -168,7 +140,7 @@ def sendmessage(HOST,PORT,self):
                                 elif command == 'sendServerToClient':
                                     datadict = json.loads(data.decode('utf-8'))
                                     data2 = datadict['data']
-                                    data2 = string2bytes(data2)
+                                    data2 = f4.string2bytes(data2)
                                     command = datadict['command']
                                     
                                     os.makedirs(os.path.dirname(filepath_abs), exist_ok = True)
@@ -188,153 +160,255 @@ def sendmessage(HOST,PORT,self):
     message = json.dumps({'command':'finished'}).encode('utf-8')
     data2 = Socket_send(HOST, PORT, message)  
     print("Transfer has finished")
+    """
     
-    
-def listen(HOST, PORT, self):
+def serverprocedure(HOST, PORT, self):
     RUNSERVER = True
     self.m_txtStatus.SetValue("server is now listening")
     i = 0
-    while RUNSERVER == True:
-        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-            s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-            s.setblocking(0)
-            s.bind((HOST, PORT))
-            
-            print(f"is now listening")            
-            s.listen()
-            s.settimeout(200)
-            conn, addr = s.accept()
-            i += 1
-            if i%18 in range(6):
-                self.m_txtStatus.SetValue("server is now receiving data .")
-            if i%18 in range(6,12):
-                self.m_txtStatus.SetValue("server is now receiving data ..")
-            if i%18 in range(12,18):
-                self.m_txtStatus.SetValue("server is now receiving data ...")
-            print("is now connected")
-            
-            RUNCON = True
-            with conn:
-                #print(colored(f"connected by: {addr}",'red'))
-                while RUNCON == True:
-                    # listen for data from the client:
-                    data_in = recv_msg(conn)                            
-                    # termination
-                    if not data_in:    
-                        RUNCON = False                        
-                    if data_in == None:
-                        RUNCON = False       
-                                 
-                    # manipulation of data
-                    if data_in != None and data_in != b'':
-                        datadict = json.loads(data_in.decode('utf-8'))
-                        data_out = json.dumps({'Error': ''}).encode('utf-8')
-                        
-                        #there are only two types of dicts that are being send to the server:
-                        # one has 'command' as a key in it and one doesn't.
-                        # the first one only contains file name/creation time/ mode depending on which files are send
-                        # 'command' then says if and in what direction files should be transferred.
-                        
-                        #%% Check if and how files should be transferred
-                        if 'command' not in datadict.keys():# don't transfer files just yet, first determine in which direction they should be transferred
+    try:
+        while RUNSERVER == True:
+            #setup socket
+            with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+                s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+                s.setblocking(0)
+                s.bind((HOST, PORT))
+                print(f"is now listening")            
+                s.listen()
+                s.settimeout(200)
+                conn, addr = s.accept()
+                #socket_nr
+                
+                i += 1
+                if i%18 in range(6):
+                    self.m_txtStatus.SetValue("server is now receiving data .")
+                if i%18 in range(6,12):
+                    self.m_txtStatus.SetValue("server is now receiving data ..")
+                if i%18 in range(12,18):
+                    self.m_txtStatus.SetValue("server is now receiving data ...")
+                print("is now connected")
+                
+                RUNCON = True
+                #if connection established
+                with conn:
+                    #print(colored(f"connected by: {addr}",'red'))
+                    while RUNCON == True:
+                        # listen for data from the client:
+                        data_in = f4.recv_msg(conn)                            
+                        # termination
+                        if not data_in:    
+                            RUNCON = False                        
+                        if data_in == None:
+                            RUNCON = False       
+                                     
+                        # manipulation of data
+                        if data_in != None and data_in != b'':
+                            #decode data: in 
+                            datadict = json.loads(data_in.decode('utf-8'))
+                            data_out = json.dumps({'Error': ''}).encode('utf-8')
                             
-                            if all (k in datadict for k in ("name","mode","creation time")):
-                                filepath_rel = datadict['name']
-                                name = os.path.join(self.basedir,filepath_rel)                                        
-                                mode = datadict['mode']
+                            #there are only two types of dicts that are being send to the server:
+                            # one has 'command' as a key in it and one doesn't.
+                            # the first one only contains file name/creation time/ mode depending on which files are send
+                            # 'command' then says if and in what direction files should be transferred.
+                            print(f"datadict = {datadict.keys()}")
+                            if 'establish connection' in datadict.keys():
                                 
-                                if os.path.exists(name):
-                                    if mode == 'mode1':
-                                        print("don't overwrite")
-                                        data_out = json.dumps({'name': filepath_rel, 'command' : 'finished' }).encode('utf-8')
-                                    if mode == 'mode0' :
-                                        stats = os.stat(name)
-                                        ctime_server = time.strftime('%y-%m-%d %H:%M:%S',time.gmtime(stats.st_mtime))
-                                        ctime_client = datadict['creation time']
-                                        ctime_client = dt.datetime.strptime(ctime_client, '%y-%m-%d %H:%M:%S')
-                                        ctime_server = dt.datetime.strptime(ctime_server, '%y-%m-%d %H:%M:%S')                                   
-                                        delta_t = int((ctime_server-ctime_client).total_seconds()/60) # time in minutes
+                                print("connection established")
+                                data_out = json.dumps({'establish connection': True}).encode('utf-8')
+                                
+                            if 'compare' in datadict.keys(): 
+                                print("\n"*5)
+                                sendtoServer = []
+                                sendtoClient = []
+                                overwrite_list_rel = datadict['compare']['overwritefiles']
+                                append_list_rel = datadict['compare']['appendfiles']
+                                append_list_abs = [os.path.join(self.basedir,x) for x in append_list_rel]
+                                overwrite_list_abs = [tuple((os.path.join(self.basedir,x[0]),x[1])) for x in overwrite_list_rel]
+                                overwrite_list_pathonly = [x[0] for x in overwrite_list_abs]
+                                
                                         
-                                        # set a minimum 10 minute threshold
-                                        if delta_t > 10:
-                                            myfile = open(name,'rb')
-                                            #  update the time this file has been last 'modified' or in this case looked at. 
-                                            #  This makes sure you on both server and client the synchronized files are *really synchronized*
-                                            os.utime(name, None) 
+                                #get the list of data from the Server side:
+                                msg = f4.GetDataList(self.basedir,self.appendDir,self.excludeDir,'absolute',False)
+                                
+                                #check if Server Side needs to be overwritten
+                                for item in overwrite_list_abs:
+                                    path  = item[0]
+                                    mtime_client = item[1]
+                                    if os.path.exists(path):
+                                        mtime_server = int(os.path.getmtime(path))
+                                        if mtime_server - mtime_client > 600: #if the client is out of date by at least 10 minutes: update it
+                                            sendtoClient.append(os.path.relpath(path, self.basedir))
+                                        if mtime_server - mtime_client < -600: #if the server is out of date by at least 10 minutes: update it
+                                            sendtoServer.append(os.path.relpath(path, self.basedir))
                                             
-                                            bytesfile = myfile.read()
-                                            bytesfile = bytes2string(bytesfile)
-                                            data_out = json.dumps({'name': filepath_rel,'mode': mode, 'command' : 'sendServerToClient','data':bytesfile }).encode('utf-8')
-                                        elif delta_t < -10:
-                                            data_out = json.dumps({'name': filepath_rel,'mode': mode, 'command' : 'sendClientToServer' }).encode('utf-8')
-                                        else:
-                                            data_out = json.dumps({'name': filepath_rel,'mode': mode, 'command' : 'finished' }).encode('utf-8')
-                                    
-                                else: # file does not exist on server side: send it
-                                    data_out = json.dumps({'name': filepath_rel,'mode': mode, 'command' : 'sendClientToServer' }).encode('utf-8')
+                                    else:
+                                        sendtoServer.append(os.path.relpath(path, self.basedir))
+                                #check that files that need to be overwritten exist in serverside but not client side:
+                                for x in msg['overwritefiles']:
+                                    if x not in overwrite_list_pathonly:
+                                        sendtoClient.append(os.path.relpath(x, self.basedir))
                                 
-                        #%% transfer files        
-                        elif 'command' in datadict.keys(): 
-                            print("accepted phase1")
-                            print(datadict.keys())
-                            if all (k in datadict for k in ("name","command","data")): #check if all keys are in dict
-                                print("accepted datadict")
-                                filepath_rel = datadict['name']
-                                name = os.path.join(self.basedir,filepath_rel)
-                                command = datadict['command']
-                                data = datadict['data']
                                 
-                                if command == 'sendClientToServer':
-                                    os.makedirs(os.path.dirname(name), exist_ok=True)
-                                    with open(name,'wb') as f:
-                                        data = string2bytes(data)
-                                        f.write(data)
-                                        print(f"filename \t{name} \t is saved")
+                                #check if items that need to be appended are not present in server side:
+                                for x in append_list_abs:
+                                    if x not in msg['appendfiles']:
+                                        sendtoServer.append(os.path.relpath(x, self.basedir))
+                                #check if items that need to be appended: are present in server side but not client side:
+                                for x in msg['appendfiles']:
+                                    if x not in append_list_abs:
+                                        sendtoClient.append(os.path.relpath(x, self.basedir))
+                                if len(sendtoServer) > 0:
+                                    data_out = json.dumps({'sendtoServer':True,'data' : sendtoServer }).encode('utf-8')
+                                else:
+                                    print("Client -> Server is done")
+                                    data_out = json.dumps({'finished':''}).encode('utf-8')
+                                
+                                        
+                                
+                                
+                                
+                                print("\n"*3)
+                                print(f"sendtoServer = {sendtoServer}")
+                                print("\n"*3)
+                                print(f"sendtoclient = {sendtoClient}")
+                                
+                                
+                                #append_list_rel    = datadict['compare']['appendfiles']
+                                
+                            if 'sendtoServer' in datadict.keys():
+                                print("\nServer received file-data from client\n")
+                                data = datadict['sendtoServer']
+                                filenames = data.keys()
+                                for filename_key in filenames:
+                                    filename_abs = os.path.join(self.basedir,filename_key)
+                                    with open(filename_abs,'wb') as f:
+                                        filedata = data[filename_key]
+                                        filedata = f4.string2bytes(filedata)
+                                        #f.write(filedata)
+                                        print(f"filename \t{filename_key} \t is saved")
                                         f.close()
-                                    if os.path.exists(name):
-                                        data_out = json.dumps({'name': filepath_rel, 'command' : 'finished'}).encode('utf-8')
-                                    else: # file failed to create
-                                        data_out = json.dumps({'name': 'failed', 'command' : 'failed'}).encode('utf-8')
-                            elif "command" in datadict:
-                                command = datadict['command']
-                                if command == 'finished':
-                                    RUNSERVER = False
+                                
+                                data_out = json.dumps({'continue':''}).encode('utf-8')
+                            if 'finished' in datadict.keys():
+                                print("completed")
+                                RUNSERVER = False
+                                
+                            """
+                            #%% Check if and how files should be transferred
+                            if 'command' not in datadict.keys():# don't transfer files just yet, first determine in which direction they should be transferred
+                                
+                                if all (k in datadict for k in ("name","mode","creation time")):
+                                    filepath_rel = datadict['name']
+                                    name = os.path.join(self.basedir,filepath_rel)                                        
+                                    mode = datadict['mode']
                                     
-                        send_msg(conn, data_out)        
-    self.m_txtStatus.SetValue("server finished") 
-       
-def SyncDevices(self, mode, HOST):        
+                                    if os.path.exists(name):
+                                        if mode == 'mode1':
+                                            print("don't overwrite")
+                                            data_out = json.dumps({'name': filepath_rel, 'command' : 'finished' }).encode('utf-8')
+                                        if mode == 'mode0' :
+                                            stats = os.stat(name)
+                                            ctime_server = time.strftime('%y-%m-%d %H:%M:%S',time.gmtime(stats.st_mtime))
+                                            ctime_client = datadict['creation time']
+                                            ctime_client = dt.datetime.strptime(ctime_client, '%y-%m-%d %H:%M:%S')
+                                            ctime_server = dt.datetime.strptime(ctime_server, '%y-%m-%d %H:%M:%S')                                   
+                                            delta_t = int((ctime_server-ctime_client).total_seconds()/60) # time in minutes
+                                            
+                                            # set a minimum 10 minute threshold
+                                            if delta_t > 10:
+                                                myfile = open(name,'rb')
+                                                #  update the time this file has been last 'modified' or in this case looked at. 
+                                                #  This makes sure you on both server and client the synchronized files are *really synchronized*
+                                                os.utime(name, None) 
+                                                
+                                                bytesfile = myfile.read()
+                                                bytesfile = f4.bytes2string(bytesfile)
+                                                data_out = json.dumps({'name': filepath_rel,'mode': mode, 'command' : 'sendServerToClient','data':bytesfile }).encode('utf-8')
+                                            elif delta_t < -10:
+                                                data_out = json.dumps({'name': filepath_rel,'mode': mode, 'command' : 'sendClientToServer' }).encode('utf-8')
+                                            else:
+                                                data_out = json.dumps({'name': filepath_rel,'mode': mode, 'command' : 'finished' }).encode('utf-8')
+                                        
+                                    else: # file does not exist on server side: send it
+                                        data_out = json.dumps({'name': filepath_rel,'mode': mode, 'command' : 'sendClientToServer' }).encode('utf-8')
+                                    
+                            #%% transfer files        
+                            elif 'command' in datadict.keys(): 
+                                print("accepted phase1")
+                                print(datadict.keys())
+                                if all (k in datadict for k in ("name","command","data")): #check if all keys are in dict
+                                    print("accepted datadict")
+                                    filepath_rel = datadict['name']
+                                    name = os.path.join(self.basedir,filepath_rel)
+                                    command = datadict['command']
+                                    data = datadict['data']
+                                    
+                                    if command == 'sendClientToServer':
+                                        os.makedirs(os.path.dirname(name), exist_ok=True)
+                                        with open(name,'wb') as f:
+                                            data = f4.string2bytes(data)
+                                            f.write(data)
+                                            print(f"filename \t{name} \t is saved")
+                                            f.close()
+                                        if os.path.exists(name):
+                                            data_out = json.dumps({'name': filepath_rel, 'command' : 'finished'}).encode('utf-8')
+                                        else: # file failed to create
+                                            data_out = json.dumps({'name': 'failed', 'command' : 'failed'}).encode('utf-8')
+                                elif "command" in datadict:
+                                    command = datadict['command']
+                                    if command == 'finished':
+                                        RUNSERVER = False
+                            """
+                            if RUNSERVER:
+                                f4.send_msg(conn, data_out)        
+        self.m_txtStatus.SetValue("server finished") 
+    except socket.timeout:
+        self.m_txtStatus.SetValue("") 
+        ctypes.windll.user32.MessageBoxW(0, "Server timed out and is now shutting down.", "Warning", MB_ICONINFORMATION)   
+        
+def SyncDevices(self, mode, HOST):  
+
+    self.dirlist    = os.listdir(self.basedir)
+    self.appendDir  = ["pics"]   # dont overwrite files in these directories
+    self.excludeDir = ["IPadresses","books","resources","temporary"] # exclude this directory from synchronizing  
+    
     PORT = 65432        # Port to listen on (non-privileged ports are > 1023)
     # listen to port:    
-    if mode == 0: # first start server, then client
+    if mode == "SERVER": # first start server, then client
+        
         HOST = self.IP1
         self.m_txtStatus.SetValue("starting server")
-        listen(HOST,PORT,self)    
-        self.m_txtStatus.SetValue("finished server, now starting client")
-        time.sleep(2)
-        self.m_txtStatus.SetValue("starting client")
+        #check if server is online:
+        
+        serverprocedure(HOST,PORT,self)    
+        
+        #self.m_txtStatus.SetValue("finished server, now starting client")
+        #time.sleep(2)
+        #self.m_txtStatus.SetValue("starting client")
+        #HOST = self.IP2
+        #clientprocedure(HOST,PORT,self)
+        
+    elif mode == "CLIENT":# first start client, then afterwards server but make sure it starts before a new client is stqarted
         HOST = self.IP2
-        sendmessage(HOST,PORT,self)
-    elif mode == 1:# first start client, then afterwards server but make sure it starts before a new client is stqarted
-        HOST = self.IP2
         self.m_txtStatus.SetValue("starting client")
-        sendmessage(HOST,PORT,self)
-        self.m_txtStatus.SetValue("finished client")
-        time.sleep(0.1)
-        self.m_txtStatus.SetValue("starting server")
-        HOST = self.IP1
-        listen(HOST,PORT,self)    
+        clientprocedure(HOST,PORT,self)
+        #self.m_txtStatus.SetValue("finished client")
+        #time.sleep(0.1)
+        #self.m_txtStatus.SetValue("starting server")
+        #HOST = self.IP1
+        #listen(HOST,PORT,self)    
     #except:
     #    ctypes.windll.user32.MessageBoxW(0, "Cannot start server: no internet connection detected", "Warning", 1)   
-    self.m_txtStatus.SetValue("Synching complete!")
+    #self.m_txtStatus.SetValue("Synching complete!")
 
-def initialize(self,event): 
+
+def initialize(self):
+
     self.basedir = os.path.join(os.getenv("LOCALAPPDATA") ,"FlashBook")
     self.dirIP   = os.path.join(self.basedir, "IPadresses")
-    
     if not os.path.exists(self.dirIP):
         os.makedirs(self.dirIP)
-        
     try:     
         wmi_obj = wmi.WMI()
         wmi_sql = "select IPAddress,DefaultIPGateway from Win32_NetworkAdapterConfiguration where IPEnabled = True"
@@ -346,10 +420,9 @@ def initialize(self,event):
             
             print(f"my ip is {myIP}")
             with open(os.path.join(self.dirIP,'IPadresses.txt'),'w') as f:
-                f.write(json.dumps({'IP1' : myIP,'IP2': ""})) 
+                f.write(json.dumps({'IP1' : myIP,'IP2': "",'client': True})) 
                 f.close()      
     except:
-        
         ctypes.windll.user32.MessageBoxW(0, "Cannot start server: no internet connection detected2", "Warning", 1)
         
     with open(os.path.join(self.dirIP,'IPadresses.txt'),'r') as file:
@@ -357,13 +430,16 @@ def initialize(self,event):
         print(data)
         self.IP1 = data['IP1']
         self.IP2 = data['IP2']
+        self.client = data['client']
     print(f"IP1 = {self.IP1}")
     print(f"IP2 = {self.IP2}")
     if self.IP1 != myIP:
         ctypes.windll.user32.MessageBoxW(0, "Your IP address has changed!\nThis device has updated the IP in the settings.\nMake sure the device connecting to your device changes the IP address accordingly!", "Warning", 1)
         with open(os.path.join(self.dirIP,'IPadresses.txt'),'w') as f:
-                f.write(json.dumps({'IP1' : myIP,'IP2': self.IP2})) 
+                f.write(json.dumps({'IP1' : myIP,'IP2': self.IP2, 'client':self.client})) 
                 f.close()
         self.IP1 = myIP
     self.m_txtMyIP.SetValue(self.IP1)
     self.m_txtTargetIP.SetValue(self.IP2) 
+    self.m_radioClient.SetValue(self.client)
+    self.m_radioServer.SetValue(not self.client)
