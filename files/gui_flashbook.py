@@ -1316,6 +1316,8 @@ class MyFrame ( wx.Frame ):
 		self.m_btnImportScreenshot.Bind( wx.EVT_BUTTON, self.m_btnImportScreenshotOnButtonClick )
 		self.m_txtMyIP.Bind( wx.EVT_KEY_UP, self.m_txtMyIPOnKeyUp )
 		self.m_txtTargetIP.Bind( wx.EVT_KEY_UP, self.m_txtTargetIPOnKeyUp )
+		self.m_radioClient.Bind( wx.EVT_RADIOBUTTON, self.m_radioClientOnRadioButton )
+		self.m_radioServer.Bind( wx.EVT_RADIOBUTTON, self.m_radioServerOnRadioButton )
 		self.m_buttonTransfer.Bind( wx.EVT_BUTTON, self.m_buttonTransferOnButtonClick )
 		self.m_richText1.Bind( wx.EVT_LEFT_DOWN, self.m_richText1OnLeftDown )
 		self.m_richText2.Bind( wx.EVT_LEFT_DOWN, self.m_richText2OnLeftDown )
@@ -1635,6 +1637,12 @@ class MyFrame ( wx.Frame ):
 		event.Skip()
 	
 	def m_txtTargetIPOnKeyUp( self, event ):
+		event.Skip()
+	
+	def m_radioClientOnRadioButton( self, event ):
+		event.Skip()
+	
+	def m_radioServerOnRadioButton( self, event ):
 		event.Skip()
 	
 	def m_buttonTransferOnButtonClick( self, event ):
