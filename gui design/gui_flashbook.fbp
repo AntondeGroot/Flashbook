@@ -11269,7 +11269,7 @@
                                                                             <event name="OnMouseEvents"></event>
                                                                             <event name="OnMouseWheel"></event>
                                                                             <event name="OnPaint"></event>
-                                                                            <event name="OnRadioButton"></event>
+                                                                            <event name="OnRadioButton">m_radioClientOnRadioButton</event>
                                                                             <event name="OnRightDClick"></event>
                                                                             <event name="OnRightDown"></event>
                                                                             <event name="OnRightUp"></event>
@@ -11440,7 +11440,7 @@
                                                                             <event name="OnMouseEvents"></event>
                                                                             <event name="OnMouseWheel"></event>
                                                                             <event name="OnPaint"></event>
-                                                                            <event name="OnRadioButton"></event>
+                                                                            <event name="OnRadioButton">m_radioServerOnRadioButton</event>
                                                                             <event name="OnRightDClick"></event>
                                                                             <event name="OnRightDown"></event>
                                                                             <event name="OnRightUp"></event>
