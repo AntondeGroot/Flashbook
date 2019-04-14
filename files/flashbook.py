@@ -50,7 +50,7 @@ import log_module    as log
 import fb_functions    as f
 import fc_functions    as f2
 import print_functions as f3
-
+import sync_functions  as f4
 import random
 import itertools
 
@@ -276,7 +276,7 @@ def initialize(self):
             myIP = wmi_out.IPAddress[0]          
            
             with open(Path(self.dirIP,'IPadresses.txt'),'w') as f:
-                f.write(json.dumps({'IP1' : myIP,'IP2': ""})) 
+                f.write(json.dumps({'IP1' : myIP,'IP2': "",'client':True})) 
                 f.close()
     except:
         log.ERRORMESSAGE("Error: could not access internet")
@@ -389,7 +389,8 @@ class MainFrame(gui.MyFrame):
         """START MAIN PROGRAM : WIFI SYNC"""
         p.SwitchPanel(self,5)
         p.get_IP(self,event)
-        m4.initialize(self,event)
+        
+        m4.initialize(self)
         
     def m_OpenPrintOnButtonClick(self,event):
         """START MAIN PROGRAM : PRINT PDF NOTES"""
@@ -993,12 +994,22 @@ class MainFrame(gui.MyFrame):
     def m_txtMyIPOnKeyUp( self, event ):
         self.IP1 = self.m_txtMyIP.GetValue()
         with open(Path(self.dirIP,'IPadresses.txt'),'w') as f:
-            f.write(json.dumps({'IP1' : self.IP1,'IP2': self.IP2})) 
+            f.write(json.dumps({'IP1' : self.IP1,'IP2': self.IP2,'client': self.client})) 
             f.close()        
     def m_txtTargetIPOnKeyUp( self, event ):
         self.IP2 = self.m_txtTargetIP.GetValue()
         with open(Path(self.dirIP,'IPadresses.txt'),'w') as f:
-            f.write(json.dumps({'IP1' : self.IP1,'IP2': self.IP2})) 
+            f.write(json.dumps({'IP1' : self.IP1,'IP2': self.IP2,'client': self.client})) 
+            f.close()
+    def m_radioServerOnRadioButton( self, event ):
+        self.client = not self.m_radioServer.GetValue()
+        with open(Path(self.dirIP,'IPadresses.txt'),'w') as f:
+            f.write(json.dumps({'IP1' : self.IP1,'IP2': self.IP2,'client': self.client})) 
+            f.close()
+    def m_radioClientOnRadioButton( self, event ):
+        self.client = self.m_radioClient.GetValue()
+        with open(Path(self.dirIP,'IPadresses.txt'),'w') as f:
+            f.write(json.dumps({'IP1' : self.IP1,'IP2': self.IP2,'client': self.client})) 
             f.close()
     def m_buttonTransferOnButtonClick(self,event):
         Client = self.m_radioClient.GetValue()
@@ -1006,9 +1017,17 @@ class MainFrame(gui.MyFrame):
             HOST = self.IP2
             print(f"HOST IS {HOST}")
             print("start client")
-            self.m_txtStatus.SetValue("starting client")
-            t_sync = lambda self,mode,HOST :threading.Thread(target=m4.SyncDevices,args=(self,mode,HOST)).start()
-            t_sync(self,1,HOST)        
+            self.SetCursor(wx.Cursor(wx.CURSOR_ARROWWAIT))
+            SERVERONLINE = f4.CheckServerStatus(HOST,65432)
+            self.SetCursor(wx.Cursor(wx.CURSOR_ARROW))
+            print(f"server is online: {SERVERONLINE}")
+            if SERVERONLINE:
+                self.m_txtStatus.SetValue("starting client")
+                t_sync = lambda self,mode,HOST :threading.Thread(target=m4.SyncDevices,args=(self,mode,HOST)).start()
+                t_sync(self,"CLIENT",HOST)        
+            else:
+                ctypes.windll.user32.MessageBoxW(0, "Server is not online. \nMake sure you start the server before you start the client.\nTry to connect again.", "Warning", ICON_STOP)   
+            
             
         else:
             HOST = self.IP1
@@ -1016,7 +1035,7 @@ class MainFrame(gui.MyFrame):
             print("start server")
             self.m_txtStatus.SetValue("starting server")
             t_sync = lambda self,mode,HOST :threading.Thread(target=m4.SyncDevices,args=(self,mode,HOST)).start()
-            t_sync(self,0,HOST)
+            t_sync(self,"SERVER",HOST)
             
             
         
