@@ -184,8 +184,11 @@ def get_IP(self,event):
         data = json.load(file)
         self.IP1 = data['IP1']
         self.IP2 = data['IP2']
+        self.client = data['client']
     self.m_txtMyIP.SetValue(self.IP1)
     self.m_txtTargetIP.SetValue(self.IP2)
+    self.m_radioClient.SetValue(self.client)
+    self.m_radioServer.SetValue(not self.client)
     
 
 def set_richtext(self):
