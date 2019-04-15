@@ -32,7 +32,8 @@ MB_ICONINFORMATION = 0x00000040
 
 def clientprocedure_sendlastfiles(HOST,PORT,self):    
     N = 5
-    f4.SendGroupOfFiles(self,self.sendtoClient,N,HOST,PORT)
+    sendtoClient_abs = [os.path.join(self.basedir,x) for x in self.sendtoClient]
+    f4.SendGroupOfFiles(self,sendtoClient_abs,N,HOST,PORT)
     f4.SEND('finished','',HOST,PORT)
     print("Client -> Server is done")
     print("really stopped")        
@@ -46,13 +47,17 @@ def clientprocedure(HOST,PORT,self):
             paths_rel = datadict['data']
             
             paths_abs = [os.path.join(self.basedir,x) for x in paths_rel]
-            N = 2
+            N = 5
             f4.SendGroupOfFiles(self,paths_abs,N,HOST,PORT)
             
             
         elif 'finished' in datadict.keys():
             f4.SEND('finished','',HOST,PORT)
             print("Client -> Server is done")
+            return False
+        elif 'switch mode' in datadict.keys():
+            print("Client -> Server is done")
+            return True
             
     print("really stopped")        
     #print(f"data from compare from server: {data_in}")
@@ -400,12 +405,12 @@ def SyncDevices(self, mode, HOST):
         switchside = serverprocedure(HOST,PORT,self)    
         
         if switchside:
-            print("server is now client")
+            print(colored("server is now client","red"))
             self.m_txtStatus.SetValue("finished server, now starting client")
             time.sleep(2)
             self.m_txtStatus.SetValue("starting client")
             HOST = self.IP2
-            #clientprocedure_sendlastfiles(HOST,PORT,self)
+            clientprocedure_sendlastfiles(HOST,PORT,self)
         
     elif mode == "CLIENT":# first start client, then afterwards server but make sure it starts before a new client is stqarted
         HOST = self.IP2
