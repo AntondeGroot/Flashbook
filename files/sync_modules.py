@@ -30,11 +30,14 @@ import base64
 
 MB_ICONINFORMATION = 0x00000040
 
+def clientprocedure_sendlastfiles(HOST,PORT,self):    
+    N = 5
+    f4.SendGroupOfFiles(self,self.sendtoClient,N,HOST,PORT)
+    f4.SEND('finished','',HOST,PORT)
+    print("Client -> Server is done")
+    print("really stopped")        
 
-def clientprocedure(HOST,PORT,self):
-    
-    
-    
+def clientprocedure(HOST,PORT,self):    
     msg = f4.GetDataList(self.basedir, self.appendDir, self.excludeDir, mode='relative', PICKLE=True)
     data_in = f4.SEND('compare',msg,HOST,PORT)
     if data_in != None and data_in != b'':
@@ -165,7 +168,6 @@ def clientprocedure(HOST,PORT,self):
 def serverprocedure(HOST, PORT, self):
     RUNSERVER = True
     self.m_txtStatus.SetValue("server is now listening")
-    i = 0
     try:
         while RUNSERVER == True:
             #setup socket
@@ -179,13 +181,8 @@ def serverprocedure(HOST, PORT, self):
                 conn, addr = s.accept()
                 #socket_nr
                 
-                i += 1
-                if i%18 in range(6):
-                    self.m_txtStatus.SetValue("server is now receiving data .")
-                if i%18 in range(6,12):
-                    self.m_txtStatus.SetValue("server is now receiving data ..")
-                if i%18 in range(12,18):
-                    self.m_txtStatus.SetValue("server is now receiving data ...")
+                
+                self.m_txtStatus.SetValue("server is now receiving data ...")
                 print("is now connected")
                 
                 RUNCON = True
@@ -222,14 +219,17 @@ def serverprocedure(HOST, PORT, self):
                                 sendtoServer = []
                                 sendtoClient = []
                                 overwrite_list_rel = datadict['compare']['overwritefiles']
+                                print(colored(overwrite_list_rel,"green"))
                                 append_list_rel = datadict['compare']['appendfiles']
+                                print(colored(append_list_rel,"red"))
+                                
                                 append_list_abs = [os.path.join(self.basedir,x) for x in append_list_rel]
                                 overwrite_list_abs = [tuple((os.path.join(self.basedir,x[0]),x[1])) for x in overwrite_list_rel]
                                 overwrite_list_pathonly = [x[0] for x in overwrite_list_abs]
                                 
                                         
                                 #get the list of data from the Server side:
-                                msg = f4.GetDataList(self.basedir,self.appendDir,self.excludeDir,'absolute',False)
+                                serverfiles_abs = f4.GetDataList(self.basedir,self.appendDir,self.excludeDir,'absolute',False)
                                 
                                 #check if Server Side needs to be overwritten
                                 for item in overwrite_list_abs:
@@ -245,19 +245,22 @@ def serverprocedure(HOST, PORT, self):
                                     else:
                                         sendtoServer.append(os.path.relpath(path, self.basedir))
                                 #check that files that need to be overwritten exist in serverside but not client side:
-                                for x in msg['overwritefiles']:
+                                for x in serverfiles_abs['overwritefiles']:
                                     if x not in overwrite_list_pathonly:
                                         sendtoClient.append(os.path.relpath(x, self.basedir))
                                 
                                 
                                 #check if items that need to be appended are not present in server side:
                                 for x in append_list_abs:
-                                    if x not in msg['appendfiles']:
+                                    print(f"error {x}")
+                                    if x not in serverfiles_abs['appendfiles']:
                                         sendtoServer.append(os.path.relpath(x, self.basedir))
+                                        
                                 #check if items that need to be appended: are present in server side but not client side:
-                                for x in msg['appendfiles']:
+                                for x in serverfiles_abs['appendfiles']:
                                     if x not in append_list_abs:
                                         sendtoClient.append(os.path.relpath(x, self.basedir))
+                                        self.sendtoClient = sendtoClient
                                 if len(sendtoServer) > 0:
                                     data_out = json.dumps({'sendtoServer':True,'data' : sendtoServer }).encode('utf-8')
                                 else:
@@ -280,19 +283,32 @@ def serverprocedure(HOST, PORT, self):
                                 print("\nServer received file-data from client\n")
                                 data = datadict['sendtoServer']
                                 filenames = data.keys()
+                                print(f"{len(data.keys())} files received")
                                 for filename_key in filenames:
                                     filename_abs = os.path.join(self.basedir,filename_key)
+                                    os.makedirs(os.path.dirname(filename_abs),exist_ok=True)
+                                    
+                                    
                                     with open(filename_abs,'wb') as f:
                                         filedata = data[filename_key]
                                         filedata = f4.string2bytes(filedata)
-                                        #f.write(filedata)
+                                        f.write(filedata)
                                         print(f"filename \t{filename_key} \t is saved")
                                         f.close()
-                                
+                                    
                                 data_out = json.dumps({'continue':''}).encode('utf-8')
                             if 'finished' in datadict.keys():
-                                print("completed")
-                                RUNSERVER = False
+                                print("client -> server has finished")
+                                #check if server -> Client has also finished
+                                if sendtoClient == []:
+                                    RUNSERVER = False
+                                    self.m_txtStatus.SetValue("finished")
+                                    #self.switchServerClient = False
+                                    return False
+                                else:
+                                    RUNSERVER = False
+                                    #self.switchServerClient = True
+                                    return True
                                 
                             """
                             #%% Check if and how files should be transferred
@@ -381,23 +397,27 @@ def SyncDevices(self, mode, HOST):
         self.m_txtStatus.SetValue("starting server")
         #check if server is online:
         
-        serverprocedure(HOST,PORT,self)    
+        switchside = serverprocedure(HOST,PORT,self)    
         
-        #self.m_txtStatus.SetValue("finished server, now starting client")
-        #time.sleep(2)
-        #self.m_txtStatus.SetValue("starting client")
-        #HOST = self.IP2
-        #clientprocedure(HOST,PORT,self)
+        if switchside:
+            print("server is now client")
+            self.m_txtStatus.SetValue("finished server, now starting client")
+            time.sleep(2)
+            self.m_txtStatus.SetValue("starting client")
+            HOST = self.IP2
+            #clientprocedure_sendlastfiles(HOST,PORT,self)
         
     elif mode == "CLIENT":# first start client, then afterwards server but make sure it starts before a new client is stqarted
         HOST = self.IP2
         self.m_txtStatus.SetValue("starting client")
-        clientprocedure(HOST,PORT,self)
-        #self.m_txtStatus.SetValue("finished client")
-        #time.sleep(0.1)
-        #self.m_txtStatus.SetValue("starting server")
-        #HOST = self.IP1
-        #listen(HOST,PORT,self)    
+        switchside = clientprocedure(HOST,PORT,self)
+        if switchside:
+            print("client is now server")
+            self.m_txtStatus.SetValue("finished client")
+            time.sleep(0.1)
+            self.m_txtStatus.SetValue("starting server")
+            HOST = self.IP1            
+            switchside = serverprocedure(HOST,PORT,self)    
     #except:
     #    ctypes.windll.user32.MessageBoxW(0, "Cannot start server: no internet connection detected", "Warning", 1)   
     #self.m_txtStatus.SetValue("Synching complete!")
