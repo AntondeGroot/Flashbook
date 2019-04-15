@@ -284,11 +284,9 @@ def initialize(self):
     print("="*90)
     print(f"\nThe files will be saved to the following directory: {self.appdir}\n")
     for item in dirs:
-        if not item.exists:
-            item.mkdirs()
-    # create settings folder for debugging
-    settings_create(self)
-    settings_get(self)
+        if not item.exists():
+            item.mkdir()
+    
     #unpack png images used in the gui
     resources.resourceimages(self.resourcedir,self.notesdir) 
     
@@ -334,6 +332,7 @@ class MainFrame(gui.MyFrame):
         #initialize parent class
         icons = [wx.Bitmap(str(self.path_folder)) , wx.Bitmap(str(self.path_convert)) ]
         gui.MyFrame.__init__(self,parent,icons) #added extra argument, so that WXpython.py can easily add the Dialog Windows (which require an extra argument), which is now used to add extra icons to the menubar             
+        settings_create(self)
         settings_get(self)
         settings_set(self)
         #settings_set(self)
