@@ -103,7 +103,7 @@ def GetDataList(basedir,appendDir,excludeDir,mode,PICKLE):
     X = os.listdir(basedir)
     TransferDir = [x for x in X if x not in excludeDir]
     dirs_to_overwrite = [os.path.join(basedir,dirx) for dirx in TransferDir if dirx not in appendDir]
-    dirs_to_append    = [os.path.join(basedir,dirx) for dirx in TransferDir if dirx not in appendDir]
+    dirs_to_append    = [os.path.join(basedir,dirx) for dirx in TransferDir if dirx in appendDir]
     
     
     
@@ -145,7 +145,7 @@ def GetDataList(basedir,appendDir,excludeDir,mode,PICKLE):
                 
            
     #pickle it so you an send it over Sockets
-    msg = {'overwritefiles': fileslist_w,'appendfiles': fileslist_a}
+    msg = {'overwritefiles': fileslist_w, 'appendfiles': fileslist_a}
     
     return msg
 
@@ -180,6 +180,9 @@ def SendGroupOfFiles(self,filelist,N,HOST,PORT):
         #load data
         bytesfile = open(file, 'rb').read()
         bytesfile = f4.bytes2string(bytesfile)
+        #  update the time this file has been last 'modified' or in this case looked at. 
+        #  This makes sure you on both server and client the synchronized files are *really synchronized*
+        os.utime(file, None) 
         #put in dict
         sublist[filepath_rel] = bytesfile
         key = 'sendtoServer'
@@ -187,9 +190,11 @@ def SendGroupOfFiles(self,filelist,N,HOST,PORT):
         
         if len(sublist) == N:
             #send    
+            print('dict =',len(sublist))
             SEND(key,dict_data,HOST,PORT)#send because you have N items
             sublist = {}
         elif i == len(filelist)-1:
             #send
+            print("last file")
             SEND(key,dict_data,HOST,PORT)#send because you have last items
                 
