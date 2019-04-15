@@ -85,7 +85,7 @@ def checkBooks(self,sleeptime):
     
     self.nr_books = len(library)
     
-    if len(library) == 0:
+    if len(library) == 0 and len(library_pdf)!= 0:
         MessageBox(0, f"Welcome new user! \n\nNo converted books were found in directory {self.booksdir} \n\nGo to the menubar of the app:  `Open/Book PDF folder`\nPlace a PDF file there and click on Convert\n\nIf the conversion fails: you need to use an online PDF converter since all image manipulations are done to jpg files.", "Welcome to Flashbook", ICON_EXCLAIM)
     else:
         print("the following books were found:")
@@ -361,6 +361,7 @@ def SwitchPanel(self,n):
                 self.m_panelGraph.Hide()
         else:
             self.m_panelGraph.Hide()
+            
     elif n == 1:
         self.panel1.Show()
         #self.panel11.Show()
@@ -375,7 +376,9 @@ def SwitchPanel(self,n):
         self.panel5.Show()
         #self.panel51.Show()
     elif n == 6:
-        self.panelHelp.Show()         
+        self.panelHelp.Show()        
+    #reset mouse arrow
+    m.setcursor(self)    
     self.Layout() # force refresh of windows
     
 def Imgpath_to_SquareBitmap(path,size): 
