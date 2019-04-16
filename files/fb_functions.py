@@ -196,6 +196,38 @@ def ShowPrintScreen(self): # no error
     except:
         log.ERRORMESSAGE("Error: cannot show PrintScreen page")
     
+def LoadPageNr(self):
+    path_file = Path(self.dirsettings, 'userdata_bookpages.txt')
+    if path_file.exists():
+        with open(path_file,'r') as file:
+            dictionary = json.load(file)
+            if self.bookname in dictionary.keys():
+                self.currentpage = dictionary[self.bookname]
+            else:
+                self.currentpage = 1
+            file.close()
+    else:
+        self.currentpage = 1
+    
+def SavePageNr(self):
+    path_file = Path(self.dirsettings, 'userdata_bookpages.txt')
+    
+    if self.currentpage == 'prtscr' and hasattr(self,'currentpage_backup'):
+        self.currentpage = self.currentpage_backup
+    
+    if path_file.exists():
+        with open(path_file,'r') as file:
+            dictionary = json.load(file)        
+            dictionary[self.bookname] = self.currentpage
+            file.close()
+    else:
+        dictionary = {self.bookname:self.currentpage}
+    print(f"dictionary = {dictionary}")
+    with open(path_file,'w') as file:
+        file.write(json.dumps(dictionary))
+        file.close()
+        
+        
     
 
 def ShowPage_fb(self): 
@@ -219,11 +251,7 @@ def ShowPage_fb(self):
         image2.SetData( self.pageimage.tobytes() )
         
         self.m_bitmapScroll.SetBitmap(wx.Bitmap(image2))
-        with open(Path(self.tempdir, self.bookname +'.txt'), 'w') as output:   
-            if self.currentpage == 'prtscr' and hasattr(self,'currentpage_backup'):
-                self.currentpage = self.currentpage_backup
-            output.write(f"{self.currentpage}")
-        output.close()
+        SavePageNr(self)
     except:
         log.ERRORMESSAGE("Error: cannot show page")
         
