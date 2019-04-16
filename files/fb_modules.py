@@ -82,10 +82,7 @@ def dirchanged(self,event):
     self.booknamepath = eventpath.relative_to(self.booksdir)
     self.currentpage = 1
     self.PathBorders = Path(self.bordersdir, self.bookname + '_borders.txt')
-    path_file = Path(self.tempdir, self.bookname + '.txt')
-    if path_file.exists():
-        file = path_file.open(mode = 'r')
-        self.currentpage = int(float(file.read()))    
+    f.LoadPageNr(self)
     
     #Create empty dictionary if it doesn't exist
     if not self.PathBorders.exists():
