@@ -67,9 +67,6 @@ def clientprocedure(HOST,PORT,self):
                 print("CLIENT: received switchmode to SERVER")
                 CLIENT = False
                 return True
-    print("CLIENT really stopped")        
-    #print(f"data from compare from server: {data_in}")
-    #send all the relpaths and mtimes
     
     
     
@@ -86,7 +83,7 @@ def serverprocedure(HOST, PORT, self):
                 s.bind((HOST, PORT))
                 print(f"is now listening")            
                 s.listen()
-                s.settimeout(200)
+                s.settimeout(60)
                 conn, addr = s.accept()
                 #socket_nr
                 
@@ -261,6 +258,7 @@ def SyncDevices(self, mode, HOST):
             HOST = self.IP1            
             switchside = serverprocedure(HOST,PORT,self) 
         else:
+            print("CLIENT: has stopped")
             self.m_txtStatus.SetValue(f"Sync completed")
     #except:
     #    ctypes.windll.user32.MessageBoxW(0, "Cannot start server: no internet connection detected", "Warning", 1)   
