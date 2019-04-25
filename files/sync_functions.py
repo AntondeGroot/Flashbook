@@ -191,10 +191,11 @@ def SendGroupOfFiles(self,filelist,N,HOST,PORT):
         if len(sublist) == N:
             #send    
             print('dict =',len(sublist))
-            SEND(key,dict_data,HOST,PORT)#send because you have N items
+            data = SEND(key,dict_data,HOST,PORT)#send because you have N items
             sublist = {}
         elif i == len(filelist)-1:
             #send
             print("last file")
-            SEND(key,dict_data,HOST,PORT)#send because you have last items
-                
+            data = SEND(key,dict_data,HOST,PORT)#send because you have last items
+    #at end of sending files return instructions from Server
+    return data
