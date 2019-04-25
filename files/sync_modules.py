@@ -34,7 +34,8 @@ def clientprocedure_sendlastfiles(HOST,PORT,self):
     N = 5
     sendtoClient_abs = [os.path.join(self.basedir,x) for x in self.sendtoClient]
     f4.SendGroupOfFiles(self,sendtoClient_abs,N,HOST,PORT)
-    f4.SEND('finished','',HOST,PORT)
+    print("otherway finished also")
+    _ = f4.SEND('reallyfinished','',HOST,PORT)
     print("Client -> Server is done")
     print("really stopped")        
 
@@ -42,8 +43,8 @@ def clientprocedure(HOST,PORT,self):
     #send all filenames from Client to server
     msg = f4.GetDataList(self.basedir, self.appendDir, self.excludeDir, mode='relative', PICKLE=True)
     data_in = f4.SEND('compare',msg,HOST,PORT)
-    CLIENT = True
-    while CLIENT==True:
+    
+    for i in range(2):
         #should actually loop only twice
         if data_in != None and data_in != b'':
             datadict = json.loads(data_in.decode('utf-8'))
@@ -53,18 +54,18 @@ def clientprocedure(HOST,PORT,self):
                 
                 paths_abs = [os.path.join(self.basedir,x) for x in paths_rel]
                 N = 5
-                data_in = f4.SendGroupOfFiles(self,paths_abs,N,HOST,PORT)
-                
+                f4.SendGroupOfFiles(self,paths_abs,N,HOST,PORT)
+                data_in = f4.SEND('finished','',HOST,PORT)
                 
             elif 'finished' in datadict.keys():
                 print("CLIENT: received server is finished")
                 print("Client -> Server is done")
-                CLIENT = False
+                
                 return False
             
             elif 'switch mode' in datadict.keys():
                 print("CLIENT: received switchmode to SERVER")
-                CLIENT = False
+                
                 return True
     
     
@@ -83,13 +84,10 @@ def serverprocedure(HOST, PORT, self):
                 print(f"is now listening")            
                 s.listen()
                 s.settimeout(60)
-                conn, addr = s.accept()
-                #socket_nr
-                
+                conn, addr = s.accept()                
                 
                 self.m_txtStatus.SetValue("server is now receiving data ...")
                 print("is now connected")
-                
                 RUNCON = True
                 #if connection established
                 with conn:
@@ -102,30 +100,25 @@ def serverprocedure(HOST, PORT, self):
                             RUNCON = False                        
                         if data_in == None:
                             RUNCON = False       
-                                     
                         # manipulation of data
                         if data_in != None and data_in != b'':
                             #decode data: in 
                             datadict = json.loads(data_in.decode('utf-8'))
                             data_out = json.dumps({'Error': ''}).encode('utf-8')
-                            
-                            #there are only two types of dicts that are being send to the server:
-                            # one has 'command' as a key in it and one doesn't.
-                            # the first one only contains file name/creation time/ mode depending on which files are send
-                            # 'command' then says if and in what direction files should be transferred.
+                            #all 'commands' are found in the keys of the dict that has been send
                             print(f"datadict = {datadict.keys()}")
                             if 'establish connection' in datadict.keys(): 
                                 print("connection established")
                                 data_out = json.dumps({'establish connection': True}).encode('utf-8')
                                 
                             if 'compare' in datadict.keys(): 
-                                print("\n"*5)
+                                print("\n"*2)
                                 sendtoServer = []
                                 sendtoClient = []
                                 overwrite_list_rel = datadict['compare']['overwritefiles']
-                                print(colored(overwrite_list_rel,"green"))
+                                print("list to overwrite: ",colored(overwrite_list_rel,"green"))
                                 append_list_rel = datadict['compare']['appendfiles']
-                                print(colored(append_list_rel,"red"))
+                                print("list to append: ",colored(append_list_rel,"red"))
                                 
                                 append_list_abs = [os.path.join(self.basedir,x) for x in append_list_rel]
                                 overwrite_list_abs = [tuple((os.path.join(self.basedir,x[0]),x[1])) for x in overwrite_list_rel]
@@ -164,18 +157,20 @@ def serverprocedure(HOST, PORT, self):
                                 for x in serverfiles_abs['appendfiles']:
                                     if x not in append_list_abs:
                                         sendtoClient.append(os.path.relpath(x, self.basedir))
-                                        self.sendtoClient = sendtoClient
+                                        
+                                self.sendtoClient = sendtoClient
                                 if len(sendtoServer) > 0:
+                                    print("Client -> Server is not yet done")
                                     data_out = json.dumps({'sendtoServer':True,'data' : sendtoServer }).encode('utf-8')
                                 else:
                                     #because there is nothing to do
                                     print("Client -> Server is done")
                                     data_out = json.dumps({'finished':''}).encode('utf-8')
-                                    conn = False
-                                    RUNCON = False
-                                    RUNSERVER = False
-                                    return False
-                                
+                                    if len(sendtoClient) != 0:
+                                        data_out = json.dumps({'switch mode':''}).encode('utf-8')
+                                        RUNCON = False
+                                        RUNSERVER = False                          
+                                        BOOL = True
                                         
                                 
                                 
@@ -206,24 +201,29 @@ def serverprocedure(HOST, PORT, self):
                                         f.close()
                                     
                                 data_out = json.dumps({'continue':''}).encode('utf-8')
+                            if 'reallyfinished' in datadict.keys():
+                                break
                             if 'finished' in datadict.keys():
                                 print("client -> server has finished")
                                 #check if server -> Client has also finished
                                 if sendtoClient == []:
-                                    conn = False
                                     RUNCON = False
                                     RUNSERVER = False
                                     self.m_txtStatus.SetValue("finished")
-                                    #self.switchServerClient = False
-                                    return False
+                                    data_out = json.dumps({'finished':''}).encode('utf-8')                                    
+                                    BOOL = False
+                                    
                                 else:#if you need to send files to the client
+                                    RUNCON = False
                                     RUNSERVER = False
-                                    #self.switchServerClient = True
-                                    return True
-                                
-                            if RUNSERVER:
-                                f4.send_msg(conn, data_out)        
-        self.m_txtStatus.SetValue("server finished") 
+                                    data_out = json.dumps({'switch mode':''}).encode('utf-8')
+                                    BOOL = True
+                                    
+                            #send message back
+                            f4.send_msg(conn, data_out)
+                            if RUNSERVER == False:
+                                return BOOL
+        self.m_txtStatus.SetValue("Sync complete") 
     except socket.timeout:
         self.m_txtStatus.SetValue("") 
         ctypes.windll.user32.MessageBoxW(0, "Server timed out and is now shutting down.", "Warning", MB_ICONINFORMATION)   
