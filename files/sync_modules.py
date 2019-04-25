@@ -38,137 +38,41 @@ def clientprocedure_sendlastfiles(HOST,PORT,self):
     print("Client -> Server is done")
     print("really stopped")        
 
-def clientprocedure(HOST,PORT,self):    
+def clientprocedure(HOST,PORT,self):  
+    #send all filenames from Client to server
     msg = f4.GetDataList(self.basedir, self.appendDir, self.excludeDir, mode='relative', PICKLE=True)
     data_in = f4.SEND('compare',msg,HOST,PORT)
-    if data_in != None and data_in != b'':
-        datadict = json.loads(data_in.decode('utf-8'))
-        if 'sendtoServer' in datadict.keys():
-            paths_rel = datadict['data']
+    CLIENT = True
+    while CLIENT==True:
+        #should actually loop only twice
+        if data_in != None and data_in != b'':
+            datadict = json.loads(data_in.decode('utf-8'))
+            if 'sendtoServer' in datadict.keys():
+                print("CLIENT: received sendtoserver")
+                paths_rel = datadict['data']
+                
+                paths_abs = [os.path.join(self.basedir,x) for x in paths_rel]
+                N = 5
+                data_in = f4.SendGroupOfFiles(self,paths_abs,N,HOST,PORT)
+                
+                
+            elif 'finished' in datadict.keys():
+                print("CLIENT: received server is finished")
+                f4.SEND('finished','',HOST,PORT)
+                print("Client -> Server is done")
+                CLIENT = False
+                return False
             
-            paths_abs = [os.path.join(self.basedir,x) for x in paths_rel]
-            N = 5
-            f4.SendGroupOfFiles(self,paths_abs,N,HOST,PORT)
-            
-            
-        elif 'finished' in datadict.keys():
-            f4.SEND('finished','',HOST,PORT)
-            print("Client -> Server is done")
-            return False
-        elif 'switch mode' in datadict.keys():
-            print("Client -> Server is done")
-            return True
-            
-    print("really stopped")        
+            elif 'switch mode' in datadict.keys():
+                print("CLIENT: received switchmode to SERVER")
+                CLIENT = False
+                return True
+    print("CLIENT really stopped")        
     #print(f"data from compare from server: {data_in}")
     #send all the relpaths and mtimes
     
     
-    """
-    for subdir in dirlist:
-        print(f"directory is {subdir}")
-        filelist = []
-        mode = f"mode{1*(subdir in appendDir)}" #mode is either 0 (overwrite) or 1 (append)
-        print(f"mode = {mode}")
-        walkdir = os.path.join(self.basedir , subdir)
-        
-        
-        
-        
-        
-        
-        #%%
-        i = 0
-        for filepath_abs in filelist:
-            i += 1
-            fname = os.path.join(os.path.split(os.path.dirname(filepath_abs))[-1],os.path.basename(filepath_abs))
-            if i%3==0:
-                self.m_txtStatus.SetValue(f"Transferring . \t{fname}")
-            if i%3==1:
-                self.m_txtStatus.SetValue(f"Transferring .. \t{fname}")
-            if i%3==2:
-                self.m_txtStatus.SetValue(f"Transferring ... \t{fname}")
-            stats = os.stat(filepath_abs)
-            # last time file was modified
-            creation_time = time.strftime('%y-%m-%d %H:%M:%S',time.gmtime(stats.st_mtime))
-            filepath_rel = os.path.relpath(filepath_abs, self.basedir)           
-            # send mode:
-            # it keeps sending information that includes the name of the file, the server processes this
-            # the server then sends back the name of the file. If the name matches the name of the file that was sent: we know the transfer was successful.
-            #%%
-            TRYSEND = True
-            while TRYSEND == True:
-                print("loop1")
-                # send file name, mode , creation time
-                message = json.dumps({'name': filepath_rel,'mode': mode, 'creation time' : creation_time}).encode('utf-8')
-                data = Socket_send(HOST,PORT,message)
-                #print(f"data = {data}")
-                if data != None and data != []:
-                    if data.decode('utf-8')!= None and data.decode('utf-8')!= '':
-                        if "name" in data.decode('utf-8'):
-                            #print(f"data is {data.decode('utf-8')} of type {type(data)}")
-                            #data = data.decode('utf-8')
-                            #print(f"data is {data} of type {type(json.loads(data.decode('utf-8')))}")
-                            #print(f"{json.loads(data.decode('utf-8')).keys()}")
-                            
-                            if json.loads(data.decode('utf-8'))['name'] == filepath_rel:
-                                datadict = json.loads(data.decode('utf-8'))
-                                data_backup = data
-                                TRYSEND = False
-                        else:
-                            TRYSEND = False
-                            
-            TRYSEND = True            
-            while TRYSEND == True:
-                print("loop2")
-                try:
-                    command = datadict['command']
-                    #message = json.dumps({'name': filepath_rel,'data': mode,'command':command}).encode('utf-8')
-                    #data = Socket_send(HOST,PORT,message)                    
-                    if data != None and data != []:
-                        datadict = json.loads(data.decode('utf-8'))
-                        if all (k in datadict for k in ("name", "command")):
-                            if datadict['name'] == filepath_rel:
-                                command = json.loads(data.decode('utf-8'))['command']                            
-                
-                                ""Server sends data back indicating how the file should be transfered Client <-> Server
-                                the data starts with bytes: "sendClientToServer" or "sendServerToClient" + the file""
-                            
-                                if command == 'sendClientToServer':  
-                                    # send data
-                                    bytesfile = open(filepath_abs, 'rb').read()
-                                    bytesfile = f4.bytes2string(bytesfile)
-                                    
-                                    message = json.dumps({'name': filepath_rel, 'data': bytesfile , 'command' : 'sendClientToServer'}).encode('utf-8')
-                                    data2 = Socket_send(HOST, PORT, message)  
-                                    datadict = json.loads(data2.decode('utf-8'))
-                                    command = datadict['command']
-                                    if command == 'finished':
-                                        TRYSEND = False
-                                elif command == 'sendServerToClient':
-                                    datadict = json.loads(data.decode('utf-8'))
-                                    data2 = datadict['data']
-                                    data2 = f4.string2bytes(data2)
-                                    command = datadict['command']
-                                    
-                                    os.makedirs(os.path.dirname(filepath_abs), exist_ok = True)
-                                    with open(filepath_abs, 'wb') as f:
-                                        f.write(data2)
-                                        f.close()
-                                    #if command == 'finished':
-                                    TRYSEND = False
-                                elif command == 'finished':
-                                    TRYSEND = False
-                                
-                except:
-                    data = data_backup
-                    print("connection failed")
-    self.m_txtStatus.SetValue("Transfer has finished")
-    #stop server:
-    message = json.dumps({'command':'finished'}).encode('utf-8')
-    data2 = Socket_send(HOST, PORT, message)  
-    print("Transfer has finished")
-    """
+    
     
 def serverprocedure(HOST, PORT, self):
     RUNSERVER = True
@@ -214,8 +118,7 @@ def serverprocedure(HOST, PORT, self):
                             # the first one only contains file name/creation time/ mode depending on which files are send
                             # 'command' then says if and in what direction files should be transferred.
                             print(f"datadict = {datadict.keys()}")
-                            if 'establish connection' in datadict.keys():
-                                
+                            if 'establish connection' in datadict.keys(): 
                                 print("connection established")
                                 data_out = json.dumps({'establish connection': True}).encode('utf-8')
                                 
@@ -310,77 +213,11 @@ def serverprocedure(HOST, PORT, self):
                                     self.m_txtStatus.SetValue("finished")
                                     #self.switchServerClient = False
                                     return False
-                                else:
+                                else:#if you need to send files to the client
                                     RUNSERVER = False
                                     #self.switchServerClient = True
                                     return True
                                 
-                            """
-                            #%% Check if and how files should be transferred
-                            if 'command' not in datadict.keys():# don't transfer files just yet, first determine in which direction they should be transferred
-                                
-                                if all (k in datadict for k in ("name","mode","creation time")):
-                                    filepath_rel = datadict['name']
-                                    name = os.path.join(self.basedir,filepath_rel)                                        
-                                    mode = datadict['mode']
-                                    
-                                    if os.path.exists(name):
-                                        if mode == 'mode1':
-                                            print("don't overwrite")
-                                            data_out = json.dumps({'name': filepath_rel, 'command' : 'finished' }).encode('utf-8')
-                                        if mode == 'mode0' :
-                                            stats = os.stat(name)
-                                            ctime_server = time.strftime('%y-%m-%d %H:%M:%S',time.gmtime(stats.st_mtime))
-                                            ctime_client = datadict['creation time']
-                                            ctime_client = dt.datetime.strptime(ctime_client, '%y-%m-%d %H:%M:%S')
-                                            ctime_server = dt.datetime.strptime(ctime_server, '%y-%m-%d %H:%M:%S')                                   
-                                            delta_t = int((ctime_server-ctime_client).total_seconds()/60) # time in minutes
-                                            
-                                            # set a minimum 10 minute threshold
-                                            if delta_t > 10:
-                                                myfile = open(name,'rb')
-                                                #  update the time this file has been last 'modified' or in this case looked at. 
-                                                #  This makes sure you on both server and client the synchronized files are *really synchronized*
-                                                os.utime(name, None) 
-                                                
-                                                bytesfile = myfile.read()
-                                                bytesfile = f4.bytes2string(bytesfile)
-                                                data_out = json.dumps({'name': filepath_rel,'mode': mode, 'command' : 'sendServerToClient','data':bytesfile }).encode('utf-8')
-                                            elif delta_t < -10:
-                                                data_out = json.dumps({'name': filepath_rel,'mode': mode, 'command' : 'sendClientToServer' }).encode('utf-8')
-                                            else:
-                                                data_out = json.dumps({'name': filepath_rel,'mode': mode, 'command' : 'finished' }).encode('utf-8')
-                                        
-                                    else: # file does not exist on server side: send it
-                                        data_out = json.dumps({'name': filepath_rel,'mode': mode, 'command' : 'sendClientToServer' }).encode('utf-8')
-                                    
-                            #%% transfer files        
-                            elif 'command' in datadict.keys(): 
-                                print("accepted phase1")
-                                print(datadict.keys())
-                                if all (k in datadict for k in ("name","command","data")): #check if all keys are in dict
-                                    print("accepted datadict")
-                                    filepath_rel = datadict['name']
-                                    name = os.path.join(self.basedir,filepath_rel)
-                                    command = datadict['command']
-                                    data = datadict['data']
-                                    
-                                    if command == 'sendClientToServer':
-                                        os.makedirs(os.path.dirname(name), exist_ok=True)
-                                        with open(name,'wb') as f:
-                                            data = f4.string2bytes(data)
-                                            f.write(data)
-                                            print(f"filename \t{name} \t is saved")
-                                            f.close()
-                                        if os.path.exists(name):
-                                            data_out = json.dumps({'name': filepath_rel, 'command' : 'finished'}).encode('utf-8')
-                                        else: # file failed to create
-                                            data_out = json.dumps({'name': 'failed', 'command' : 'failed'}).encode('utf-8')
-                                elif "command" in datadict:
-                                    command = datadict['command']
-                                    if command == 'finished':
-                                        RUNSERVER = False
-                            """
                             if RUNSERVER:
                                 f4.send_msg(conn, data_out)        
         self.m_txtStatus.SetValue("server finished") 
@@ -422,7 +259,9 @@ def SyncDevices(self, mode, HOST):
             time.sleep(0.1)
             self.m_txtStatus.SetValue("starting server")
             HOST = self.IP1            
-            switchside = serverprocedure(HOST,PORT,self)    
+            switchside = serverprocedure(HOST,PORT,self) 
+        else:
+            self.m_txtStatus.SetValue(f"Sync completed")
     #except:
     #    ctypes.windll.user32.MessageBoxW(0, "Cannot start server: no internet connection detected", "Warning", 1)   
     #self.m_txtStatus.SetValue("Synching complete!")
