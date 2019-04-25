@@ -157,7 +157,9 @@ def SEND(key,dict_data,HOST,PORT):
     # the server then sends back the name of the file. If the name matches the name of the file that was sent: we know the transfer was successful.
     #%%
     TRYSEND = True
+    i = 0
     while TRYSEND == True:
+        
         print("loop1")
         # send file name, mode , creation time
         message = json.dumps({key: dict_data}).encode('utf-8')
@@ -167,10 +169,11 @@ def SEND(key,dict_data,HOST,PORT):
             if data.decode('utf-8')!= None and data.decode('utf-8')!= '':
                 TRYSEND = False
                 return data
-
-            #else:
-            #    TRYSEND = False
-            #    return None
+        i += 1
+        if i >= 20:
+            print("error could not connect")
+            TRYSEND = False
+            return None
 def SendGroupOfFiles(self,filelist,N,HOST,PORT):
     #filelist has absolutepaths
     sublist = {}
@@ -191,11 +194,11 @@ def SendGroupOfFiles(self,filelist,N,HOST,PORT):
         if len(sublist) == N:
             #send    
             print('dict =',len(sublist))
-            data = SEND(key,dict_data,HOST,PORT)#send because you have N items
+            SEND(key,dict_data,HOST,PORT)#send because you have N items
             sublist = {}
         elif i == len(filelist)-1:
             #send
             print("last file")
-            data = SEND(key,dict_data,HOST,PORT)#send because you have last items
-    #at end of sending files return instructions from Server
-    return data
+            SEND(key,dict_data,HOST,PORT)#send because you have last items
+    
+    
