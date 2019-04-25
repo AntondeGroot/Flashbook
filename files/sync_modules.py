@@ -58,7 +58,6 @@ def clientprocedure(HOST,PORT,self):
                 
             elif 'finished' in datadict.keys():
                 print("CLIENT: received server is finished")
-                f4.SEND('finished','',HOST,PORT)
                 print("Client -> Server is done")
                 CLIENT = False
                 return False
@@ -169,8 +168,13 @@ def serverprocedure(HOST, PORT, self):
                                 if len(sendtoServer) > 0:
                                     data_out = json.dumps({'sendtoServer':True,'data' : sendtoServer }).encode('utf-8')
                                 else:
+                                    #because there is nothing to do
                                     print("Client -> Server is done")
                                     data_out = json.dumps({'finished':''}).encode('utf-8')
+                                    conn = False
+                                    RUNCON = False
+                                    RUNSERVER = False
+                                    return False
                                 
                                         
                                 
@@ -206,6 +210,8 @@ def serverprocedure(HOST, PORT, self):
                                 print("client -> server has finished")
                                 #check if server -> Client has also finished
                                 if sendtoClient == []:
+                                    conn = False
+                                    RUNCON = False
                                     RUNSERVER = False
                                     self.m_txtStatus.SetValue("finished")
                                     #self.switchServerClient = False
@@ -245,7 +251,8 @@ def SyncDevices(self, mode, HOST):
             self.m_txtStatus.SetValue("starting client")
             HOST = self.IP2
             clientprocedure_sendlastfiles(HOST,PORT,self)
-        
+        else:
+            self.m_txtStatus.SetValue("Sync completed")
     elif mode == "CLIENT":# first start client, then afterwards server but make sure it starts before a new client is stqarted
         HOST = self.IP2
         self.m_txtStatus.SetValue("starting client")
