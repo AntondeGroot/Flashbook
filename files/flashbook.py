@@ -325,8 +325,6 @@ class MainFrame(gui.MyFrame):
     """ INITIALIZE """
     def __init__(self,parent): 
         initialize(self)
-        super(MainFrame, self).__init__(self,parent)#for childclasses with multiple parents
-        super(gui.MyFrame, self).__init__()#for childclasses with multiple parents
         
         setup_sources(self)
         
