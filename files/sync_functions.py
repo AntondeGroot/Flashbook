@@ -33,8 +33,8 @@ def CheckServerStatus(HOST,PORT):
             s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
             s.connect((HOST,PORT))
             message = json.dumps({'establish connection': ''}).encode('utf-8')            
-            f4.send_msg(s, message)
-            data_in = f4.recv_msg(s)
+            send_msg(s, message)
+            data_in = recv_msg(s)
         if data_in != None and data_in != b'':
             datadict = json.loads(data_in.decode('utf-8'))
             if 'establish connection' in datadict.keys():
@@ -105,10 +105,6 @@ def GetDataList(basedir,appendDir,excludeDir,mode,PICKLE):
     dirs_to_overwrite = [os.path.join(basedir,dirx) for dirx in TransferDir if dirx not in appendDir]
     dirs_to_append    = [os.path.join(basedir,dirx) for dirx in TransferDir if dirx in appendDir]
     
-    
-    
-    def string2bytes(string):
-        return base64.b64decode(string)
     
     def to_lists(path,files,ctimes):
         ctimes.append(int(os.path.getmtime(path)))    
@@ -182,7 +178,7 @@ def SendGroupOfFiles(self,filelist,N,HOST,PORT):
         
         #load data
         bytesfile = open(file, 'rb').read()
-        bytesfile = f4.bytes2string(bytesfile)
+        bytesfile = bytes2string(bytesfile)
         #  update the time this file has been last 'modified' or in this case looked at. 
         #  This makes sure you on both server and client the synchronized files are *really synchronized*
         os.utime(file, None) 
@@ -201,4 +197,206 @@ def SendGroupOfFiles(self,filelist,N,HOST,PORT):
             print("last file")
             SEND(key,dict_data,HOST,PORT)#send because you have last items
     
-    
+def compare_server_with_client(self,datadict,key):
+    if 'compare' in datadict.keys(): 
+        RUNCON    = True
+        RUNSERVER = True
+        SWITCH_BOOL = True
+        
+        print("\n"*2)
+        sendtoServer = []
+        self.sendtoClient = []
+        overwrite_list_rel = datadict['compare']['overwritefiles']
+        print("list to overwrite: ",colored(overwrite_list_rel,"green"))
+        append_list_rel = datadict['compare']['appendfiles']
+        print("list to append: ",colored(append_list_rel,"red"))
+        
+        append_list_abs = [os.path.join(self.basedir,x) for x in append_list_rel]
+        overwrite_list_abs = [tuple((os.path.join(self.basedir,x[0]),x[1])) for x in overwrite_list_rel]
+        overwrite_list_pathonly = [x[0] for x in overwrite_list_abs]
+        
+                
+        #get the list of data from the Server side:
+        serverfiles_abs = GetDataList(self.basedir,self.appendDir,self.excludeDir,'absolute',False)
+        
+        #check if Server Side needs to be overwritten
+        for item in overwrite_list_abs:
+            path  = item[0]
+            mtime_client = item[1]
+            if os.path.exists(path):
+                mtime_server = int(os.path.getmtime(path))
+                if mtime_server - mtime_client > 600: #if the client is out of date by at least 10 minutes: update it
+                    self.sendtoClient.append(os.path.relpath(path, self.basedir))
+                if mtime_server - mtime_client < -600: #if the server is out of date by at least 10 minutes: update it
+                    sendtoServer.append(os.path.relpath(path, self.basedir))
+                    
+            else:
+                sendtoServer.append(os.path.relpath(path, self.basedir))
+        #check that files that need to be overwritten exist in serverside but not client side:
+        for x in serverfiles_abs['overwritefiles']:
+            if x not in overwrite_list_pathonly:
+                self.sendtoClient.append(os.path.relpath(x, self.basedir))
+        
+        
+        #check if items that need to be appended are not present in server side:
+        for x in append_list_abs:
+            print(f"error {x}")
+            if x not in serverfiles_abs['appendfiles']:
+                sendtoServer.append(os.path.relpath(x, self.basedir))
+                
+        #check if items that need to be appended: are present in server side but not client side:
+        for x in serverfiles_abs['appendfiles']:
+            if x not in append_list_abs:
+                self.sendtoClient.append(os.path.relpath(x, self.basedir))
+                
+        self.sendtoClient
+        if len(sendtoServer) > 0:
+            print("Client -> Server is not yet done")
+            data_out = json.dumps({'sendtoServer':True,'data' : sendtoServer }).encode('utf-8')
+        else:
+            #because there is nothing to do
+            print("Client -> Server is done")
+            data_out = json.dumps({'finished':''}).encode('utf-8')
+            if len(self.sendtoClient) != 0:
+                data_out = json.dumps({'switch mode':''}).encode('utf-8')
+                RUNCON = False
+                RUNSERVER = False                          
+                SWITCH_BOOL = True
+        self.data_out = data_out
+        self.RUNCON = RUNCON
+        self.RUNSERVER = RUNSERVER
+        self.SWITCH_BOOL = SWITCH_BOOL
+
+def request_files_from_client(self,datadict,key):
+    if 'sendtoServer' in datadict.keys():
+        print("\nServer received file-data from client\n")
+        data = datadict['sendtoServer']
+        filenames = data.keys()
+        print(f"{len(data.keys())} files received")
+        for filename_key in filenames:
+            filename_abs = os.path.join(self.basedir,filename_key)
+            os.makedirs(os.path.dirname(filename_abs),exist_ok=True)
+            
+            
+            with open(filename_abs,'wb') as f:
+                filedata = data[filename_key]
+                filedata = string2bytes(filedata)
+                f.write(filedata)
+                print(f"filename \t{filename_key} \t is saved")
+                f.close()
+            
+        self.data_out = json.dumps({'continue':''}).encode('utf-8')
+
+def establish_connection_server_client(self,datadict,key):
+    if 'establish connection' in datadict.keys(): 
+        print("connection established")
+        self.data_out = json.dumps({'establish connection': True}).encode('utf-8')
+        
+def finish_server(self,datadict,key):
+    if 'reallyfinished' in datadict.keys():
+        pass
+    if 'finished' in datadict.keys():
+        print("client -> server has finished")
+        if datadict['finished'] == '':
+            #check if server -> Client has also finished
+            if hasattr(self,'sendtoClient'): 
+                if self.sendtoClient == []:
+                    self.RUNCON = False
+                    self.RUNSERVER = False
+                    self.m_txtStatus.SetValue("finished")
+                    self.data_out = json.dumps({'finished':''}).encode('utf-8')                                    
+                    self.SWITCH_BOOL = False
+                    
+                else:#if you need to send files to the client
+                    self.RUNCON = False
+                    self.RUNSERVER = False
+                    self.data_out = json.dumps({'switch mode':''}).encode('utf-8')
+                    self.SWITCH_BOOL = True
+            else:
+                self.RUNCON = False
+                self.RUNSERVER = False
+                self.m_txtStatus.SetValue("finished")
+                self.data_out = json.dumps({'finished':''}).encode('utf-8')                                    
+                self.SWITCH_BOOL = False
+        elif datadict['finished'] == 'clientprocedure_sendlastfiles':   
+            self.RUNCON = False
+            self.RUNSERVER = False
+            self.m_txtStatus.SetValue("finished")
+            self.data_out = json.dumps({'finished':''}).encode('utf-8')                                    
+            self.SWITCH_BOOL = False
+
+
+# -*- coding: utf-8 -*-
+"""
+Created on Fri Apr 26 11:28:31 2019
+
+@author: Anton
+"""
+
+# -*- coding: utf-8 -*-
+"""
+Created on Thu Mar 21 19:23:41 2019
+@author: Anton
+"""
+
+import threading
+import time
+import flashbook as fb
+class StoppableDisplayThread(threading.Thread):
+    """Thread class with a stop() method. The thread itself has to check
+    regularly for the stopped() condition."""
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._stop_event = threading.Event()
+        self.message = ''
+        self.status  = ''
+        self.delay   = 0.5
+        self.nrdots  = 4
+    #getters and setters
+    def set_delay(self,var):
+        self.delay = var
+    def set_nrdots(self,var):
+        self.delay = var
+    def get_nrdots(self):
+        return self.nrdots
+    def set_msg(self,var):
+        self.message = var
+    def set_status(self,var):
+        self.status = var
+    def get_msg(self):
+        return self.message  
+    def get_status(self):
+        return self.status
+    def get_delay(self):
+        return 0.5
+    #to stop it
+    def stop(self):
+        self._stop_event.set()
+    def stopped(self):
+        return self._stop_event.is_set()
+
+
+def Display(text,self):
+    self.m_txtStatus.SetValue(text)
+class DisplayStatus(fb.MainFrame,StoppableDisplayThread):
+    def __init__(self):
+        super(DisplayStatus, self).__init__()
+    """To Use:
+    t = DisplayStatus()
+    t.set_status("some text") #after status dots will be printed
+    t.start()
+    ...
+    t.stop()
+    """
+    def run(self):
+        mod = self.get_nrdots()+1
+        i = 0 
+        while not self.stopped():
+            time.sleep(self.get_delay())
+            message = self.get_status()+" "+"."*int(i%mod)+" "*int(mod-i%mod)+self.get_msg()
+            Display(message,self)
+            i += 1
+
+
+
+
