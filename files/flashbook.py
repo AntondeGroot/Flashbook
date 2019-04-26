@@ -325,7 +325,8 @@ class MainFrame(gui.MyFrame):
     """ INITIALIZE """
     def __init__(self,parent): 
         initialize(self)
-        
+        super(MainFrame, self).__init__(self,parent)#for childclasses with multiple parents
+        super(gui.MyFrame, self).__init__()#for childclasses with multiple parents
         
         setup_sources(self)
         
@@ -339,7 +340,7 @@ class MainFrame(gui.MyFrame):
         self.m_menubar1.EnableTop(2, False)#disable Flashcard menu
         self.Maximize(True) # open the app window maximized
         t_books = lambda self,delay : threading.Thread(target = p.checkBooks , args=(self,delay )).start()
-        t_books(self, 2) 
+        t_books(self, 0.1) 
         
         self.stitchmode_v = True
         self.FilePickEvent = True 
