@@ -2541,7 +2541,7 @@ class MyDialogScore ( wx.Dialog ):
 class MyDialogAbout ( wx.Dialog ):
 	
 	def __init__( self, parent, data ):
-		wx.Dialog.__init__ ( self, parent, id = wx.ID_ANY, title = u"About", pos = wx.DefaultPosition, size = wx.Size( 391,139 ), style = wx.DEFAULT_DIALOG_STYLE )
+		wx.Dialog.__init__ ( self, parent, id = wx.ID_ANY, title = u"About", pos = wx.DefaultPosition, size = wx.Size( 391,148 ), style = wx.DEFAULT_DIALOG_STYLE )
 		
 		self.SetSizeHints( wx.DefaultSize, wx.DefaultSize )
 		
@@ -2623,6 +2623,12 @@ class MyDialogAbout ( wx.Dialog ):
 		
 		
 		bSizer91.Add( bSizer93, 0, wx.EXPAND, 0 )
+		
+		self.m_staticText63 = wx.StaticText( self.m_panel33, wx.ID_ANY, u"© 2018 A. de Groot", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_staticText63.Wrap( -1 )
+		self.m_staticText63.SetFont( wx.Font( 9, 74, 93, 90, False, "Verdana" ) )
+		
+		bSizer91.Add( self.m_staticText63, 0, wx.ALL, 0 )
 		
 		
 		bSizer90.Add( bSizer91, 1, wx.EXPAND, 5 )
