@@ -670,9 +670,11 @@ class MainFrame(gui.MyFrame):
     def m_toolStitchOnButtonClick( self, event ):
         self.stitchmode_v =  not self.stitchmode_v
         if self.stitchmode_v == True:
-            self.m_toolStitch.SetBitmap(wx.Bitmap(self.path_arrow2))
+            BMP = p.Imgpath_to_SquareBitmap(str(self.path_arrow2),26)
+            self.m_toolStitch.SetBitmap(wx.Bitmap(BMP))
         else:
-            self.m_toolStitch.SetBitmap(wx.Bitmap(self.path_arrow))
+            BMP = p.Imgpath_to_SquareBitmap(str(self.path_arrow),26)
+            self.m_toolStitch.SetBitmap(wx.Bitmap(BMP))
         
         """The following is used to create a mozaic of ictures. There is a question mode and an answer mode
         The pics are stored in a list, and when the element of a list is another list it means that particular list is ment to be stitched horizontally
