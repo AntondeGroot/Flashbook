@@ -48,7 +48,7 @@ It is also possible to enter LaTeX code
 
 ![alt text](https://github.com/AntondeGroot/Flashbook/blob/master/readme%20images/fb_latex2.png) ![alt text](https://github.com/AntondeGroot/Flashbook/blob/master/readme%20images/fb_latex.png) 
 
-It's even possible to add your own LaTeX macros so that you can avoid typing long sequences of code.
+It's even possible to add your own LaTeX macros so that you can avoid typing long sequences of code. (See .../Flashbook/files/usercommands.txt)
 
 ![alt text](https://github.com/AntondeGroot/Flashbook/blob/master/readme%20images/fb_latex4.png) ![alt text](https://github.com/AntondeGroot/Flashbook/blob/master/readme%20images/fb_latex3.png) 
 
