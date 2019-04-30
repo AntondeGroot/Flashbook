@@ -49,6 +49,7 @@ It is also possible to enter LaTeX code
 ![alt text](https://github.com/AntondeGroot/Flashbook/blob/master/readme%20images/fb_latex2.png) ![alt text](https://github.com/AntondeGroot/Flashbook/blob/master/readme%20images/fb_latex.png) 
 
 It's even possible to add your own LaTeX macros so that you can avoid typing long sequences of code. 
+
 <sub><sup>(See .../Flashbook/files/usercommands.txt)</sup></sub>
 
 
