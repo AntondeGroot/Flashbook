@@ -73,7 +73,7 @@ Then you can either use your mouse or your arrow keys to: flip the card, indicat
 
 ## User data
 
-The program will also keep track of you progress and indicate how many minutes you've spend learning and reading the past N days.
+The program will also keep track of you progress and indicate how many minutes you've spend learning and reading the past N days. It will first list all Flashcards times in ascending order and then the Flashbook times in ascending order. This way you can instantly see which Flashcard you need to learn first.
 ![alt text](https://github.com/AntondeGroot/Flashbook/blob/master/readme%20images/statsgraph2.png)
 ## Print
 
