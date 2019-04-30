@@ -101,19 +101,14 @@ You can also sync two devices. It will automatically display the IP address of t
 - Replace os.path with pathlib to make it cross-platform in the future / less verbose and easier to read.
 - Multiprocess the functions that create the flashcards in 'print' mode. Python multithreading isn't real multithreading as it just switches rapidly between threads. Multithreading will not speed it up but multiprocessing will.
 - Clean up code: make it PEP-8 compliant, add clear docstrings to the functions, perhaps move more code from modules to functions in order to make the modules clearer and shorter.
-- Perhaps use SQLite for data, currently everything is stored as .tex, .txt, .json files in %localappdata%. Although, now it is easy for users to edit manually, easy to delete etc.
 - Customizable colors for Flashbook: the user should be able to choose the color of the temporary and permanent borders.  
 - Add ability to combine multiple PDFs for additional information / if a course consists of multiple PDFs: syllabus, book, assignments ...
 - Add ability to change a flashcard while you are rehersing: "change current card" which then shows the user input text / the ability to delete the card.
 - Improve design: font / colors / borders / icons / ...
-#### Issues:
 
-- Synching needs to be improved. First send a list of all filenames this will avoid unnecessary connections.
 
 #### Possible Issues:
 - pdf conversion may not be supported: pdftoppm.exe is called on laptop via miktex. Explicit import needed in spec file? Now this is hopefully accounted for by including poppler.rar in the executables and adding it as 'path variable' if there is no 'pdftoppm.exe' already available. 
-
-- Flashbook: drawn borders suddenly shifted up and to the left. This does not affect new borders being drawn (or the final selections), or past selections. Perhaps this is caused by a missing self.Layout() where the page should be redrawn. Perhaps the page is rescaled but the borders aren't.
 
 
 
