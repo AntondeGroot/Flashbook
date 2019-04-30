@@ -88,7 +88,7 @@ where you can modify it to your liking. You add lines between Q&A cards (if pres
 You can also sync two devices. It will automatically display the IP address of the device the app is running on. Then you only need to add the other device's IP address. Right now it can only be used on a local wifi network. 
 
 
-![alt text](https://github.com/AntondeGroot/Flashbook/blob/master/readme%20images/sync_gui.png)
+![alt text](https://github.com/AntondeGroot/Flashbook/blob/master/readme%20images/sync_gui2.png)
 
 
 
