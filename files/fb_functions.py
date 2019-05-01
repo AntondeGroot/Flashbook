@@ -98,6 +98,22 @@ def is_number(s):
         return False
 
 
+def SetToolStitchArrow(self,orientation="vertical"):
+    if orientation == "vertical":
+        BMP = self.path_arrow2
+    elif orientation == "horizontal":
+        BMP = self.path_arrow
+    else:
+        BMP = self.path_arrow
+        print(colored("Wrong mode entered in SetToolStitchArrow","red"))
+    try:
+        assert type(self.path_arrow) == str
+        assert type(self.path_arrow2) == str
+    except AssertionError:
+        print(colored("ERROR: self.path_arrow and self.path_arrow2 should be of the type STR","red"))
+        print(colored("use os.path.join()","red"))
+    self.m_toolStitch.SetBitmap(wx.Bitmap(BMP))
+
 def drawrect(self,layer,linecolor): # no errors
     if self.debugmode:
         print("fb=drawRec")
