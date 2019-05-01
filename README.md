@@ -74,6 +74,12 @@ Your progress will be saved after each answer given. Although, the 'continue las
 
 Then you can either use your mouse or your arrow keys to: flip the card, indicate your answer is correct / wrong.
 
+Only when you use Flashcard can you press on the 'flashcard' button in the menubar. You can then chose to edit or delete the current flashcard, and it also allows you to skip back to the previous flashcard so you could edit or delete that one too.
+
+![alt text](https://github.com/AntondeGroot/Flashbook/blob/master/readme%20images/fc4.png)
+
+![alt text](https://github.com/AntondeGroot/Flashbook/blob/master/readme%20images/fc5.png)
+
 ## User data
 
 The program will also keep track of you progress and indicate how many minutes you've spend learning and reading the past N days. It will first list all Flashcards times in ascending order and then the Flashbook times in ascending order. This way you can instantly see which Flashcard you need to learn first.
