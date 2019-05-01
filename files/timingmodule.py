@@ -115,7 +115,8 @@ class TimeCount:
         timedelta = timenow-v.timelastchecked
         
         if timedelta < v.upperbound:     # user has not been idle    
-            if timedelta > v.lowerbound:                  
+            if timedelta > v.lowerbound:     
+                
                 #update
                 v.count +=  timedelta
                 v.timelastchecked = time.time()                
