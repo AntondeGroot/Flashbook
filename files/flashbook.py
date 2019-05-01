@@ -127,8 +127,8 @@ def setup_sources(self):
     self.path_fc      = Path(rdir,"flashcard.png")
     self.path_wifi    = Path(rdir,"wifi.png")
     self.path_pr      = Path(rdir,"print.png")
-    self.path_arrow   = Path(rdir,"arrow.png")
-    self.path_arrow2  = Path(rdir,"arrow2.png")
+    self.path_arrow   = os.path.join(rdir,"arrow.png")
+    self.path_arrow2  = os.path.join(rdir,"arrow2.png")
     self.path_convert = Path(rdir,"convert.png")
     self.path_folder  = Path(rdir,"folder.png")
     self.path_repeat  = Path(rdir,"repeat.png")
@@ -670,11 +670,9 @@ class MainFrame(gui.MyFrame):
     def m_toolStitchOnButtonClick( self, event ):
         self.stitchmode_v =  not self.stitchmode_v
         if self.stitchmode_v == True:
-            BMP = p.Imgpath_to_SquareBitmap(str(self.path_arrow2),26)
-            self.m_toolStitch.SetBitmap(wx.Bitmap(BMP))
+            f.SetToolStitchArrow(self,orientation="vertical")
         else:
-            BMP = p.Imgpath_to_SquareBitmap(str(self.path_arrow),26)
-            self.m_toolStitch.SetBitmap(wx.Bitmap(BMP))
+            f.SetToolStitchArrow(self,orientation="horizontal")
         
         """The following is used to create a mozaic of ictures. There is a question mode and an answer mode
         The pics are stored in a list, and when the element of a list is another list it means that particular list is ment to be stitched horizontally
