@@ -411,7 +411,7 @@ def set_bitmapbuttons(self):
     self.m_OpenTransfer.SetBitmap(BMP)
     
     #image2 = Img2Bitmap(self.path_arrow,32)
-    self.m_toolStitch.SetBitmap(wx.Bitmap(str(self.path_arrow2)))
+    f.SetToolStitchArrow(self,orientation="vertical")
     
 def resetparameters(self):
     self.m_bitmapScroll.SetBitmap(wx.Bitmap(wx.Image( 1,1 ))) # always empty bitmap, in case someone reruns the program
