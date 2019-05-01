@@ -194,8 +194,8 @@ def bitmapleftup(self,event):
                     self.pic_question.append([picname])  
                     self.pic_question_dir.append([dir_])  
                 #restore stitchmode to default
-                self.stitchmode_v =  True            
-                self.m_toolStitch.SetBitmap(wx.Bitmap(self.path_arrow2))
+                self.stitchmode_v =  True   
+                f.SetToolStitchArrow(self,orientation="vertical")
         else:
             if self.stitchmode_v == True:
                 self.pic_answer.append(picname)  
@@ -208,8 +208,8 @@ def bitmapleftup(self,event):
                     self.pic_answer.append([picname])  
                     self.pic_answer_dir.append([dir_])  
                 #restore stitchmode to default
-                self.stitchmode_v =  True            
-                self.m_toolStitch.SetBitmap(wx.Bitmap(str(self.path_arrow2)))
+                self.stitchmode_v =  True     
+                f.SetToolStitchArrow(self,orientation="vertical")
         f.ShowPage_fb(self)     
         
 def panel4_bitmapleftup(self,event):
