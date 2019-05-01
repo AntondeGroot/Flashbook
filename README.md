@@ -43,6 +43,8 @@ You can also create a 'mozaic' by simply clicking on the arrow at the bottom of 
 
 There doesn't have to be an answer card, for example when you just want to take notes. In that case once you entered your 'selection' or lack thereof, it will be made permanent. The borders will now be colored black.
 
+It is possible to combine multiple notes and then use that to rehearse or to print it as a PDF, for example if you want to combine lecture notes with homework assignments.
+
 ## Flashbook: LaTeX
 It is also possible to enter LaTeX code 
 
@@ -107,7 +109,7 @@ You can also sync two devices. It will automatically display the IP address of t
 
 ### TODO
 #### To add:
-- Clean up code: make it PEP-8 compliant, add clear docstrings to the functions, perhaps move more code from modules to functions in order to make the modules clearer and shorter.
+- Clean up code: make it PEP-8 compliant, add clear docstrings to the functions, perhaps move more code from modules to functions in order to make the modules clearer and shorter. Perhaps use more Classes and methods.
 - Customizable colors for Flashbook: the user should be able to choose the color of the temporary and permanent borders. 
 
 
