@@ -111,7 +111,7 @@ You can also sync two devices. It will automatically display the IP address of t
 #### To add:
 - Clean up code: make it PEP-8 compliant, add clear docstrings to the functions, perhaps move more code from modules to functions in order to make the modules clearer and shorter. Perhaps use more Classes and methods.
 - Customizable colors for Flashbook: the user should be able to choose the color of the temporary and permanent borders. 
-- the statsgraph might not show the time spend in Flashbook if the bookname also occurs in Flashcard.<sub><sup>Only seen this error occur once.</sup></sub> 
+- the statsgraph might not show the time spend in Flashbook if the bookname also occurs in Flashcard. Only seen this error occur once.
 
 #### Possible Issues:
 - pdf conversion may not be supported: pdftoppm.exe is called on laptop via miktex. Explicit import needed in spec file? Now this is hopefully accounted for by including poppler.rar in the executables and adding it as 'path variable' if there is no 'pdftoppm.exe' already available. 
