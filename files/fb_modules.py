@@ -22,7 +22,26 @@ ICON_STOP = 0x10
 MB_ICONINFORMATION = 0x00000040
 MessageBox = ctypes.windll.user32.MessageBoxW
 
-
+def list2path(templist):
+    output = None
+    if type(templist) == list:
+        if len(templist)>1:
+            if type(templist[0]) == str:
+                print(f"mode1 {templist}")
+                output = templist[0]
+            elif type(templist[0]) == list:
+                output = templist[0][0]
+        elif len(templist)==1:
+            if type(templist[0]) == str:
+                print(f"mode2 {templist}")
+                output = templist[0]
+            elif type(templist[0]) == list:
+                print(f"mode2 {templist}")
+                output = templist[0][0]
+            
+    
+    return output
+#%%
 def dirchanged(self,event):
     
     """For scrolling: only remember last few positions, append and pop 
@@ -148,13 +167,13 @@ def bitmapleftup(self,event):
     if VALID_RECTANGLE:            
         self.BorderCoords = [x0,y0,x1,y1]
         #save all borders in dict
-        try:
-            #dict key exists, so you should append its value
+        
+        try:#dict key exists, so you should append its value
             val = self.tempdictionary[f'page {self.currentpage}']
             val.append(self.BorderCoords)
             self.tempdictionary[f'page {self.currentpage}'] = val
-        except:
-            #dict key does not exist, just add the value to the new key
+            
+        except:#dict key does not exist, just add the value to the new key
             self.tempdictionary.update({f'page {self.currentpage}' : [self.BorderCoords]})
             
         #crop image
@@ -185,8 +204,10 @@ def bitmapleftup(self,event):
         dir_ = str(Path(self.picsdir,self.bookname,picname))
         if self.Flashcard.getmode() == 'Question':
             if self.stitchmode_v == True:
+                print(f"anton {dir_}")
                 self.Flashcard.addpic('Question','vertical',picname,dir_)
             else:
+                print(f"anton {dir_}")
                 self.Flashcard.addpic('Question','horizontal',picname,dir_)
                 #restore stitchmode to default
                 self.stitchmode_v =  True   
@@ -244,28 +265,31 @@ def selectionentered(self,event):
                 self.m_textCtrl2.SetValue("")
                 self.Refresh()
                 # check for [[1,2,3]]
-                if PICS_DRAWN > 1:                    
-                    list_ = self.Flashcard.getpiclist()
+                if PICS_DRAWN > 1:
+                    print("PICS DRAWN > 1")                    
+                    list_ = self.Flashcard.getpiclist("Question")
                     f.CombinePics(self,list_)
-                    if type(list_[0]) is list:
-                        self.Flashcard.setpiclist('Question',list_[0][0])
+                    list_ = list2path(list_)
+                    #if type(list_[0]) is list:
+                    self.Flashcard.setpiclist('Question',list_)   
+                    self.Flashcard.setQ(usertext + r" \pic{" + os.path.basename(list_)+r"}")                
+                elif PICS_DRAWN == 1:
+                    
+                    list_ = self.Flashcard.getpiclist("Question")
+                    print(f"PICS DRAWN = 1 {list_}")    
+                    print(f"mode is {self.Flashcard.getmode()}")
+                    if len(list_)>1 and type(list_[0]) is list:#list in list    
+                        f.CombinePics(self,list_)
+                        list_ = list2path(list_)
                         
-                    self.Flashcard.setQ(usertext + r" \pic{" + os.path.basename(list_[0][0])+r"}")
-                else:       
-                    print("only horizontal questions")
-                    print(f"nr picquestions = {PICS_DRAWN}")
-                    if PICS_DRAWN == 1:
-                        list_ = self.Flashcard.getpiclist()
-                        
-                        if len(list_)>1 and type(list_[0]) is list:#list in list    
-                            f.CombinePics(self,list_)
-                            listentry = list_[0]
-                        else:
-                            listentry = list_
-                            print("is not a list")
-                        self.Flashcard.setQ(usertext + r" \pic{" + os.path.basename(listentry)+r"}")
                     else:
-                        self.Flashcard.setQ(usertext)
+                        list_ = list2path(list_)
+                        
+                        print("is not a list")
+                    self.Flashcard.setQ(usertext + r" \pic{" + os.path.basename(list_)+r"}")
+                elif PICS_DRAWN == 0:
+                    print("PICS DRAWN = 0")                    
+                    self.Flashcard.setQ(usertext)
                 f.ShowInPopup(self,event,"Question")
                 
             else:#ANSWER mode
@@ -293,7 +317,7 @@ def selectionentered(self,event):
                     with open(self.PathBorders, 'w') as file:
                         file.write(json.dumps(self.dictionary))
                         
-                list_A = self.Flashcard.getpiclist()
+                list_A = self.Flashcard.getpiclist("Answer")
                 if list_A == None:
                     list_A = ''
                 if len(list_A) > 1:
@@ -329,7 +353,7 @@ def selectionentered(self,event):
             # remove temporary borders
             self.pageimage = self.pageimagecopy
             f.ShowPage_fb(self)
-            list_A = self.Flashcard.getpiclist()
+            list_A = self.Flashcard.getpiclist("Answer")
             if self.stayonpage == False: # if screenshot mode
                 with open(self.PathBorders, 'w') as file:
                         file.write(json.dumps(self.dictionary)) 
