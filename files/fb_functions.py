@@ -386,7 +386,7 @@ def CombinePicText_fb(self,directory):
 
 def ShowInPopup(self,event,mode):
     #try:# a picture directory may not exist
-    dir_ = self.Flashcard.getpiclist()
+    dir_ = self.Flashcard.getpiclist(mode)
     print(f"dir = {dir_}")
     try:
         if type(dir_) == list: 
