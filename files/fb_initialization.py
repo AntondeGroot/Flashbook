@@ -25,5 +25,5 @@ def initializeparameters(self):
     self.zoom           = 1.0
     self.m_textCtrl1.SetValue("Question:")
     self.m_Zoom11.SetValue(f"{int(self.zoom*100)}%")  
-    f.ResetQuestions(self)
+    #f.ResetQuestions(self)
     f.SetScrollbars(self)
