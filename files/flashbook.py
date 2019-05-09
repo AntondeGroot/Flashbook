@@ -313,12 +313,16 @@ def save2latexfile(self,files,title):
                     f.write(line)
             f.close()  
         
+
     
 """
 ###############################################################################
 #####              MAINFRAME                                              #####
 ###############################################################################
 """
+
+
+
 
 class MainFrame(gui.MyFrame):
     
@@ -331,6 +335,7 @@ class MainFrame(gui.MyFrame):
         #initialize parent class
         icons = [wx.Bitmap(str(self.path_folder)) , wx.Bitmap(str(self.path_convert)) ]
         gui.MyFrame.__init__(self,parent,icons) #added extra argument, so that WXpython.py can easily add the Dialog Windows (which require an extra argument), which is now used to add extra icons to the menubar             
+        self.Flashcard = Flashcard(parent,icons)
         settings_create(self)
         settings_get(self)
         settings_set(self)
@@ -680,26 +685,7 @@ class MainFrame(gui.MyFrame):
         all it does is switch [a,...,[x]] for [a,...,x] and back to [a,...,[x]] depending on whether the user has pushed a button to change the direction in which the notes should be stitched together.  """
         
         if hasattr(self,'bookname') and self.bookname != '': # a book has been chosen
-            #stitch it vertically
-            if self.stitchmode_v == True:
-                #question mode
-                if (self.questionmode == True) and (len(self.pic_question) > 0) and (type(self.pic_question[-1]) is list) and (len(self.pic_question[-1])==1):
-                    self.pic_question[-1] = self.pic_question[-1][0]
-                    self.pic_question_dir[-1] = self.pic_question_dir[-1][0]
-                #answer mode
-                if (self.questionmode == False) and (len(self.pic_answer) > 0) and (type(self.pic_answer[-1]) is list) and (len(self.pic_answer[-1])==1):
-                    self.pic_answer[-1] = self.pic_answer[-1][0]
-                    self.pic_answer_dir[-1] = self.pic_answer_dir[-1][0]    
-            #stitch it horizontally
-            else:
-                #question mode
-                if (self.questionmode == True) and (len(self.pic_question) > 0) and (type(self.pic_question[-1]) is not list):
-                    self.pic_question[-1] = [self.pic_question[-1]]
-                    self.pic_question_dir[-1] = [self.pic_question_dir[-1]]
-                #answer mode
-                if (self.questionmode == False) and (len(self.pic_answer) > 0) and (type(self.pic_answer[-1]) is not list):
-                    self.pic_answer[-1] = [self.pic_answer[-1]]
-                    self.pic_answer_dir[-1] = [self.pic_answer_dir[-1]]
+            self.Flashcard.StitchCards(self.stitchmode_v)
                 
             
     def m_menuItemFlashbookOnMenuSelection( self, event ):        
@@ -1269,7 +1255,183 @@ class MainFrame(gui.MyFrame):
     def m_scrolledWindow11OnKeyDown( self, event ):
         SaveTime(self)
         event.Skip()
+    
+
+"""
+###############################################################################
+#####              FLASHCARD                                              #####
+###############################################################################
+"""
+class Flashcard(gui.MyFrame):
+    def __init__(self,parent,icons):
+        gui.MyFrame.__init__(self,parent,icons) #added extra argument, so that WXpython.py can easily add the Dialog Windows (which require an extra argument), which is now used to add extra icons to the menubar              
+        self.question = None
+        self.answer   = ''
+        self.mode     = 'Question'
+        self.questionmode = True
+        self.topic    = ''
         
+        self.pic_question     = []
+        self.pic_answer       = []
+        self.pic_question_dir = []
+        self.pic_answer_dir   = []
+        self.usertext         = ''
+        
+        self.m_textCtrl1.SetValue("Question:")
+        self.m_textCtrl2.SetValue("")
+    
+    def setpiclist(self,mode,text):
+        if mode.lower() == 'question':
+            self.pic_question_dir = text
+        else:
+            self.pic_question_dir = text
+    def getpicdir(self,mode):
+        if mode.lower() == 'question':
+            return self.pic_question_dir
+        else:
+            return self.pic_question_dir
+            
+        
+    def removepics(self):
+        
+        def unlinkpics(dir_):
+            for pic in dir_:
+                if type(pic) == str and Path(pic).exists():
+                    Path(pic).unlink()
+        if len(self.pic_question_dir) > 0:
+            dir_ = self.pic_question_dir
+            unlinkpics(dir_)
+        if len(self.pic_answer_dir) > 0:
+            dir_ = self.pic_answer_dir    
+            unlinkpics(dir_)
+            
+        
+    
+    def addpic(self,mode,orientation,name,path):
+        if orientation == 'vertical':
+            pass
+        elif orientation == 'horizontal':
+            pass
+        
+        if mode == 'Question':
+            if orientation == 'vertical':
+                self.pic_question.append(name)  
+                self.pic_question_dir.append(path)  
+            elif orientation == 'horizontal':
+                try:
+                    self.pic_question[-1].append(name)  
+                    self.pic_question_dir[-1].append(path)  
+                except:
+                    self.pic_question.append([name])  
+                    self.pic_question_dir.append([path])  
+            else:
+                raise ValueError('Flashcard has been given a wrong orientation')
+        elif mode == 'Answer':  
+            if orientation == 'vertical':
+                self.pic_answer.append(name)  
+                self.pic_answer_dir.append(path)  
+            elif orientation == 'horizontal':
+                try:
+                    self.pic_answer[-1].append(name)  
+                    self.pic_answer_dir[-1].append(path)  
+                except:
+                    self.pic_answer.append([name])  
+                    self.pic_answer_dir.append([path])  
+            else:
+                raise ValueError('Flashcard has been given a wrong orientation')
+        else: 
+            raise ValueError('Flashcard has been given a wrong mode')
+            
+    def StitchCards(self,vertical_stitch):
+        if vertical_stitch == True:
+            #question mode
+            if (self.questionmode == True) and (len(self.pic_question) > 0) and (type(self.pic_question[-1]) is list) and (len(self.pic_question[-1])==1):
+                self.pic_question[-1] = self.pic_question[-1][0]
+                self.pic_question_dir[-1] = self.pic_question_dir[-1][0]
+            #answer mode
+            if (self.questionmode == False) and (len(self.pic_answer) > 0) and (type(self.pic_answer[-1]) is list) and (len(self.pic_answer[-1])==1):
+                self.pic_answer[-1] = self.pic_answer[-1][0]
+                self.pic_answer_dir[-1] = self.pic_answer_dir[-1][0]    
+        #stitch it horizontally
+        else:
+            #question mode
+            if (self.questionmode == True) and (len(self.pic_question) > 0) and (type(self.pic_question[-1]) is not list):
+                self.pic_question[-1] = [self.pic_question[-1]]
+                self.pic_question_dir[-1] = [self.pic_question_dir[-1]]
+            #answer mode
+            if (self.questionmode == False) and (len(self.pic_answer) > 0) and (type(self.pic_answer[-1]) is not list):
+                self.pic_answer[-1] = [self.pic_answer[-1]]
+                self.pic_answer_dir[-1] = [self.pic_answer_dir[-1]]
+    def QuestionExists(self):
+        if self.question != '' and self.question != None:
+            return True
+        else:
+            return False
+    def getpiclist(self):
+        if self.mode == 'Question':
+            return self.pic_question_dir
+        elif self.mode == 'Answer':
+            return self.pic_answer_dir
+        
+    def nrpics(self,mode):
+        if mode.lower() == 'question':
+            return len(self.pic_question)
+        elif mode.lower() == 'answer':
+            return len(self.pic_answer)
+        
+    def reset(self):
+        self.question = None
+        self.answer   = ''
+        self.mode     = 'Question'
+        self.questionmode = True
+        self.topic    = ''
+        
+        self.pic_question     = []
+        self.pic_answer       = []
+        self.pic_question_dir = []
+        self.pic_answer_dir   = []
+        self.usertext         = ''
+        
+        
+    
+    def setQ(self,text):
+        #raw question includes \question{} \pic{} \answer{}
+        self.question = text
+    def setA(self,text):
+        self.answer = text
+    def saveCard(self,path):
+        with open(path, 'a') as output:
+            output.write(r"\quiz{" + self.question + "}")
+            output.write(r"\ans{"  + self.answer   + "}")
+            output.write(r"\topic{"+ self.topic    + "}"+"\n")
+    
+    def switchmode(self):
+        if self.mode == 'Question':
+            self.mode = 'Answer'
+            self.questionmode = False
+        else:
+            self.mode = 'Question'
+            self.questionmode = True
+            
+    def getmode(self):
+        return self.mode
+    def getquestionmode(self):
+        return self.questionmode
+    def getQ(self):
+        return self.question
+    def getA(self):
+        return self.answer
+    def getTopic(self):
+        return self.topic
+    def getcard(self):
+        return {'q':self.question,'a':self.answer,'t':self.topic}
+    def hasanswer(self):
+        return self.answer != None
+
+
+
+
+    
 if __name__ == "__main__":
     # start the application
     app = wx.App(False) 
