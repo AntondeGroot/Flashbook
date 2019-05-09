@@ -1270,30 +1270,37 @@ class Flashcard(gui.MyFrame):
         self.mode     = 'Question'
         self.questionmode = True
         self.topic    = ''
-        
         self.pic_question     = []
         self.pic_answer       = []
         self.pic_question_dir = []
         self.pic_answer_dir   = []
         self.usertext         = ''
         
-        self.m_textCtrl1.SetValue("Question:")
-        self.m_textCtrl2.SetValue("")
-    
+    def reset(self):
+        self.question = None
+        self.answer   = ''
+        self.mode     = 'Question'
+        self.questionmode = True
+        self.topic    = ''
+        self.pic_question     = []
+        self.pic_answer       = []
+        self.pic_question_dir = []
+        self.pic_answer_dir   = []
+        self.usertext         = ''
+        
     def setpiclist(self,mode,text):
         if mode.lower() == 'question':
             self.pic_question_dir = text
         else:
             self.pic_question_dir = text
+            
     def getpicdir(self,mode):
         if mode.lower() == 'question':
             return self.pic_question_dir
         else:
             return self.pic_question_dir
             
-        
     def removepics(self):
-        
         def unlinkpics(dir_):
             for pic in dir_:
                 if type(pic) == str and Path(pic).exists():
@@ -1367,10 +1374,10 @@ class Flashcard(gui.MyFrame):
             return True
         else:
             return False
-    def getpiclist(self):
-        if self.mode == 'Question':
+    def getpiclist(self,var):
+        if var == 'Question':
             return self.pic_question_dir
-        elif self.mode == 'Answer':
+        elif var == 'Answer':
             return self.pic_answer_dir
         
     def nrpics(self,mode):
@@ -1379,18 +1386,7 @@ class Flashcard(gui.MyFrame):
         elif mode.lower() == 'answer':
             return len(self.pic_answer)
         
-    def reset(self):
-        self.question = None
-        self.answer   = ''
-        self.mode     = 'Question'
-        self.questionmode = True
-        self.topic    = ''
-        
-        self.pic_question     = []
-        self.pic_answer       = []
-        self.pic_question_dir = []
-        self.pic_answer_dir   = []
-        self.usertext         = ''
+    
         
         
     
