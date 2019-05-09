@@ -183,8 +183,6 @@ def LoadPage(self):
         if self.stayonpage == False:
             self.pageimage = PIL.Image.open(self.jpgdir)
             self.pageimagecopy = self.pageimage
-        if self.resetselection == True:
-            self.pageimage = self.pageimagecopy
         width, height = self.pageimage.size
         #rescale
         width, height = self.pageimagecopy.size #so that it doesn't rescale it everytime ShowPage() is used
@@ -247,8 +245,6 @@ def SavePageNr(self):
     
 
 def ShowPage_fb(self): 
-    if self.debugmode:
-        print("fb=ShowPage_fb")
     try:
         # update
         self.m_CurrentPage11.SetValue(str(self.currentpage))
@@ -271,14 +267,6 @@ def ShowPage_fb(self):
     except:
         log.ERRORMESSAGE("Error: cannot show page")
         
-def ResetQuestions(self): # no errors
-    self.latex_question   = ''
-    self.latex_answer     = ''
-    self.pic_question     = []
-    self.pic_answer       = []
-    self.pic_question_dir = []
-    self.pic_answer_dir   = []
-    self.usertext         = ''
 
 def CombinePics(self,directorylist):
     if self.debugmode:
@@ -325,47 +313,47 @@ def CombinePics(self,directorylist):
             
 def CreateTextCard(self):
     self.ERROR = False
-    try:
-        self.TextCard = True    
-        LaTeXcode = self.usertext
-        height_card = math.ceil(len(LaTeXcode)/40)/2
-        fig = Figure(figsize=[8, height_card], dpi=100)
-        ax = fig.gca()
-        ax.plot([0, 0,0, height_card],color = (1,1,1,1))
-        ax.axis('off')
-        ax.text(-0.5, height_card/2, LaTeXcode, fontsize = self.LaTeXfontsize, horizontalalignment = 'left', verticalalignment = 'center', wrap = True)
-        
-        canvas = FigureCanvas(fig)
-        canvas.draw()
-        renderer = canvas.get_renderer()
-        raw_data = renderer.tostring_rgb()
-        size = canvas.get_width_height()
-        imagetext = PIL.Image.frombytes("RGB", size, raw_data, decoder_name='raw', )
-        # crop the LaTeX image further
-        border = 30
-        SEARCH = True
-        img = imagetext
-        imginv = ImageOps.invert(img)
-        
-        img_array = np.sum(np.sum(np.array(imginv),2),0) # look where something is not "white" in the x-axis
-        while SEARCH == True:
-            for i in range(len(img_array)):
-                j = len(img_array) - i-1            
-                if SEARCH == True:
-                    if img_array[j]!= 0:
-                        SEARCH = False
-                        var = j
-                    if j == 0:
-                        SEARCH = False
-                        var = j
-        if var + border >  img.size[0]:
-            var = img.size[0]
-        else:
-            var = var + border
-        self.imagetext = img.crop((0, 0, var, img.size[1]))
-    except:
-        self.ERROR = True
-        log.ERRORMESSAGE("Error: could not create textcard")
+    #try:
+    self.TextCard = True    
+    LaTeXcode = self.usertext
+    height_card = math.ceil(len(LaTeXcode)/40)/2
+    fig = Figure(figsize=[8, height_card], dpi=100)
+    ax = fig.gca()
+    ax.plot([0, 0,0, height_card],color = (1,1,1,1))
+    ax.axis('off')
+    ax.text(-0.5, height_card/2, LaTeXcode, fontsize = self.LaTeXfontsize, horizontalalignment = 'left', verticalalignment = 'center', wrap = True)
+    
+    canvas = FigureCanvas(fig)
+    canvas.draw()
+    renderer = canvas.get_renderer()
+    raw_data = renderer.tostring_rgb()
+    size = canvas.get_width_height()
+    imagetext = PIL.Image.frombytes("RGB", size, raw_data, decoder_name='raw', )
+    # crop the LaTeX image further
+    border = 30
+    SEARCH = True
+    img = imagetext
+    imginv = ImageOps.invert(img)
+    
+    img_array = np.sum(np.sum(np.array(imginv),2),0) # look where something is not "white" in the x-axis
+    while SEARCH == True:
+        for i in range(len(img_array)):
+            j = len(img_array) - i-1            
+            if SEARCH == True:
+                if img_array[j]!= 0:
+                    SEARCH = False
+                    var = j
+                if j == 0:
+                    SEARCH = False
+                    var = j
+    if var + border >  img.size[0]:
+        var = img.size[0]
+    else:
+        var = var + border
+    self.imagetext = img.crop((0, 0, var, img.size[1]))
+    #except:
+    #    self.ERROR = True
+    #    log.ERRORMESSAGE("Error: could not create textcard")
 
 
 
@@ -397,17 +385,23 @@ def CombinePicText_fb(self,directory):
 
 
 def ShowInPopup(self,event,mode):
-    if self.debugmode:
-        print("fb=ShowInPopup")
-    try:# a picture directory may not exist
-        if mode == "Answer":
-            directory = self.pic_answer_dir[0]
-        if mode == "Question":
-            directory = self.pic_question_dir[0]
-        image = PIL.Image.open(directory)
-        self.image = image
+    #try:# a picture directory may not exist
+    dir_ = self.Flashcard.getpiclist()
+    print(f"dir = {dir_}")
+    try:
+        if type(dir_) == list: 
+            directory = dir_[0]
+        else: 
+            directory = dir_
+        
+        if directory != '':
+            image = PIL.Image.open(directory)
+            self.image = image
     except:
-        log.ERRORMESSAGE("Error: could not open file in popup")
+        pass
+        #except: 
+        #    log.ERRORMESSAGE("Error: could not open file in popup ")
+        
     try:
         CreateTextCard(self)
     except:
