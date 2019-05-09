@@ -422,6 +422,15 @@ class MyFrame ( wx.Frame ):
 		self.m_staticline3 = wx.StaticLine( self.panel11, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.LI_VERTICAL )
 		bSizer3.Add( self.m_staticline3, 1, wx.EXPAND|wx.LEFT|wx.RIGHT, 2000 )
 		
+		self.m_staticText64 = wx.StaticText( self.panel11, wx.ID_ANY, u"Topic", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_staticText64.Wrap( -1 )
+		self.m_staticText64.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
+		
+		bSizer3.Add( self.m_staticText64, 0, wx.ALL, 9 )
+		
+		self.m_textCtrlTopic = wx.TextCtrl( self.panel11, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
+		bSizer3.Add( self.m_textCtrlTopic, 0, wx.ALL, 7 )
+		
 		self.m_btnScreenshot = wx.Button( self.panel11, wx.ID_ANY, u"Import Screenshot", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.m_btnScreenshot.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
 		
@@ -2292,6 +2301,128 @@ class MyDialog6 ( wx.Dialog ):
 	
 
 ###########################################################################
+## Class MyDialog6B
+###########################################################################
+
+class MyDialog6B ( wx.Dialog ):
+	
+	def __init__( self, parent, data ):
+		wx.Dialog.__init__ ( self, parent, id = wx.ID_ANY, title = u"Delete card", pos = wx.DefaultPosition, size = wx.Size( -1,-1 ), style = wx.DEFAULT_DIALOG_STYLE|wx.STAY_ON_TOP )
+		
+		self.SetSizeHints( wx.DefaultSize, wx.DefaultSize )
+		
+		bSizer651 = wx.BoxSizer( wx.VERTICAL )
+		
+		self.m_panel291 = wx.Panel( self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TAB_TRAVERSAL )
+		bSizer661 = wx.BoxSizer( wx.VERTICAL )
+		
+		bSizer81 = wx.BoxSizer( wx.HORIZONTAL )
+		
+		
+		bSizer81.Add( ( 0, 0), 1, wx.EXPAND, 5 )
+		
+		self.m_staticText52 = wx.StaticText( self.m_panel291, wx.ID_ANY, u"Do you want to delete the following card?", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_staticText52.Wrap( -1 )
+		self.m_staticText52.SetFont( wx.Font( 12, 74, 90, 90, False, "Verdana" ) )
+		
+		bSizer81.Add( self.m_staticText52, 0, wx.ALL, 5 )
+		
+		
+		bSizer81.Add( ( 0, 0), 1, wx.EXPAND, 5 )
+		
+		
+		bSizer661.Add( bSizer81, 1, wx.EXPAND, 5 )
+		
+		self.m_staticline5 = wx.StaticLine( self.m_panel291, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.LI_HORIZONTAL )
+		bSizer661.Add( self.m_staticline5, 0, wx.EXPAND |wx.ALL, 5 )
+		
+		bSizer103 = wx.BoxSizer( wx.VERTICAL )
+		
+		bSizer102 = wx.BoxSizer( wx.HORIZONTAL )
+		
+		
+		bSizer102.Add( ( 0, 0), 1, wx.EXPAND, 5 )
+		
+		self.m_staticText67 = wx.StaticText( self.m_panel291, wx.ID_ANY, u"Topic", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_staticText67.Wrap( -1 )
+		self.m_staticText67.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
+		
+		bSizer102.Add( self.m_staticText67, 0, wx.ALL, 5 )
+		
+		self.m_textCtrlTopicDisplay = wx.TextCtrl( self.m_panel291, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
+		bSizer102.Add( self.m_textCtrlTopicDisplay, 0, wx.ALL, 5 )
+		
+		
+		bSizer102.Add( ( 0, 0), 1, wx.EXPAND, 5 )
+		
+		
+		bSizer103.Add( bSizer102, 1, wx.EXPAND, 5 )
+		
+		
+		bSizer661.Add( bSizer103, 1, wx.EXPAND, 5 )
+		
+		bSizer67 = wx.BoxSizer( wx.HORIZONTAL )
+		
+		
+		bSizer67.Add( ( 0, 0), 1, wx.EXPAND, 5 )
+		
+		self.m_bitmap6 = wx.StaticBitmap( self.m_panel291, wx.ID_ANY, wx.NullBitmap, wx.DefaultPosition, wx.Size( -1,-1 ), wx.SIMPLE_BORDER )
+		bSizer67.Add( self.m_bitmap6, 0, wx.ALL, 5 )
+		
+		self.m_bitmap7 = wx.StaticBitmap( self.m_panel291, wx.ID_ANY, wx.NullBitmap, wx.DefaultPosition, wx.Size( -1,-1 ), wx.SIMPLE_BORDER )
+		bSizer67.Add( self.m_bitmap7, 0, wx.ALL, 5 )
+		
+		
+		bSizer67.Add( ( 0, 0), 1, wx.EXPAND, 5 )
+		
+		
+		bSizer661.Add( bSizer67, 0, wx.EXPAND, 5 )
+		
+		self.m_staticline6 = wx.StaticLine( self.m_panel291, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.LI_HORIZONTAL )
+		bSizer661.Add( self.m_staticline6, 0, wx.EXPAND |wx.ALL, 5 )
+		
+		bSizer68 = wx.BoxSizer( wx.HORIZONTAL )
+		
+		
+		bSizer68.Add( ( 0, 0), 1, wx.EXPAND, 5 )
+		
+		self.m_button16 = wx.Button( self.m_panel291, wx.ID_OK, u"Delete", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_button16.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
+		
+		bSizer68.Add( self.m_button16, 0, wx.ALL, 5 )
+		
+		
+		bSizer68.Add( ( 10, 0), 0, wx.EXPAND, 5 )
+		
+		self.m_button17 = wx.Button( self.m_panel291, wx.ID_CANCEL, u"Cancel", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_button17.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
+		
+		bSizer68.Add( self.m_button17, 0, wx.ALL, 5 )
+		
+		
+		bSizer68.Add( ( 0, 0), 1, wx.EXPAND, 5 )
+		
+		
+		bSizer661.Add( bSizer68, 1, wx.EXPAND, 5 )
+		
+		
+		self.m_panel291.SetSizer( bSizer661 )
+		self.m_panel291.Layout()
+		bSizer661.Fit( self.m_panel291 )
+		bSizer651.Add( self.m_panel291, 1, wx.EXPAND |wx.ALL, 5 )
+		
+		
+		self.SetSizer( bSizer651 )
+		self.Layout()
+		bSizer651.Fit( self )
+		
+		self.Centre( wx.BOTH )
+	
+	def __del__( self ):
+		pass
+	
+
+###########################################################################
 ## Class MyDialog7
 ###########################################################################
 
@@ -2386,13 +2517,125 @@ class MyDialog7 ( wx.Dialog ):
 	
 
 ###########################################################################
+## Class MyDialog7B
+###########################################################################
+
+class MyDialog7B ( wx.Dialog ):
+	
+	def __init__( self, parent, data ):
+		wx.Dialog.__init__ ( self, parent, id = wx.ID_ANY, title = u"Delete card", pos = wx.DefaultPosition, size = wx.Size( -1,-1 ), style = wx.DEFAULT_DIALOG_STYLE|wx.STAY_ON_TOP )
+		
+		self.SetSizeHints( wx.DefaultSize, wx.DefaultSize )
+		
+		bSizer65 = wx.BoxSizer( wx.VERTICAL )
+		
+		self.m_panel29 = wx.Panel( self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TAB_TRAVERSAL )
+		bSizer66 = wx.BoxSizer( wx.VERTICAL )
+		
+		bSizer77 = wx.BoxSizer( wx.HORIZONTAL )
+		
+		
+		bSizer77.Add( ( 0, 0), 1, wx.EXPAND, 5 )
+		
+		self.m_staticText52 = wx.StaticText( self.m_panel29, wx.ID_ANY, u"Do you want to delete the following card?", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_staticText52.Wrap( -1 )
+		self.m_staticText52.SetFont( wx.Font( 12, 74, 90, 90, False, "Verdana" ) )
+		
+		bSizer77.Add( self.m_staticText52, 0, wx.ALL, 5 )
+		
+		
+		bSizer77.Add( ( 0, 0), 1, wx.EXPAND, 5 )
+		
+		
+		bSizer66.Add( bSizer77, 1, wx.EXPAND, 5 )
+		
+		self.m_staticline5 = wx.StaticLine( self.m_panel29, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.LI_HORIZONTAL )
+		bSizer66.Add( self.m_staticline5, 0, wx.EXPAND |wx.ALL, 5 )
+		
+		bSizer114 = wx.BoxSizer( wx.HORIZONTAL )
+		
+		
+		bSizer114.Add( ( 0, 0), 1, wx.EXPAND, 5 )
+		
+		self.m_staticText71 = wx.StaticText( self.m_panel29, wx.ID_ANY, u"Topic", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_staticText71.Wrap( -1 )
+		bSizer114.Add( self.m_staticText71, 0, wx.ALL, 5 )
+		
+		self.m_textCtrl31 = wx.TextCtrl( self.m_panel29, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
+		bSizer114.Add( self.m_textCtrl31, 0, wx.ALL, 5 )
+		
+		
+		bSizer114.Add( ( 0, 0), 1, wx.EXPAND, 5 )
+		
+		
+		bSizer66.Add( bSizer114, 1, wx.EXPAND, 5 )
+		
+		bSizer67 = wx.BoxSizer( wx.HORIZONTAL )
+		
+		
+		bSizer67.Add( ( 0, 0), 1, wx.EXPAND, 5 )
+		
+		self.m_bitmap8 = wx.StaticBitmap( self.m_panel29, wx.ID_ANY, data, wx.DefaultPosition, wx.Size( -1,-1 ), wx.SIMPLE_BORDER )
+		bSizer67.Add( self.m_bitmap8, 0, wx.ALL, 5 )
+		
+		
+		bSizer67.Add( ( 0, 0), 1, wx.EXPAND, 5 )
+		
+		
+		bSizer66.Add( bSizer67, 0, wx.EXPAND, 5 )
+		
+		self.m_staticline6 = wx.StaticLine( self.m_panel29, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.LI_HORIZONTAL )
+		bSizer66.Add( self.m_staticline6, 0, wx.EXPAND |wx.ALL, 5 )
+		
+		bSizer68 = wx.BoxSizer( wx.HORIZONTAL )
+		
+		
+		bSizer68.Add( ( 0, 0), 1, wx.EXPAND, 5 )
+		
+		self.m_button16 = wx.Button( self.m_panel29, wx.ID_OK, u"Delete", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_button16.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
+		
+		bSizer68.Add( self.m_button16, 0, wx.ALL, 5 )
+		
+		
+		bSizer68.Add( ( 10, 0), 0, wx.EXPAND, 5 )
+		
+		self.m_button17 = wx.Button( self.m_panel29, wx.ID_CANCEL, u"Cancel", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_button17.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
+		
+		bSizer68.Add( self.m_button17, 0, wx.ALL, 5 )
+		
+		
+		bSizer68.Add( ( 0, 0), 1, wx.EXPAND, 5 )
+		
+		
+		bSizer66.Add( bSizer68, 1, wx.EXPAND, 5 )
+		
+		
+		self.m_panel29.SetSizer( bSizer66 )
+		self.m_panel29.Layout()
+		bSizer66.Fit( self.m_panel29 )
+		bSizer65.Add( self.m_panel29, 1, wx.EXPAND |wx.ALL, 5 )
+		
+		
+		self.SetSizer( bSizer65 )
+		self.Layout()
+		bSizer65.Fit( self )
+		
+		self.Centre( wx.BOTH )
+	
+	def __del__( self ):
+		pass
+	
+
+###########################################################################
 ## Class MyDialog8
 ###########################################################################
 
 class MyDialog8 ( wx.Dialog ):
 	
 	def __init__( self, parent, data ):
-		wx.Dialog.__init__ ( self, parent, id = wx.ID_ANY, title = u"Edit the cards", pos = wx.DefaultPosition, size = wx.Size( 527,156 ), style = wx.DEFAULT_DIALOG_STYLE )
+		wx.Dialog.__init__ ( self, parent, id = wx.ID_ANY, title = u"Edit the cards", pos = wx.DefaultPosition, size = wx.Size( 527,188 ), style = wx.DEFAULT_DIALOG_STYLE )
 		
 		self.SetSizeHints( wx.DefaultSize, wx.DefaultSize )
 		
@@ -2428,6 +2671,17 @@ class MyDialog8 ( wx.Dialog ):
 		self.m_textCtrl25.SetMinSize( wx.Size( 400,-1 ) )
 		
 		fgSizer5.Add( self.m_textCtrl25, 0, wx.ALL, 5 )
+		
+		self.m_staticText68 = wx.StaticText( self.m_panel32, wx.ID_ANY, u"Topic", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_staticText68.Wrap( -1 )
+		self.m_staticText68.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
+		
+		fgSizer5.Add( self.m_staticText68, 0, wx.ALL, 5 )
+		
+		self.m_textCtrl30 = wx.TextCtrl( self.m_panel32, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_textCtrl30.SetMinSize( wx.Size( 400,-1 ) )
+		
+		fgSizer5.Add( self.m_textCtrl30, 0, wx.ALL, 5 )
 		
 		
 		bSizer79.Add( fgSizer5, 0, wx.EXPAND, 5 )
@@ -2565,7 +2819,7 @@ class MyDialogAbout ( wx.Dialog ):
 		
 		bSizer91.Add( self.m_staticText58, 0, wx.ALL, 0 )
 		
-		self.m_staticText59 = wx.StaticText( self.m_panel33, wx.ID_ANY, 'Version 1.4.0', wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_staticText59 = wx.StaticText( self.m_panel33, wx.ID_ANY, 'Version 1.4.1', wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.m_staticText59.Wrap( -1 )
 		self.m_staticText59.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
 		
