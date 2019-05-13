@@ -167,7 +167,9 @@ def settings_get(self):
             settingsfile.unlink()
         settings_create(self)
         settings_get(self)
-           
+
+        
+         
 def settings_create(self):
     settingsfile = Path(self.dirsettings,"settings.txt")
     if not settingsfile.exists():   
@@ -335,7 +337,10 @@ class MainFrame(gui.MyFrame):
         #initialize parent class
         icons = [wx.Bitmap(str(self.path_folder)) , wx.Bitmap(str(self.path_convert)) ]
         gui.MyFrame.__init__(self,parent,icons) #added extra argument, so that WXpython.py can easily add the Dialog Windows (which require an extra argument), which is now used to add extra icons to the menubar             
-        self.Flashcard = Flashcard(parent,icons)
+        self.Flashcard = Flashcard()
+        self.CardsDeck = CardsDeck()
+        print(f"anton has {hasattr(self,'Cardsdeck')}")
+        
         settings_create(self)
         settings_get(self)
         settings_set(self)
@@ -382,7 +387,7 @@ class MainFrame(gui.MyFrame):
         
     def m_OpenFlashcardOnButtonClick( self, event ):
         """START MAIN PROGRAM : FLASCARD"""
-        
+        self.CardsDeck = CardsDeck()
         m7.AcceleratorTableSetup(self,"flashcard","set")
         p.SwitchPanel(self,2)
         p.run_flashcard(self)
@@ -1262,9 +1267,75 @@ class MainFrame(gui.MyFrame):
 #####              FLASHCARD                                              #####
 ###############################################################################
 """
-class Flashcard(gui.MyFrame):
-    def __init__(self,parent,icons):
-        gui.MyFrame.__init__(self,parent,icons) #added extra argument, so that WXpython.py can easily add the Dialog Windows (which require an extra argument), which is now used to add extra icons to the menubar              
+class CardsDeck():
+    def __init__(self):
+        """ - cards are dicts because then you can easily delete a card from the deck
+            - you can then use cardorder to switch cards and just omit a cardnumber from that list"""
+        self.cards = {}
+        self.cards_raw = {}
+        self.nrcards = 0
+        self.cardorder = []
+        self.index = 0
+        self.mode = 'Question'
+        self.textdictionary = {}
+        self.picdictionary  = {}
+    
+    def getcards(self):
+        return self.cards
+        
+    def set_cards(self, cards=None, notesdir=None):
+        assert type(cards) == list
+        assert type(self.cards_raw) == dict
+        ##
+        
+        def addtodict(self, key, card):
+            if key in self.cards.keys():
+                self.cards[key].update(card)
+            else:
+                self.cards[key] = card
+        
+        if notesdir != None and cards != None:
+            file = open(str(Path(notesdir, "usercommands.txt")), 'r')
+            commandsfile = file.readlines()
+            for i,card in enumerate(cards):
+                print(f"card = {card}")
+                self.cards_raw[f"card{i}"] = card #dict with keys q,a,t
+                for mode in ['q','a']:
+                    
+                    line = card[mode]
+                    line = f2.ReplaceUserCommands(commandsfile,line)
+                    text, picname = f2.SeparatePicsFromText(self,line)
+                    print(mode,text,picname)
+                    key = f"card_{mode}{i}"
+                    topic = card['t']
+                    if text!= None and picname != None:
+                        _card_ = {'text': text, 'pic': picname, 'topic': topic}
+                        addtodict(self, key, _card_)
+                    elif text != None and picname == None:
+                        _card_ = {'text': text, 'topic': topic}
+                        addtodict(self, key, _card_)
+                    elif text == None and picname != None:
+                        _card_ = {'pic': picname, 'topic': topic}
+                        addtodict(self, key, _card_)
+                    else:
+                        #nothing to add to the dict
+                        pass
+                    
+                
+            self.nrcards = len(cards)
+    def get_nrcards(self):
+        return self.nrcards
+    def get_cardorder(self):
+        return self.cardorder
+    def set_cardorder(self,cardorder):
+        self.cardorder = cardorder
+    def get_card_i(self,i):
+        return self.cards[i]
+
+
+        
+class Flashcard():
+    def __init__(self):
         self.question = None
         self.answer   = ''
         self.mode     = 'Question'
