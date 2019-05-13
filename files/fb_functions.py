@@ -460,7 +460,8 @@ def text_to_latex(self,usertext):
     # remove the lines that precede the ###     
     commandsfile[:index] = []
     # only look at lines containing "newcommand"
-    commands = [line for line in commandsfile if ("newcommand"  in line)]
+    
+    commands = [x for x in commandsfile if ("newcommand"  in x) and ("Note:" not in x)]
     
     ###  how to replace a user defined command with a command that is known in latex ###
     
@@ -478,7 +479,8 @@ def text_to_latex(self,usertext):
         # find the commands explicitly
         defined_command = command_line[definition_start+1:definition_end]     ## finds \secpar        
         LaTeX_command   = command_line[latex_start+1:latex_end] ## finds \frac{\partial^2 #1}{\partial #2^2}
-        nr_arg = int(command_line[int(num_start[0]+1):int(num_end[0])])            
+        nr_arg = int(command_line[int(num_start[0]+1):int(num_end[0])]) 
+        
         
         while defined_command in usertext:
             usertext = replacecommands(defined_command, LaTeX_command, usertext, nr_arg)              
