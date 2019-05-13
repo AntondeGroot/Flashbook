@@ -175,21 +175,25 @@ def switchCard(self):
             # check if there is an answer: if not switch_bitmap sets the mode back to 'question'
             f2.switch_bitmap(self) 
             AbsoluteIndex = self.cardorder[self.index] 
-            key = f'{self.mode[0]}{AbsoluteIndex}' #e.g. Q12 is a key
+            key = f'card_{self.mode[0].lower()}{AbsoluteIndex}' #e.g. card_q12 is a key
             
             
             # if there are no answer cards, then don't switch card: the self.key makes sure this happens
-            if f'A{AbsoluteIndex}' not in self.textdictionary:
-                self.m_textCtrlMode.SetValue(self.mode)
-                key = f'{self.mode[0]}{AbsoluteIndex}'            
-            bool_textcard, img_txt = f2.CreateTextCard(self,'flashcard',key)
-            bool_piccard, img_pic  = f2.findpicture(self,key) 
-            image = f2.CombinePicText_fc(bool_textcard,img_txt,bool_piccard,img_pic)
-            f2.ShowPage_fc(self,image)
+            #if f'card_a{AbsoluteIndex}' not in self.CardsDeck.getcards().keys():
+            #if f'card_a{AbsoluteIndex}' not in self.textdictionary:
+            #    self.m_textCtrlMode.SetValue(self.mode)
+            #    key = f'card_{self.mode[0].lower()}{AbsoluteIndex}'        
+            f2.displaycard(self)
+            self.Refresh()
+            #bool_textcard, img_txt = f2.CreateTextCard(self,'flashcard',key)
+            #bool_piccard, img_pic  = f2.findpicture(self,key) 
+            #image = f2.CombinePicText_fc(bool_textcard,img_txt,bool_piccard,img_pic)
+            #f2.ShowPage_fc(self,image)
             # you don't need to check for: "no Text & no picture" because switch_bitmap already takes care of that.
-            f2.SetScrollbars_fc(self)
+            #f2.SetScrollbars_fc(self)
     except:
-        pass
+        log.ERRORMESSAGE("Error: Couldn't switch card")
+        
 
 def startprogram(self,event): 
     """main program that does all the preprocessing"""
@@ -205,7 +209,7 @@ def startprogram(self,event):
         
     self.questions   = []
     self.answers     = []
-    self.questions2 = []
+    self.questions2  = []
     
     f2.SetScrollbars_fc(self)
     
@@ -222,22 +226,29 @@ def startprogram(self,event):
     except:
         log.ERRORMESSAGE("Error: Couldn't open path")
     self.resumedata = {self.bookname : {'score': self.score, 'index': self.index, 'nr_questions':self.nr_questions}}
-    try:
-        if Path(eventpath).exists():
-            file = open(eventpath, 'r')
-            letterfile = str(file.read())                    
-        self.q_hookpos , self.a_hookpos = f2.File_to_hookpositions(self,letterfile)
-        self.nr_cards = len(self.q_hookpos)
-        
-    except:
-        log.ERRORMESSAGE("Error: could not find questions/answers")
-
+    #try:
+    if Path(eventpath).exists():
+        file = open(eventpath, 'r',newline='\r')
+        linefile = file.readlines()                    
+    #self.q_hookpos , self.a_hookpos = f2.File_to_hookpositions(self,letterfile)
+    cards = f2.File_to_Cards(self,linefile)
+    self.CardsDeck.set_cards(cards=cards,notesdir=self.notesdir)
+    #o self.nr_cards = len(self.q_hookpos)
+    self.nr_cards = len(linefile)
+    
+    
+    
+    #except:
+    #    log.ERRORMESSAGE("Error: could not find questions/answers")
 
     #open dialog window
     """open My dialog, don't forget to add two parameters to "def __init__( self, parent,MaxValue,Value )" within MyDialog 
     and use these values to set the slider as you wish. Don't forget to add "self.Destroy" when you press the button"""
     
     data = self.nr_cards
+    print(f"data is {data}")
+    
+    print(self.CardsDeck.getcards())
     if data == 1:
         data = 2
     try:
@@ -277,7 +288,8 @@ def startprogram(self,event):
                 self.multiplier = dlg.m_textCtrl11.GetValue()
         except:
             log.ERRORMESSAGE("Error: Couldn't open Dialog window nr 2")
-            
+    
+    print("END END END")
     # if you want to use all cards twice or 1.5 times for the quiz: then exclude invalid selections of this multiplier
     try:
         self.multiplier = float(self.multiplier)
@@ -292,12 +304,12 @@ def startprogram(self,event):
     # display nr of questions and current index of questions            
     self.m_CurrentPage21.SetValue(f"{self.index+1}")
     self.m_TotalPages21.SetValue(f"{self.nr_questions}")
-        
-    LoadFlashCards(self, True,letterfile)
+    DetermineCardorder(self,True)
+    
     f2.displaycard(self)        
-    f2.switch_bitmap(self)
+    #f2.switch_bitmap(self)
 
-def LoadFlashCards(self,USERINPUT,letterfile):
+def DetermineCardorder(self,USERINPUT):
     """
     USERINPUT: boolean, 
     - TRUE it will ask the user for input to determine
@@ -305,12 +317,7 @@ def LoadFlashCards(self,USERINPUT,letterfile):
     - FALSE, it will display them chronologically without userinput.
     """
     print(f"nrcards = {self.nr_cards}")
-    try:                                               
-        f2.FindArgumentsCards(self,self.q_hookpos,self.a_hookpos,letterfile)
-        f2.Cards_ReplaceUserCommands(self)
-        f2.SeparatePicsFromCards(self)
-    except:
-        log.ERRORMESSAGE("Error: couldn't create Cards, LoadFlashCards error")
+    
     try:        
         """CARD ORDER"""
         ## determine cardorder based on user given input
@@ -352,8 +359,7 @@ def LoadFlashCards(self,USERINPUT,letterfile):
                         self.cardorder = cardorder[:self.nr_questions] 
             else:
                 f2.load_stats(self)  
-            
-        f2.Cards_To_TextDicts(self)
-        
+        self.CardsDeck.set_cardorder(self.cardorder)            
     except:
-       log.ERRORMESSAGE("Error: couldn't put the cards in a specific order, LoadFlashCards error")
+       log.ERRORMESSAGE("Error: couldn't put the cards in a specific order")
+    
