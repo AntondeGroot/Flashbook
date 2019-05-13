@@ -13,7 +13,7 @@ def initializeparameters(self):
     self.pic_command      = "\pic{"
     self.question_command = r'\\quiz{'
     self.answer_command   = r"\\ans{"
-    
+    self.topic_command    = r"\\topic{"
     # initialize variables:
     self.bookname       = ''
     self.image          = []
