@@ -781,6 +781,7 @@ def ShowPage_fc(self,image):
         image2 = wx.Image( width, height )
         image2.SetData( image.tobytes() )        
         self.m_bitmapScroll1.SetBitmap(wx.Bitmap(image2))     
+        self.Refresh()
     except:        
         log.ERRORMESSAGE("Error: cannot show image")
 
