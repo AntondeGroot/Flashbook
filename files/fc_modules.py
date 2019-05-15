@@ -184,6 +184,7 @@ def switchCard(self):
             #    self.m_textCtrlMode.SetValue(self.mode)
             #    key = f'card_{self.mode[0].lower()}{AbsoluteIndex}'        
             f2.displaycard(self)
+            f2.SetScrollbars_fc(self)
             self.Refresh()
             #bool_textcard, img_txt = f2.CreateTextCard(self,'flashcard',key)
             #bool_piccard, img_pic  = f2.findpicture(self,key) 
@@ -306,8 +307,9 @@ def startprogram(self,event):
     self.m_TotalPages21.SetValue(f"{self.nr_questions}")
     DetermineCardorder(self,True)
     
-    f2.displaycard(self)        
-    #f2.switch_bitmap(self)
+    f2.displaycard(self)     
+    f2.SetScrollbars_fc(self)
+    f2.switch_bitmap(self)
 
 def DetermineCardorder(self,USERINPUT):
     """
