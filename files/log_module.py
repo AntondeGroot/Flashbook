@@ -19,6 +19,7 @@ def ERRORMESSAGE(msg):
         logging.debug('New session has started')
         print(colored(f"{msg}\n",'red',attrs=['underline']))
         ErrorMessage = traceback.format_exc()
+        print(ErrorMessage)
         logging.warning(ErrorMessage)
         logging.shutdown()
     except:

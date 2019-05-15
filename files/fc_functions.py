@@ -49,15 +49,17 @@ def findpicture(self,key):
     If the picture really doesn't exist, then the user gets notified with a messagebox."""
     FOUNDPIC = False
     imagepic = None
-    if key in self.picdictionary:
-        path = Path(self.picsdir, self.bookname, self.picdictionary[key])
+    #if key in self.picdictionary:
+    if 'pic' in self.CardsDeck.getcards()[key].keys():
+        picname = self.CardsDeck.getcards()[key]['pic']
+        path = Path(self.picsdir, self.bookname, picname)
         if path.exists():
             imagepic = PIL.Image.open(str(path))
             FOUNDPIC = True
         else:
             folders = os.listdir(self.picsdir)
             for i,item in enumerate(folders):
-                path = Path(self.picsdir, item, self.picdictionary[key])
+                path = Path(self.picsdir, item, picname)
                 if path.exists():
                     imagepic = PIL.Image.open(str(path))
                     FOUNDPIC = True
@@ -65,7 +67,7 @@ def findpicture(self,key):
             """Notify User and create a fake picture with the error message 
             as replacement for the missing picture."""
             
-            MessageBox(0, f"Error in line {str(int(key[1:])+1)} mode {key[0]}\nline: {self.picdictionary[key]}\nPicture could not be found in any folder.", "Message", ICON_STOP)
+            MessageBox(0, f"Error in line {str(int(key[6:])+1)} mode {key[0]}\nline: {picname}\nPicture could not be found in any folder.", "Message", ICON_STOP)
             LaTeXcode =  "This image does not exist"
             height_card = math.ceil(len(LaTeXcode)/40)/2
             fig = Figure(figsize=[8, height_card],dpi=100)
@@ -306,41 +308,40 @@ def find_arguments(hookpos, sentence, defined_command, nr_arguments):
 
 
 
-def replace_allcommands(defined_command, LaTeX_command, Question, nr_arg):    
+def replace_allcommands(defined_command, LaTeX_command, STRING, nr_arg):    
     """replace all defined commands in a string"""
-    length_c = len(defined_command) 
-    # check if the command can be found in Q&A
-    SEARCH = (defined_command in Question)
+   
+    SEARCH = (defined_command in STRING)
     while SEARCH == True: 
         # if a command has arguments: you need to find their positions
         if nr_arg != 0:
-            cmd_start = [m.start() for m in re.finditer(r'\{}'.format(defined_command), Question )][0]
-            arguments = find_arguments(cmd_start,Question,defined_command,nr_arg)[0]
+            cmd_start = [m.start() for m in re.finditer(r'\{}'.format(defined_command), STRING )][0]
+            arguments = find_arguments(cmd_start, STRING, defined_command, nr_arg)[0]
             # check if it gives empty [], otherwise index1 = [] will give errors
-            A = find_arguments(cmd_start,Question ,defined_command,nr_arg)
+            ARG, _, _ = find_arguments(cmd_start, STRING, defined_command, nr_arg)
     
-            if not A[0]: # quits if the index is empty
+            if ARG == []: # quits if no arguments have been found
                 SEARCH = False
                 break
             else:
-                index1 = find_arguments(cmd_start,Question ,defined_command,nr_arg)[1][0]-length_c
-                index2 = find_arguments(cmd_start,Question,defined_command,nr_arg)[2][1]+1
+                index1 = find_arguments(cmd_start, STRING ,defined_command, nr_arg)[1][0] - len(defined_command) 
+                index2 = find_arguments(cmd_start, STRING ,defined_command, nr_arg)[2][1] + 1
                 
                 #replace the command by a LaTeX command
-                Question = Question.replace(Question[index1:index2],LaTeX_command )
+                STRING = STRING.replace(STRING[index1:index2],LaTeX_command )
                 #replace the temporary arguments #1,#2... by the real arguments
                 for i in range(nr_arg):
-                    Question = Question.replace(f"#{i+1}", arguments[i])
+                    STRING = STRING.replace(f"#{i+1}", arguments[i])
                 # check if another command is in the Q&A
-                SEARCH = (defined_command in Question)
+                SEARCH = (defined_command in STRING)
         else:
-            # if there are no arguments you can directly replace the defined_cmd for the latex_cmd
-            # only needs to do this once for the entire string
-            Question = Question.replace(defined_command,LaTeX_command)
+            """ if there are no arguments you can directly replace the defined_cmd for the latex_cmd
+                only needs to do this once for the entire string"""
+            STRING = STRING.replace(defined_command,LaTeX_command)
             SEARCH = False
             break
     
-    return Question
+    return STRING
 
 
 
@@ -362,7 +363,7 @@ def remove_pics(string, pic_command):
         string  = string[:pic_start] + string[pic_end+1:]                 # Question without picture
     else:
         BOOLEAN = False
-        picname = []
+        picname = None
     return BOOLEAN, string, picname
 
 
@@ -375,19 +376,23 @@ def switch_bitmap(self):
     
     try:
         # you always start with a question, check if there is an answer:
-        _key_ = f'A{self.cardorder[self.index]}' # do not use self.key: only check if there is an answer, don't change the key
+        _key_ = f'card_a{self.cardorder[self.index]}' # do not use self.key: only check if there is an answer, don't change the key
+        print(f"switch key is {_key_}")
         try:
-            if _key_ not in self.textdictionary and _key_ not in self.picdictionary: # there is no answer card!
+            if _key_ not in self.CardsDeck.getcards().keys(): # there is no answer card!
+                print("there is no answer card")
                 self.mode = 'Question'
                 self.SwitchCard = False        
                 id_ = self.m_toolSwitch21.GetId()
                 self.m_toolBar3.SetToolNormalBitmap(id_, wx.Bitmap( str(path_repeat_na), wx.BITMAP_TYPE_ANY ))  
                 self.m_textCtrlMode.SetValue(self.mode) 
+                displaycard(self) 
             else:
                 self.SwitchCard = True
                 id_ = self.m_toolSwitch21.GetId()
                 self.m_toolBar3.SetToolNormalBitmap(id_, wx.Bitmap( str(path_repeat), wx.BITMAP_TYPE_ANY ))
                 self.m_textCtrlMode.SetValue(self.mode) 
+                displaycard(self) 
         except:
             log.ERRORMESSAGE("Error: could not switch bitmap #2")
     except:
@@ -454,7 +459,7 @@ def TryOnlyTextPic(self):
         
 def displaycard(self):
     #try:
-    key = f'{self.mode[0]}{self.cardorder[self.index]}'
+    key = f'card_{self.mode[0].lower()}{self.cardorder[self.index]}'
     # try to create a TextCard
     bool_textcard, img_txt = CreateTextCard(self,'flashcard',key)
     bool_piccard, img_pic  = findpicture(self,key)
@@ -495,14 +500,15 @@ def CreateTextCard(self,mode,arg1):
     The creation of a card can fail because the userinput was incorrect it can see something starting with '\' as LaTeX code
     when it should not, or if the user used some undefined function.
     """
-    if (mode == 'flashbook' and self.usertext != '') or (mode == 'flashcard' and arg1 in self.textdictionary):
+    if (mode == 'flashbook' and self.usertext != '') or (mode == 'flashcard' and 'text' in self.CardsDeck.getcards()[arg1].keys()):
         try:
             if mode == 'flashbook':
                 usertext = arg1
             if mode == 'flashcard':
                 # acquire text
-                key = arg1                
-                usertext = self.textdictionary[key]
+                key = arg1     
+                usertext = self.CardsDeck.getcards()[key]['text']
+                    
             # display text in a plot
             height_card = math.ceil(len(usertext)/40)/2
             figure = Figure(figsize=[8, height_card],dpi=100)
@@ -516,12 +522,15 @@ def CreateTextCard(self,mode,arg1):
         except:
             if mode == 'flashbook':
                 MessageBox(0, f"Error in text given by user.\nFaulty text or something mistakingly seen as a command used.\nGo to .../Flashbook/files/... and edit it manually.\nOr edit it in Flashcard.", "Message", ICON_STOP)
+                
             if mode == 'flashcard':
-                if key[0] == 'A':
+                if key[:6] == 'card_a':
                     modekey = 'ANSWER'
-                elif key[0] == 'Q':
+                elif key[:6] == 'card_q':
                     modekey = 'QUESTION'
-                MessageBox(0, f"Error in line {str(int(key[1:])+1)} mode {modekey}\nline: {self.textdictionary[key]}\nFaulty text or command used.\nGo to .../Flashbook/files/... and edit it manually.\nOr edit it in Flashcard.", "Message", ICON_STOP)
+                else:
+                    modekey = "Error"
+                MessageBox(0, f"Error in line {str(int(key[6:])+1)} mode {modekey}\nline: {self.CardsDeck.getcards()[key]}\nFaulty text or command used.\nGo to .../Flashbook/files/... and edit it manually.\nOr edit it in Flashcard.", "Message", ICON_STOP)
             LaTeXcode =  "Error for this page: invalid code"
             height_card = math.ceil(len(LaTeXcode)/40)/2
             fig = Figure(figsize=[8, height_card],dpi=100)
@@ -565,7 +574,29 @@ def DeleteCurrentCard(self):
     save_stats(self)
     print("success!!")
 
-def File_to_hookpositions(self,letterfile):
+def File_to_Cards(self,linefile):
+    cards = []
+    def argument(command,line):
+        startpos   = [m.start() for m in re.finditer(command, line)]
+        if startpos != []:
+            hookpos = list(np.array(startpos)+len(command)-2)[0]
+            end_index = find_hook(hookpos,line)
+            return line[hookpos+1:end_index]
+        else:
+            return ''
+            
+    for line in linefile:
+        q = argument(self.question_command,line)
+        a = argument(self.answer_command,line)
+        t = argument(self.topic_command,line)
+        
+        cards.append({'q': q, 'a': a, 't': t})  
+    print("keycards")
+    print(cards[0].keys())
+    return cards
+    
+
+def oFile_to_hookpositions(self,letterfile):
     # positions of Questions and Answers
     q_pos   = [m.start() for m in re.finditer(self.question_command, letterfile)]
     a_pos   = [m.start() for m in re.finditer(self.answer_command, letterfile)]
@@ -588,6 +619,50 @@ def FindArgumentsCards(self,q_hookpos,a_hookpos,letterfile):
         #store the unedited questions and answers. This will be used when the user wants to edit the original Q and A
         self.questions_raw.append(letterfile[self.q_hookpos[N]+1:end_q_index])
         self.answers_raw.append(letterfile[self.a_hookpos[N]+1:end_a_index])
+
+def stringcontains(string,substring):
+    ans = None
+    con = False
+    if substring in string:
+        con = True
+        ans = string.find(substring)    
+    return con, ans
+
+def ReplaceUserCommands(commandsfile,line):
+    assert type(commandsfile) == list
+    assert type(line) == str
+    # replace user defined commands, found in a separate file                      
+    # only look at lines containing "newcommand" removes all empty and irrelevant lines
+    
+    newcommand_list = [x for x in commandsfile if ("newcommand"  in x) and ("Note:" not in x)]
+    print("commandlist", newcommand_list)
+    
+    
+    ##  how to replace a user defined command with a command that is known in latex
+    # look for all commands if they appear anywhere in questions or answers.
+    # find indices of: -defined command -original command, -number of arguments
+    for i,commandline in enumerate(newcommand_list):
+        
+        # extract all the data from a commandline
+        c_start = findchar('{',commandline,0)
+        c_end   = findchar('}',commandline,0)
+        
+        num_start = findchar('\[',commandline,"")              # the argument "" indicates it will find all instances
+        num_end   = findchar('\]',commandline,"") 
+       
+        newc_start = findchar('{',commandline,1)   
+        newc_end   = findchar('}',commandline,-1)
+        
+        # find the commands explicitly
+        defined_command = commandline[c_start+1:c_end]         # finds \secpar{}{}            
+        LaTeX_command   = commandline[newc_start+1:newc_end]   # finds \frac{\partial^2 #1}{\partial #2^2}
+        assert type(num_start[0]) == int
+        assert type(num_end[0]) == int
+        nr_arg          = int(commandline[int(num_start[0]+1):int(num_end[0])])
+        
+        # replace the commandsmacro
+        line = replace_allcommands(defined_command,LaTeX_command,line,nr_arg)
+    return line
 
 def Cards_ReplaceUserCommands(self):
     # replace user defined commands, found in a separate file                  
@@ -649,6 +724,13 @@ def Cards_ReplaceUserCommands(self):
                 A = self.answers[index2]
                 self.answers[index2] = replace_allcommands(defined_command, LaTeX_command, A, nr_arg)
 
+
+def SeparatePicsFromText(self,line):
+    T_F, QnA, picname = remove_pics(line,"\pic{")
+    if QnA.strip() == '':
+        QnA = None
+    return QnA, picname
+
 def SeparatePicsFromCards(self):
     ## replace all \pics out of the QnA and save the picture names.
     self.picdictionary  = {}
@@ -698,7 +780,8 @@ def ShowPage_fc(self,image):
         width, height = image.size
         image2 = wx.Image( width, height )
         image2.SetData( image.tobytes() )        
-        self.m_bitmapScroll1.SetBitmap(wx.Bitmap(image2))        
+        self.m_bitmapScroll1.SetBitmap(wx.Bitmap(image2))     
+        self.Refresh()
     except:        
         log.ERRORMESSAGE("Error: cannot show image")
 

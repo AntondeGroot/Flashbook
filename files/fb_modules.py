@@ -22,7 +22,26 @@ ICON_STOP = 0x10
 MB_ICONINFORMATION = 0x00000040
 MessageBox = ctypes.windll.user32.MessageBoxW
 
-
+def list2path(templist):
+    output = None
+    if type(templist) == list:
+        if len(templist)>1:
+            if type(templist[0]) == str:
+                print(f"mode1 {templist}")
+                output = templist[0]
+            elif type(templist[0]) == list:
+                output = templist[0][0]
+        elif len(templist)==1:
+            if type(templist[0]) == str:
+                print(f"mode2 {templist}")
+                output = templist[0]
+            elif type(templist[0]) == list:
+                print(f"mode2 {templist}")
+                output = templist[0][0]
+            
+    
+    return output
+#%%
 def dirchanged(self,event):
     
     """For scrolling: only remember last few positions, append and pop 
@@ -144,16 +163,17 @@ def bitmapleftup(self,event):
     x1 = int(x1/self.zoom)
     y1 = int(y1/self.zoom)
     
-    if abs(x1-x0)>2 and abs(y1-y0)>2:            
+    VALID_RECTANGLE = abs(x1-x0)>2 and abs(y1-y0)>2 #should be at least of a certain width and height
+    if VALID_RECTANGLE:            
         self.BorderCoords = [x0,y0,x1,y1]
         #save all borders in dict
-        try:
-            #dict key exists, so you should append its value
+        
+        try:#dict key exists, so you should append its value
             val = self.tempdictionary[f'page {self.currentpage}']
             val.append(self.BorderCoords)
             self.tempdictionary[f'page {self.currentpage}'] = val
-        except:
-            #dict key does not exist, just add the value to the new key
+            
+        except:#dict key does not exist, just add the value to the new key
             self.tempdictionary.update({f'page {self.currentpage}' : [self.BorderCoords]})
             
         #crop image
@@ -182,31 +202,23 @@ def bitmapleftup(self,event):
         then everythying will be combined vertically."""
         
         dir_ = str(Path(self.picsdir,self.bookname,picname))
-        if self.questionmode == True:
+        if self.Flashcard.getmode() == 'Question':
             if self.stitchmode_v == True:
-                self.pic_question.append(picname)  
-                self.pic_question_dir.append(dir_)  
+                print(f"anton {dir_}")
+                self.Flashcard.addpic('Question','vertical',picname,dir_)
             else:
-                try:
-                    self.pic_question[-1].append(picname)  
-                    self.pic_question_dir[-1].append(dir_)  
-                except:
-                    self.pic_question.append([picname])  
-                    self.pic_question_dir.append([dir_])  
+                print(f"anton {dir_}")
+                self.Flashcard.addpic('Question','horizontal',picname,dir_)
                 #restore stitchmode to default
                 self.stitchmode_v =  True   
                 f.SetToolStitchArrow(self,orientation="vertical")
         else:
             if self.stitchmode_v == True:
-                self.pic_answer.append(picname)  
-                self.pic_answer_dir.append(dir_)    
+                print(f"anton {dir_}")
+                self.Flashcard.addpic('Answer','vertical',picname,dir_)
             else:
-                try:
-                    self.pic_answer[-1].append(picname)  
-                    self.pic_answer_dir[-1].append(dir_) 
-                except:
-                    self.pic_answer.append([picname])  
-                    self.pic_answer_dir.append([dir_])  
+                print(f"anton {dir_}")
+                self.Flashcard.addpic('Answer','horizontal',picname,dir_)
                 #restore stitchmode to default
                 self.stitchmode_v =  True     
                 f.SetToolStitchArrow(self,orientation="vertical")
@@ -240,43 +252,51 @@ def selectionentered(self,event):
     
     if hasattr(self,'bookname') and self.bookname != '':
         USER_textinput = self.m_textCtrl2.GetValue()
-        PICS_DRAWN = len(self.pic_question) 
-        QUESTION_MODE = self.questionmode
+        
+        PICS_DRAWN = self.Flashcard.nrpics("Question")
+        QUESTION_MODE = self.Flashcard.getquestionmode()
         if  USER_textinput != '' or PICS_DRAWN > 0:
+            usertext = USER_textinput
             if QUESTION_MODE:
                 # change mode to answer
-                usertext = USER_textinput
-                self.latex_question = usertext
                 self.usertext = f.text_to_latex(self,usertext)
-                self.questionmode = False
-                self.m_textCtrl1.SetValue("Answer:")
+                self.Flashcard.switchmode()
+                self.m_textCtrl1.SetValue(self.Flashcard.getmode()+":")
                 self.m_textCtrl2.SetValue("")
-                
+                self.Refresh()
                 # check for [[1,2,3]]
                 if PICS_DRAWN > 1:
-                    f.CombinePics(self,self.pic_question_dir)
-                    if type(self.pic_question[0]) is list:
-                        self.pic_question[0] = self.pic_question[0][0]
-                    self.latex_question = str(self.latex_question) + r" \pic{" + "{}".format(self.pic_question[0])+r"}"
-                else:       
-                    print("only horizontal questions")
-                    print(f"nr picquestions = {len(self.pic_question)}")
-                    if len(self.pic_question) == 1:
-                        if type(self.pic_question[0]) is list:
-                            
-                            f.CombinePics(self,self.pic_question_dir)
-                        else:
-                            print("is not a list")
-                        self.latex_question = str(self.latex_question) + r" \pic{" + "{}".format(self.pic_question[0])+r"}"
+                    print("PICS DRAWN > 1")                    
+                    list_ = self.Flashcard.getpiclist("Question")
+                    f.CombinePics(self,list_)
+                    list_ = list2path(list_)
+                    #if type(list_[0]) is list:
+                    self.Flashcard.setpiclist('Question',list_)   
+                    self.Flashcard.setQ(usertext + r" \pic{" + os.path.basename(list_)+r"}")                
+                elif PICS_DRAWN == 1:
+                    
+                    list_ = self.Flashcard.getpiclist("Question")
+                    print(f"PICS DRAWN = 1 {list_}")    
+                    print(f"mode is {self.Flashcard.getmode()}")
+                    if len(list_)>1 and type(list_[0]) is list:#list in list    
+                        f.CombinePics(self,list_)
+                        list_ = list2path(list_)
+                        
+                    else:
+                        list_ = list2path(list_)
+                        
+                        print("is not a list")
+                    self.Flashcard.setQ(usertext + r" \pic{" + os.path.basename(list_)+r"}")
+                elif PICS_DRAWN == 0:
+                    print("PICS DRAWN = 0")                    
+                    self.Flashcard.setQ(usertext)
                 f.ShowInPopup(self,event,"Question")
-                 
+                
             else:#ANSWER mode
-                usertext = USER_textinput
-                self.latex_answer = usertext
                 self.usertext = f.text_to_latex(self,usertext)
                 self.questionmode = True
-                self.m_textCtrl1.SetValue("Question:")
-                self.m_textCtrl2.SetValue("")
+                #self.m_textCtrl1.SetValue("Question:")
+                #self.m_textCtrl2.SetValue("")
                 
                 # save everything
                 findic = self.dictionary
@@ -295,65 +315,68 @@ def selectionentered(self,event):
                 f.ShowPage_fb(self)
                 if self.stayonpage == False: # if screenshot mode
                     with open(self.PathBorders, 'w') as file:
-                            file.write(json.dumps(self.dictionary)) 
-                if len(self.pic_answer) > 1:
-                    f.CombinePics(self,self.pic_answer_dir)
-                    if type(self.pic_answer[0]) is list:
-                        self.pic_answer[0] = self.pic_answer[0][0]
-                    self.latex_answer = str(self.latex_answer) + r" \pic{" + "{}".format(self.pic_answer[0])+r"}"                        
-                elif len(self.pic_answer) == 1:
-                    if type(self.pic_answer[0]) is list:        
-                        f.CombinePics(self,self.pic_answer_dir)
+                        file.write(json.dumps(self.dictionary))
+                        
+                list_A = self.Flashcard.getpiclist("Answer")
+                if list_A == None:
+                    list_A = ''
+                if len(list_A) > 1:
+                    f.CombinePics(self,list_A)
+                    if type(list_A[0]) is list:
+                        list_A[0] = list_A[0][0]
+                    self.Flashcard.setA(usertext + r" \pic{" + os.path.basename(list_A[0])+r"}")
+                elif len(list_A) == 1:
+                    if type(list_A[0]) is list:        
+                        f.CombinePics(self,list_A)
+                        self.Flashcard.setA(usertext + r" \pic{" + os.path.basename(list_A[0])+r"}")
                     else:
+                        self.Flashcard.setA(usertext + r" \pic{" + os.path.basename(list_A[0])+r"}")
                         print("is not a list")                
-                    self.latex_answer = str(self.latex_answer) + r" \pic{" + "{}".format(self.pic_answer[0])+r"}"                        
+                else:
+                    self.Flashcard.setA(usertext)
                 
 
                 f.ShowInPopup(self,event,"Answer")                    
                 # save the user inputs in .tex file
-                if len(self.latex_question) != 0:
-                    with open(str(Path(self.notesdir, self.bookname +'.tex')), 'a') as output: # the mode "a" appends to the file    
-                        output.write(r"\quiz{" + str(self.latex_question) + "}")
-                        output.write(r"\ans{"  + str(self.latex_answer)   + "}"+"\n")
+                if self.Flashcard.getQ() != None:
+                    path = str(Path(self.notesdir, self.bookname +'.tex'))
+                    self.Flashcard.saveCard(path)
                 #reset all
-                f.ResetQuestions(self)
+                self.Flashcard.reset()
+                self.m_textCtrl1.SetValue(self.Flashcard.getmode()+":")
+                self.m_textCtrl2.SetValue("")
                 
         elif QUESTION_MODE == False:
             # if in question mode the user only typed in some text and want to save that 
-            self.questionmode = True
-            self.m_textCtrl1.SetValue("Question:")
-            self.m_textCtrl2.SetValue("")
-            self.tempdictionary = {}
             
+            self.tempdictionary = {}
             # remove temporary borders
             self.pageimage = self.pageimagecopy
             f.ShowPage_fb(self)
-            
-            
+            list_A = self.Flashcard.getpiclist("Answer")
             if self.stayonpage == False: # if screenshot mode
                 with open(self.PathBorders, 'w') as file:
                         file.write(json.dumps(self.dictionary)) 
-            if len(self.pic_answer) > 1:
-                f.CombinePics(self,self.pic_answer_dir)
-                if type(self.pic_answer[0]) is list:
-                    self.pic_answer[0] = self.pic_answer[0][0]
-                self.latex_answer = str(self.latex_answer) + r" \pic{" + "{}".format(self.pic_answer[0])+r"}"                        
-            elif len(self.pic_answer) == 1:
-                if type(self.pic_answer[0]) is list:        
-                    f.CombinePics(self,self.pic_answer_dir)
+            if len(list_A) > 1:
+                f.CombinePics(self,list_A)
+                if type(list_A[0]) is list:
+                    list_A[0] = list_A[0][0]
+                self.Flashcard.setA(usertext + r" \pic{" + str(list_A[0])+r"}")
+            elif len(list_A) == 1:
+                if type(list_A[0]) is list:        
+                    f.CombinePics(self,list_A)
                 else:
-                    print("is not a list")                
-                self.latex_answer = str(self.latex_answer) + r" \pic{" + "{}".format(self.pic_answer[0])+r"}"                        
+                    print("is not a list")
+                self.Flashcard.setA(usertext + r" \pic{" + str(list_A[0])+r"}")               
             
 
             f.ShowInPopup(self,event,"Answer")                    
             # save the user inputs in .tex file
-            if len(self.latex_question) != 0:
-                with open(str(Path(self.notesdir, self.bookname +'.tex')), 'a') as output: # the mode "a" appends to the file    
-                    output.write(r"\quiz{" + str(self.latex_question) + "}")
-                    output.write(r"\ans{"  + str(self.latex_answer)   + "}"+"\n")
+            if self.Flashcard.QuestionExists():
+                path = str(Path(self.notesdir, self.bookname +'.tex'))
+                self.Flashcard.saveCard(path)
             #reset all
-            f.ResetQuestions(self)
+            self.Flashcard.reset()
             
             
 def arrowscroll(self,event,direction):
@@ -444,27 +467,17 @@ def mousewheel(self,event):
             self.m_toolNext11OnToolClicked(self)
     event.Skip() # necessary to use other functions after this one is used
     
-def resetselection(self,event):
-    self.resetselection = True
+def resetselection(self,event):    
     #  remove all temporary pictures taken
-    if len(self.pic_answer_dir) > 0:
-        for pic in self.pic_answer_dir:
-            if Path(pic).exists():
-                Path(pic).unlink()
-    if len(self.pic_question_dir) > 0:
-        for pic in self.pic_question_dir:
-            if type(pic) == str and Path(pic).exists():
-                Path(pic).unlink()
+    self.Flashcard.removepics()
     #reset all values:
     self.tempdictionary = {}
-    f.ResetQuestions(self)        
-    self.questionmode = True
-    self.m_textCtrl1.SetValue("Question:")
-    self.m_textCtrl2.SetValue("")
+    self.Flashcard.reset()
     # update drawn borders
+    self.pageimage = self.pageimagecopy
     f.LoadPage(self)
     f.ShowPage_fb(self)
-    self.resetselection = False
+    
     
 def switchpage(self,event):
     try:
