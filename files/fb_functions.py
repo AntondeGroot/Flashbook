@@ -194,7 +194,7 @@ def LoadPage(self):
 def ShowPrintScreen(self): # no error
     try:
         # update
-        self.m_CurrentPage11.SetValue("PrtScr")
+        self.m_CurrentPageFB.SetValue("PrtScr")
         #rescale image
         width, height = self.pageimagecopy.size #so that it doesn't rescale it everytime ShowPage() is used
         width, height = int(width*self.zoom) , int(height*self.zoom)
@@ -247,7 +247,7 @@ def SavePageNr(self):
 def ShowPage_fb(self): 
     try:
         # update
-        self.m_CurrentPage11.SetValue(str(self.currentpage))
+        self.m_CurrentPageFB.SetValue(str(self.currentpage))
         #rescale image
         width, height = self.pageimagecopy.size #so that it doesn't rescale it everytime ShowPage() is used
         width, height = int(width*self.zoom) , int(height*self.zoom)
