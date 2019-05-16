@@ -760,7 +760,7 @@ class MainFrame(gui.MyFrame):
                     print(f"cardorder = {self.cardorder}")
                     #it might occur multiple times
                     self.cardorder = [x for x in self.cardorder if x != self.cardorder[self.index]]
-                    self.nr_cards = len(self.cardorder)
+                    #self.nr_cards = len(self.cardorder)
                     self.nr_questions -= 1
                     self.m_TotalPages21.SetValue(f"{self.nr_questions}")
                     f2.displaycard(self)
@@ -775,7 +775,7 @@ class MainFrame(gui.MyFrame):
                 if dlg.ShowModal() == wx.ID_OK:  
                     f2.DeleteCurrentCard(self)
                     self.cardorder = [x for x in self.cardorder if x != self.cardorder[self.index]]
-                    self.nr_cards = len(self.cardorder)
+                    #self.nr_cards = len(self.cardorder)
                     self.nr_questions -= 1
                     self.m_TotalPages21.SetValue(f"{self.nr_questions}")
                     f2.displaycard(self)
@@ -783,50 +783,64 @@ class MainFrame(gui.MyFrame):
                 
     def m_menuEditCardOnMenuSelection( self, event ):
         trueindex = self.cardorder[self.index]
-        
-        data = [self.questions_raw[trueindex],self.answers_raw[trueindex]]
+        rawcard = self.CardsDeck.get_rawcard_i(trueindex)
+        data = [ rawcard['q'] , rawcard['a'] , rawcard['t'] ]
         
         with gui.MyDialog8(self,data) as dlg:
             if dlg.ShowModal() == wx.ID_OK:
+                #Get user data
                 question = dlg.m_textCtrl24.GetValue()
                 answer   = dlg.m_textCtrl25.GetValue()
+                topic    = dlg.m_textCtrl30.GetValue()
                 #open file
                 with open(Path(self.notesdir,self.filename),'r') as file:
-                    flines = file.readlines()
+                    file_lines = file.readlines()
                     file.close()
+                    
+                print(question,answer,topic)
+                
                 #make changes
                 if question == '':
-                    flines.pop(trueindex)
+                    """ If you remove the question then the entire card will be deleted"""
+                    file_lines.pop(trueindex)
                     f2.DeleteCurrentCard(self)
                     self.cardorder = [x for x in self.cardorder if x != self.cardorder[self.index]]
-                    self.nr_cards = len(self.cardorder)
+                    #self.nr_cards = len(self.cardorder)
                     self.nr_questions -= 1
                     self.m_TotalPages21.SetValue(f"{self.nr_questions}")
                     f2.displaycard(self)
                     self.Refresh()
                 else:
-                    flines[trueindex] = r"\quiz{"+str(question)+"}"+r"\ans{"+str(answer)+"}"+"\n"
+                    file_lines[trueindex] = r"\quiz{"+str(question)+"}"+r"\ans{"+str(answer)+"}" +r"\topic{"+str(topic)+  "}"+"\n"
                     #save changes
                     with open(str(Path(self.notesdir, self.filename)), 'w') as output: 
-                        for line in flines:
+                        for line in file_lines:
                             output.write(line)
-                    print(Path(self.notesdir,self.filename))
-                    
-                    if Path(self.notesdir,self.filename).exists():
-                        file = open(Path(self.notesdir,self.filename), 'r')
-                        letterfile = str(file.read())                    
-                    self.q_hookpos , self.a_hookpos = f2.File_to_hookpositions(self,letterfile)
-                    self.nr_cards = len(self.q_hookpos)
-                    f2.FindArgumentsCards(self,self.q_hookpos,self.a_hookpos,letterfile)
-                    f2.Cards_ReplaceUserCommands(self)
-                    f2.SeparatePicsFromCards(self)
-                    f2.Cards_To_TextDicts(self)
+                    #reload cards
+                    self.CardsDeck.reset()
+                    linefile = f2.loadfile(self.booknamepath)
+                    cards = f2.File_to_Cards(self,linefile)                       # converts to raw cards
+                    self.CardsDeck.set_cards(cards=cards,notesdir=self.notesdir)
                     f2.switch_bitmap(self)
-                    image = f2.CreateSingularCard(self,'Question')
-                    
-                    BMP = f2.PILimage_to_Bitmap(image)
-                    self.m_bitmapScroll1.SetBitmap(BMP)
+                    f2.displaycard(self)
                     self.Refresh()
+                    
+                    #if Path(self.notesdir,self.filename).exists():
+                    #    file = open(Path(self.notesdir,self.filename), 'r')
+                    #    letterfile = str(file.read())                    
+                    #self.q_hookpos , self.a_hookpos = f2.File_to_hookpositions(self,letterfile)
+                    #self.nr_cards = len(self.q_hookpos)
+                    #f2.FindArgumentsCards(self,self.q_hookpos,self.a_hookpos,letterfile)
+                    #f2.Cards_ReplaceUserCommands(self)
+                    #f2.SeparatePicsFromCards(self)
+                    #f2.Cards_To_TextDicts(self)
+                    #f2.switch_bitmap(self)
+                    #image = f2.CreateSingularCard(self,'Question')
+                    
+                    #BMP = f2.PILimage_to_Bitmap(image)
+                    #self.m_bitmapScroll1.SetBitmap(BMP)
+                    #self.Refresh()
+                
                 print("success!!")
                 
     def m_menuPreviousCardOnMenuSelection( self, event ):
@@ -1034,7 +1048,7 @@ class MainFrame(gui.MyFrame):
     def m_filePicker21OnFileChanged( self, event ):
         self.m_menubar1.EnableTop(2,True)
         m2.startprogram(self,event)
-    
+        
     # button events
     def m_buttonCorrectOnButtonClick( self, event ):        
         m2.buttonCorrect(self)
@@ -1042,6 +1056,12 @@ class MainFrame(gui.MyFrame):
         event.Skip()
     def m_bitmapScroll1OnLeftUp( self, event ):
         m2.buttonCorrect(self)
+        event.Skip()
+    
+    # flip flashcard
+    def m_toolSwitchOnToolClicked( self, event ):
+        m2.switchCard(self)
+        SaveTime(self)
         event.Skip()
     
     def m_scrolledWindow11OnLeftUp( self, event ):
@@ -1279,7 +1299,29 @@ class CardsDeck():
         self.mode = 'Question'
         self.textdictionary = {}
         self.picdictionary  = {}
+        self.rawkey = "card"
+        self.key = "card_"
     
+    def reset(self):
+        self.cards = {}
+        self.cards_raw = {}
+        self.nrcards = 0
+        self.cardorder = []
+        self.index = 0
+        self.mode = 'Question'
+        self.textdictionary = {}
+        self.picdictionary  = {}
+        
+        
+    def get_rawkey(self,index):
+        return self.rawkey + index
+    def get_key(self,mode,index):
+        return self.key+str(mode[0]).lower()+str(index)
+    
+    def __len__(self):
+        """nr of cards"""
+        return len(self.cards_raw)
+        
     def getcards(self):
         return self.cards
         
@@ -1288,25 +1330,26 @@ class CardsDeck():
         assert type(self.cards_raw) == dict
         ##
         
-        def addtodict(self, key, card):
-            if key in self.cards.keys():
-                self.cards[key].update(card)
+        def addtodict(self, _key_, card):
+            if _key_ in self.cards.keys():
+                self.cards[_key_].update(card)
             else:
-                self.cards[key] = card
+                self.cards[_key_] = card
         
         if notesdir != None and cards != None:
             file = open(str(Path(notesdir, "usercommands.txt")), 'r')
             commandsfile = file.readlines()
             for i,card in enumerate(cards):
                 print(f"card = {card}")
-                self.cards_raw[f"card{i}"] = card #dict with keys q,a,t
+                _key = self.rawkey + str(i)
+                self.cards_raw[_key] = card #dict with keys q,a,t
                 for mode in ['q','a']:
                     
                     line = card[mode]
                     line = f2.ReplaceUserCommands(commandsfile,line)
                     text, picname = f2.SeparatePicsFromText(self,line)
                     print(mode,text,picname)
-                    key = f"card_{mode}{i}"
+                    key = self.key + f"{mode}{i}"
                     topic = card['t']
                     if text!= None and picname != None:
                         _card_ = {'text': text, 'pic': picname, 'topic': topic}
@@ -1331,7 +1374,8 @@ class CardsDeck():
         self.cardorder = cardorder
     def get_card_i(self,i):
         return self.cards[i]
-
+    def get_rawcard_i(self,index):
+        return self.cards_raw[self.rawkey + str(index)]
 
         
 class Flashcard():
