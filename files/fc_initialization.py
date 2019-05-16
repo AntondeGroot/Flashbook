@@ -19,7 +19,7 @@ def initializeparameters(self):
     self.image          = []
     self.panel_pos      = (0,0)        
     self.zoom           = 1.0
-    self.m_Zoom21.SetValue(f"{int(self.zoom*100)}%")  
+    self.m_ZoomFC.SetValue(f"{int(self.zoom*100)}%")  
     #
     self.runprogram = True
     self.SwitchCard = True
@@ -27,7 +27,7 @@ def initializeparameters(self):
     self.score = 0
     self.nr_questions = 0
     self.mode = 'Question'
-    self.m_textCtrlMode.SetValue(self.mode)
+    self.m_modeDisplayFC.SetValue(self.mode)
     self.cardorder   = []        
     self.questions   = []
     self.answers     = []
