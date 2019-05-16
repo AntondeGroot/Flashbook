@@ -83,11 +83,16 @@ class MyFrame ( wx.Frame ):
 		self.m_menubar1.Append( self.m_menuBooks, u"Books" ) 
 		
 		self.m_menuCards = wx.Menu()
+		self.m_menuAddCard = wx.MenuItem( self.m_menuCards, wx.ID_ANY, u"Add card", wx.EmptyString, wx.ITEM_NORMAL )
+		self.m_menuCards.Append( self.m_menuAddCard )
+		
 		self.m_menuDeleteCard = wx.MenuItem( self.m_menuCards, wx.ID_ANY, u"Delete card", wx.EmptyString, wx.ITEM_NORMAL )
 		self.m_menuCards.Append( self.m_menuDeleteCard )
 		
 		self.m_menuEditCard = wx.MenuItem( self.m_menuCards, wx.ID_ANY, u"Edit card", wx.EmptyString, wx.ITEM_NORMAL )
 		self.m_menuCards.Append( self.m_menuEditCard )
+		
+		self.m_menuCards.AppendSeparator()
 		
 		self.m_menuPreviousCard = wx.MenuItem( self.m_menuCards, wx.ID_ANY, u"See previous card", wx.EmptyString, wx.ITEM_NORMAL )
 		self.m_menuCards.Append( self.m_menuPreviousCard )
@@ -106,12 +111,12 @@ class MyFrame ( wx.Frame ):
 		self.m_menubar1.Append( self.m_menuHelpbar, u"Help" ) 
 		
 		self.m_menuSettings = wx.Menu()
-		self.m_checkBox11 = wx.MenuItem( self.m_menuSettings, wx.ID_ANY, u"Show selections", wx.EmptyString, wx.ITEM_CHECK )
-		self.m_menuSettings.Append( self.m_checkBox11 )
-		self.m_checkBox11.Check( True )
+		self.m_checkBoxSelections = wx.MenuItem( self.m_menuSettings, wx.ID_ANY, u"Show selections", wx.EmptyString, wx.ITEM_CHECK )
+		self.m_menuSettings.Append( self.m_checkBoxSelections )
+		self.m_checkBoxSelections.Check( True )
 		
-		self.m_checkBoxCursor11 = wx.MenuItem( self.m_menuSettings, wx.ID_ANY, u"Crosshair cursor", wx.EmptyString, wx.ITEM_CHECK )
-		self.m_menuSettings.Append( self.m_checkBoxCursor11 )
+		self.m_checkBoxCursor = wx.MenuItem( self.m_menuSettings, wx.ID_ANY, u"Crosshair cursor", wx.EmptyString, wx.ITEM_CHECK )
+		self.m_menuSettings.Append( self.m_checkBoxCursor )
 		
 		self.m_checkBoxDebug = wx.MenuItem( self.m_menuSettings, wx.ID_ANY, u"Debug mode", wx.EmptyString, wx.ITEM_CHECK )
 		self.m_menuSettings.Append( self.m_checkBoxDebug )
@@ -305,47 +310,47 @@ class MyFrame ( wx.Frame ):
 		bSizer2 = wx.BoxSizer( wx.VERTICAL )
 		
 		self.m_toolBar1 = wx.ToolBar( self.panel11, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TB_HORIZONTAL ) 
-		self.m_dirPicker11 = wx.DirPickerCtrl( self.m_toolBar1, wx.ID_ANY, wx.EmptyString, u"Select a folder", wx.DefaultPosition, wx.DefaultSize, 0 )
-		self.m_dirPicker11.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
+		self.m_dirPickerFB = wx.DirPickerCtrl( self.m_toolBar1, wx.ID_ANY, wx.EmptyString, u"Select a folder", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_dirPickerFB.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
 		
-		self.m_toolBar1.AddControl( self.m_dirPicker11 )
-		self.m_toolPlus11 = self.m_toolBar1.AddTool( wx.ID_ANY, u"plus", wx.Bitmap( path_add, wx.BITMAP_TYPE_ANY ), wx.NullBitmap, wx.ITEM_NORMAL, wx.EmptyString, wx.EmptyString, None ) 
+		self.m_toolBar1.AddControl( self.m_dirPickerFB )
+		self.m_toolPlusFB = self.m_toolBar1.AddTool( wx.ID_ANY, u"plus", wx.Bitmap( path_add, wx.BITMAP_TYPE_ANY ), wx.NullBitmap, wx.ITEM_NORMAL, wx.EmptyString, wx.EmptyString, None ) 
 		
-		self.m_toolMin11 = self.m_toolBar1.AddTool( wx.ID_ANY, u"min", wx.Bitmap( path_min, wx.BITMAP_TYPE_ANY ), wx.NullBitmap, wx.ITEM_NORMAL, wx.EmptyString, wx.EmptyString, None ) 
+		self.m_toolMinFB = self.m_toolBar1.AddTool( wx.ID_ANY, u"min", wx.Bitmap( path_min, wx.BITMAP_TYPE_ANY ), wx.NullBitmap, wx.ITEM_NORMAL, wx.EmptyString, wx.EmptyString, None ) 
 		
-		self.m_Zoom11 = wx.TextCtrl( self.m_toolBar1, wx.ID_ANY, u"100%", wx.DefaultPosition, wx.Size( 40,-1 ), wx.TE_READONLY|wx.NO_BORDER )
-		self.m_Zoom11.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
+		self.m_ZoomFB = wx.TextCtrl( self.m_toolBar1, wx.ID_ANY, u"100%", wx.DefaultPosition, wx.Size( 40,-1 ), wx.TE_READONLY|wx.NO_BORDER )
+		self.m_ZoomFB.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
 		
-		self.m_toolBar1.AddControl( self.m_Zoom11 )
-		self.m_toolBack11 = self.m_toolBar1.AddTool( wx.ID_ANY, u"tool", wx.ArtProvider.GetBitmap( wx.ART_GO_BACK,  ), wx.NullBitmap, wx.ITEM_NORMAL, wx.EmptyString, wx.EmptyString, None ) 
+		self.m_toolBar1.AddControl( self.m_ZoomFB )
+		self.m_pageBackFB = self.m_toolBar1.AddTool( wx.ID_ANY, u"tool", wx.ArtProvider.GetBitmap( wx.ART_GO_BACK,  ), wx.NullBitmap, wx.ITEM_NORMAL, wx.EmptyString, wx.EmptyString, None ) 
 		
-		self.m_toolNext11 = self.m_toolBar1.AddTool( wx.ID_ANY, u"tool", wx.ArtProvider.GetBitmap( wx.ART_GO_FORWARD,  ), wx.NullBitmap, wx.ITEM_NORMAL, wx.EmptyString, wx.EmptyString, None ) 
+		self.m_pageNextFB = self.m_toolBar1.AddTool( wx.ID_ANY, u"tool", wx.ArtProvider.GetBitmap( wx.ART_GO_FORWARD,  ), wx.NullBitmap, wx.ITEM_NORMAL, wx.EmptyString, wx.EmptyString, None ) 
 		
 		self.m_staticText3 = wx.StaticText( self.m_toolBar1, wx.ID_ANY, u"Page: ", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.m_staticText3.Wrap( -1 )
 		self.m_staticText3.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
 		
 		self.m_toolBar1.AddControl( self.m_staticText3 )
-		self.m_CurrentPage11 = wx.TextCtrl( self.m_toolBar1, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.Size( 40,-1 ), wx.TE_CENTRE )
-		self.m_CurrentPage11.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
-		self.m_CurrentPage11.SetMinSize( wx.Size( 10,-1 ) )
-		self.m_CurrentPage11.SetMaxSize( wx.Size( 10,-1 ) )
+		self.m_CurrentPageFB = wx.TextCtrl( self.m_toolBar1, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.Size( 40,-1 ), wx.TE_CENTRE )
+		self.m_CurrentPageFB.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
+		self.m_CurrentPageFB.SetMinSize( wx.Size( 10,-1 ) )
+		self.m_CurrentPageFB.SetMaxSize( wx.Size( 10,-1 ) )
 		
-		self.m_toolBar1.AddControl( self.m_CurrentPage11 )
+		self.m_toolBar1.AddControl( self.m_CurrentPageFB )
 		self.m_staticText6 = wx.StaticText( self.m_toolBar1, wx.ID_ANY, u" of ", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.m_staticText6.Wrap( -1 )
 		self.m_staticText6.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
 		
 		self.m_toolBar1.AddControl( self.m_staticText6 )
-		self.m_TotalPages11 = wx.TextCtrl( self.m_toolBar1, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.Size( 40,-1 ), wx.TE_READONLY|wx.NO_BORDER )
-		self.m_TotalPages11.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
-		self.m_TotalPages11.SetMinSize( wx.Size( 20,-1 ) )
-		self.m_TotalPages11.SetMaxSize( wx.Size( 20,-1 ) )
+		self.m_TotalPagesFB = wx.TextCtrl( self.m_toolBar1, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.Size( 40,-1 ), wx.TE_READONLY|wx.NO_BORDER )
+		self.m_TotalPagesFB.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
+		self.m_TotalPagesFB.SetMinSize( wx.Size( 20,-1 ) )
+		self.m_TotalPagesFB.SetMaxSize( wx.Size( 20,-1 ) )
 		
-		self.m_toolBar1.AddControl( self.m_TotalPages11 )
-		self.m_toolUP = self.m_toolBar1.AddTool( wx.ID_ANY, u"tool", wx.ArtProvider.GetBitmap( wx.ART_GO_UP,  ), wx.NullBitmap, wx.ITEM_NORMAL, wx.EmptyString, wx.EmptyString, None ) 
+		self.m_toolBar1.AddControl( self.m_TotalPagesFB )
+		self.m_pageUP = self.m_toolBar1.AddTool( wx.ID_ANY, u"tool", wx.ArtProvider.GetBitmap( wx.ART_GO_UP,  ), wx.NullBitmap, wx.ITEM_NORMAL, wx.EmptyString, wx.EmptyString, None ) 
 		
-		self.m_toolDOWN = self.m_toolBar1.AddTool( wx.ID_ANY, u"tool", wx.ArtProvider.GetBitmap( wx.ART_GO_DOWN,  ), wx.NullBitmap, wx.ITEM_NORMAL, wx.EmptyString, wx.EmptyString, None ) 
+		self.m_pageDOWN = self.m_toolBar1.AddTool( wx.ID_ANY, u"tool", wx.ArtProvider.GetBitmap( wx.ART_GO_DOWN,  ), wx.NullBitmap, wx.ITEM_NORMAL, wx.EmptyString, wx.EmptyString, None ) 
 		
 		self.m_toolBar1.Realize() 
 		
@@ -388,16 +393,16 @@ class MyFrame ( wx.Frame ):
 		
 		bSizer3 = wx.BoxSizer( wx.HORIZONTAL )
 		
-		self.m_textCtrl1 = wx.TextCtrl( self.panel11, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, wx.TE_READONLY )
-		self.m_textCtrl1.SetFont( wx.Font( 10, 74, 90, 92, False, "Verdana" ) )
+		self.m_modeDisplay = wx.TextCtrl( self.panel11, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, wx.TE_READONLY )
+		self.m_modeDisplay.SetFont( wx.Font( 10, 74, 90, 92, False, "Verdana" ) )
 		
-		bSizer3.Add( self.m_textCtrl1, 0, wx.ALL, 5 )
+		bSizer3.Add( self.m_modeDisplay, 0, wx.ALL, 5 )
 		
-		self.m_textCtrl2 = wx.TextCtrl( self.panel11, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
-		self.m_textCtrl2.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
-		self.m_textCtrl2.SetMinSize( wx.Size( 400,-1 ) )
+		self.m_userInput = wx.TextCtrl( self.panel11, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_userInput.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
+		self.m_userInput.SetMinSize( wx.Size( 400,-1 ) )
 		
-		bSizer3.Add( self.m_textCtrl2, 0, wx.ALL, 5 )
+		bSizer3.Add( self.m_userInput, 0, wx.ALL, 5 )
 		
 		self.m_enterselection = wx.Button( self.panel11, wx.ID_ANY, u"Enter Selection", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.m_enterselection.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
@@ -428,8 +433,8 @@ class MyFrame ( wx.Frame ):
 		
 		bSizer3.Add( self.m_staticText64, 0, wx.ALL, 9 )
 		
-		self.m_textCtrlTopic = wx.TextCtrl( self.panel11, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
-		bSizer3.Add( self.m_textCtrlTopic, 0, wx.ALL, 7 )
+		self.m_TopicInput = wx.TextCtrl( self.panel11, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
+		bSizer3.Add( self.m_TopicInput, 0, wx.ALL, 7 )
 		
 		self.m_btnScreenshot = wx.Button( self.panel11, wx.ID_ANY, u"Import Screenshot", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.m_btnScreenshot.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
@@ -466,51 +471,51 @@ class MyFrame ( wx.Frame ):
 		bSizer211 = wx.BoxSizer( wx.VERTICAL )
 		
 		self.m_toolBar3 = wx.ToolBar( self.panel21, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TB_HORIZONTAL ) 
-		self.m_filePicker21 = wx.FilePickerCtrl( self.m_toolBar3, wx.ID_ANY, wx.EmptyString, u"Select a file", u"*.tex*", wx.DefaultPosition, wx.DefaultSize, 0 )
-		self.m_filePicker21.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
+		self.m_filePickerFC = wx.FilePickerCtrl( self.m_toolBar3, wx.ID_ANY, wx.EmptyString, u"Select a file", u"*.tex*", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_filePickerFC.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
 		
-		self.m_toolBar3.AddControl( self.m_filePicker21 )
-		self.m_toolSwitch21 = self.m_toolBar3.AddTool( wx.ID_ANY, u"Switch", wx.Bitmap( path_switch, wx.BITMAP_TYPE_ANY ), wx.NullBitmap, wx.ITEM_NORMAL, wx.EmptyString, wx.EmptyString, None ) 
+		self.m_toolBar3.AddControl( self.m_filePickerFC )
+		self.m_toolSwitchFC = self.m_toolBar3.AddTool( wx.ID_ANY, u"Switch", wx.Bitmap( path_switch, wx.BITMAP_TYPE_ANY ), wx.NullBitmap, wx.ITEM_NORMAL, wx.EmptyString, wx.EmptyString, None ) 
 		
-		self.m_textCtrlMode = wx.TextCtrl( self.m_toolBar3, wx.ID_ANY, u"Question:", wx.DefaultPosition, wx.Size( -1,18 ), wx.TE_READONLY|wx.NO_BORDER )
-		self.m_textCtrlMode.SetFont( wx.Font( 11, 74, 90, 92, False, "Verdana" ) )
+		self.m_modeDisplayFC = wx.TextCtrl( self.m_toolBar3, wx.ID_ANY, u"Question:", wx.DefaultPosition, wx.Size( -1,18 ), wx.TE_READONLY|wx.NO_BORDER )
+		self.m_modeDisplayFC.SetFont( wx.Font( 11, 74, 90, 92, False, "Verdana" ) )
 		
-		self.m_toolBar3.AddControl( self.m_textCtrlMode )
-		self.m_CurrentPage21 = wx.TextCtrl( self.m_toolBar3, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.Size( 40,-1 ), wx.TE_CENTRE|wx.TE_READONLY )
-		self.m_CurrentPage21.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
-		self.m_CurrentPage21.SetMinSize( wx.Size( 10,-1 ) )
-		self.m_CurrentPage21.SetMaxSize( wx.Size( 10,-1 ) )
+		self.m_toolBar3.AddControl( self.m_modeDisplayFC )
+		self.m_CurrentCard = wx.TextCtrl( self.m_toolBar3, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.Size( 40,-1 ), wx.TE_CENTRE|wx.TE_READONLY )
+		self.m_CurrentCard.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
+		self.m_CurrentCard.SetMinSize( wx.Size( 10,-1 ) )
+		self.m_CurrentCard.SetMaxSize( wx.Size( 10,-1 ) )
 		
-		self.m_toolBar3.AddControl( self.m_CurrentPage21 )
+		self.m_toolBar3.AddControl( self.m_CurrentCard )
 		self.m_staticText611 = wx.StaticText( self.m_toolBar3, wx.ID_ANY, u" of ", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.m_staticText611.Wrap( -1 )
 		self.m_staticText611.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
 		
 		self.m_toolBar3.AddControl( self.m_staticText611 )
-		self.m_TotalPages21 = wx.TextCtrl( self.m_toolBar3, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.Size( 40,-1 ), wx.TE_READONLY )
-		self.m_TotalPages21.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
-		self.m_TotalPages21.SetMinSize( wx.Size( 20,-1 ) )
-		self.m_TotalPages21.SetMaxSize( wx.Size( 20,-1 ) )
+		self.m_TotalCards = wx.TextCtrl( self.m_toolBar3, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.Size( 40,-1 ), wx.TE_READONLY )
+		self.m_TotalCards.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
+		self.m_TotalCards.SetMinSize( wx.Size( 20,-1 ) )
+		self.m_TotalCards.SetMaxSize( wx.Size( 20,-1 ) )
 		
-		self.m_toolBar3.AddControl( self.m_TotalPages21 )
+		self.m_toolBar3.AddControl( self.m_TotalCards )
 		self.m_staticText311 = wx.StaticText( self.m_toolBar3, wx.ID_ANY, u"    score: ", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.m_staticText311.Wrap( -1 )
 		self.m_staticText311.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
 		
 		self.m_toolBar3.AddControl( self.m_staticText311 )
-		self.m_Score21 = wx.TextCtrl( self.m_toolBar3, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, wx.TE_READONLY|wx.NO_BORDER )
-		self.m_Score21.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
-		self.m_Score21.SetMaxSize( wx.Size( 20,-1 ) )
+		self.m_Score = wx.TextCtrl( self.m_toolBar3, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, wx.TE_READONLY|wx.NO_BORDER )
+		self.m_Score.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
+		self.m_Score.SetMaxSize( wx.Size( 20,-1 ) )
 		
-		self.m_toolBar3.AddControl( self.m_Score21 )
-		self.m_toolPlus21 = self.m_toolBar3.AddTool( wx.ID_ANY, u"plus", wx.Bitmap( path_add, wx.BITMAP_TYPE_ANY ), wx.NullBitmap, wx.ITEM_NORMAL, wx.EmptyString, wx.EmptyString, None ) 
+		self.m_toolBar3.AddControl( self.m_Score )
+		self.m_toolPlusFC = self.m_toolBar3.AddTool( wx.ID_ANY, u"plus", wx.Bitmap( path_add, wx.BITMAP_TYPE_ANY ), wx.NullBitmap, wx.ITEM_NORMAL, wx.EmptyString, wx.EmptyString, None ) 
 		
-		self.m_toolMin21 = self.m_toolBar3.AddTool( wx.ID_ANY, u"min", wx.Bitmap( path_min, wx.BITMAP_TYPE_ANY ), wx.NullBitmap, wx.ITEM_NORMAL, wx.EmptyString, wx.EmptyString, None ) 
+		self.m_toolMinFC = self.m_toolBar3.AddTool( wx.ID_ANY, u"min", wx.Bitmap( path_min, wx.BITMAP_TYPE_ANY ), wx.NullBitmap, wx.ITEM_NORMAL, wx.EmptyString, wx.EmptyString, None ) 
 		
-		self.m_Zoom21 = wx.TextCtrl( self.m_toolBar3, wx.ID_ANY, u"100%", wx.DefaultPosition, wx.Size( 40,-1 ), wx.TE_READONLY|wx.NO_BORDER )
-		self.m_Zoom21.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
+		self.m_ZoomFC = wx.TextCtrl( self.m_toolBar3, wx.ID_ANY, u"100%", wx.DefaultPosition, wx.Size( 40,-1 ), wx.TE_READONLY|wx.NO_BORDER )
+		self.m_ZoomFC.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
 		
-		self.m_toolBar3.AddControl( self.m_Zoom21 )
+		self.m_toolBar3.AddControl( self.m_ZoomFC )
 		self.m_toolBar3.Realize() 
 		
 		bSizer211.Add( self.m_toolBar3, 0, wx.ALIGN_CENTER|wx.EXPAND, 0 )
@@ -530,8 +535,8 @@ class MyFrame ( wx.Frame ):
 		
 		bSizer82.Add( ( 0, 0), 1, wx.EXPAND, 5 )
 		
-		self.m_bitmapScroll1 = wx.StaticBitmap( self.m_scrolledWindow11, wx.ID_ANY, wx.NullBitmap, wx.DefaultPosition, wx.DefaultSize, 0 )
-		bSizer82.Add( self.m_bitmapScroll1, 0, wx.ALL, 5 )
+		self.m_bitmapScrollFC = wx.StaticBitmap( self.m_scrolledWindow11, wx.ID_ANY, wx.NullBitmap, wx.DefaultPosition, wx.DefaultSize, 0 )
+		bSizer82.Add( self.m_bitmapScrollFC, 0, wx.ALL, 5 )
 		
 		
 		bSizer82.Add( ( 0, 0), 1, wx.EXPAND, 5 )
@@ -950,10 +955,10 @@ class MyFrame ( wx.Frame ):
 		
 		bSizer341 = wx.BoxSizer( wx.HORIZONTAL )
 		
-		self.m_btnSelect = wx.Button( self.m_panel18, wx.ID_ANY, u"Undo Changes", wx.DefaultPosition, wx.DefaultSize, 0 )
-		self.m_btnSelect.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
+		self.m_btnUndoChanges = wx.Button( self.m_panel18, wx.ID_ANY, u"Undo Changes", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_btnUndoChanges.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
 		
-		bSizer341.Add( self.m_btnSelect, 0, wx.ALL, 5 )
+		bSizer341.Add( self.m_btnUndoChanges, 0, wx.ALL, 5 )
 		
 		self.m_btnImportScreenshot = wx.Button( self.m_panel18, wx.ID_ANY, u"Import", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.m_btnImportScreenshot.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
@@ -1181,13 +1186,14 @@ class MyFrame ( wx.Frame ):
 		self.Bind( wx.EVT_MENU, self.m_menuCombineBooksOnMenuSelection, id = self.m_menuCombineBooks.GetId() )
 		self.Bind( wx.EVT_MENU, self.m_menuNewBookOnMenuSelection, id = self.m_menuNewBook.GetId() )
 		self.Bind( wx.EVT_MENU, self.m_menuItemDelBookOnMenuSelection, id = self.m_menuItemDelBook.GetId() )
+		self.Bind( wx.EVT_MENU, self.m_menuAddCardOnMenuSelection, id = self.m_menuAddCard.GetId() )
 		self.Bind( wx.EVT_MENU, self.m_menuDeleteCardOnMenuSelection, id = self.m_menuDeleteCard.GetId() )
 		self.Bind( wx.EVT_MENU, self.m_menuEditCardOnMenuSelection, id = self.m_menuEditCard.GetId() )
 		self.Bind( wx.EVT_MENU, self.m_menuPreviousCardOnMenuSelection, id = self.m_menuPreviousCard.GetId() )
 		self.Bind( wx.EVT_MENU, self.m_menuHelpOnMenuSelection, id = self.m_menuHelp.GetId() )
 		self.Bind( wx.EVT_MENU, self.m_menuItemAboutOnMenuSelection, id = self.m_menuItemAbout.GetId() )
-		self.Bind( wx.EVT_MENU, self.m_checkBox11OnCheckBox, id = self.m_checkBox11.GetId() )
-		self.Bind( wx.EVT_MENU, self.m_checkBoxCursor11OnCheckBox, id = self.m_checkBoxCursor11.GetId() )
+		self.Bind( wx.EVT_MENU, self.m_checkBoxSelectionsOnMenuSelection, id = self.m_checkBoxSelections.GetId() )
+		self.Bind( wx.EVT_MENU, self.m_checkBoxCursorOnMenuSelection, id = self.m_checkBoxCursor.GetId() )
 		self.Bind( wx.EVT_MENU, self.m_checkBoxDebugOnMenuSelection, id = self.m_checkBoxDebug.GetId() )
 		self.Bind( wx.EVT_MENU, self.m_menuItemGraphOnMenuSelection, id = self.m_menuItemGraph.GetId() )
 		self.Bind( wx.EVT_MENU, self.m_menuResetSettingsOnMenuSelection, id = self.m_menuResetSettings.GetId() )
@@ -1197,16 +1203,16 @@ class MyFrame ( wx.Frame ):
 		self.m_OpenFlashcard.Bind( wx.EVT_BUTTON, self.m_OpenFlashcardOnButtonClick )
 		self.m_OpenPrint.Bind( wx.EVT_BUTTON, self.m_OpenPrintOnButtonClick )
 		self.m_OpenTransfer.Bind( wx.EVT_BUTTON, self.m_OpenTransferOnButtonClick )
-		self.m_dirPicker11.Bind( wx.EVT_DIRPICKER_CHANGED, self.m_dirPicker11OnDirChanged )
-		self.Bind( wx.EVT_TOOL, self.m_toolPlus11OnToolClicked, id = self.m_toolPlus11.GetId() )
-		self.Bind( wx.EVT_TOOL, self.m_toolMin11OnToolClicked, id = self.m_toolMin11.GetId() )
-		self.Bind( wx.EVT_TOOL, self.m_toolBack11OnToolClicked, id = self.m_toolBack11.GetId() )
-		self.Bind( wx.EVT_TOOL, self.m_toolNext11OnToolClicked, id = self.m_toolNext11.GetId() )
-		self.m_CurrentPage11.Bind( wx.EVT_ENTER_WINDOW, self.m_CurrentPage11OnEnterWindow )
-		self.m_CurrentPage11.Bind( wx.EVT_KEY_UP, self.m_CurrentPage11OnKeyUp )
-		self.m_CurrentPage11.Bind( wx.EVT_LEAVE_WINDOW, self.m_CurrentPage11OnLeaveWindow )
-		self.Bind( wx.EVT_TOOL, self.m_toolUPOnToolClicked, id = self.m_toolUP.GetId() )
-		self.Bind( wx.EVT_TOOL, self.m_toolDOWNOnToolClicked, id = self.m_toolDOWN.GetId() )
+		self.m_dirPickerFB.Bind( wx.EVT_DIRPICKER_CHANGED, self.m_dirPickerFBOnDirChanged )
+		self.Bind( wx.EVT_TOOL, self.m_toolPlusFBOnToolClicked, id = self.m_toolPlusFB.GetId() )
+		self.Bind( wx.EVT_TOOL, self.m_toolMinFBOnToolClicked, id = self.m_toolMinFB.GetId() )
+		self.Bind( wx.EVT_TOOL, self.m_pageBackFBOnToolClicked, id = self.m_pageBackFB.GetId() )
+		self.Bind( wx.EVT_TOOL, self.m_pageNextFBOnToolClicked, id = self.m_pageNextFB.GetId() )
+		self.m_CurrentPageFB.Bind( wx.EVT_ENTER_WINDOW, self.m_CurrentPageFBOnEnterWindow )
+		self.m_CurrentPageFB.Bind( wx.EVT_KEY_UP, self.m_CurrentPageFBOnKeyUp )
+		self.m_CurrentPageFB.Bind( wx.EVT_LEAVE_WINDOW, self.m_CurrentPageFBOnLeaveWindow )
+		self.Bind( wx.EVT_TOOL, self.m_pageUPOnToolClicked, id = self.m_pageUP.GetId() )
+		self.Bind( wx.EVT_TOOL, self.m_pageDOWNOnToolClicked, id = self.m_pageDOWN.GetId() )
 		self.m_scrolledWindow1.Bind( wx.EVT_KEY_DOWN, self.m_scrolledWindow1OnKeyDown )
 		self.m_scrolledWindow1.Bind( wx.EVT_LEFT_DOWN, self.m_scrolledWindow1OnMouseEvents )
 		self.m_scrolledWindow1.Bind( wx.EVT_LEFT_UP, self.m_scrolledWindow1OnMouseEvents )
@@ -1240,19 +1246,19 @@ class MyFrame ( wx.Frame ):
 		self.m_bitmapScroll.Bind( wx.EVT_MOUSEWHEEL, self.m_bitmapScrollOnMouseEvents )
 		self.m_bitmapScroll.Bind( wx.EVT_MOUSEWHEEL, self.m_bitmapScrollOnMouseWheel )
 		self.m_bitmapScroll.Bind( wx.EVT_RIGHT_DOWN, self.m_bitmapScrollOnRightDown )
-		self.m_textCtrl2.Bind( wx.EVT_ENTER_WINDOW, self.m_textCtrl2OnEnterWindow )
-		self.m_textCtrl2.Bind( wx.EVT_LEAVE_WINDOW, self.m_textCtrl2OnLeaveWindow )
+		self.m_userInput.Bind( wx.EVT_ENTER_WINDOW, self.m_userInputOnEnterWindow )
+		self.m_userInput.Bind( wx.EVT_LEAVE_WINDOW, self.m_userInputOnLeaveWindow )
 		self.m_enterselection.Bind( wx.EVT_BUTTON, self.m_enterselectionOnButtonClick )
 		self.m_toolStitch.Bind( wx.EVT_BUTTON, self.m_toolStitchOnButtonClick )
 		self.m_btnScreenshot.Bind( wx.EVT_BUTTON, self.m_btnScreenshotOnButtonClick )
 		self.m_resetselection.Bind( wx.EVT_BUTTON, self.m_resetselectionOnButtonClick )
-		self.m_filePicker21.Bind( wx.EVT_FILEPICKER_CHANGED, self.m_filePicker21OnFileChanged )
-		self.Bind( wx.EVT_TOOL, self.m_toolSwitch21OnToolClicked, id = self.m_toolSwitch21.GetId() )
-		self.m_CurrentPage21.Bind( wx.EVT_KEY_DOWN, self.m_CurrentPage21OnKeyDown )
-		self.m_CurrentPage21.Bind( wx.EVT_KEY_UP, self.m_CurrentPage21OnKeyUp )
-		self.m_CurrentPage21.Bind( wx.EVT_TEXT, self.m_CurrentPage21OnText )
-		self.Bind( wx.EVT_TOOL, self.m_toolPlus21OnToolClicked, id = self.m_toolPlus21.GetId() )
-		self.Bind( wx.EVT_TOOL, self.m_toolMin21OnToolClicked, id = self.m_toolMin21.GetId() )
+		self.m_filePickerFC.Bind( wx.EVT_FILEPICKER_CHANGED, self.m_filePickerFCOnFileChanged )
+		self.Bind( wx.EVT_TOOL, self.m_toolSwitchFCOnToolClicked, id = self.m_toolSwitchFC.GetId() )
+		self.m_CurrentCard.Bind( wx.EVT_KEY_DOWN, self.m_CurrentCardOnKeyDown )
+		self.m_CurrentCard.Bind( wx.EVT_KEY_UP, self.m_CurrentCardOnKeyUp )
+		self.m_CurrentCard.Bind( wx.EVT_TEXT, self.m_CurrentCardOnText )
+		self.Bind( wx.EVT_TOOL, self.m_toolPlusFCOnToolClicked, id = self.m_toolPlusFC.GetId() )
+		self.Bind( wx.EVT_TOOL, self.m_toolMinFCOnToolClicked, id = self.m_toolMinFC.GetId() )
 		self.m_scrolledWindow11.Bind( wx.EVT_KEY_DOWN, self.m_scrolledWindow11OnKeyDown )
 		self.m_scrolledWindow11.Bind( wx.EVT_LEFT_UP, self.m_scrolledWindow11OnLeftUp )
 		self.m_scrolledWindow11.Bind( wx.EVT_LEFT_DOWN, self.m_scrolledWindow11OnMouseEvents )
@@ -1270,26 +1276,26 @@ class MyFrame ( wx.Frame ):
 		self.m_scrolledWindow11.Bind( wx.EVT_MOUSEWHEEL, self.m_scrolledWindow11OnMouseEvents )
 		self.m_scrolledWindow11.Bind( wx.EVT_MOUSEWHEEL, self.m_scrolledWindow11OnMouseWheel )
 		self.m_scrolledWindow11.Bind( wx.EVT_RIGHT_UP, self.m_scrolledWindow11OnRightUp )
-		self.m_bitmapScroll1.Bind( wx.EVT_KEY_DOWN, self.m_bitmapScroll1OnKeyDown )
-		self.m_bitmapScroll1.Bind( wx.EVT_LEFT_DOWN, self.m_bitmapScroll1OnLeftDown )
-		self.m_bitmapScroll1.Bind( wx.EVT_LEFT_UP, self.m_bitmapScroll1OnLeftUp )
-		self.m_bitmapScroll1.Bind( wx.EVT_MOTION, self.m_bitmapScroll1OnMotion )
-		self.m_bitmapScroll1.Bind( wx.EVT_LEFT_DOWN, self.m_bitmapScroll1OnMouseEvents )
-		self.m_bitmapScroll1.Bind( wx.EVT_LEFT_UP, self.m_bitmapScroll1OnMouseEvents )
-		self.m_bitmapScroll1.Bind( wx.EVT_MIDDLE_DOWN, self.m_bitmapScroll1OnMouseEvents )
-		self.m_bitmapScroll1.Bind( wx.EVT_MIDDLE_UP, self.m_bitmapScroll1OnMouseEvents )
-		self.m_bitmapScroll1.Bind( wx.EVT_RIGHT_DOWN, self.m_bitmapScroll1OnMouseEvents )
-		self.m_bitmapScroll1.Bind( wx.EVT_RIGHT_UP, self.m_bitmapScroll1OnMouseEvents )
-		self.m_bitmapScroll1.Bind( wx.EVT_MOTION, self.m_bitmapScroll1OnMouseEvents )
-		self.m_bitmapScroll1.Bind( wx.EVT_LEFT_DCLICK, self.m_bitmapScroll1OnMouseEvents )
-		self.m_bitmapScroll1.Bind( wx.EVT_MIDDLE_DCLICK, self.m_bitmapScroll1OnMouseEvents )
-		self.m_bitmapScroll1.Bind( wx.EVT_RIGHT_DCLICK, self.m_bitmapScroll1OnMouseEvents )
-		self.m_bitmapScroll1.Bind( wx.EVT_LEAVE_WINDOW, self.m_bitmapScroll1OnMouseEvents )
-		self.m_bitmapScroll1.Bind( wx.EVT_ENTER_WINDOW, self.m_bitmapScroll1OnMouseEvents )
-		self.m_bitmapScroll1.Bind( wx.EVT_MOUSEWHEEL, self.m_bitmapScroll1OnMouseEvents )
-		self.m_bitmapScroll1.Bind( wx.EVT_MOUSEWHEEL, self.m_bitmapScroll1OnMouseWheel )
-		self.m_bitmapScroll1.Bind( wx.EVT_RIGHT_DOWN, self.m_bitmapScroll1OnRightDown )
-		self.m_bitmapScroll1.Bind( wx.EVT_RIGHT_UP, self.m_bitmapScroll1OnRightUp )
+		self.m_bitmapScrollFC.Bind( wx.EVT_KEY_DOWN, self.m_bitmapScrollFCOnKeyDown )
+		self.m_bitmapScrollFC.Bind( wx.EVT_LEFT_DOWN, self.m_bitmapScrollFCOnLeftDown )
+		self.m_bitmapScrollFC.Bind( wx.EVT_LEFT_UP, self.m_bitmapScrollFCOnLeftUp )
+		self.m_bitmapScrollFC.Bind( wx.EVT_MOTION, self.m_bitmapScrollFCOnMotion )
+		self.m_bitmapScrollFC.Bind( wx.EVT_LEFT_DOWN, self.m_bitmapScrollFCOnMouseEvents )
+		self.m_bitmapScrollFC.Bind( wx.EVT_LEFT_UP, self.m_bitmapScrollFCOnMouseEvents )
+		self.m_bitmapScrollFC.Bind( wx.EVT_MIDDLE_DOWN, self.m_bitmapScrollFCOnMouseEvents )
+		self.m_bitmapScrollFC.Bind( wx.EVT_MIDDLE_UP, self.m_bitmapScrollFCOnMouseEvents )
+		self.m_bitmapScrollFC.Bind( wx.EVT_RIGHT_DOWN, self.m_bitmapScrollFCOnMouseEvents )
+		self.m_bitmapScrollFC.Bind( wx.EVT_RIGHT_UP, self.m_bitmapScrollFCOnMouseEvents )
+		self.m_bitmapScrollFC.Bind( wx.EVT_MOTION, self.m_bitmapScrollFCOnMouseEvents )
+		self.m_bitmapScrollFC.Bind( wx.EVT_LEFT_DCLICK, self.m_bitmapScrollFCOnMouseEvents )
+		self.m_bitmapScrollFC.Bind( wx.EVT_MIDDLE_DCLICK, self.m_bitmapScrollFCOnMouseEvents )
+		self.m_bitmapScrollFC.Bind( wx.EVT_RIGHT_DCLICK, self.m_bitmapScrollFCOnMouseEvents )
+		self.m_bitmapScrollFC.Bind( wx.EVT_LEAVE_WINDOW, self.m_bitmapScrollFCOnMouseEvents )
+		self.m_bitmapScrollFC.Bind( wx.EVT_ENTER_WINDOW, self.m_bitmapScrollFCOnMouseEvents )
+		self.m_bitmapScrollFC.Bind( wx.EVT_MOUSEWHEEL, self.m_bitmapScrollFCOnMouseEvents )
+		self.m_bitmapScrollFC.Bind( wx.EVT_MOUSEWHEEL, self.m_bitmapScrollFCOnMouseWheel )
+		self.m_bitmapScrollFC.Bind( wx.EVT_RIGHT_DOWN, self.m_bitmapScrollFCOnRightDown )
+		self.m_bitmapScrollFC.Bind( wx.EVT_RIGHT_UP, self.m_bitmapScrollFCOnRightUp )
 		self.m_buttonCorrect.Bind( wx.EVT_BUTTON, self.m_buttonCorrectOnButtonClick )
 		self.m_buttonWrong.Bind( wx.EVT_BUTTON, self.m_buttonWrongOnButtonClick )
 		self.m_lineQA.Bind( wx.EVT_CHECKBOX, self.m_lineQAOnCheckBox )
@@ -1321,7 +1327,7 @@ class MyFrame ( wx.Frame ):
 		self.m_PrintFinal.Bind( wx.EVT_BUTTON, self.m_PrintFinalOnButtonClick )
 		self.m_bitmap4.Bind( wx.EVT_LEFT_DOWN, self.m_bitmap4OnLeftDown )
 		self.m_bitmap4.Bind( wx.EVT_LEFT_UP, self.m_bitmap4OnLeftUp )
-		self.m_btnSelect.Bind( wx.EVT_BUTTON, self.m_btnSelectOnButtonClick )
+		self.m_btnUndoChanges.Bind( wx.EVT_BUTTON, self.m_btnUndoChangesOnButtonClick )
 		self.m_btnImportScreenshot.Bind( wx.EVT_BUTTON, self.m_btnImportScreenshotOnButtonClick )
 		self.m_txtMyIP.Bind( wx.EVT_KEY_UP, self.m_txtMyIPOnKeyUp )
 		self.m_txtTargetIP.Bind( wx.EVT_KEY_UP, self.m_txtTargetIPOnKeyUp )
@@ -1362,6 +1368,9 @@ class MyFrame ( wx.Frame ):
 	def m_menuItemDelBookOnMenuSelection( self, event ):
 		event.Skip()
 	
+	def m_menuAddCardOnMenuSelection( self, event ):
+		event.Skip()
+	
 	def m_menuDeleteCardOnMenuSelection( self, event ):
 		event.Skip()
 	
@@ -1377,10 +1386,10 @@ class MyFrame ( wx.Frame ):
 	def m_menuItemAboutOnMenuSelection( self, event ):
 		event.Skip()
 	
-	def m_checkBox11OnCheckBox( self, event ):
+	def m_checkBoxSelectionsOnMenuSelection( self, event ):
 		event.Skip()
 	
-	def m_checkBoxCursor11OnCheckBox( self, event ):
+	def m_checkBoxCursorOnMenuSelection( self, event ):
 		event.Skip()
 	
 	def m_checkBoxDebugOnMenuSelection( self, event ):
@@ -1410,34 +1419,34 @@ class MyFrame ( wx.Frame ):
 	def m_OpenTransferOnButtonClick( self, event ):
 		event.Skip()
 	
-	def m_dirPicker11OnDirChanged( self, event ):
+	def m_dirPickerFBOnDirChanged( self, event ):
 		event.Skip()
 	
-	def m_toolPlus11OnToolClicked( self, event ):
+	def m_toolPlusFBOnToolClicked( self, event ):
 		event.Skip()
 	
-	def m_toolMin11OnToolClicked( self, event ):
+	def m_toolMinFBOnToolClicked( self, event ):
 		event.Skip()
 	
-	def m_toolBack11OnToolClicked( self, event ):
+	def m_pageBackFBOnToolClicked( self, event ):
 		event.Skip()
 	
-	def m_toolNext11OnToolClicked( self, event ):
+	def m_pageNextFBOnToolClicked( self, event ):
 		event.Skip()
 	
-	def m_CurrentPage11OnEnterWindow( self, event ):
+	def m_CurrentPageFBOnEnterWindow( self, event ):
 		event.Skip()
 	
-	def m_CurrentPage11OnKeyUp( self, event ):
+	def m_CurrentPageFBOnKeyUp( self, event ):
 		event.Skip()
 	
-	def m_CurrentPage11OnLeaveWindow( self, event ):
+	def m_CurrentPageFBOnLeaveWindow( self, event ):
 		event.Skip()
 	
-	def m_toolUPOnToolClicked( self, event ):
+	def m_pageUPOnToolClicked( self, event ):
 		event.Skip()
 	
-	def m_toolDOWNOnToolClicked( self, event ):
+	def m_pageDOWNOnToolClicked( self, event ):
 		event.Skip()
 	
 	def m_scrolledWindow1OnKeyDown( self, event ):
@@ -1467,10 +1476,10 @@ class MyFrame ( wx.Frame ):
 	def m_bitmapScrollOnRightDown( self, event ):
 		event.Skip()
 	
-	def m_textCtrl2OnEnterWindow( self, event ):
+	def m_userInputOnEnterWindow( self, event ):
 		event.Skip()
 	
-	def m_textCtrl2OnLeaveWindow( self, event ):
+	def m_userInputOnLeaveWindow( self, event ):
 		event.Skip()
 	
 	def m_enterselectionOnButtonClick( self, event ):
@@ -1485,25 +1494,25 @@ class MyFrame ( wx.Frame ):
 	def m_resetselectionOnButtonClick( self, event ):
 		event.Skip()
 	
-	def m_filePicker21OnFileChanged( self, event ):
+	def m_filePickerFCOnFileChanged( self, event ):
 		event.Skip()
 	
-	def m_toolSwitch21OnToolClicked( self, event ):
+	def m_toolSwitchFCOnToolClicked( self, event ):
 		event.Skip()
 	
-	def m_CurrentPage21OnKeyDown( self, event ):
+	def m_CurrentCardOnKeyDown( self, event ):
 		event.Skip()
 	
-	def m_CurrentPage21OnKeyUp( self, event ):
+	def m_CurrentCardOnKeyUp( self, event ):
 		event.Skip()
 	
-	def m_CurrentPage21OnText( self, event ):
+	def m_CurrentCardOnText( self, event ):
 		event.Skip()
 	
-	def m_toolPlus21OnToolClicked( self, event ):
+	def m_toolPlusFCOnToolClicked( self, event ):
 		event.Skip()
 	
-	def m_toolMin21OnToolClicked( self, event ):
+	def m_toolMinFCOnToolClicked( self, event ):
 		event.Skip()
 	
 	def m_scrolledWindow11OnKeyDown( self, event ):
@@ -1521,28 +1530,28 @@ class MyFrame ( wx.Frame ):
 	def m_scrolledWindow11OnRightUp( self, event ):
 		event.Skip()
 	
-	def m_bitmapScroll1OnKeyDown( self, event ):
+	def m_bitmapScrollFCOnKeyDown( self, event ):
 		event.Skip()
 	
-	def m_bitmapScroll1OnLeftDown( self, event ):
+	def m_bitmapScrollFCOnLeftDown( self, event ):
 		event.Skip()
 	
-	def m_bitmapScroll1OnLeftUp( self, event ):
+	def m_bitmapScrollFCOnLeftUp( self, event ):
 		event.Skip()
 	
-	def m_bitmapScroll1OnMotion( self, event ):
+	def m_bitmapScrollFCOnMotion( self, event ):
 		event.Skip()
 	
-	def m_bitmapScroll1OnMouseEvents( self, event ):
+	def m_bitmapScrollFCOnMouseEvents( self, event ):
 		event.Skip()
 	
-	def m_bitmapScroll1OnMouseWheel( self, event ):
+	def m_bitmapScrollFCOnMouseWheel( self, event ):
 		event.Skip()
 	
-	def m_bitmapScroll1OnRightDown( self, event ):
+	def m_bitmapScrollFCOnRightDown( self, event ):
 		event.Skip()
 	
-	def m_bitmapScroll1OnRightUp( self, event ):
+	def m_bitmapScrollFCOnRightUp( self, event ):
 		event.Skip()
 	
 	def m_buttonCorrectOnButtonClick( self, event ):
@@ -1636,7 +1645,7 @@ class MyFrame ( wx.Frame ):
 	def m_bitmap4OnLeftUp( self, event ):
 		event.Skip()
 	
-	def m_btnSelectOnButtonClick( self, event ):
+	def m_btnUndoChangesOnButtonClick( self, event ):
 		event.Skip()
 	
 	def m_btnImportScreenshotOnButtonClick( self, event ):
@@ -2635,7 +2644,7 @@ class MyDialog7B ( wx.Dialog ):
 class MyDialog8 ( wx.Dialog ):
 	
 	def __init__( self, parent, data ):
-		wx.Dialog.__init__ ( self, parent, id = wx.ID_ANY, title = u"Edit the cards", pos = wx.DefaultPosition, size = wx.Size( 527,188 ), style = wx.DEFAULT_DIALOG_STYLE )
+		wx.Dialog.__init__ ( self, parent, id = wx.ID_ANY, title = data[0], pos = wx.DefaultPosition, size = wx.Size( 527,188 ), style = wx.DEFAULT_DIALOG_STYLE )
 		
 		self.SetSizeHints( wx.DefaultSize, wx.DefaultSize )
 		
@@ -2654,7 +2663,7 @@ class MyDialog8 ( wx.Dialog ):
 		
 		fgSizer5.Add( self.m_staticText55, 0, wx.ALL, 5 )
 		
-		self.m_textCtrl24 = wx.TextCtrl( self.m_panel32, wx.ID_ANY, data[0], wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_textCtrl24 = wx.TextCtrl( self.m_panel32, wx.ID_ANY, data[1], wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.m_textCtrl24.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
 		self.m_textCtrl24.SetMinSize( wx.Size( 400,-1 ) )
 		
@@ -2666,7 +2675,7 @@ class MyDialog8 ( wx.Dialog ):
 		
 		fgSizer5.Add( self.m_staticText56, 0, wx.ALL, 5 )
 		
-		self.m_textCtrl25 = wx.TextCtrl( self.m_panel32, wx.ID_ANY, data[1], wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_textCtrl25 = wx.TextCtrl( self.m_panel32, wx.ID_ANY, data[2], wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.m_textCtrl25.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
 		self.m_textCtrl25.SetMinSize( wx.Size( 400,-1 ) )
 		
@@ -2678,7 +2687,7 @@ class MyDialog8 ( wx.Dialog ):
 		
 		fgSizer5.Add( self.m_staticText68, 0, wx.ALL, 5 )
 		
-		self.m_textCtrl30 = wx.TextCtrl( self.m_panel32, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_textCtrl30 = wx.TextCtrl( self.m_panel32, wx.ID_ANY, data[3], wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.m_textCtrl30.SetMinSize( wx.Size( 400,-1 ) )
 		
 		fgSizer5.Add( self.m_textCtrl30, 0, wx.ALL, 5 )
