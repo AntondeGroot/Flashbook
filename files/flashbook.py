@@ -229,7 +229,7 @@ def settings_reset(self):
         settingsfile.unlink()
     settings_create(self)
     settings_get(self)
-    self.m_checkBox11.Check(self.drawborders)
+    self.m_checkBoxSelections.Check(self.drawborders)
     if self.panel3.IsShown():
         self.m_colorQAline.SetColour(self.QAline_color)
         self.m_colorPDFline.SetColour(self.pdfline_color)
@@ -360,8 +360,8 @@ class MainFrame(gui.MyFrame):
         p.SwitchPanel(self,0)
         self.printpreview = True
         
-        self.m_checkBox11.Check(self.drawborders)
-        self.m_checkBoxCursor11.Check(self.cursor)
+        self.m_checkBoxSelections.Check(self.drawborders)
+        self.m_checkBoxCursor.Check(self.cursor)
         self.m_checkBoxDebug.Check(self.debugmode)
         
         m.setcursor(self)
@@ -376,8 +376,8 @@ class MainFrame(gui.MyFrame):
         """START MAIN PROGRAM : FLASHBOOK"""
         self.stayonpage = False
         self.stitchmode_v = True # stich vertical or horizontal
-        self.m_dirPicker11.SetInitialDirectory(str(self.booksdir))
-        self.m_dirPicker11.SetPath(str(self.booksdir))
+        self.m_dirPickerFB.SetInitialDirectory(str(self.booksdir))
+        self.m_dirPickerFB.SetPath(str(self.booksdir))
         self.m_bitmapScroll.SetWindowStyleFlag(False)  # first disable the border of the bitmap, otherwise you get a bordered empty bitmap. Enable the border only when there is a bitmap
         setup_sources(self)
         p.SwitchPanel(self,1)      
@@ -741,6 +741,41 @@ class MainFrame(gui.MyFrame):
     def m_txtHelpSyncOnLeftDown(self,event):
         p.SwitchPanel(self,5) 
     #%%Flashcard menu
+    
+    def m_menuAddCardOnMenuSelection( self, event ):
+            
+        trueindex = self.cardorder[self.index]
+        data = ['Add a card', '' , '' , '' ]
+        
+        with gui.MyDialog8(self,data) as dlg:
+            if dlg.ShowModal() == wx.ID_OK:
+                #Get user data
+                question = dlg.m_textCtrl24.GetValue()
+                answer   = dlg.m_textCtrl25.GetValue()
+                topic    = dlg.m_textCtrl30.GetValue()
+                #open file
+                with open(Path(self.notesdir,self.filename),'r') as file:
+                    file_lines = file.readlines()
+                    file.close()                    
+                print(question,answer,topic)
+                #make changes
+                if question != '':
+                    self.nr_questions += 1
+                    self.m_TotalCards.SetValue(f"{self.nr_questions}")
+                    file_lines.insert(trueindex, r"\quiz{"+str(question)+"}"+r"\ans{"+str(answer)+"}" +r"\topic{"+str(topic)+  "}"+"\n")
+                    #save changes
+                    with open(str(Path(self.notesdir, self.filename)), 'w') as output: 
+                        for line in file_lines:
+                            output.write(line)
+                    #reload cards
+                    self.CardsDeck.reset()
+                    linefile = f2.loadfile(self.booknamepath)
+                    cards = f2.File_to_Cards(self,linefile)                       # converts to raw cards
+                    self.CardsDeck.set_cards(cards=cards,notesdir=self.notesdir)
+                    f2.switch_bitmap(self)
+                    f2.displaycard(self)
+                    self.Refresh()
+                
     def m_menuDeleteCardOnMenuSelection( self, event ):
         if self.SwitchCard == True: #there is also an Answer card
             modereset = self.mode
@@ -762,7 +797,7 @@ class MainFrame(gui.MyFrame):
                     self.cardorder = [x for x in self.cardorder if x != self.cardorder[self.index]]
                     #self.nr_cards = len(self.cardorder)
                     self.nr_questions -= 1
-                    self.m_TotalPages21.SetValue(f"{self.nr_questions}")
+                    self.m_TotalCards.SetValue(str(self.nr_questions))
                     f2.displaycard(self)
                     self.Refresh()
                     print("success!!")
@@ -777,14 +812,14 @@ class MainFrame(gui.MyFrame):
                     self.cardorder = [x for x in self.cardorder if x != self.cardorder[self.index]]
                     #self.nr_cards = len(self.cardorder)
                     self.nr_questions -= 1
-                    self.m_TotalPages21.SetValue(f"{self.nr_questions}")
+                    self.m_TotalCards.SetValue(f"{self.nr_questions}")
                     f2.displaycard(self)
                     self.Refresh()
                 
     def m_menuEditCardOnMenuSelection( self, event ):
         trueindex = self.cardorder[self.index]
         rawcard = self.CardsDeck.get_rawcard_i(trueindex)
-        data = [ rawcard['q'] , rawcard['a'] , rawcard['t'] ]
+        data = ['Edit the card', rawcard['q'] , rawcard['a'] , rawcard['t'] ]
         
         with gui.MyDialog8(self,data) as dlg:
             if dlg.ShowModal() == wx.ID_OK:
@@ -807,7 +842,7 @@ class MainFrame(gui.MyFrame):
                     self.cardorder = [x for x in self.cardorder if x != self.cardorder[self.index]]
                     #self.nr_cards = len(self.cardorder)
                     self.nr_questions -= 1
-                    self.m_TotalPages21.SetValue(f"{self.nr_questions}")
+                    self.m_TotalCards.SetValue(f"{self.nr_questions}")
                     f2.displaycard(self)
                     self.Refresh()
                 else:
@@ -838,7 +873,7 @@ class MainFrame(gui.MyFrame):
                     #image = f2.CreateSingularCard(self,'Question')
                     
                     #BMP = f2.PILimage_to_Bitmap(image)
-                    #self.m_bitmapScroll1.SetBitmap(BMP)
+                    #self.m_bitmapScrollFC.SetBitmap(BMP)
                     #self.Refresh()
                 
                 print("success!!")
@@ -866,14 +901,14 @@ class MainFrame(gui.MyFrame):
     def m_enterselectionOnButtonClick( self, event ):
         m.selectionentered(self,event)
         
-    def m_checkBoxCursor11OnCheckBox( self, event ):
+    def m_checkBoxCursorOnCheckBox( self, event ):
         self.cursor = not self.cursor
         m.setcursor(self)
         settings_set(self)
     
     # show drawn borders 
-    def m_checkBox11OnCheckBox( self, event ):
-        self.drawborders = self.m_checkBox11.IsChecked()   
+    def m_checkBoxSelectionsOnCheckBox( self, event ):
+        self.drawborders = self.m_checkBoxSelections.IsChecked()   
         settings_set(self)
         try:
             print(f"checkbox is {self.drawborders}")
@@ -884,8 +919,8 @@ class MainFrame(gui.MyFrame):
             pass    
     def m_menuResetSettingsOnMenuSelection( self, event ):
         settings_reset(self)   
-        self.m_checkBox11.Check(self.drawborders)
-        self.m_checkBoxCursor11.Check(self.cursor)
+        self.m_checkBoxSelections.Check(self.drawborders)
+        self.m_checkBoxCursor.Check(self.cursor)
         self.m_checkBoxDebug.Check(self.debugmode)
         m.setcursor(self)   
     #%% flashbook
@@ -897,14 +932,14 @@ class MainFrame(gui.MyFrame):
         self.currentpage = 'prtscr'
         m3.import_screenshot(self,event)
         
-    def m_textCtrl2OnEnterWindow( self, event ):
+    def m_userInputOnEnterWindow( self, event ):
         print("entered window")
         m7.AcceleratorTableSetup(self,"flashbook","textwindow")
 	
-    def m_textCtrl2OnLeaveWindow( self, event ):
+    def m_userInputOnLeaveWindow( self, event ):
         m7.AcceleratorTableSetup(self,"flashbook","set")
     
-    def m_btnSelectOnButtonClick( self, event ):
+    def m_btnUndoChangesOnButtonClick( self, event ):
         if hasattr(self,"backupimage"):
             image3 = self.backupimage
             self.m_bitmap4.SetBitmap(image3)
@@ -934,40 +969,40 @@ class MainFrame(gui.MyFrame):
         self.Update()
         self.Refresh()
         
-    def m_dirPicker11OnDirChanged( self, event ):
+    def m_dirPickerFBOnDirChanged( self, event ):
         print("dir has changed")
         self.m_bitmapScroll.SetWindowStyleFlag(wx.SIMPLE_BORDER)
         m.dirchanged(self,event)        
         
     
 	# zoom in #================================================================
-    def m_toolPlus11OnToolClicked( self, event ):
+    def m_toolPlusFBOnToolClicked( self, event ):
         m.zoomin(self,event)
 	
-    def m_toolMin11OnToolClicked( self, event ):
+    def m_toolMinFBOnToolClicked( self, event ):
         m.zoomout(self,event)
 	
     # change page #============================================================
-    def m_toolBack11OnToolClicked( self, event ):
+    def m_pageBackFBOnToolClicked( self, event ):
         self.stayonpage = False
         m.previouspage(self,event)
 	
-    def m_toolNext11OnToolClicked( self, event ):
+    def m_pageNextFBOnToolClicked( self, event ):
         self.stayonpage = False
         m.nextpage(self,event)
-    def m_toolUPOnToolClicked( self, event ):
+    def m_pageUPOnToolClicked( self, event ):
         m.arrowscroll(self,event,'up')
             
-    def m_toolDOWNOnToolClicked( self, event ):
+    def m_pageDOWNOnToolClicked( self, event ):
         m.arrowscroll(self,event,'down')        
     
-    def m_CurrentPage11OnEnterWindow( self, event ):
+    def m_CurrentPageFBOnEnterWindow( self, event ):
         m7.AcceleratorTableSetup(self,"flashbook","pagewindow")
         
-    def m_CurrentPage11OnLeaveWindow( self, event ):
+    def m_CurrentPageFBOnLeaveWindow( self, event ):
         m7.AcceleratorTableSetup(self,"flashbook","set")
         try:
-            self.currentpage = int(self.m_CurrentPage11.GetValue())
+            self.currentpage = int(self.m_CurrentPageFB.GetValue())
         except:
             self.currentpage = 1
         m.switchpage(self,event)
@@ -1045,7 +1080,7 @@ class MainFrame(gui.MyFrame):
     #%% flashcard
     """ flashcard """
     # main program
-    def m_filePicker21OnFileChanged( self, event ):
+    def m_filePickerFCOnFileChanged( self, event ):
         self.m_menubar1.EnableTop(2,True)
         m2.startprogram(self,event)
         
@@ -1054,7 +1089,7 @@ class MainFrame(gui.MyFrame):
         m2.buttonCorrect(self)
         SaveTime(self)
         event.Skip()
-    def m_bitmapScroll1OnLeftUp( self, event ):
+    def m_bitmapScrollFCOnLeftUp( self, event ):
         m2.buttonCorrect(self)
         event.Skip()
     
@@ -1078,14 +1113,14 @@ class MainFrame(gui.MyFrame):
         m2.buttonWrong(self)
         SaveTime(self)
         event.Skip()
-    def m_bitmapScroll1OnRightUp( self, event ):
+    def m_bitmapScrollFCOnRightUp( self, event ):
         m2.buttonWrong(self)   
         event.Skip()
 	
-    def m_toolSwitch21OnToolClicked( self, event ):
+    def m_toolSwitchFCOnToolClicked( self, event ):
         m2.switchCard(self)
 	
-    def m_bitmapScroll1OnMouseWheel( self, event ):
+    def m_bitmapScrollFCOnMouseWheel( self, event ):
         m2.switchCard(self)
         
     #%% print the notes
@@ -1268,10 +1303,10 @@ class MainFrame(gui.MyFrame):
     def m_bitmapScrollOnKeyDown( self, event ):
         SaveTime(self)
         event.Skip()
-    def m_bitmapScroll1OnKeyDown( self, event ):
+    def m_bitmapScrollFCOnKeyDown( self, event ):
         SaveTime(self)
         event.Skip()
-    def m_bitmapScroll1OnMouseEvents( self, event ):
+    def m_bitmapScrollFCOnMouseEvents( self, event ):
         SaveTime(self)
         event.Skip()
     def m_scrolledWindow11OnMouseEvents( self, event ):
