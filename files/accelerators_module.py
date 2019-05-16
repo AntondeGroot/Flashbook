@@ -70,7 +70,7 @@ def AcceleratorTableSetup(self,mode,submode):
         # combine functions with the id
         self.Bind( wx.EVT_MENU, self.m_buttonCorrectOnButtonClick,         id = self.Acc.IDcor()    )
         self.Bind( wx.EVT_MENU, self.m_buttonWrongOnButtonClick,           id = self.Acc.IDwrong()  )
-        self.Bind( wx.EVT_MENU, self.m_toolSwitch21OnToolClicked,          id = self.Acc.IDcard()   )
+        self.Bind( wx.EVT_MENU, self.m_toolSwitchFCOnToolClicked,          id = self.Acc.IDcard()   )
         self.Bind( wx.EVT_MENU, self.m_menuItemBackToMainOnMenuSelection , id = self.Acc.IDesc()    )
         # combine id with keyboard = now keyboard is connected to functions
         entries = wx.AcceleratorTable([(wx.ACCEL_NORMAL, wx.WXK_LEFT,   self.Acc.IDcor()),
@@ -85,12 +85,12 @@ def AcceleratorTableSetup(self,mode,submode):
     if mode == "flashbook" and submode == "set":
         self.SetAcceleratorTable(wx.AcceleratorTable())
         # combine functions with the id
-        self.Bind( wx.EVT_MENU, self.m_toolBack11OnToolClicked,     id = self.Acc.IDleft()  )
-        self.Bind( wx.EVT_MENU, self.m_toolNext11OnToolClicked,     id = self.Acc.IDright() )
+        self.Bind( wx.EVT_MENU, self.m_pageBackFBOnToolClicked,     id = self.Acc.IDleft()  )
+        self.Bind( wx.EVT_MENU, self.m_pageNextFBOnToolClicked,     id = self.Acc.IDright() )
         self.Bind( wx.EVT_MENU, self.m_enterselectionOnButtonClick, id = self.Acc.IDenter() )
         self.Bind( wx.EVT_MENU, self.m_toolStitchOnButtonClick,     id = self.Acc.IDstitch() )
-        self.Bind( wx.EVT_MENU, self.m_toolUPOnToolClicked,         id = self.Acc.IDup())
-        self.Bind( wx.EVT_MENU, self.m_toolDOWNOnToolClicked,       id = self.Acc.IDdown())
+        self.Bind( wx.EVT_MENU, self.m_pageUPOnToolClicked,         id = self.Acc.IDup())
+        self.Bind( wx.EVT_MENU, self.m_pageDOWNOnToolClicked,       id = self.Acc.IDdown())
         self.Bind( wx.EVT_MENU, self.m_menuItemBackToMainOnMenuSelection, id = self.Acc.IDesc())
         
         # combine id with keyboard = now keyboard is connected to functions
