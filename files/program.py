@@ -157,26 +157,11 @@ def run_flashcard(self):
     
     
     f2.SetScrollbars_fc(self)
+    
         
-    # answers given 
-    def m_buttonCorrectOnButtonClick( self, event ):
-        m2.buttonCorrect(self)
-        event.Skip()
+    
         
-    def m_buttonWrongOnButtonClick( self, event ):
-        m2.buttonWrong(self)
-        event.Skip()
-        
-    # flip flashcard
-    def m_toolSwitchOnToolClicked( self, event ):
-        m2.switchCard(self)
-        event.Skip()
-        
-    def m_filePickerOnFileChanged( self, event ): 
-        
-        # main program, does all of the preprocessing
-        m2.startprogram(self,event)
-        event.Skip()
+    
 
       
 def get_IP(self,event):
