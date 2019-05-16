@@ -39,6 +39,7 @@ org = [
        'self.m_bitmap8 = wx.StaticBitmap( self.m_panel29, wx.ID_ANY, wx.NullBitmap, wx.DefaultPosition, wx.Size( -1,-1 ), wx.SIMPLE_BORDER )','self.m_bitmap8 = wx.StaticBitmap( self.m_panel29, wx.ID_ANY, data, wx.DefaultPosition, wx.Size( -1,-1 ), wx.SIMPLE_BORDER )',
        'self.m_textCtrl24 = wx.TextCtrl( self.m_panel32, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )','self.m_textCtrl24 = wx.TextCtrl( self.m_panel32, wx.ID_ANY, data[0], wx.DefaultPosition, wx.DefaultSize, 0 )',
        'self.m_textCtrl25 = wx.TextCtrl( self.m_panel32, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )','self.m_textCtrl25 = wx.TextCtrl( self.m_panel32, wx.ID_ANY, data[1], wx.DefaultPosition, wx.DefaultSize, 0 )',
+       'self.m_textCtrl30 = wx.TextCtrl( self.m_panel32, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )','self.m_textCtrl30 = wx.TextCtrl( self.m_panel32, wx.ID_ANY, data[2], wx.DefaultPosition, wx.DefaultSize, 0 )',
        'self.m_bitmapAbout = wx.StaticBitmap( self.m_panel33, wx.ID_ANY, wx.NullBitmap, wx.DefaultPosition, wx.Size( 100,100 ), 0 )','self.m_bitmapAbout = wx.StaticBitmap( self.m_panel33, wx.ID_ANY, data, wx.DefaultPosition, wx.Size( 100,100 ), 0 )'
        ]
 # sometimes a variable can change for example the Version number, this variable is unknown but everything left and right of it IS known
