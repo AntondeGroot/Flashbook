@@ -480,7 +480,7 @@ def PILimage_to_Bitmap(image):
 def CreateSingularCard(self,mode):
     self.mode = mode
     try:
-        key = f'{self.mode[0]}{self.cardorder[self.index]}'
+        key = f'card_{self.mode[0]}{self.cardorder[self.index]}'
         # try to create a TextCard
         bool_textcard, img_text = CreateTextCard(self,'flashcard',key)
         bool_piccard,  img_pic  = findpicture(self,key)
@@ -575,6 +575,7 @@ def DeleteCurrentCard(self):
     print("success!!")
 
 def File_to_Cards(self,linefile):
+    assert type(linefile) == list
     cards = []
     def argument(command,line):
         startpos   = [m.start() for m in re.finditer(command, line)]
@@ -724,7 +725,11 @@ def Cards_ReplaceUserCommands(self):
                 A = self.answers[index2]
                 self.answers[index2] = replace_allcommands(defined_command, LaTeX_command, A, nr_arg)
 
-
+def loadfile(eventpath):
+    if Path(eventpath).exists():
+        file = open(eventpath, 'r',newline='\r')
+        linefile = file.readlines()      
+    return linefile
 def SeparatePicsFromText(self,line):
     T_F, QnA, picname = remove_pics(line,"\pic{")
     if QnA.strip() == '':
@@ -738,7 +743,7 @@ def SeparatePicsFromCards(self):
     self.q_pics = []
     self.a_pics = []
     # remove all \pic{} commands
-    for i in range(self.nr_cards):
+    for i in range(len(self.CardsDeck)):
         SEARCH1 = True
         SEARCH2 = True            
         # Questions: replace pics{}
