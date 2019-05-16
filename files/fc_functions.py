@@ -212,7 +212,7 @@ def load_stats(self):
             self.nr_questions = self.resumedata[self.bookname]['nr_questions']
             self.cardorder = self.resumedata[self.bookname]['cardorder']
             score = round(float(self.score)/self.nr_questions*100,1)
-            self.m_Score21.SetValue(f"{score} %")    
+            self.m_Score.SetValue(f"{score} %")    
     except:
         print("no stats found for this book, continue")
         
@@ -383,15 +383,15 @@ def switch_bitmap(self):
                 print("there is no answer card")
                 self.mode = 'Question'
                 self.SwitchCard = False        
-                id_ = self.m_toolSwitch21.GetId()
+                id_ = self.m_toolSwitchFC.GetId()
                 self.m_toolBar3.SetToolNormalBitmap(id_, wx.Bitmap( str(path_repeat_na), wx.BITMAP_TYPE_ANY ))  
-                self.m_textCtrlMode.SetValue(self.mode) 
+                self.m_modeDisplayFC.SetValue(self.mode) 
                 displaycard(self) 
             else:
                 self.SwitchCard = True
-                id_ = self.m_toolSwitch21.GetId()
+                id_ = self.m_toolSwitchFC.GetId()
                 self.m_toolBar3.SetToolNormalBitmap(id_, wx.Bitmap( str(path_repeat), wx.BITMAP_TYPE_ANY ))
-                self.m_textCtrlMode.SetValue(self.mode) 
+                self.m_modeDisplayFC.SetValue(self.mode) 
                 displaycard(self) 
         except:
             log.ERRORMESSAGE("Error: could not switch bitmap #2")
@@ -429,7 +429,7 @@ def CombinePicText_fc(bool_text,imagetext,bool_pic,imagepic):
     
 def clearbitmap(self):
     """to clear it: just display a 1x1 empty bitmap"""
-    self.m_bitmapScroll1.SetBitmap(wx.Bitmap(wx.Image( 1,1 )))
+    self.m_bitmapScrollFC.SetBitmap(wx.Bitmap(wx.Image( 1,1 )))
 
 def TryCreateTextCard(self,key):
     # try to create a TextCard]
@@ -480,7 +480,7 @@ def PILimage_to_Bitmap(image):
 def CreateSingularCard(self,mode):
     self.mode = mode
     try:
-        key = f'card_{self.mode[0]}{self.cardorder[self.index]}'
+        key = f'card_{self.mode[0].lower()}{self.cardorder[self.index]}'
         # try to create a TextCard
         bool_textcard, img_text = CreateTextCard(self,'flashcard',key)
         bool_piccard,  img_pic  = findpicture(self,key)
@@ -785,7 +785,7 @@ def ShowPage_fc(self,image):
         width, height = image.size
         image2 = wx.Image( width, height )
         image2.SetData( image.tobytes() )        
-        self.m_bitmapScroll1.SetBitmap(wx.Bitmap(image2))     
+        self.m_bitmapScrollFC.SetBitmap(wx.Bitmap(image2))     
         self.Refresh()
     except:        
         log.ERRORMESSAGE("Error: cannot show image")
