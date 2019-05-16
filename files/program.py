@@ -102,12 +102,12 @@ def run_flashbook(self):
     resetparameters(self)
     print("Welcome to Flashbook , one moment ...")     
     self.m_bitmapScroll.SetBitmap(wx.Bitmap(wx.Image( 1,1 ))) # always empty bitmap, in case someone reruns the program
-    self.m_CurrentPage11.SetValue('')
-    self.m_TotalPages11.SetValue('')                      
+    self.m_CurrentPageFB.SetValue('')
+    self.m_TotalPagesFB.SetValue('')                      
     ##
     self.stayonpage = False
     self.resetselection = False
-    self.m_dirPicker11.SetInitialDirectory(str(self.booksdir))
+    self.m_dirPickerFB.SetInitialDirectory(str(self.booksdir))
     #short cuts
     ini.initializeparameters(self)
     #m.SetKeyboardShortcuts(self) anton set it to the correct one
@@ -120,7 +120,7 @@ def run_flashcard(self):
     def initialize2(self):
         # set all directories
                 
-        self.m_filePicker21.SetInitialDirectory(str(self.notesdir)+'\.') #for filepicker you can't just set a directory like dirPicker, in this case it should end in "\." so that it has to look for files, otherwise it will see a folder as a file...
+        self.m_filePickerFC.SetInitialDirectory(str(self.notesdir)+'\.') #for filepicker you can't just set a directory like dirPicker, in this case it should end in "\." so that it has to look for files, otherwise it will see a folder as a file...
         os.chdir(self.notesdir)        
         
         dirs = [self.appdir,self.notesdir,self.picsdir,self.booksdir,self.tempdir,self.bordersdir,self.resourcedir]        
@@ -400,7 +400,7 @@ def set_bitmapbuttons(self):
     
 def resetparameters(self):
     self.m_bitmapScroll.SetBitmap(wx.Bitmap(wx.Image( 1,1 ))) # always empty bitmap, in case someone reruns the program
-    self.m_bitmapScroll1.SetBitmap(wx.Bitmap(wx.Image( 1,1 ))) # always empty bitmap, in case someone reruns the program
+    self.m_bitmapScrollFC.SetBitmap(wx.Bitmap(wx.Image( 1,1 ))) # always empty bitmap, in case someone reruns the program
     #variables for Flashbook
     selfvars_fb = ['bookname','BorderCoords','colorlist','currentpage','image','imagecopy','tempdictionary','panel_pos','questionmode','zoom']
     #variables for Flashcard
@@ -408,10 +408,10 @@ def resetparameters(self):
     for i,var in enumerate(selfvars_fb+selfvars_fc):
         if hasattr(self,var):
             delattr(self,var)
-    self.m_CurrentPage21.SetValue('')
-    self.m_TotalPages21.SetValue('')
-    self.m_Score21.SetValue('')
+    self.m_CurrentCard.SetValue('')
+    self.m_TotalCards.SetValue('')
+    self.m_Score.SetValue('')
     #reset icon in flashcard
     path_repeat    = Path(self.resourcedir,"repeat.png")
-    id_ = self.m_toolSwitch21.GetId()
+    id_ = self.m_toolSwitchFC.GetId()
     self.m_toolBar3.SetToolNormalBitmap(id_, wx.Bitmap( str(path_repeat), wx.BITMAP_TYPE_ANY ))
