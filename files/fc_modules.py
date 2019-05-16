@@ -43,7 +43,7 @@ def buttonCorrect(self):
         if runprogram == True:
             self.score +=1
         self.mode = 'Question'
-        self.m_textCtrlMode.SetValue(self.mode)
+        self.m_modeDisplayFC.SetValue(self.mode)
         
         if self.score > self.nr_questions + 1:
             self.score = self.nr_questions
@@ -62,8 +62,8 @@ def buttonCorrect(self):
                 delattr(self,'bookname')
             
         _score_ = round(float(self.score)/self.nr_questions*100,1)
-        self.m_Score21.SetValue(f"{_score_} %")     
-        self.m_CurrentPage21.SetValue(f"{self.index+1}")
+        self.m_Score.SetValue(f"{_score_} %")     
+        self.m_CurrentCard.SetValue(f"{self.index+1}")
         
         # update stats
         if runprogram == True:
@@ -73,12 +73,12 @@ def buttonCorrect(self):
             f2.displaycard(self)
             f2.switch_bitmap(self)
         else:
-            self.m_Score21.SetValue("")     
-            self.m_CurrentPage21.SetValue("")
-            self.m_TotalPages21.SetValue("")
+            self.m_Score.SetValue("")     
+            self.m_CurrentCard.SetValue("")
+            self.m_TotalCards.SetValue("")
             #reset pictogram
             path_repeat    = Path(self.resourcedir,"repeat.png")
-            id_ = self.m_toolSwitch21.GetId()
+            id_ = self.m_toolSwitchFC.GetId()
             self.m_toolBar3.SetToolNormalBitmap(id_, wx.Bitmap( str(path_repeat), wx.BITMAP_TYPE_ANY ))
         #update self.vars accordingly
         self.runprogram = runprogram
@@ -90,7 +90,7 @@ def buttonWrong(self):
         runprogram = self.runprogram
         self.index += 1
         self.mode = 'Question'
-        self.m_textCtrlMode.SetValue(self.mode)  
+        self.m_modeDisplayFC.SetValue(self.mode)  
         if self.index > (self.nr_questions-1):
             self.index = (self.nr_questions-1)
             f2.remove_stats(self)
@@ -109,8 +109,8 @@ def buttonWrong(self):
             self.score = self.nr_questions
             _score_ = round(float(self.score)/self.nr_questions*100,1)
         _score_ = round(float(self.score)/self.nr_questions*100,1)
-        self.m_Score21.SetValue(f"{_score_} %")      
-        self.m_CurrentPage21.SetValue(str(self.index+1))
+        self.m_Score.SetValue(f"{_score_} %")      
+        self.m_CurrentCard.SetValue(str(self.index+1))
         
         ## update stats
         if runprogram == True:
@@ -120,12 +120,12 @@ def buttonWrong(self):
             f2.switch_bitmap(self)
         f2.SetScrollbars_fc(self)
         if runprogram == False:
-            self.m_Score21.SetValue("")     
-            self.m_CurrentPage21.SetValue("")
-            self.m_TotalPages21.SetValue("")
+            self.m_Score.SetValue("")     
+            self.m_CurrentCard.SetValue("")
+            self.m_TotalCards.SetValue("")
             #reset pictogram
             path_repeat    = Path(self.resourcedir,"repeat.png")
-            id_ = self.m_toolSwitch21.GetId()
+            id_ = self.m_toolSwitchFC.GetId()
             self.m_toolBar3.SetToolNormalBitmap(id_, wx.Bitmap( str(path_repeat), wx.BITMAP_TYPE_ANY ))
         self.runprogram = runprogram
 
@@ -138,10 +138,10 @@ def buttonPreviousCard(self):
         if self.score != 0:
             self.score -= 1
         self.mode = 'Question'
-        self.m_textCtrlMode.SetValue(self.mode)  
+        self.m_modeDisplayFC.SetValue(self.mode)  
         _score_ = round(float(self.score)/self.nr_questions*100,1)
-        self.m_Score21.SetValue(f"{_score_} %")      
-        self.m_CurrentPage21.SetValue(str(self.index+1))
+        self.m_Score.SetValue(f"{_score_} %")      
+        self.m_CurrentCard.SetValue(str(self.index+1))
         
         ## update stats
         if runprogram == True:
@@ -151,12 +151,12 @@ def buttonPreviousCard(self):
             f2.switch_bitmap(self)
         f2.SetScrollbars_fc(self)
         if runprogram == False:
-            self.m_Score21.SetValue("")     
-            self.m_CurrentPage21.SetValue("")
-            self.m_TotalPages21.SetValue("")
+            self.m_Score.SetValue("")     
+            self.m_CurrentCard.SetValue("")
+            self.m_TotalCards.SetValue("")
             #reset pictogram
             path_repeat    = Path(self.resourcedir,"repeat.png")
-            id_ = self.m_toolSwitch21.GetId()
+            id_ = self.m_toolSwitchFC.GetId()
             self.m_toolBar3.SetToolNormalBitmap(id_, wx.Bitmap( str(path_repeat), wx.BITMAP_TYPE_ANY ))
         self.runprogram = runprogram
 
@@ -171,7 +171,7 @@ def switchCard(self):
                 self.mode = 'Answer'
             else:
                 self.mode = 'Question'
-            self.m_textCtrlMode.SetValue(self.mode)
+            self.m_modeDisplayFC.SetValue(self.mode)
             # check if there is an answer: if not switch_bitmap sets the mode back to 'question'
             f2.switch_bitmap(self)       
             f2.displaycard(self)
@@ -191,7 +191,7 @@ def startprogram(self,event):
     self.score  = 0
        
     self.mode = 'Question'
-    self.m_textCtrlMode.SetValue(self.mode)
+    self.m_modeDisplayFC.SetValue(self.mode)
         
     self.questions   = []
     self.answers     = []
@@ -282,8 +282,8 @@ def startprogram(self,event):
         self.nr_questions = math.ceil(float(self.multiplier)*self.nr_questions)
         
     # display nr of questions and current index of questions            
-    self.m_CurrentPage21.SetValue(f"{self.index+1}")
-    self.m_TotalPages21.SetValue(f"{self.nr_questions}")
+    self.m_CurrentCard.SetValue(f"{self.index+1}")
+    self.m_TotalCards.SetValue(f"{self.nr_questions}")
     DetermineCardorder(self,True)
     
     f2.displaycard(self)     
