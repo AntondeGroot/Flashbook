@@ -173,25 +173,10 @@ def switchCard(self):
                 self.mode = 'Question'
             self.m_textCtrlMode.SetValue(self.mode)
             # check if there is an answer: if not switch_bitmap sets the mode back to 'question'
-            f2.switch_bitmap(self) 
-            AbsoluteIndex = self.cardorder[self.index] 
-            key = f'card_{self.mode[0].lower()}{AbsoluteIndex}' #e.g. card_q12 is a key
-            
-            
-            # if there are no answer cards, then don't switch card: the self.key makes sure this happens
-            #if f'card_a{AbsoluteIndex}' not in self.CardsDeck.getcards().keys():
-            #if f'card_a{AbsoluteIndex}' not in self.textdictionary:
-            #    self.m_textCtrlMode.SetValue(self.mode)
-            #    key = f'card_{self.mode[0].lower()}{AbsoluteIndex}'        
+            f2.switch_bitmap(self)       
             f2.displaycard(self)
             f2.SetScrollbars_fc(self)
-            self.Refresh()
-            #bool_textcard, img_txt = f2.CreateTextCard(self,'flashcard',key)
-            #bool_piccard, img_pic  = f2.findpicture(self,key) 
-            #image = f2.CombinePicText_fc(bool_textcard,img_txt,bool_piccard,img_pic)
-            #f2.ShowPage_fc(self,image)
-            # you don't need to check for: "no Text & no picture" because switch_bitmap already takes care of that.
-            #f2.SetScrollbars_fc(self)
+            #self.Refresh()
     except:
         log.ERRORMESSAGE("Error: Couldn't switch card")
         
@@ -220,6 +205,7 @@ def startprogram(self,event):
         print(f"path = {eventpath}")
         self.filename = Path(eventpath).name
         self.bookname = Path(eventpath).stem
+        self.booknamepath = eventpath
         print(f"book = {self.bookname} ")
         if hasattr(self,'TC'):
             delattr(self,'TC')
@@ -228,16 +214,9 @@ def startprogram(self,event):
         log.ERRORMESSAGE("Error: Couldn't open path")
     self.resumedata = {self.bookname : {'score': self.score, 'index': self.index, 'nr_questions':self.nr_questions}}
     #try:
-    if Path(eventpath).exists():
-        file = open(eventpath, 'r',newline='\r')
-        linefile = file.readlines()                    
-    #self.q_hookpos , self.a_hookpos = f2.File_to_hookpositions(self,letterfile)
-    cards = f2.File_to_Cards(self,linefile)
-    self.CardsDeck.set_cards(cards=cards,notesdir=self.notesdir)
-    #o self.nr_cards = len(self.q_hookpos)
-    self.nr_cards = len(linefile)
-    
-    
+    linefile = f2.loadfile(eventpath)
+    cards = f2.File_to_Cards(self,linefile)                       # converts to raw cards
+    self.CardsDeck.set_cards(cards=cards,notesdir=self.notesdir)  # set_cards converts the text to somthing Matplotlib can understand
     
     #except:
     #    log.ERRORMESSAGE("Error: could not find questions/answers")
@@ -246,7 +225,7 @@ def startprogram(self,event):
     """open My dialog, don't forget to add two parameters to "def __init__( self, parent,MaxValue,Value )" within MyDialog 
     and use these values to set the slider as you wish. Don't forget to add "self.Destroy" when you press the button"""
     
-    data = self.nr_cards
+    data = len(self.CardsDeck)
     print(f"data is {data}")
     
     print(self.CardsDeck.getcards())
@@ -318,7 +297,7 @@ def DetermineCardorder(self,USERINPUT):
            the order in which the cards should be displayed.
     - FALSE, it will display them chronologically without userinput.
     """
-    print(f"nrcards = {self.nr_cards}")
+    print(f"nrcards = {len(self.CardsDeck)}")
     
     try:        
         """CARD ORDER"""
@@ -331,22 +310,22 @@ def DetermineCardorder(self,USERINPUT):
                 self.continueSession = False
                         
             if self.continueSession == False:
-                if self.nr_questions < self.nr_cards:   
+                if self.nr_questions < len(self.CardsDeck):   
                     if self.chrono == True:
                         self.cardorder = range(self.nr_questions)    
                     else:
-                        self.cardorder = random.sample(range(self.nr_cards),self.nr_questions) 
+                        self.cardorder = random.sample(range(len(self.CardsDeck)),self.nr_questions) 
                 else: 
                     ## If there are more questions than cards
                     # we would like to get every question about the same number of times, to do this we do sampling without
                     # replacement, then we remove a question if it is immediately repeated.
                     if self.chrono == True:
-                        self.cardorder = list(range(self.nr_cards))*self.nr_questions
+                        self.cardorder = list(range(len(self.CardsDeck)))*self.nr_questions
                         self.cardorder = self.cardorder[:self.nr_questions]
                     else:
                         cardorder = []
-                        for i in range(self.nr_cards):   # possibly way larger than needed:
-                            cardorder.append(random.sample(range(self.nr_cards),self.nr_cards))
+                        for i in range(len(self.CardsDeck)):   # possibly way larger than needed:
+                            cardorder.append(random.sample(range(len(self.CardsDeck)),len(self.CardsDeck)))
                         cardorder = [val for sublist in cardorder for val in sublist]
                         SEARCH = True
                         index = 0
