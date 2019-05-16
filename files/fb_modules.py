@@ -113,8 +113,8 @@ def dirchanged(self,event):
         book_dir.mkdir()
         
     
-    self.m_CurrentPage11.SetValue(str(self.currentpage))
-    self.m_TotalPages11.SetValue(str(self.totalpages))
+    self.m_CurrentPageFB.SetValue(str(self.currentpage))
+    self.m_TotalPagesFB.SetValue(str(self.totalpages))
     nrlist.sort()
     
     #Open dictionary if it exists
@@ -251,7 +251,7 @@ def panel4_bitmapleftup(self,event):
 def selectionentered(self,event):
     
     if hasattr(self,'bookname') and self.bookname != '':
-        USER_textinput = self.m_textCtrl2.GetValue()
+        USER_textinput = self.m_userInput.GetValue()
         
         PICS_DRAWN = self.Flashcard.nrpics("Question")
         QUESTION_MODE = self.Flashcard.getquestionmode()
@@ -261,8 +261,8 @@ def selectionentered(self,event):
                 # change mode to answer
                 self.usertext = f.text_to_latex(self,usertext)
                 self.Flashcard.switchmode()
-                self.m_textCtrl1.SetValue(self.Flashcard.getmode()+":")
-                self.m_textCtrl2.SetValue("")
+                self.m_modeDisplay.SetValue(self.Flashcard.getmode()+":")
+                self.m_userInput.SetValue("")
                 self.Refresh()
                 # check for [[1,2,3]]
                 if PICS_DRAWN > 1:
@@ -295,8 +295,8 @@ def selectionentered(self,event):
             else:#ANSWER mode
                 self.usertext = f.text_to_latex(self,usertext)
                 self.questionmode = True
-                #self.m_textCtrl1.SetValue("Question:")
-                #self.m_textCtrl2.SetValue("")
+                #self.m_modeDisplay.SetValue("Question:")
+                #self.m_userInput.SetValue("")
                 
                 # save everything
                 findic = self.dictionary
@@ -343,8 +343,8 @@ def selectionentered(self,event):
                     self.Flashcard.saveCard(path)
                 #reset all
                 self.Flashcard.reset()
-                self.m_textCtrl1.SetValue(self.Flashcard.getmode()+":")
-                self.m_textCtrl2.SetValue("")
+                self.m_modeDisplay.SetValue(self.Flashcard.getmode()+":")
+                self.m_userInput.SetValue("")
                 
         elif QUESTION_MODE == False:
             # if in question mode the user only typed in some text and want to save that 
@@ -396,7 +396,7 @@ def arrowscroll(self,event,direction):
         if self.scrollpos[0] == 0:             # beginning
             if direction == 'up':
                 self.scrollpos = self.scrollpos_reset     # make it a little more difficult to scroll back once you scrolled a page
-                self.m_toolBack11OnToolClicked(self)
+                self.m_pageBackFBOnToolClicked(self)
                 
                 if self.currentpage != 1:
                     scrollWin.SetScrollPos(wx.VERTICAL,scrollWin.GetScrollPos(1)+150,False) #orientation, value, refresh?  # 150 is overkill, but it means the new page starts definitely at the bottom of the scroll bar
@@ -407,7 +407,7 @@ def arrowscroll(self,event,direction):
         else:                                  # end of page
             if direction == 'down':
                 self.scrollpos = self.scrollpos_reset 
-                self.m_toolNext11OnToolClicked(self)
+                self.m_pageNextFBOnToolClicked(self)
     else:
         # change scrollbar    
         scrollWin.Scroll(wx.VERTICAL,newpos)
@@ -442,7 +442,7 @@ def mousewheel(self,event):
         if topofpage and wheel_scrollsup:
             reset_scrollpos(self)
             if self.currentpage != 1:
-                self.m_toolBack11OnToolClicked(self)
+                self.m_pageBackFBOnToolClicked(self)
                 scroll_end_of_page(scrollWin)
             else:
                 scroll_begin_of_page(scrollWin)
@@ -450,7 +450,7 @@ def mousewheel(self,event):
         elif bottomofpage and wheel_scrollsdown:
             reset_scrollpos(self)
             if self.currentpage < self.totalpages:
-                self.m_toolNext11OnToolClicked(self)
+                self.m_pageNextFBOnToolClicked(self)
                 scroll_begin_of_page(scrollWin)
             else:
                 pass    
@@ -458,13 +458,13 @@ def mousewheel(self,event):
         if wheel_scrollsup:
             reset_scrollpos(self)
             if self.currentpage != 1:
-                self.m_toolBack11OnToolClicked(self)
+                self.m_pageBackFBOnToolClicked(self)
                 scroll_end_of_page(scrollWin)
             else:
                 scroll_begin_of_page(scrollWin)
         elif wheel_scrollsdown:
             reset_scrollpos(self)
-            self.m_toolNext11OnToolClicked(self)
+            self.m_pageNextFBOnToolClicked(self)
     event.Skip() # necessary to use other functions after this one is used
     
 def resetselection(self,event):    
@@ -524,7 +524,7 @@ def previouspage(self,event):
     
 def setcursor(self):
     #lf = event.GetEventObject()
-    cursor = self.m_checkBoxCursor11.IsChecked()
+    cursor = self.m_checkBoxCursor.IsChecked()
     self.cursor = cursor
     if cursor == True:
         self.SetCursor(wx.Cursor(wx.CURSOR_CROSS))
@@ -538,7 +538,7 @@ def zoomin(self,event):
         f.ShowPage_fb(self)
         f.SetScrollbars(self)
         percentage = int(self.zoom*100)
-        self.m_Zoom11.SetValue(f"{percentage}%")
+        self.m_ZoomFB.SetValue(f"{percentage}%")
         self.Layout()
     except:
         log.ERRORMESSAGE("Error: cannot zoom out")
@@ -553,7 +553,7 @@ def zoomout(self,event):
         f.ShowPage_fb(self)
         f.SetScrollbars(self)
         percentage = int(self.zoom*100)
-        self.m_Zoom11.SetValue(f"{percentage}%")
+        self.m_ZoomFB.SetValue(f"{percentage}%")
         self.panel1.Refresh() # to remove the remnants of a larger bitmap when the page shrinks
         self.Layout()
     except:
