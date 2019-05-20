@@ -295,6 +295,7 @@ def selectionentered(self,event):
             else:#ANSWER mode
                 self.usertext = f.text_to_latex(self,usertext)
                 self.questionmode = True
+                
                 #self.m_modeDisplay.SetValue("Question:")
                 #self.m_userInput.SetValue("")
                 
@@ -338,13 +339,17 @@ def selectionentered(self,event):
 
                 f.ShowInPopup(self,event,"Answer")                    
                 # save the user inputs in .tex file
+                
+                self.Flashcard.setT(self.m_TopicInput.GetValue())
                 if self.Flashcard.getQ() != None:
                     path = str(Path(self.notesdir, self.bookname +'.tex'))
                     self.Flashcard.saveCard(path)
                 #reset all
                 self.Flashcard.reset()
                 self.m_modeDisplay.SetValue(self.Flashcard.getmode()+":")
+                self.m_TopicInput.SetValue('')
                 self.m_userInput.SetValue("")
+                
                 
         elif QUESTION_MODE == False:
             # if in question mode the user only typed in some text and want to save that 
