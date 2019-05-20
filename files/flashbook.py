@@ -339,7 +339,6 @@ class MainFrame(gui.MyFrame):
         gui.MyFrame.__init__(self,parent,icons) #added extra argument, so that WXpython.py can easily add the Dialog Windows (which require an extra argument), which is now used to add extra icons to the menubar             
         self.Flashcard = Flashcard()
         self.CardsDeck = CardsDeck()
-        print(f"anton has {hasattr(self,'Cardsdeck')}")
         
         settings_create(self)
         settings_get(self)
@@ -401,6 +400,8 @@ class MainFrame(gui.MyFrame):
         m4.initialize(self)
         
     def m_OpenPrintOnButtonClick(self,event):
+        self.onlyonce = 0
+        self.CardsDeck.reset()
         """START MAIN PROGRAM : PRINT PDF NOTES"""
         t_panel = lambda self,page : threading.Thread(target = p.SwitchPanel , args=(self,page )).start()
         t_panel(self, 3) 
@@ -438,7 +439,6 @@ class MainFrame(gui.MyFrame):
                 self.fileDialog = fileDialog
                 self.FilePickEvent = True
                 
-                #m3.print_preview(self,event)
                 t_preview = lambda self,evt : threading.Thread(target = m3.print_preview, name = 't_preview' , args=(self,evt )).run()
                 t_preview(self, event) 
                 
@@ -743,7 +743,8 @@ class MainFrame(gui.MyFrame):
     #%%Flashcard menu
     
     def m_menuAddCardOnMenuSelection( self, event ):
-            
+        print("b cardorder")
+        print(self.cardorder)   
         trueindex = self.cardorder[self.index]
         data = ['Add a card', '' , '' , '' ]
         
@@ -761,6 +762,13 @@ class MainFrame(gui.MyFrame):
                 #make changes
                 if question != '':
                     self.nr_questions += 1
+                    print(self.cardorder)
+                    
+                    self.cardorder += [max(self.cardorder)+1]
+                    print("cardorder")
+                    print(self.cardorder)
+                    print("true index")
+                    print(trueindex)
                     self.m_TotalCards.SetValue(f"{self.nr_questions}")
                     file_lines.insert(trueindex, r"\quiz{"+str(question)+"}"+r"\ans{"+str(answer)+"}" +r"\topic{"+str(topic)+  "}"+"\n")
                     #save changes
@@ -770,19 +778,25 @@ class MainFrame(gui.MyFrame):
                     #reload cards
                     self.CardsDeck.reset()
                     linefile = f2.loadfile(self.booknamepath)
+                    
+                    print(f"linefile = {linefile}")
+                    print(f"linefilelen = {len(linefile)}")
                     cards = f2.File_to_Cards(self,linefile)                       # converts to raw cards
+                    print(f"cards = {cards}")
                     self.CardsDeck.set_cards(cards=cards,notesdir=self.notesdir)
                     f2.switch_bitmap(self)
                     f2.displaycard(self)
                     self.Refresh()
+                    
+                    
                 
     def m_menuDeleteCardOnMenuSelection( self, event ):
         if self.SwitchCard == True: #there is also an Answer card
             modereset = self.mode
-            image = f2.CreateSingularCard(self,'Question')
+            image,_ = f2.CreateSingularCard(self,'Question')
             BMP_q = f2.PILimage_to_Bitmap(image)
             
-            image = f2.CreateSingularCard(self,'Answer')
+            image,_ = f2.CreateSingularCard(self,'Answer')
             BMP_a = f2.PILimage_to_Bitmap(image)
             
             data = [BMP_q,BMP_a]
@@ -803,7 +817,7 @@ class MainFrame(gui.MyFrame):
                     print("success!!")
         elif self.SwitchCard == False: #there is only a Question card
             
-            image = f2.CreateSingularCard(self,'Question')
+            image,_ = f2.CreateSingularCard(self,'Question')
             BMP_q = f2.PILimage_to_Bitmap(image)
             
             with gui.MyDialog7(self,BMP_q) as dlg:
@@ -870,7 +884,7 @@ class MainFrame(gui.MyFrame):
                     #f2.SeparatePicsFromCards(self)
                     #f2.Cards_To_TextDicts(self)
                     #f2.switch_bitmap(self)
-                    #image = f2.CreateSingularCard(self,'Question')
+                    #image,_ = f2.CreateSingularCard(self,'Question')
                     
                     #BMP = f2.PILimage_to_Bitmap(image)
                     #self.m_bitmapScrollFC.SetBitmap(BMP)
@@ -923,6 +937,10 @@ class MainFrame(gui.MyFrame):
         self.m_checkBoxCursor.Check(self.cursor)
         self.m_checkBoxDebug.Check(self.debugmode)
         m.setcursor(self)   
+        try:
+            m3.preview_refresh(self)
+        except:
+            pass
     #%% flashbook
     " flashbook "
     #Import screenshot
@@ -1196,6 +1214,7 @@ class MainFrame(gui.MyFrame):
         
     def m_PrintFinalOnButtonClick( self, event ):
         
+        
         self.SetCursor(wx.Cursor(wx.CURSOR_ARROWWAIT))
         self.printsuccessful = False
         self.printpreview    = False
@@ -1210,13 +1229,12 @@ class MainFrame(gui.MyFrame):
                 [file.unlink() for file in folder.iterdir() if ("temporary" in file.name and file.suffix =='.png' )]
             MessageBox(0, " Your PDF has been created!\n Select in the menubar: `Open/Open PDF-notes Folder` to\n open the folder in Windows explorer. ", "Message", MB_ICONINFORMATION)
             self.SetCursor(wx.Cursor(wx.CURSOR_ARROW))
-            
-    def m_CtrlNrCardsOnText( self, event ):
+         
+    def m_CtrlNrCardsOnTextEnter( self, event ):
         try:
             var = self.m_CtrlNrCards.GetValue()
             print(f"var is {var}")
             if var == "":
-                
                 self.NrCardsPreview = ''
             elif int(var) > 0:
                 self.NrCardsPreview = int(var)
@@ -1336,6 +1354,7 @@ class CardsDeck():
         self.picdictionary  = {}
         self.rawkey = "card"
         self.key = "card_"
+        self.bookname = ''
     
     def reset(self):
         self.cards = {}
@@ -1346,7 +1365,10 @@ class CardsDeck():
         self.mode = 'Question'
         self.textdictionary = {}
         self.picdictionary  = {}
-        
+        self.bookname = ''
+    
+    def set_bookname(self,name):
+        self.bookname = name
         
     def get_rawkey(self,index):
         return self.rawkey + index
@@ -1356,6 +1378,13 @@ class CardsDeck():
     def __len__(self):
         """nr of cards"""
         return len(self.cards_raw)
+    
+    def len_uniquecards(self):
+        """You need to separate topic cards from Q/A cards"""
+        return len([x for x in self.cards.keys() if 'card_a' not in x])
+    def len_totalcards(self):
+        """You need to separate topic cards from Q/A cards"""
+        return len(self.cards.keys())
         
     def getcards(self):
         return self.cards
@@ -1375,29 +1404,31 @@ class CardsDeck():
             file = open(str(Path(notesdir, "usercommands.txt")), 'r')
             commandsfile = file.readlines()
             for i,card in enumerate(cards):
-                print(f"card = {card}")
+                #print(f"card = {card}")
                 _key = self.rawkey + str(i)
                 self.cards_raw[_key] = card #dict with keys q,a,t
-                for mode in ['q','a']:
+                for mode in ['t','q','a']:
                     
                     line = card[mode]
                     line = f2.ReplaceUserCommands(commandsfile,line)
                     text, picname = f2.SeparatePicsFromText(self,line)
-                    print(mode,text,picname)
+                    if mode == 't' and i == 0:
+                        text = self.bookname
+                    #print(mode,text,picname)
                     key = self.key + f"{mode}{i}"
-                    topic = card['t']
+                    
                     if text!= None and picname != None:
-                        _card_ = {'text': text, 'pic': picname, 'topic': topic}
+                        _card_ = {'text': text, 'pic': picname}
                         addtodict(self, key, _card_)
                     elif text != None and picname == None:
-                        _card_ = {'text': text, 'topic': topic}
+                        _card_ = {'text': text}
                         addtodict(self, key, _card_)
                     elif text == None and picname != None:
-                        _card_ = {'pic': picname, 'topic': topic}
+                        _card_ = {'pic': picname}
                         addtodict(self, key, _card_)
-                    else:
-                        #nothing to add to the dict
+                    else:#nothing to add to the dict
                         pass
+                    
                     
                 
             self.nrcards = len(cards)
