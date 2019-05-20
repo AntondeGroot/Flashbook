@@ -1570,7 +1570,8 @@ class Flashcard():
     
         
         
-    
+    def setT(self,text):
+        self.topic = text
     def setQ(self,text):
         #raw question includes \question{} \pic{} \answer{}
         self.question = text
