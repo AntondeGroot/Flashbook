@@ -90,9 +90,11 @@ The program will also keep track of your progress and indicate how many minutes 
 
 When you click on the 'print' button you get to the following preview window:
 
-![alt text](https://github.com/AntondeGroot/Flashbook/blob/master/readme%20images/print3.png)
+![alt text](https://github.com/AntondeGroot/Flashbook/blob/master/readme%20images/print4.png)
 
 where you can modify it to your liking. You add lines between Q&A cards (if present) and between each horizontal row of cards. You can also change the color and thickness of these lines. If you press 'apply' a pdf will be made. The location of this folder can be opened via the menubar.
+
+In Flashbook you have the option to add a topic to a card. Topics will be the page wide black bar with text as you can see in the above image. When the very first card does not contain a topic it will automatically create the title of the book.
 
 ## Synchronizing Devices
 
