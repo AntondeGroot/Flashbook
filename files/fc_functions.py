@@ -100,7 +100,7 @@ def cropimage(img, x, backgroundcolor=(255,255,255), border=20):
     var4 = 0
     array = np.array(img)- backgroundcolor
     img_array = np.sum(np.sum(array,2),x) #summed over x-axis
-    print(f"length is {len(img_array)}")
+    #print(f"length is {len(img_array)}")
     while (SEARCH1 or SEARCH2):
         for i,pixel in enumerate(img_array):
             j = len(img_array) - i - 1
@@ -146,7 +146,7 @@ def cropimage(img, x, backgroundcolor=(255,255,255), border=20):
     if x == 0:
         img = img.crop((var1, 0, var2, img.size[1]))
         
-    print(var1,var2,var3,var4)
+    #print(var1,var2,var3,var4)
     return img    
 
 
@@ -476,6 +476,13 @@ def PILimage_to_Bitmap(image):
     image2 = wx.Bitmap(image2)
     return image2
 
+def CreateTopicCard(self):
+    key = f'card_{self.mode[0].lower()}{self.cardorder[self.index]}'
+    bool_textcard, img_text = TopicCard(self,key)
+    if bool_textcard:
+        return img_text
+    else:
+        return None
 
 def CreateSingularCard(self,mode):
     self.mode = mode
@@ -488,10 +495,68 @@ def CreateSingularCard(self,mode):
         #ShowPage_fc(self,image)
         image = cropimage(image,0)
         image = cropimage(image,1)
-        return image
+        if bool_textcard == False and bool_piccard == True:
+            """Make sure you don't need to save it, you can just load it"""
+            return image, False
+        else:
+            return image, True
+    except IndexError:
+        print(f"index = {self.index}")
+        print(f"cardorder = {self.cardorder}")
+        print(f"len cardorder = {len(self.cardorder)}")
     except:
         log.ERRORMESSAGE("Error: could not display card")
-    
+
+def TopicCard(self,key):
+    width_card = 8
+    INVERT = True
+    if INVERT:
+        fcolor, tcolor = 'black', 'white'
+    else:
+        fcolor, tcolor = 'white', 'black'
+        
+    if key in self.CardsDeck.getcards().keys():
+        try:
+            usertext = self.CardsDeck.getcards()[key]['text']
+            width_card = self.a4page_w/100
+            # display text in a plot
+            height_card = math.ceil(len(usertext)/40)/2
+            figure = Figure(figsize=[width_card, height_card],dpi=100,facecolor=fcolor)
+            figure.add_axes([0,0,1,1])
+            ax = figure.gca()
+            #ax.plot([0, 0, 0, height_card],color = (1,1,1,1))
+            ax.axis('off')
+            #ax.text(-0.5, height_card/2,usertext, fontsize = self.LaTeXfontsize, horizontalalignment='left', verticalalignment='center',wrap = True)
+            ax.text(0.5, 0.5,usertext, fontsize = self.LaTeXfontsize*2, horizontalalignment='center', verticalalignment='center',wrap = True,color=tcolor)
+            # convert picture to data, if the text is illegitimate the error will occur in canvas.draw()
+            canvas = FigureCanvas(figure)
+            canvas.draw()
+        except:
+            
+            #MessageBox(0, f"Error in line {str(int(key[6:])+1)} mode {modekey}\nline: {self.CardsDeck.getcards()[key]}\nFaulty text or command used.\nGo to .../Flashbook/files/... and edit it manually.\nOr edit it in Flashcard.", "Message", ICON_STOP)
+            LaTeXcode =  "Error for this page: invalid code"
+            height_card = math.ceil(len(LaTeXcode)/40)/2
+            fig = Figure(figsize=[width_card, height_card],dpi=100)
+            ax = fig.gca()
+            ax.plot([0, 0, 0, height_card],color = (1,1,1,1))
+            ax.axis('off')
+            ax.text(-0.5, height_card/2,LaTeXcode, fontsize = self.LaTeXfontsize, horizontalalignment='left', verticalalignment='center',wrap = True,color = 'r')    
+            canvas = FigureCanvas(fig)
+            canvas.draw()
+            
+        renderer = canvas.get_renderer()
+        raw_data = renderer.tostring_rgb()
+        size = canvas.get_width_height()
+        # output
+        bool_textcard = True
+        imagetext = PIL.Image.frombytes("RGB", size, raw_data, decoder_name = 'raw', )
+        #crop image
+        #print(colored(imagetext.size,"red"))
+    else: 
+        #if mode == 'flashcard' but the key is not in dict
+        bool_textcard = False
+        imagetext = None
+    return bool_textcard, imagetext    
 
 def CreateTextCard(self,mode,arg1):
     """This function is used for 2 different purposes
@@ -500,6 +565,7 @@ def CreateTextCard(self,mode,arg1):
     The creation of a card can fail because the userinput was incorrect it can see something starting with '\' as LaTeX code
     when it should not, or if the user used some undefined function.
     """
+    
     if (mode == 'flashbook' and self.usertext != '') or (mode == 'flashcard' and 'text' in self.CardsDeck.getcards()[arg1].keys()):
         try:
             if mode == 'flashbook':
@@ -548,10 +614,10 @@ def CreateTextCard(self,mode,arg1):
         bool_textcard = True
         imagetext = PIL.Image.frombytes("RGB", size, raw_data, decoder_name = 'raw', )
         #crop image
-        print(colored(imagetext.size,"red"))
+        
         imagetext = cropimage(imagetext,0)
         imagetext = cropimage(imagetext,1)
-        print(colored(imagetext.size,"red"))
+        #print(colored(imagetext.size,"red"))
     else: 
         #if mode == 'flashcard' but the key is not in dict
         bool_textcard = False
