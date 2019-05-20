@@ -45,6 +45,9 @@ There doesn't have to be an answer card, for example when you just want to take 
 
 It is possible to combine multiple notes and then use that to rehearse or to print it as a PDF, for example if you want to combine lecture notes with homework assignments.
 
+### Add topics:
+you can also add topics to a flashcard. These will be the page wide black bars of text as you can see in the section "Print". When the very first card does not contain a topic it will automatically display the name of the book at the top of the page.
+
 ## Flashbook: LaTeX
 It is also possible to enter LaTeX code 
 
