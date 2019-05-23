@@ -64,6 +64,7 @@ sys.setrecursionlimit(5000)
 PIL.Image.MAX_IMAGE_PIXELS = 1000000000  
 #ctypes:
 ICON_EXCLAIM=0x30
+
 ICON_STOP = 0x10
 MB_ICONINFORMATION = 0x00000040
 MessageBox = ctypes.windll.user32.MessageBoxW
@@ -401,12 +402,13 @@ class MainFrame(gui.MyFrame):
         
     def m_OpenPrintOnButtonClick(self,event):
         self.onlyonce = 0
+        self.CardsCatalog = CardsCatalog()
         self.CardsDeck.reset()
         """START MAIN PROGRAM : PRINT PDF NOTES"""
         t_panel = lambda self,page : threading.Thread(target = p.SwitchPanel , args=(self,page )).start()
         t_panel(self, 3) 
         settings_get(self)                
-        self.m_CtrlNrCards.SetValue(str(self.NrCardsPreview))
+        
         
         self.m_colorQAline.SetColour(self.QAline_color)
         self.m_colorPDFline.SetColour(self.pdfline_color)
@@ -1165,8 +1167,81 @@ class MainFrame(gui.MyFrame):
         self.vertline_bool = self.m_lineVERT.GetValue()
         settings_set(self)
         m3.preview_refresh(self)
-        
     
+    def m_bitmap3OnLeftDown(self, event):
+        print("klikte op pdf")
+        self.pdfmousepos = self.m_bitmap3.ScreenToClient(wx.GetMousePosition())
+        
+        W, H = self.m_panel32.GetSize()
+        Wp = self.pdfmousepos[0]/W*self.a4page_w
+        Hp = self.pdfmousepos[1]/H*self.a4page_h
+        self.RectangleDetection = m3.RectangleDetection(self.pdfpagedict)
+        print(f"pos = {Wp,Hp}")
+        key = self.RectangleDetection.findRect((Wp,Hp))
+        index = key[0][1:]
+        print(f"pdf = {self.a4page_w}")
+        
+        print(f"index = {index}")
+        trueindex = int(index)
+        rawcard = self.CardsDeck.get_rawcard_i(trueindex)
+        data = ['Edit the card', rawcard['q'] , rawcard['a'] , rawcard['t'] ]
+        print(f"popup data = {data}")
+        self.cardorder = [index]
+        self.index = 0
+        image1,bool1 = f2.CreateSingularCard(self,'Question')
+        image1 = image1.resize((int(image1.size[0]/2),int(image1.size[1]/2)), PIL.Image.ANTIALIAS)
+        
+        BMP_q = f2.PILimage_to_Bitmap(image1)
+        try:
+            image2,bool2 = f2.CreateSingularCard(self,'Answer')
+            image2 = image2.resize((int(image2.size[0]/2),int(image2.size[1]/2)), PIL.Image.ANTIALIAS)
+            BMP_a = f2.PILimage_to_Bitmap(image2)
+        except:
+            BMP_a = wx.NullBitmap
+            bool2 = False
+        print(f"bools = {bool1,bool2}")
+        
+        
+        
+        data = [BMP_q,BMP_a,rawcard['q'] , rawcard['a'] , rawcard['t'] ]
+        
+        
+        with gui.MyDialog9(self,data) as dlg:
+            if dlg.ShowModal() == wx.ID_OK:
+                #Get user data
+                question = dlg.m_textCtrl241.GetValue()
+                answer   = dlg.m_textCtrl251.GetValue()
+                topic    = dlg.m_textCtrl301.GetValue()
+                #open file
+                with open(Path(self.notesdir,self.filename),'r') as file:
+                    file_lines = file.readlines()
+                    file.close()
+                    
+                print(question,answer,topic)
+                
+                #make changes
+                if question == '':
+                    """ If you remove the question then the entire card will be deleted"""
+                    file_lines.pop(trueindex)
+                else:
+                    file_lines[trueindex] = r"\quiz{"+str(question)+"}"+r"\ans{"+str(answer)+"}" +r"\topic{"+str(topic)+  "}"+"\n"
+                    #save changes
+                    with open(str(Path(self.notesdir, self.filename)), 'w') as output: 
+                        for line in file_lines:
+                            output.write(line)
+                    #reload cards
+                    self.CardsDeck.reset()
+                    linefile = f2.loadfile(self.booknamepath)
+                    cards = f2.File_to_Cards(self,linefile)                       # converts to raw cards
+                    self.CardsDeck.set_cards(cards=cards,notesdir=self.notesdir)
+                    
+                    self.Refresh()
+                    
+                
+                print("success!!")
+            else: #dialog closed by user
+                print(f"bookname = {self.booknamepath}")
+        
     def m_colorQAlineOnColourChanged( self, event ):
         original_color = self.QAline_color
         self.FilePickEvent = False
@@ -1230,9 +1305,9 @@ class MainFrame(gui.MyFrame):
             MessageBox(0, " Your PDF has been created!\n Select in the menubar: `Open/Open PDF-notes Folder` to\n open the folder in Windows explorer. ", "Message", MB_ICONINFORMATION)
             self.SetCursor(wx.Cursor(wx.CURSOR_ARROW))
          
-    def m_CtrlNrCardsOnTextEnter( self, event ):
+    def m_pdfCurrentPageOnTextEnter( self, event ):
         try:
-            var = self.m_CtrlNrCards.GetValue()
+            var = self.m_pdfCurrentPage.GetValue()
             print(f"var is {var}")
             if var == "":
                 self.NrCardsPreview = ''
@@ -1606,9 +1681,21 @@ class Flashcard():
     def hasanswer(self):
         return self.answer != None
 
-
-
-
+class CardsCatalog():
+    """The goal is to know exactly where on each page of the created PDF which card is located
+    self.catalog = {pdfpage1 :  {card1 : coord1, card2 : coord2, card3: coord3 }, pdfpage2: {card4: coord4,...} }
+    self.pagecoorddict = {pdfpage1: {card1: coord1,card2:coord2...}}
+    self.pathdict = {card1:path1, card2:path2 , ... , cardN:pathN}"""
+    def __init__(self):
+        self.modelist = []
+        self.catalog = {}
+        self.pagecoorddict = {}
+        self.pathdict = {}
+    def reset(self):
+        self.modelist = []
+        self.sizelist = {}
+        self.pagelist = {}
+        self.positionlist = {}
     
 if __name__ == "__main__":
     # start the application
