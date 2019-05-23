@@ -702,7 +702,7 @@ def ReplaceUserCommands(commandsfile,line):
     # only look at lines containing "newcommand" removes all empty and irrelevant lines
     
     newcommand_list = [x for x in commandsfile if ("newcommand"  in x) and ("Note:" not in x)]
-    print("commandlist", newcommand_list)
+    
     
     
     ##  how to replace a user defined command with a command that is known in latex
