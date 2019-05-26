@@ -306,7 +306,7 @@ def getcardmode(path):
             index = path.find('_')
         else:
             index = path.find('.png')
-        print(f"anton index = {index}")
+        print(f"index = {index}")
         path = path[:index]
         return path
     else:
@@ -457,7 +457,7 @@ def preview_refresh(self):
     self.SetCursor(wx.Cursor(wx.CURSOR_ARROW))
     
 class pdfpage():
-    def __init__(self,pagenr,dict1,dict2,dict3,a4page_w,a4page_h):
+    def __init__(self,pagenr,dict1,dict2,dict3,a4page_w,a4page_h,tempdir = None):
         self.dict1 = dict1 #{pdfpage: {cardname : Rect}}
         self.dict2 = dict2 #{pdfpage: {self.line_nr:cardname}}
         self.dict3 = dict3 #{pdfpage: {cardname: basecard}}
@@ -471,6 +471,10 @@ class pdfpage():
         self.horiline_thickness = 0
         self.vertline_color = (0,0,0)
         self.horiline_color = (0,0,0)
+        self.tempdir = tempdir
+    def get_cardrect(self):
+        key = self.pagekey()
+        return self.dict1[key]
     def add_margins(self,img):
         margin = 0.05
         margin_pxs = round(margin * self.a4page_w)
@@ -494,7 +498,19 @@ class pdfpage():
         self.horiline_color = color    
     def pagekey(self):
         return f"pdfpage{self.page_nr}"
-    
+    def createpdf(self):
+        self.backuppage = self.page_nr
+        pdflist = [] #contains all images
+        if self.tempdir != None:
+            for i in range(self.page_max):
+                path = os.path.join(self.tempdir,f"temporary_pdfpage{i}.png")
+                self.page_nr = i
+                im = self.loadpage()
+                im.save(path)
+                pdflist.append(path)
+        self.page_nr = self.backuppage
+        return pdflist
+        
     def loadpage(self):
         #key = self.pagekey()
         key = f"pdfpage{self.page_nr}"
@@ -509,7 +525,7 @@ class pdfpage():
             
             cards = self.dict2[key][line]
             for cardname in cards:
-                print(f"anton : key {key}, cardname {cardname} line {line} , cards {cards}")
+                #print(f"cardinfo : key {key}, cardname {cardname} line {line} , cards {cards}")
                 
                 basecard = self.dict3[key][cardname]
                 im = basecard.createimage()
@@ -547,10 +563,16 @@ class pdfpage():
     def prevpage(self):
         if self.page_nr != 0:
             self.page_nr -= 1
+            return True
+        else: 
+            return False
         
     def nextpage(self):
         if self.page_nr != self.page_max-1:
             self.page_nr += 1
+            return True
+        else:
+            return False
         
     def getmode(self):
         pass
@@ -723,7 +745,7 @@ def createbasiscards(self,index,card_mode_nr,cardsdicts,library,CardsDeckEntries
    
     basiscard_i = basiscard()    
     
-    #print(f"anton mode = {mode}")
+    #print(f"mode = {mode}")
     
     if mode == 'Topic':
         
@@ -797,15 +819,20 @@ def notes2paper(self):
     self.answers     = []
     ini2.initializeparameters(self) 
     # open file
+    if self.onlyatinitialize == 0:
+        try:
+            if self.FilePickEvent == True:
+                self.path         = self.fileDialog.GetPath()      
+                self.booknamepath = self.path
+                self.filename     = self.fileDialog.GetFilename()
+                self.bookname     = Path(self.filename).stem
+        except:
+            log.ERRORMESSAGE("Error: Couldn't open path")
+    self.onlyatinitialize += 1
+    
     try:
-        if self.FilePickEvent == True:
-            self.path         = self.fileDialog.GetPath()      
-            self.booknamepath = self.path
-            self.filename     = self.fileDialog.GetFilename()
-            self.bookname     = Path(self.filename).stem
-    except:
-        log.ERRORMESSAGE("Error: Couldn't open path")
-    try:
+        if self.bookname == '':
+            self.bookname = os.path.splitext(os.path.basename(self.booknamepath))[0]
         linefile = f2.loadfile(self.path)
         cards = f2.File_to_Cards(self,linefile)                       # converts to raw cards
         self.CardsDeck.set_bookname(self.bookname)
@@ -815,7 +842,7 @@ def notes2paper(self):
         self.nr_questions = len(self.CardsDeck)
     except:
         log.ERRORMESSAGE("Error: finding questions/answers")
-
+    
     ## dialog display              
     self.chrono = True
     self.multiplier = 1   
@@ -849,14 +876,14 @@ def notes2paper(self):
         for index,card_mode_nr in enumerate(CardsDeckUniqueCards):
             if checkcard[index] == True:
                 createbasiscards(self,index,card_mode_nr,cardsdicts,library,CardsDeckEntries)
-        self.library = library
+        self.library = list(library[:])
     self.onlyonce += 1
     #print(f"library = ")
     #[print(x) for x in library]
     #%% resize images    
     if hasattr(self,'library2'):
         delattr(self,'library2')
-    self.library2 = self.library.copy()
+    self.library2 = list(self.library[:])
     TT.update('resize all the images')
     
     if ColumnSliders(self) != []:
@@ -889,6 +916,7 @@ def notes2paper(self):
     TT.update('add borders to all the images')
     if self.vertline_bool or self.pdfline_bool:
         for i,entrydict in enumerate(self.library2):
+            entrydict = self.library[i]
             if entrydict['mode'] != 't':
                 basiscard_j = entrydict['card']
                 width  = 0
@@ -898,10 +926,12 @@ def notes2paper(self):
                 if self.pdfline_bool:
                     height += self.pdfline_thickness + self.linesep
                 bordersize = (width,height)
-                #print(f"bordersize = {bordersize}")
-                #print(f"before = {basiscard_j.getsize()}")
+                if i == 1:
+                    print(f"bordersize = {bordersize}")
+                    print(f"before = {basiscard_j.getsize()}")
                 basiscard_j.addbordersize(bordersize)# anton hier zit het probleem
-                #print(f"after = {basiscard_j.getsize()}\n")
+                if i == 1:
+                    print(f"after = {basiscard_j.getsize()}\n")
                 entrydict['card'] = basiscard_j
                 self.library2[i] = entrydict
     
@@ -923,13 +953,14 @@ def notes2paper(self):
     self.SortImages = SortImages(library = self.library2, page_width = self.a4page_w, page_height = self.a4page_h)
     dct,dct2,dct3 = self.SortImages.sortpages()
     
+    
     #%% create test page
     TT.update("create single pdf page") 
     if hasattr(self,'pdfpage'):
         pagenr = self.pdfpage.getpage()
     else:
         pagenr = 0
-    self.pdfpage = pdfpage(pagenr,dct,dct2,dct3,self.a4page_w,self.a4page_h)
+    self.pdfpage = pdfpage(pagenr,dct,dct2,dct3,self.a4page_w,self.a4page_h,tempdir = self.tempdir)
     self.pdfpage.setvertline(color = self.vertline_color , thickness = self.vertline_thickness,visible = self.vertline_bool)
     self.pdfpage.sethoriline(color = self.pdfline_color , thickness = self.pdfline_thickness,visible = self.pdfline_bool)
     pdfimage_i = self.pdfpage.loadpage()
@@ -956,22 +987,24 @@ def notes2paper(self):
     self.SetCursor(wx.Cursor(wx.CURSOR_ARROW))
     if self.printpreview == False:
         TT.update("writing files to pdf")
-        filename = os.path.join(self.dirpdf,f"{self.bookname}.pdf")
+        filename = os.path.join(self.dirpdf,f"{os.path.splitext(os.path.basename(self.booknamepath))[0]}.pdf")
+        
         try:
+            imagelist = self.pdfpage.createpdf()
             with open(filename, "wb") as file:
                 #file.write(img2pdf.convert([im for im in imagelist if im.endswith(".png")]))
                 file.write(img2pdf.convert([im for im in imagelist]))
             file.close()
             self.printsuccessful = True
         except:
+            log.ERRORMESSAGE("Error: Couldn't create pdf")
             self.printsuccessful = False
             MessageBox(0, "If you have the PDF opened in another file, close it and try it again.", "Warning", ICON_EXCLAIM)
         TT.stop()
     
     #page info
     currentpage, maxpage = self.pdfpage.getpageinfo()
-    self.m_pdfCurrentPage.SetValue(str(currentpage))
-    self.m_TotalPDFPages.SetValue(str(maxpage))
+    self.m_pdfCurrentPage.SetValue(f"{currentpage}/{maxpage}")
     print("end "*3)
     TT.stop()
     
