@@ -14,11 +14,13 @@ import json
 class Timing():
     "Class that displays how long certain parts of code takes to execute."
     time_0 = time.time()
+    time_started = time_0
     message = ""
     index = 1
     def __init__(self, message):
         v = type(self)
         v.time_0 = time.time()
+        v.time_started = v.time_0
         v.message = message
     def update(self,message):
         v = type(self)
@@ -33,7 +35,8 @@ class Timing():
         v.index = 1
     def stop(self):
         v = type(self)
-        print(colored(f"{v.index}) {v.message} took {round(time.time()-v.time_0,2)} seconds","red"))        
+        print(colored(f"{v.index}) {v.message} took {round(time.time()-v.time_0,2)} seconds","red"))
+        print(colored(f"it took in total: {round(time.time()-v.time_started,2)} seconds","red"))        
         
 
 
@@ -50,8 +53,8 @@ class TimeCount:
     timelastchecked = time.time()
     timelastsaved   = time.time()
     # bounds in seconds
-    lowerbound = 1      # when to update the count
-    savethreshold = 5      # when to save the current count
+    lowerbound = 1     # when to update the count
+    savethreshold = 5  # when to save the current count
     upperbound = 60    # when to consider the user to be idle
     
     def __init__(self, bookname, filename):
