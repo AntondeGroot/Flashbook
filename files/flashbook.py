@@ -1273,20 +1273,20 @@ class MainFrame(gui.MyFrame):
                     file_lines.pop(trueindex)
                 else:
                     file_lines[trueindex] = r"\quiz{"+str(question)+"}"+r"\ans{"+str(answer)+"}" +r"\topic{"+str(topic)+  "}"+"\n"
-                    #save changes
-                    with open(str(Path(self.notesdir, self.filename)), 'w') as output: 
-                        for line in file_lines:
-                            output.write(line)
-                    #reload cards
-                    self.onlyonce = 0
-                    self.CardsDeck.reset()
-                    m3.notes2paper(self)
-                    #self.CardsDeck.reset()
-                    #linefile = f2.loadfile(self.booknamepath)
-                    #cards = f2.File_to_Cards(self,linefile)                       # converts to raw cards
-                    #self.CardsDeck.set_cards(cards=cards,notesdir=self.notesdir)
-                    
-                    self.Refresh()
+                #save changes
+                with open(str(Path(self.notesdir, self.filename)), 'w') as output: 
+                    for line in file_lines:
+                        output.write(line)
+                #reload cards
+                self.onlyonce = 0
+                self.CardsDeck.reset()
+                m3.notes2paper(self)
+                #self.CardsDeck.reset()
+                #linefile = f2.loadfile(self.booknamepath)
+                #cards = f2.File_to_Cards(self,linefile)                       # converts to raw cards
+                #self.CardsDeck.set_cards(cards=cards,notesdir=self.notesdir)
+                
+                self.Refresh()
                     
                 
                 print("success!!")
