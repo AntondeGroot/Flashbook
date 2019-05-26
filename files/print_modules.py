@@ -499,15 +499,28 @@ class pdfpage():
     def pagekey(self):
         return f"pdfpage{self.page_nr}"
     def createpdf(self):
+        def threadfunction(self,i,pdflist):
+            path = os.path.join(self.tempdir,f"temporary_pdfpage{i}.png")
+            self.page_nr = i
+            im = self.loadpage()
+            im.save(path)
+            pdflist[i] = path
+            
         self.backuppage = self.page_nr
         pdflist = [] #contains all images
+        print(f"pdflist is {pdflist}")
         if self.tempdir != None:
+            threads = [None] * len(range(self.page_max))        
+            pdflist = [None] * len(range(self.page_max))        
             for i in range(self.page_max):
-                path = os.path.join(self.tempdir,f"temporary_pdfpage{i}.png")
-                self.page_nr = i
-                im = self.loadpage()
-                im.save(path)
-                pdflist.append(path)
+                
+                threads[i] = threading.Thread(target = threadfunction  , args=(self,i,pdflist))
+                threads[i].start()
+                
+                
+            for i,thread in enumerate(threads):
+                thread.join()
+        print(f"pdflist is {pdflist}")
         self.page_nr = self.backuppage
         return pdflist
         
@@ -651,7 +664,8 @@ class basiscard():
             self.pos_QAline = d1
             d1 += self.QAline_thickness
             height += self.QAline_thickness
-            
+        
+        #print(f"texta = {self.pica}")
         if self.texta != None:
             path = self.texta[0]
             w,h = self.texta[1]
@@ -671,7 +685,7 @@ class basiscard():
             d1 += h
         realw,realh = w,h
         if self.QAbool == True:
-            im.paste(PIL.Image.new("RGB", (realw ,self.QAline_thickness), self.linecolor), (self.displacement[0],self.pos_QAline))
+            im.paste(PIL.Image.new("RGB", (width ,self.QAline_thickness), self.linecolor), (self.displacement[0],self.pos_QAline))
         
         return im
         
@@ -742,6 +756,7 @@ def createbasiscards(self,index,card_mode_nr,cardsdicts,library,CardsDeckEntries
     #print(f"t = {t}")
     mode = getmode(card_mode_nr)
     currentcard = cardsdicts[card_mode_nr]
+    print(f"cardsdicts = {cardsdicts}")
    
     basiscard_i = basiscard()    
     
@@ -779,25 +794,29 @@ def createbasiscards(self,index,card_mode_nr,cardsdicts,library,CardsDeckEntries
                 basiscard_i.setq_pic(path,imagesize)
         #MessageBox(0, f"{'a'+mode[1:]} , {CardsDeckEntries}", "Error", ICON_EXCLAIM)
         tempkey = 'card_a'+card_mode_nr[6:]
-        if tempkey in CardsDeckEntries:
-        
-            print(f"currentcard.keys = {currentcard.keys()}")
-            #if 'a'+mode[1:] in CardsDeckEntries:
-            if 'text' in currentcard.keys():
-                #text = currentcard['text']
-                bool_textcard, img_text = f2.CreateTextCard(self,'flashcard',tempkey)
-                if bool_textcard:
-                    img_text = f2.cropimage(img_text,0)    
-                    imagename = f"temporary_{tempkey}_{mode}.png"
-                    imagepathname = str(Path(self.tempdir, imagename))
-                    imgsize = img_text.size
-                    saveimage(img_text,imagepathname)
-                    basiscard_i.seta_text(imagepathname,imgsize)
-            if 'pic' in currentcard.keys():
-                
-                FOUNDPIC, imagesize,path = findpicturesize(self,tempkey)
-                if FOUNDPIC:
-                    basiscard_i.seta_pic(path,imagesize)    
+        if tempkey in cardsdicts.keys():
+            currentcard = cardsdicts[tempkey]
+            #print(f"currentcard.keys = {currentcard.keys()} \n {CardsDeckEntries}")
+            #print(f"tempkey = {tempkey}")
+            if tempkey in CardsDeckEntries:
+            
+                print(f"currentcard.keys = {currentcard.keys()}")
+                #if 'a'+mode[1:] in CardsDeckEntries:
+                if 'text' in currentcard.keys():
+                    #text = currentcard['text']
+                    bool_textcard, img_text = f2.CreateTextCard(self,'flashcard',tempkey)
+                    if bool_textcard:
+                        img_text = f2.cropimage(img_text,0)    
+                        imagename = f"temporary_{tempkey}_{mode}.png"
+                        imagepathname = str(Path(self.tempdir, imagename))
+                        imgsize = img_text.size
+                        saveimage(img_text,imagepathname)
+                        basiscard_i.seta_text(imagepathname,imgsize)
+                if 'pic' in currentcard.keys():
+                    
+                    FOUNDPIC, imagesize,path = findpicturesize(self,tempkey)
+                    if FOUNDPIC:
+                        basiscard_i.seta_pic(path,imagesize)    
         
     #print(basiscard_i)
     library[index] = {'mode': mode[0].lower(), 'card': basiscard_i,'line':line_nr,'cardname': mode[0].lower()+line_nr,'size':basiscard_i.getsize()}
@@ -875,6 +894,7 @@ def notes2paper(self):
         CardsDeckUniqueCards = [x for x in CardsDeckEntries if 'card_a' not in x]
         for index,card_mode_nr in enumerate(CardsDeckUniqueCards):
             if checkcard[index] == True:
+                print(f"index,cardmode_nr {index,card_mode_nr}")
                 createbasiscards(self,index,card_mode_nr,cardsdicts,library,CardsDeckEntries)
         self.library = list(library[:])
     self.onlyonce += 1
