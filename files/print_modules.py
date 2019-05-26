@@ -83,7 +83,7 @@ class SortImages():
         self.library = library    
         self.images_w = [x[0] for x in sizelist]
         self.images_s = sizelist
-        print(colored(f"sizelist = {sizelist}","red"))
+        #print(colored(f"sizelist = {sizelist}","red"))
         
         self.a4page_w = page_width
         self.a4page_h = page_height
@@ -306,7 +306,7 @@ def getcardmode(path):
             index = path.find('_')
         else:
             index = path.find('.png')
-        print(f"index = {index}")
+        #print(f"index = {index}")
         path = path[:index]
         return path
     else:
@@ -508,7 +508,7 @@ class pdfpage():
             
         self.backuppage = self.page_nr
         pdflist = [] #contains all images
-        print(f"pdflist is {pdflist}")
+        #print(f"pdflist is {pdflist}")
         if self.tempdir != None:
             threads = [None] * len(range(self.page_max))        
             pdflist = [None] * len(range(self.page_max))        
@@ -520,7 +520,7 @@ class pdfpage():
                 
             for i,thread in enumerate(threads):
                 thread.join()
-        print(f"pdflist is {pdflist}")
+        #print(f"pdflist is {pdflist}")
         self.page_nr = self.backuppage
         return pdflist
         
@@ -756,7 +756,7 @@ def createbasiscards(self,index,card_mode_nr,cardsdicts,library,CardsDeckEntries
     #print(f"t = {t}")
     mode = getmode(card_mode_nr)
     currentcard = cardsdicts[card_mode_nr]
-    print(f"cardsdicts = {cardsdicts}")
+    #print(f"cardsdicts = {cardsdicts}")
    
     basiscard_i = basiscard()    
     
@@ -800,7 +800,7 @@ def createbasiscards(self,index,card_mode_nr,cardsdicts,library,CardsDeckEntries
             #print(f"tempkey = {tempkey}")
             if tempkey in CardsDeckEntries:
             
-                print(f"currentcard.keys = {currentcard.keys()}")
+                #print(f"currentcard.keys = {currentcard.keys()}")
                 #if 'a'+mode[1:] in CardsDeckEntries:
                 if 'text' in currentcard.keys():
                     #text = currentcard['text']
@@ -894,7 +894,7 @@ def notes2paper(self):
         CardsDeckUniqueCards = [x for x in CardsDeckEntries if 'card_a' not in x]
         for index,card_mode_nr in enumerate(CardsDeckUniqueCards):
             if checkcard[index] == True:
-                print(f"index,cardmode_nr {index,card_mode_nr}")
+                #print(f"index,cardmode_nr {index,card_mode_nr}")
                 createbasiscards(self,index,card_mode_nr,cardsdicts,library,CardsDeckEntries)
         self.library = list(library[:])
     self.onlyonce += 1
@@ -1025,7 +1025,6 @@ def notes2paper(self):
     #page info
     currentpage, maxpage = self.pdfpage.getpageinfo()
     self.m_pdfCurrentPage.SetValue(f"{currentpage}/{maxpage}")
-    print("end "*3)
     TT.stop()
     
     
