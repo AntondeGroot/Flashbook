@@ -28,20 +28,72 @@ import wx
 import threading
 from timingmodule import Timing
 
+def CreateTopicCard(self,key):
+    bool_textcard, img_text = f2.TopicCard(self,key)
+    if bool_textcard:
+        return img_text
+    else:
+        return None
+
+def findpicturesize(self,key):
+    """Instead of just opening the path of a picture
+    Try to find out if the path exists
+    if it does not exist, try to look in all other folders.
+    This problem may occur if you have combined several books.
+    If the picture really doesn't exist, then the user gets notified with a messagebox."""
+    FOUNDPIC = False
+    imagesize = None
+    path = None
+    #if key in self.picdictionary:
+    if 'pic' in self.CardsDeck.getcards()[key].keys():
+        picname = self.CardsDeck.getcards()[key]['pic']
+        path = os.path.join(self.picsdir, self.bookname, picname)
+        if os.path.exists(path):
+            imagesize = PIL.Image.open(str(path)).size
+            FOUNDPIC = True
+        else:
+            folders = os.listdir(self.picsdir)
+            for i,item in enumerate(folders):
+                path = os.path.join(self.picsdir, item, picname)
+                if os.path.exists(path):
+                    imagesize = PIL.Image.open(str(path)).size
+                    FOUNDPIC = True
+        if FOUNDPIC == False:
+            """Notify User and create a fake picture with the error message 
+            as replacement for the missing picture."""
+            
+            MessageBox(0, f"Error in line {str(int(key[6:])+1)} mode {key[0]}\nline: {picname}\nPicture could not be found in any folder.", "Message", ICON_STOP)
+            
+    else:
+        #picture does not exist and should not exist, so this is fine
+        pass
+    return FOUNDPIC, imagesize, path
+
+
 class SortImages():
     import numpy as np
     import bisect
-    def __init__(self, image_sizes = None, im_paths = None, page_width = 1240, page_height = 1754):
-        self.images_w = [x[0] for x in image_sizes]
-        self.images_s = image_sizes
-        self.im_paths = im_paths
-        print(f"self.impaths = {self.im_paths}" )
+    def __init__(self, library = None, page_width = 1240, page_height = 1754):
+        sizelist = []
+        
+        for i,entry in enumerate(library):
+            basiscard_i = entry['card']
+            size = basiscard_i.getsize()
+            sizelist.append(size)
+        self.library = library    
+        self.images_w = [x[0] for x in sizelist]
+        self.images_s = sizelist
+        print(colored(f"sizelist = {sizelist}","red"))
+        
         self.a4page_w = page_width
         self.a4page_h = page_height
         self.page_x  = 0
         self.page_y  = 0
         self.page_nr = 0
-        self.datadict = {}      # {pdfpagenr " {'q1': coordinates , ...}}
+        self.line_nr = 0
+        self.datadict = {}      # {pdfpagenr " {'q1': rect , ...}}
+        self.datadict2 = {}     # {q1: basiscard}
+        self.datadict3 = {}
         self.datadict_path = {} # {"q1" : c://.../name}
         self.rowindex = 0
     def newpage(self):
@@ -65,62 +117,58 @@ class SortImages():
         return f'pdfpage{self.page_nr}'
     
     def savedata(self,w,h):
-        cardpath = self.im_paths[self.picindex]            
-        cardname = self.getcardmode(self.im_paths[self.picindex])
+        def dictdictlist(self,key,subkey,val):
+            if key not in self.datadict2.keys():
+                val_list = [val]
+                base = {subkey: val_list}
+                self.datadict2[key] = base
+            else:
+                if subkey in self.datadict2[key].keys():
+                    val_list = self.datadict2[key][subkey]
+                    val_list += [val]
+                    self.datadict2[key][subkey] = val_list
+                    
+                else:
+                    val_list = [val]
+                    base = {subkey: val_list}
+                    self.datadict2[key].update(base)
+        
+        cardname = self.library[0]['mode']+self.library[0]['line'] #t0/q0 
+        basecard = self.library[0]['card']
+        w,h = basecard.getsize()
         Rect = (self.page_x, self.page_y, w, h)
         dict_ = {cardname : Rect}
+        dict_2 = {self.line_nr: [cardname]}
+        dict_3 = {cardname: basecard}
         pagekey = self.pdfpagename()
         
-        print(f"DATA DATA = {pagekey,dict_,cardname,cardpath}")
+        #print(f"DATA DATA = {pagekey,dict_,cardname,cardpath}")
         
         if pagekey not in  self.datadict.keys():
             self.datadict[pagekey] = dict_
         else:
             self.datadict[pagekey].update(dict_)
-        cardkey = cardname
-        if cardkey not in self.datadict_path.keys():
-            print(f"Good cardkey {cardkey}")
-            self.datadict_path[cardkey] = cardpath
-            #print(f"datadictpath = {self.datadict_path}")
-        else:
-            print(f"Error cardkey {cardkey}")
-        #    self.datadict_path[cardkey].update(cardpath)
-    
-    def savesingledata(self,w,h):
-        cardpath = self.im_paths[0]            
-        cardname = self.getcardmode(self.im_paths[0])
-        Rect = (self.page_x, self.page_y, w, h)
-        dict_ = {cardname : Rect}
-        pagekey = self.pdfpagename()
+            
+        dictdictlist(self,pagekey,self.line_nr,cardname)    
         
-        print(f"DATA DATA = {pagekey,dict_,cardname,cardpath}")
         
-        if pagekey not in  self.datadict.keys():
-            self.datadict[pagekey] = dict_
+        #print(f"dict 2 = {self.datadict2}")
+        if pagekey not in  self.datadict3.keys():
+            self.datadict3[pagekey] = dict_3
         else:
-            self.datadict[pagekey].update(dict_)
-        cardkey = cardname
-        if cardkey not in self.datadict_path.keys():
-            print(f"Good cardkey {cardkey}")
-            self.datadict_path[cardkey] = cardpath
-            #print(f"datadictpath = {self.datadict_path}")
-        else:
-            print(f"Error cardkey {cardkey}")
-        #    self.datadict_path[cardkey].update(cardpath)
-    
+            self.datadict3[pagekey].update(dict_3)
     def removedata(self):
-        self.page_x = 0
-        self.im_paths = self.im_paths[self.rowindex+1:] 
-        self.images_w = self.images_w[self.rowindex+1:]                
-        self.images_s = self.images_s[self.rowindex+1:]
-    def removesingle(self):
-        self.im_paths = self.im_paths[1:] 
         self.images_w = self.images_w[1:]                
         self.images_s = self.images_s[1:]
+        self.library  = self.library[1:]
+        
     def sortpages(self):
-        CUMSUMLEN = np.cumsum(self.images_w)        
+        CUMSUMLEN = np.cumsum(self.images_w) 
+        #print(colored(f"CUMSUMLEN {CUMSUMLEN}","green"))
         k = 0
-        while len(self.images_w) != 0: #continue until all pictures have been processed               
+        self.line_nr = 0
+        while len(self.images_w) != 0: #continue until all pictures have been processed     
+             
             """Method:
             Cumsum the widths of images.
             Use bisect to look first instance where the cumsum is too large to fit on a page.
@@ -129,11 +177,12 @@ class SortImages():
             #combine horizontally until it doesn't fit on the page
             self.rowindex = bisect.bisect_left(CUMSUMLEN, self.a4page_w) 
             
-            print(f"card{k}")
+            #print(f"card{k}")
             k += 1
             self.page_x = 0
             self.picindex = 0
             if self.rowindex == 0: # image is too wide
+                print(colored(f"too wide {CUMSUMLEN[0]}","red"))
                 # rescale
                 w,h = self.images_s[0]    
                 w_resized,h_resized = (int(self.a4page_w),int(self.a4page_w/w*h))
@@ -141,15 +190,17 @@ class SortImages():
                 if self.page_y + h_resized > self.a4page_h: 
                     self.newpage()
                 #
-                #self.savedata(w_resized,h_resized)  # save data
-                self.savesingledata(w_resized,h_resized)
+                
+                self.savedata(w_resized,h_resized)
                 #print(f"saved pagexy = {self.page_x,self.page_y}")
                 self.removedata()                   # remove data from searchlist 
                 self.page_x = 0
                 self.page_y += h_resized
+                self.line_nr += 1
+                
                 CUMSUMLEN = np.cumsum(self.images_w)  
             else:   # image(s) are combined not too wide
-                
+                #print(colored("not too wide","green"))
                 #print(f"size = {self.images_s[:self.rowindex]}\n")
                 h_max = max([x[1] for x in self.images_s[:self.rowindex]])
                 #print(f"hmax = {h_max}")                
@@ -162,23 +213,25 @@ class SortImages():
                     self.picindex = i
                     
                     w_i,h_i = sizetuple 
-                    #print(f"s = {w_i,h_i}")
-                    #self.savedata(w_i,h_i)
-                    self.savesingledata(w_i,h_i)
-                    #print(f"saved pagexy = {self.page_x,self.page_y}")
+                    self.savedata(w_i,h_i)
                     self.page_x += w_i
-                    self.removesingle()
+                    self.removedata()
                     
                 #self.removedata()
                 self.page_x  = 0
                 self.page_y += h_max
+                self.line_nr += 1
                 CUMSUMLEN = np.cumsum(self.images_w)  
             self.page_x = 0
             
             
         # finished
-        return self.datadict, self.datadict_path
+        return self.datadict, self.datadict2,self.datadict3
 
+class pdfrow():
+    def __init__(self):
+        pass
+    
 
 
 class RectangleDetection():
@@ -259,76 +312,7 @@ def getcardmode(path):
     else:
         print(f"error: path")
 
-def combine_h(self,paper_h_list_sizes,i,paths,paper_v_heights , paper_v_widths, paper_h, ModeAndSize):
-    
-    imagesizes = paper_h_list_sizes[i]
-    cardtype = ''
-    if type(paths) == list:
-        # if there are multiple pics
-        images = []
-        for l,im in enumerate(paths):
-            print(f"immode = {getmode(im)}")
-            
-            images.append(PIL.Image.open(im).resize(imagesizes[l], PIL.Image.ANTIALIAS))
-    elif type(paths) == str:
-        print(f"im = {getmode(paths)}")
-        # if there is only 1 pic
-        
-        images = [PIL.Image.open(paths).resize(imagesizes[0], PIL.Image.ANTIALIAS)]
-        if 'card_t' in paths:
-            cardtype = "topiccard"                
-    N = len(images)      
-    widths, heights = zip(*(im.size for im in images)) 
-    if self.vertline_bool:
-        total_width = sum(widths) + (N+1)*self.vertline_thickness+2*N*self.linesep
-        max_height  = max(heights)+2*self.linesep
-        if cardtype == 'topiccard':
-            total_width = sum(widths)
-    else:
-        total_width = sum(widths)
-    if self.pdfline_bool:
-        max_height = max(heights) + 2*self.pdfline_thickness+2*self.linesep
-        if cardtype == 'topiccard':
-            max_height = max(heights)
-    else:
-        max_height = max(heights)
-    
-    
-    
-    new_im = PIL.Image.new('RGB', (total_width, max_height), "white")
-    #combine images to 1
-    x_offset = 0
-    for _,im in enumerate(images):
-        if  self.vertline_bool == True:        
-            if cardtype == 'topiccard':
-                linecolor = 'black'
-            else:
-                linecolor = self.vertline_color
-            border = PIL.Image.new("RGB", (self.vertline_thickness , max_height), linecolor)        
-            new_im.paste(border, (x_offset,0))
-            if cardtype == 'topiccard':#topic cards should not have white spaces
-                x_offset += self.vertline_thickness
-            else:
-                x_offset += self.vertline_thickness + self.linesep
-        
-        new_im.paste(im, (x_offset,0))
-        x_offset += im.size[0] + self.linesep           
-    if self.vertline_bool:
-        if cardtype == 'topiccard': #this is a bit strange and trying to fix the topic card for a problem that occurs for calculating x_offset
-            if x_offset > im.size[0]:
-                x_offset = im.size[0]-self.vertline_thickness
-        if cardtype == 'topiccard':
-            pass
-            #print(f"x_offset = {x_offset}, imsize = {im.size[0]}")
-        if cardtype != 'topiccard':
-            new_im.paste(border, (x_offset,0))            
-            #print(f"x_offset = {x_offset}, imsize = {im.size[0]}")
-    self.image = new_im
-    pathname_line = str(Path(self.tempdir,f"temporary_p{i}.png"))
-    saveimage(new_im,pathname_line)
-    paper_h[i] = pathname_line
-    paper_v_widths[i] = new_im.size[0]
-    paper_v_heights[i] = new_im.size[1]   
+
 
 
 
@@ -443,6 +427,7 @@ def print_preview(self,event):
     self.Layout()
     self.SetCursor(wx.Cursor(wx.CURSOR_ARROW))
     """
+    
     image = PIL.Image.open(self.allimages_v[0])
     image = image.resize((PanelWidth, PanelHeight), PIL.Image.ANTIALIAS)
     image2 = wx.Image( image.size)
@@ -461,317 +446,482 @@ def preview_refresh(self):
     _, PanelHeight = self.m_panel32.GetSize()
     PanelWidth = round(float(PanelHeight)/1754.0*1240.0)
     #only select first page and display it on the bitmap
-    image = self.allimages_v[0]
+    #image = self.allimages_v[0]
     #image = PIL.Image.open(self.allimages_v[0])
-    image = image.resize((PanelWidth, PanelHeight), PIL.Image.ANTIALIAS) 
-    image2 = wx.Image( image.size)
-    image2.SetData( image.tobytes() )
-    bitmapimage = wx.Bitmap(image2)
-    self.m_bitmap3.SetBitmap(bitmapimage)
+    #image = image.resize((PanelWidth, PanelHeight), PIL.Image.ANTIALIAS) 
+    #image2 = wx.Image( image.size)
+    #image2.SetData( image.tobytes() )
+    #bitmapimage = wx.Bitmap(image2)
+    #self.m_bitmap3.SetBitmap(bitmapimage)
     self.Layout()
     self.SetCursor(wx.Cursor(wx.CURSOR_ARROW))
     
-
-  
-def notes2paper(self):
+class pdfpage():
+    def __init__(self,dict1,dict2,dict3,a4page_w,a4page_h):
+        self.dict1 = dict1 #{pdfpage: {cardname : Rect}}
+        self.dict2 = dict2 #{pdfpage: {self.line_nr:cardname}}
+        self.dict3 = dict3 #{pdfpage: {cardname: basecard}}
+        self.a4page_w = a4page_w
+        self.a4page_h = a4page_h
+        self.page_nr  = 0
+        self.page_max = len(dict1.keys())-1
+        self.vertline_bool = False
+        self.horiline_bool = False
+        self.vertline_thickness = 0
+        self.horiline_thickness = 0
+        self.vertline_color = (0,0,0)
+        self.horiline_color = (0,0,0)
+    def setvertline(self,color = (0,0,0), thickness = 0, visible = False):
+        self.vertline_bool = visible
+        self.vertline_thickness = thickness
+        self.vertline_color = color
+    def sethoriline(self,color = (0,0,0), thickness = 0, visible = False):
+        self.horiline_bool = visible
+        self.horiline_thickness = thickness
+        self.horiline_color = color    
+    def pagekey(self):
+        return f"pdfpage{self.page_nr}"
     
+    def loadpage(self,page_nr):
+        #key = self.pagekey()
+        key = f"pdfpage{page_nr}"
+        linenumbers = self.dict2[key].keys()
+        imcanvas = im = PIL.Image.new("RGB", (self.a4page_w ,self.a4page_h), 'white')
+        
+        
+        for line in linenumbers:
+            xpos = [0]
+            linerect = (0,0,0,0)
+            cards = self.dict2[key][line]
+            for cardname in cards:
+                print(f"anton : key {key}, cardname {cardname} line {line} , cards {cards}")
+                
+                basecard = self.dict3[key][cardname]
+                im = basecard.createimage()
+                
+                x,y,w,h = self.dict1[key][cardname]
+                xpos += [x]
+                xpos += [x+w]
+                linerect = (min(linerect[0],x),max(linerect[1],y),linerect[2]+w,max(linerect[3],h))
+                imcanvas.paste(im,(x,y))
+        
+            if self.vertline_bool:
+                #imcanvas.paste(PIL.Image.new("RGB", (self.vertline_thickness, linerect[3]), self.vertline_color), (linerect[0],linerect[1]))
+                for x_i in xpos:
+                    imcanvas.paste(PIL.Image.new("RGB", (self.vertline_thickness, linerect[3]), self.vertline_color), (x_i,linerect[1]))
+                
+            if self.horiline_bool:
+                imcanvas.paste(PIL.Image.new("RGB", (linerect[2] ,self.horiline_thickness), self.horiline_color), (linerect[0],linerect[1]))
+                imcanvas.paste(PIL.Image.new("RGB", (linerect[2] ,self.horiline_thickness), self.horiline_color), (linerect[0],linerect[1]+linerect[3]))
+                #imcanvas.paste(PIL.Image.new("RGB", (linerect[3] ,self.horiline_thickness), self.horiline_color), (linerect[0]+linerect[2],linerect[1]))
+        #imcanvas.show()
+        return imcanvas
+        
+    def prevpage(self):
+        if self.page_nr != 0:
+            self.page_nr -= 1
+    def nextpage(self):
+        if self.page_nr != self.page_max:
+            self.page_nr += 1
+            
+    def getmode(self):
+        pass
+
+def getmode(key):
+    assert "card_" in key
+    letter = key[5].lower()
+    #print(f"letter = {letter}")
+    if letter == 'q':
+        return 'Question'
+    elif letter == 'a':
+        return 'Answer'
+    elif letter == 't':
+        return 'Topic'
+    
+class basiscard():
+    def __init__(self):
+        self.basecoordinates = (0,0)
+        self.displacement = (0,0) #how much each picture should be displaced wrt basecoordinates / when you add lines to the image
+        self.total_width  = 0
+        self.total_height = 0
+        self.linecolor    = (0,0,0)
+        
+        self.topiccard    = False
+        self.QAbool       = False
+        self.pos_QAline   = 0
+        self.QAline_thickness = 5
+        self.textq = None#[path, size]
+        self.picq  = None#[path, size]
+        self.texta = None#[path, size]
+        self.pica  = None#[path, size]
+        self.bordersize = (0,0)
+    def addbordersize(self,size):
+        assert type(size) == tuple and len(size) == 2
+        w,h = size
+        self.bordersize = size
+        #self.total_width  += w*2
+        #self.total_height += h*2
+        #w0,h0 = self.displacement
+        #self.displacement = (w0+w,h0+h)
+        #if self.QAbool:
+        #    self.pos_QAline += h#what about w?
+    def __str__(self):
+        return f"textq = {self.textq} , picq = {self.picq} \n texta = {self.texta}, pica = {self.pica}\n topic = {self.topiccard} \n size = {self.total_width,self.total_height}"
+    
+    def settopic(self):
+        self.topiccard = True
+    
+    def createimage(self):
+        
+        height = 0
+        width  = 0
+        im = PIL.Image.new("RGB", (self.total_width+self.bordersize[0]*2 ,self.total_height+self.bordersize[1]*2), 'white')
+        
+        d0 = self.displacement[0]+self.bordersize[0]
+        d1 = self.displacement[1]+self.bordersize[1]
+        if self.textq != None:
+            path = self.textq[0]
+            w,h = self.textq[1]
+            im0 = PIL.Image.open(path).resize((w,h), PIL.Image.ANTIALIAS)
+            im.paste(im0,(d0,d1))
+            
+            height += h
+            width  += w
+            d1 += h
+        if self.picq != None:
+            path = self.picq[0]
+            w,h = self.picq[1]
+            im0 = PIL.Image.open(path).resize((w,h), PIL.Image.ANTIALIAS)
+            im.paste(im0,(d0,d1))
+            height += h
+            width  += w
+            d1  += h
+            
+        if self.QAbool == True:
+            self.pos_QAline = d1
+            d1 += self.QAline_thickness
+            height += self.QAline_thickness
+            
+        if self.texta != None:
+            path = self.texta[0]
+            w,h = self.texta[1]
+            im0 = PIL.Image.open(path).resize((w,h), PIL.Image.ANTIALIAS)
+            im.paste(im0,(d0,d1))
+            
+            height += h
+            width  += w
+            d1 += h
+        if self.pica != None:
+            path = self.pica[0]
+            w,h = self.pica[1]
+            im0 = PIL.Image.open(path).resize((w,h), PIL.Image.ANTIALIAS)
+            im.paste(im0,(d0,d1))
+            height += h
+            width  += w
+            d1 += h
+        realw,realh = w,h
+        if self.QAbool == True:
+            im.paste(PIL.Image.new("RGB", (realw ,self.QAline_thickness), self.linecolor), (self.displacement[0],self.pos_QAline))
+        
+        return im
+        
+    def addsize(self,size):
+        self.total_height += size[1] 
+        self.total_width = max(self.total_width,size[0])
+    
+    def setq_text(self,path,size):
+        self.textq = [path,size]
+        self.addsize(size)
+        self.pos_QAline += size[1]
+    def setq_pic(self,path,size):
+        self.picq = [path,size]
+        self.addsize(size)
+        self.pos_QAline += size[1]
+    def seta_text(self,path,size):
+        self.texta = [path,size]
+        self.addsize(size)
+        self.QAbool = True
+    def seta_pic(self,path,size):
+        self.pica = [path,size]
+        self.addsize(size)
+        self.QAbool = True
+    def resize(self,size):
+        Wp = size[0]/self.total_width
+        Hp = size[1]/self.total_height
+        self.total_width = size[0]
+        #print(f"WpHp = {Wp,Hp}")
+        #make sure that the dividing line between Q and A is NOT resized
+        height = 0
+        if self.textq != None:
+            w,h = int(self.textq[1][0]*Wp) , int(self.textq[1][1]*Hp)
+            self.textq = [self.textq[0],(w,h)]
+            height += h
+        if self.picq != None:
+            w,h = int(self.picq[1][0]*Wp) , int(self.picq[1][1]*Hp)
+            self.picq = [self.picq[0],(w,h)]
+            height += h
+        self.pos_QAline = height
+        if self.texta != None:
+            w,h = int(self.texta[1][0]*Wp) , int(self.texta[1][1]*Hp)
+            self.texta = [self.texta[0],(w,h)]
+            height += h
+        if self.pica != None:
+            w,h = int(self.pica[1][0]*Wp) , int(self.pica[1][1]*Hp)
+            self.pica = [self.pica[0],(w,h)]    
+            height += h
+        self.total_height = height + self.QAline_thickness
+        #print(f"totalsize = {self.total_width,self.total_height}")
+        
+    def getsize_ini(self):
+        #when used the first time otherwise the QAline thickness is not included
+        return self.total_width+self.QAline_thickness, self.total_height
+    def getsize(self):
+        return self.total_width+self.bordersize[0]*2, self.total_height+self.bordersize[1]*2
+    def hasline(self):
+        return self.QAbool
+    def getrect(self):
+        x,y = self.basecoordinates
+        w,h = self.total_width,self.total_height
+        return (x,y,w,h)
+def createbasiscards(self,index,card_mode_nr,cardsdicts,library,CardsDeckEntries):
+    #print(f"carkey_nr = {card_mode_nr}")
+    #Entries may contain card_t0 / card_q0 / card_a0
+    # initialize variables
+    t = card_mode_nr[5:]
+    line_nr = card_mode_nr[6:]
+    #print(f"t = {t}")
+    mode = getmode(card_mode_nr)
+    currentcard = cardsdicts[card_mode_nr]
+   
+    basiscard_i = basiscard()    
+    
+    #print(f"anton mode = {mode}")
+    
+    if mode == 'Topic':
+        
+        basiscard_i.settopic()
+        key = f"card_{t}"
+        img_text = CreateTopicCard(self,key)
+        imagename = f"temporary_{card_mode_nr}_{mode}.png"
+        imagepathname = str(Path(self.tempdir, imagename))
+        imgsize = img_text.size
+        
+        saveimage(img_text,imagepathname)
+        basiscard_i.setq_text(imagepathname,imgsize)
+        
+    elif mode == 'Question':
+        #print(f"keys = {currentcard.keys()}")
+        if 'text' in currentcard.keys():
+            #text = currentcard['text']
+            bool_textcard, img_text = f2.CreateTextCard(self,'flashcard',card_mode_nr)
+            if bool_textcard:
+                img_text = f2.cropimage(img_text,0)    
+                imagename = f"temporary_{card_mode_nr}_{mode}.png"
+                imagepathname = str(Path(self.tempdir, imagename))
+                
+                imgsize = img_text.size
+                saveimage(img_text,imagepathname)
+                basiscard_i.setq_text(imagepathname,imgsize)
+        if 'pic' in currentcard.keys():
+            key = 'card_'+t
+            FOUNDPIC, imagesize,path = findpicturesize(self,key)
+            if FOUNDPIC:
+                basiscard_i.setq_pic(path,imagesize)
+        #MessageBox(0, f"{'a'+mode[1:]} , {CardsDeckEntries}", "Error", ICON_EXCLAIM)
+        tempkey = 'card_a'+card_mode_nr[6:]
+        if tempkey in CardsDeckEntries:
+        
+            print(f"currentcard.keys = {currentcard.keys()}")
+            #if 'a'+mode[1:] in CardsDeckEntries:
+            if 'text' in currentcard.keys():
+                #text = currentcard['text']
+                bool_textcard, img_text = f2.CreateTextCard(self,'flashcard',tempkey)
+                if bool_textcard:
+                    img_text = f2.cropimage(img_text,0)    
+                    imagename = f"temporary_{tempkey}_{mode}.png"
+                    imagepathname = str(Path(self.tempdir, imagename))
+                    imgsize = img_text.size
+                    saveimage(img_text,imagepathname)
+                    basiscard_i.seta_text(imagepathname,imgsize)
+            if 'pic' in currentcard.keys():
+                
+                FOUNDPIC, imagesize,path = findpicturesize(self,tempkey)
+                if FOUNDPIC:
+                    basiscard_i.seta_pic(path,imagesize)    
+        
+    #print(basiscard_i)
+    library[index] = {'mode': mode[0].lower(), 'card': basiscard_i,'line':line_nr,'cardname': mode[0].lower()+line_nr,'size':basiscard_i.getsize()}
+    #{'card0': {'textq': ['txt', (w,h)],'picq': ['path',(w,h)],'texta':['text':(w,h)],'pica':['path',(w,h)],'totalsize':(max(w),max(h)) }  }
+    
+def notes2paper(self):
+    #%% initialize
+    """ initialize the cards """
+    TT = Timing("Initialize the cards")
+    ##initialize
+    self.runprogram   = True
+    self.nr_questions = 0
+    self.zoom     = 1
+    self.chrono   = True
+    self.index    = 0
+    self.nr_cards = 0
+    self.mode     = 'Question'    
+    self.questions   = []
+    self.answers     = []
+    ini2.initializeparameters(self) 
+    # open file
+    try:
+        if self.FilePickEvent == True:
+            self.path         = self.fileDialog.GetPath()      
+            self.booknamepath = self.path
+            self.filename     = self.fileDialog.GetFilename()
+            self.bookname     = Path(self.filename).stem
+    except:
+        log.ERRORMESSAGE("Error: Couldn't open path")
+    try:
+        linefile = f2.loadfile(self.path)
+        cards = f2.File_to_Cards(self,linefile)                       # converts to raw cards
+        self.CardsDeck.set_bookname(self.bookname)
+        self.CardsDeck.set_cards(cards=cards,notesdir=self.notesdir)    
+        
+        self.nr_cards = len(self.CardsDeck)
+        self.nr_questions = len(self.CardsDeck)
+    except:
+        log.ERRORMESSAGE("Error: finding questions/answers")
+
+    ## dialog display              
+    self.chrono = True
+    self.multiplier = 1   
+    #%%
     self.linesep = 5
     N = 1.3
     self.a4page_w  = round(1240*N*self.pdfmultiplier) # in pixels
     self.a4page_h  = round(1754*N*self.pdfmultiplier)
-    self.paper_h      = []
-    
-    
     
     if self.onlyonce == 0:
-        self.allimagepaths_QAbrackets = []
-        self.allimagepaths_QAcombined = []
-        
-        self.allimagesizes_QAbrackets = []
-        self.allimagesizes_QAcombined = []
-        self.allimagesizes_resized_QAcombined = []
-        
-        if self.printpreview == True:
-            if self.NrCardsPreview != '':
-                nrQ = int(self.NrCardsPreview)
-                if self.NrCardsPreview > self.nr_questions:
-                    nrQ = self.nr_questions
-            else:
-                nrQ = self.nr_questions
-        else:
-            nrQ = self.nr_questions
-        #self.nr_questions = 15
+        #initialize
         self.cardorder = [x for x in range(self.nr_questions)]
         if len(self.cardorder) > 10:
             print(f"carorder = {self.cardorder[:10]}")
         else:
-            print(f"carorder = {self.cardorder}")
-        
-    
-    
+            print(f"carorder = {self.cardorder}")    
     nrUnique = self.CardsDeck.len_uniquecards()
     
-    #save individual cards
-    def getmode(key):
-        assert "card_" in key
-        letter = key[5].lower()
-        #print(f"letter = {letter}")
-        if letter == 'q':
-            return 'Question'
-        elif letter == 'a':
-            return 'Answer'
-        elif letter == 't':
-            return 'Topic'
-        
+    #%%    
     """ create all the individual images """
-    TT = Timing("Create the QA cards")
-    
+    TT.update("Create the QA cards")
+    """All text images are created and saved, and their [path,size] is stored 
+    For all other pictures it only checks their sizes and stores [path,size] as well"""
     if self.onlyonce == 0:
-        self.library_modelist = []
-        keys = self.CardsDeck.getcards().keys()            
-        threads       = [None] * len(keys)
-        allimagepaths = []
-        for i,key in enumerate(keys):            
-            # initialize variables
-            mode = getmode(key)
-            self.mode = mode
-            self.index = int(key[6:])
-            #print(f"mode = {mode}\nnow at card: {key}\nindex = {self.index}")
-            image     = None
-            imagename = f"temporary_{key}.png"
-            imagepathname = str(Path(self.tempdir, imagename))
-            
-            # create images
-            if mode == 'Question' or mode == 'Answer':
-                image,_ = f2.CreateSingularCard(self,mode)            
-            elif mode == 'Topic':
-                image = f2.CreateTopicCard(self)
-            else:#invalid mode
-                image = None
-                MessageBox(0, f"Critical Error: invalid mode entered in line{self.index}", "Warning", ICON_EXCLAIM)    
-            # Error:
-            if mode == 'Question' and image == None:
-                MessageBox(0, "Critical Error: question image should not be empty", "Warning", ICON_EXCLAIM)
-            
-            # save images    
-            if image != None:
-                if mode == 'Question':
-                    allimagepaths.append([imagepathname])
-                    self.allimagesizes_QAbrackets.append([image.size])
-                if mode == 'Answer':
-                    allimagepaths[-1].append(imagepathname)
-                    self.allimagesizes_QAbrackets[-1].append(image.size)
-                if mode == 'Topic':
-                    allimagepaths.append(imagepathname)
-                    self.allimagesizes_QAbrackets.append(image.size)
-                threads[i] = threading.Thread(target = saveimage  , args=(image,imagepathname))
-                threads[i].start()
-        for i,thread in enumerate(threads):
-            thread.join()
-            
-    
-    
-        """combine Q&A cards -- they will be combined as a list [path1,path2]"""
-        for i,item in enumerate(allimagepaths):
-            if type(item) == list and len(item) == 1:
-                assert type(item[0]) == str
-                allimagepaths[i] = item[0]
-        self.allimagepaths_QAbrackets = allimagepaths               
-    #print results
-    if len(self.allimagepaths_QAbrackets) > 10:
-        print(f"allimages = {self.allimagepaths_QAbrackets[:10]}... ...")
-    self.allimagepaths_QAcombined = self.allimagepaths_QAbrackets.copy()
-    self.allimagesizes_QAcombined = self.allimagesizes_QAbrackets.copy()
+        CardsDeckEntries = self.CardsDeck.getcards().keys()
+        nrUnique   = self.CardsDeck.len_uniquecards()
+        cardsdicts = self.CardsDeck.getcards()            
+        checkcard  = [True] * nrUnique
+        library    = [None] * nrUnique
+        CardsDeckUniqueCards = [x for x in CardsDeckEntries if 'card_a' not in x]
+        for index,card_mode_nr in enumerate(CardsDeckUniqueCards):
+            if checkcard[index] == True:
+                createbasiscards(self,index,card_mode_nr,cardsdicts,library,CardsDeckEntries)
+        self.library = library
     self.onlyonce += 1
-    #%% combine question and answer cards and save them as a new card
-    nrthreads = len([x for x in self.allimagepaths_QAcombined if (type(x) == list and len(x) == 2)])
-    threads_save = [None] * nrthreads    
-    j = 0
-    for i,item in enumerate(self.allimagepaths_QAcombined):
-        if type(item) == list and len(item) == 2:
-            #initialize
-            q_path = item[0]
-            a_path = item[1]
-            temp_path = q_path[:-4]+"_"+str(i)+".png"
-            self.allimagepaths_QAcombined[i] = temp_path
-            image_a = None
-            image_q = None
-            #get pictures
-            try:
-                #paths
-                image_q = PIL.Image.open(q_path)
-                image_a = PIL.Image.open(a_path)
-                #images
-                image_q = f2.cropimage(image_q,0)
-                image_q = f2.cropimage(image_q,1)
-                image_a = f2.cropimage(image_a,0)
-                image_a = f2.cropimage(image_a,1)
-            except:
-                pass
-            #combine pics
-            if image_q != None and image_a != None:
-                images = [image_q,image_a]
-                #image sizes
-                widths, heights = zip(*(im.size for im in images)) 
-                max_width, total_height = max(widths), sum(heights)
-                if self.QAline_bool == True:
-                    new_im = PIL.Image.new('RGB', (max_width, total_height + self.QAline_thickness), "white")
-                    line = PIL.Image.new('RGB', (image_q.size[0], self.QAline_thickness), self.QAline_color)
-                    #combine images to 1
-                    new_im.paste(images[0], (0,0))
-                    new_im.paste(line,(0,image_q.size[1]))
-                    new_im.paste(images[1], (0,image_q.size[1]+self.QAline_thickness))
-                else:
-                    #combine images to 1
-                    new_im = PIL.Image.new('RGB', (max_width, total_height), "white")
-                    new_im.paste(images[0], (0,0))
-                    new_im.paste(images[1], (0,image_q.size[1]))
-                IMG_QA = new_im
-                self.allimagesizes_QAcombined[i] = IMG_QA.size
-                threads_save[j] = threading.Thread(target = saveimage  , args=(IMG_QA,temp_path))
-                threads_save[j].start()
-                j += 1
-                
-    for _,thread in enumerate(threads_save):
-        thread.join() 
-    
-    #remove superfluous brackets
-    for idx , item in enumerate(self.allimagesizes_QAcombined):
-        if type(item) == list and len(item) == 1: 
-            self.allimagesizes_QAcombined[idx] = item[0]
-        elif type(item) == tuple and len(item) == 2:
-            self.allimagesizes_QAcombined[idx] = item
-        else:
-            MessageBox(0, f"Error : {type(item)},{item}", "Info", 0x30)
-            
-    
-    self.allimagesizes_resized_QAcombined = self.allimagesizes_QAcombined.copy()
+    #print(f"library = ")
+    #[print(x) for x in library]
     #%% resize images    
+    if hasattr(self,'library2'):
+        delattr(self,'library2')
+    self.library2 = self.library
+    TT.update('resize all the images')
+    
     if ColumnSliders(self) != []:
         columns = ColumnSliders(self)
         ColumnWidths = [int(col/100*self.a4page_w) for col in columns if col != 0]                       
         if len(ColumnWidths) > 0:
-            assert len(self.allimagesizes_resized_QAcombined) == len(self.allimagepaths_QAcombined)
-            for _idx_ , imgsize in enumerate(self.allimagesizes_resized_QAcombined):
-                if "card_t" not in self.allimagepaths_QAcombined[_idx_]: #topic cards should not be resized but should be page wide
-                    w,h = imgsize
-                    print(f"idx, imgsize ={_idx_}, {imgsize}")
-                    print(f"w,col = {w},{min(ColumnWidths)}")
+            for _idx_ , entrydict in enumerate(self.library2):
+                if entrydict['mode'] == 't':
+                    pass #don't resize
+                    #resize topic card always to the pagewidth
+                    #w,h = imgsize
+                elif entrydict['mode'] == 'q':
+                    basiscard_j = entrydict['card']
+                    w,h = basiscard_j.getsize_ini()
                     if w > min(ColumnWidths) and w > 0:
                         NearestCol = min(ColumnWidths, key=lambda x:abs(x-w))
-                        self.allimagesizes_resized_QAcombined[_idx_] = (int(NearestCol),int(NearestCol/w*h))    
-                else:
-                    #resize topic card always to the pagewidth
-                    w,h = imgsize
-                    self.allimagesizes_resized_QAcombined[_idx_] = (int(self.a4page_w),int(self.a4page_w/w*h))    
+                        newsize = (int(NearestCol),int(NearestCol/w*h))
+                        if newsize != (w,h):
+                            #print(f"newsize = {newsize}")
+                            basiscard_j.resize(newsize)
+                            entrydict['card'] = basiscard_j
+                            try:
+                                assert entrydict['card'].getsize() == newsize
+                            except AssertionError:
+                                pass
+                                #print(colored(f"Error: original{(w,h)} new: {newsize} vs {entrydict['card'].getsize()}","red"))
+                            self.library2[_idx_] = entrydict
     
-    #add border to the images:
+    #%% add border to the images:
+    TT.update('add borders to all the images')
     if self.vertline_bool or self.pdfline_bool:
-        for i,imgsize in enumerate(self.allimagesizes_resized_QAcombined):
-            width  = imgsize[0]
-            height = imgsize[1]
-            if self.vertline_bool:
-                width += 2*self.vertline_thickness + 2*self.linesep
-            if self.pdfline_bool:
-                height += 2*self.pdfline_thickness + 2*self.linesep
-            imgsize = (width,height)
-            self.allimagesizes_resized_QAcombined[i] = imgsize
+        for i,entrydict in enumerate(self.library2):
+            if entrydict['mode'] != 't':
+                basiscard_j = entrydict['card']
+                width  = 0
+                height = 0
+                if self.vertline_bool:
+                    width += self.vertline_thickness + self.linesep
+                if self.pdfline_bool:
+                    height += self.pdfline_thickness + self.linesep
+                bordersize = (width,height)
+                #print(f"bordersize = {bordersize}")
+                #print(f"before = {basiscard_j.getsize()}")
+                basiscard_j.addbordersize(bordersize)# anton hier zit het probleem
+                #print(f"after = {basiscard_j.getsize()}\n")
+                entrydict['card'] = basiscard_j
+                self.library2[i] = entrydict
     
-    
-    print(f"anton data{self.allimagesizes_resized_QAcombined }")
-    if len(self.allimagesizes_QAcombined) > 10:
-        print("original")
-        print(self.allimagesizes_QAcombined[:10])
-        print("resized")
-        print(self.allimagesizes_resized_QAcombined[:10])
-        print("image paths")
-        print(self.allimagepaths_QAcombined[:10])
-           
+    if False:
+        for i in range(5):
+            print("original")
+            entrydict = self.library2[i]
+            print(entrydict['card'])
+            #print("resized")
+            
+            #print(entrydict['card'])
+      
     #%% sort images horizontally AND vertically
     TT.update("sort images over all pdf pages") 
-    print(f"anton anton = {len(self.allimagepaths_QAcombined)}")
-    self.SortImages = SortImages(image_sizes =self.allimagesizes_resized_QAcombined, im_paths = self.allimagepaths_QAcombined, page_width = self.a4page_w, page_height = self.a4page_h)
-    dct,dct2 = self.SortImages.sortpages()
     
+    if hasattr(self,'SortImages'):
+        delattr(self,'SortImages')
     
+    self.SortImages = SortImages(library = self.library2, page_width = self.a4page_w, page_height = self.a4page_h)
+    dct,dct2,dct3 = self.SortImages.sortpages()
+    
+    #%% create test page
+    TT.update("create single pdf page") 
+    if hasattr(self,'pdfpage'):
+        delattr(self,'pdfpage')
+    self.pdfpage = pdfpage(dct,dct2,dct3,self.a4page_w,self.a4page_h)
+    self.pdfpage.setvertline(color = self.vertline_color , thickness = self.vertline_thickness,visible = self.vertline_bool)
+    self.pdfpage.sethoriline(color = self.pdfline_color , thickness = self.pdfline_thickness,visible = self.pdfline_bool)
+    pdfimage_i = self.pdfpage.loadpage(1)
+    #print(f"dct = {dct}\ndct2 = {dct2}\ndct3 = {dct3}")
+    
+    #%% display result
+    _, PanelHeight = self.m_panel32.GetSize()
+    PanelWidth = round(float(PanelHeight)/1754.0*1240.0)
+    #only select first page and display it on the bitmap
+    
+    image = pdfimage_i
+    image = image.resize((PanelWidth, PanelHeight), PIL.Image.ANTIALIAS)
+    image2 = wx.Image( image.size)
+    image2.SetData( image.tobytes() )
+    
+    bitmapimage = wx.Bitmap(image2)
+    self.m_bitmap3.SetBitmap(bitmapimage)
+    self.Layout()
+    self.SetCursor(wx.Cursor(wx.CURSOR_ARROW))
+       
+    self.allimages_v = [pdfimage_i]
     TT.update("create pdf") 
-    #%%
-    print(f"datadict = {dct}")
-    print(f"datadict2 = {dct2}")
-    
-    pdfimage_i = []
-    #page 0
-    for key in dct.keys():
-        key = 'pdfpage0'
-        self.pdfpagedict = dct[key]
-        page_i = dct[key]
-        cards_page_i = page_i.keys()
-    
-        im = PIL.Image.new("RGB", (self.a4page_w ,self.a4page_h), 'white')  
-        pos_h = {}
-        pos_hw = pos_h.copy()
-        pos_w = {}
-        for cardname in cards_page_i:      
-            path = dct2[cardname]
-            x,y,w,h = page_i[cardname]
-            if y not in pos_h.keys():
-                pos_h[y] = h
-            else:
-                pos_h[y] = max(pos_h[y],h)
-            if y not in pos_w.keys():
-                pos_w[y] = w
-            else:
-                pos_w[y] += pos_w[y]
-            
-            sub_im = PIL.Image.open(path)
-            
-            
-            sub_im = sub_im.resize((w, h), PIL.Image.ANTIALIAS)
-            if self.vertline_bool:
-                line = PIL.Image.new("RGB", (self.vertline_thickness ,pos_h[y]), self.vertline_color)  
-                sub_im.paste(line,(x,0))
-                sub_im.paste(line,(x+w,0))
-                
-            im.paste(sub_im,(x,y))
-            print(f"data = card/{cardname} xywh/{x,y,w,h} path / {path}")
-        #im.show()
-        print(f"pos_h {pos_h}")
-        
-        
-        
-        ypos = list(pos_h.keys())
-        for i,key in enumerate(ypos):
-            
-            #horizontal lines
-            try:
-                key2 = ypos[i+1]
-                key1 = ypos[i]
-                if pos_w[key2] > pos_w[key1]:
-                    y_offset = pos_h[key1]+key1        
-                    line = PIL.Image.new("RGB", (pos_w[key2] ,self.pdfline_thickness), self.pdfline_color) 
-                else:
-                    y_offset = pos_h[key]+key        
-                    line = PIL.Image.new("RGB", (pos_w[key] ,self.pdfline_thickness), self.pdfline_color)  
-            except:
-                y_offset = pos_h[key]+key        
-                line = PIL.Image.new("RGB", (pos_w[key] ,self.pdfline_thickness), self.pdfline_color)  
-            im.paste(line,(0,y_offset))
-            
-            #vertical lines
-            try:
-                print(f"anton {page_i[key]}")
-                
-            except:
-                pass
-        pdfimage_i.append(im)
-        
-        
-        
-    
-    #print(paper_h_list_sizes)
-    #print("")
-    self.allimages_v = pdfimage_i
-    imagelist = pdfimage_i
     #%% export to PDF file    
     self.SetCursor(wx.Cursor(wx.CURSOR_ARROW))
     if self.printpreview == False:
@@ -787,11 +937,11 @@ def notes2paper(self):
             self.printsuccessful = False
             MessageBox(0, "If you have the PDF opened in another file, close it and try it again.", "Warning", ICON_EXCLAIM)
         TT.stop()
-        
+    
     self.m_TotalPDFPages.SetValue(str(''))
     self.m_TotalPDFPages.SetValue(str(len(self.allimages_v)))
     print("end "*3)
-    
+    TT.stop()
     
     
     
@@ -823,42 +973,4 @@ def add_margins(self,img):
 
 # main program that does all the preprocessing
 def startprogram(self,event): 
-    self.runprogram   = True
-    self.nr_questions = 0
-    self.zoom     = 1
-    self.chrono   = True
-    self.index    = 0
-    self.nr_cards = 0
-    self.mode     = 'Question'    
-    self.questions   = []
-    self.answers     = []
-    ini2.initializeparameters(self) 
-    # open file
-    try:
-        if self.FilePickEvent == True:
-            self.path     = self.fileDialog.GetPath()      
-            self.booknamepath = self.path
-            self.filename = self.fileDialog.GetFilename()
-            self.bookname = Path(self.filename).stem
-    except:
-        log.ERRORMESSAGE("Error: Couldn't open path")
-        
-    try:
-        linefile = f2.loadfile(self.path)
-        cards = f2.File_to_Cards(self,linefile)                       # converts to raw cards
-        self.CardsDeck.set_bookname(self.bookname)
-        self.CardsDeck.set_cards(cards=cards,notesdir=self.notesdir)    
-        
-        self.nr_cards = len(self.CardsDeck)
-        self.nr_questions = len(self.CardsDeck)
-    except:
-        log.ERRORMESSAGE("Error: finding questions/answers")
-
-    ## dialog display              
-    self.chrono = True
-    self.multiplier = 1    
-    # display nr of questions and current index of questions            
-    #m2.LoadFlashCards(self, False,letterfile)
-    print(self.nr_questions)
-    
     notes2paper(self)
