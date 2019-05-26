@@ -520,7 +520,7 @@ def TopicCard(self,key):
             usertext = self.CardsDeck.getcards()[key]['text']
             width_card = self.a4page_w/100
             # display text in a plot
-            height_card = math.ceil(len(usertext)/40)/2
+            height_card = int(math.ceil(len(usertext)/40))*0.75
             figure = Figure(figsize=[width_card, height_card],dpi=100,facecolor=fcolor)
             figure.add_axes([0,0,1,1])
             ax = figure.gca()
