@@ -457,20 +457,33 @@ def preview_refresh(self):
     self.SetCursor(wx.Cursor(wx.CURSOR_ARROW))
     
 class pdfpage():
-    def __init__(self,dict1,dict2,dict3,a4page_w,a4page_h):
+    def __init__(self,pagenr,dict1,dict2,dict3,a4page_w,a4page_h):
         self.dict1 = dict1 #{pdfpage: {cardname : Rect}}
         self.dict2 = dict2 #{pdfpage: {self.line_nr:cardname}}
         self.dict3 = dict3 #{pdfpage: {cardname: basecard}}
         self.a4page_w = a4page_w
         self.a4page_h = a4page_h
-        self.page_nr  = 0
-        self.page_max = len(dict1.keys())-1
+        self.page_nr  = pagenr
+        self.page_max = len(dict1.keys())
         self.vertline_bool = False
         self.horiline_bool = False
         self.vertline_thickness = 0
         self.horiline_thickness = 0
         self.vertline_color = (0,0,0)
         self.horiline_color = (0,0,0)
+    def add_margins(self,img):
+        margin = 0.05
+        margin_pxs = round(margin * self.a4page_w)
+        new_im = PIL.Image.new("RGB", (self.a4page_w + 2*margin_pxs, self.a4page_h + 2*margin_pxs),"white")    
+        new_im.paste(img, (margin_pxs , margin_pxs))    
+        return new_im
+    
+    def getpage(self):
+        return self.page_nr
+    def setpage(self,nr):
+        self.page_nr = nr
+    def getpageinfo(self):
+        return self.page_nr+1,self.page_max
     def setvertline(self,color = (0,0,0), thickness = 0, visible = False):
         self.vertline_bool = visible
         self.vertline_thickness = thickness
@@ -482,16 +495,18 @@ class pdfpage():
     def pagekey(self):
         return f"pdfpage{self.page_nr}"
     
-    def loadpage(self,page_nr):
+    def loadpage(self):
         #key = self.pagekey()
-        key = f"pdfpage{page_nr}"
+        key = f"pdfpage{self.page_nr}"
         linenumbers = self.dict2[key].keys()
         imcanvas = im = PIL.Image.new("RGB", (self.a4page_w ,self.a4page_h), 'white')
         
         
         for line in linenumbers:
             xpos = [0]
+            ypos = [0]
             linerect = (0,0,0,0)
+            
             cards = self.dict2[key][line]
             for cardname in cards:
                 print(f"anton : key {key}, cardname {cardname} line {line} , cards {cards}")
@@ -500,8 +515,11 @@ class pdfpage():
                 im = basecard.createimage()
                 
                 x,y,w,h = self.dict1[key][cardname]
+                #y += self.horiline_thickness
                 xpos += [x]
                 xpos += [x+w]
+                ypos += [y]
+                ypos += [y+h]
                 linerect = (min(linerect[0],x),max(linerect[1],y),linerect[2]+w,max(linerect[3],h))
                 imcanvas.paste(im,(x,y))
         
@@ -511,19 +529,29 @@ class pdfpage():
                     imcanvas.paste(PIL.Image.new("RGB", (self.vertline_thickness, linerect[3]), self.vertline_color), (x_i,linerect[1]))
                 
             if self.horiline_bool:
-                imcanvas.paste(PIL.Image.new("RGB", (linerect[2] ,self.horiline_thickness), self.horiline_color), (linerect[0],linerect[1]))
-                imcanvas.paste(PIL.Image.new("RGB", (linerect[2] ,self.horiline_thickness), self.horiline_color), (linerect[0],linerect[1]+linerect[3]))
+                #prints line at EVERY cards' bottom line across the whole page
+                #for y_i in ypos:
+                #    imcanvas.paste(PIL.Image.new("RGB", (linerect[2], self.horiline_thickness), self.horiline_color), (linerect[0],y_i))
+                #imcanvas.paste(PIL.Image.new("RGB", (linerect[2] ,self.horiline_thickness), self.horiline_color), (linerect[0],linerect[1]+self.horiline_thickness))
+                if self.vertline_bool:
+                    d = self.vertline_thickness
+                else:
+                    d = 0
+                imcanvas.paste(PIL.Image.new("RGB", (linerect[2]+d ,self.horiline_thickness), self.horiline_color), (linerect[0],linerect[1]))
+                imcanvas.paste(PIL.Image.new("RGB", (linerect[2]+d ,self.horiline_thickness), self.horiline_color), (linerect[0],linerect[1]+linerect[3]))
                 #imcanvas.paste(PIL.Image.new("RGB", (linerect[3] ,self.horiline_thickness), self.horiline_color), (linerect[0]+linerect[2],linerect[1]))
         #imcanvas.show()
+        imcanvas = self.add_margins(imcanvas)
         return imcanvas
         
     def prevpage(self):
         if self.page_nr != 0:
             self.page_nr -= 1
+        
     def nextpage(self):
-        if self.page_nr != self.page_max:
+        if self.page_nr != self.page_max-1:
             self.page_nr += 1
-            
+        
     def getmode(self):
         pass
 
@@ -828,7 +856,7 @@ def notes2paper(self):
     #%% resize images    
     if hasattr(self,'library2'):
         delattr(self,'library2')
-    self.library2 = self.library
+    self.library2 = self.library.copy()
     TT.update('resize all the images')
     
     if ColumnSliders(self) != []:
@@ -898,11 +926,13 @@ def notes2paper(self):
     #%% create test page
     TT.update("create single pdf page") 
     if hasattr(self,'pdfpage'):
-        delattr(self,'pdfpage')
-    self.pdfpage = pdfpage(dct,dct2,dct3,self.a4page_w,self.a4page_h)
+        pagenr = self.pdfpage.getpage()
+    else:
+        pagenr = 0
+    self.pdfpage = pdfpage(pagenr,dct,dct2,dct3,self.a4page_w,self.a4page_h)
     self.pdfpage.setvertline(color = self.vertline_color , thickness = self.vertline_thickness,visible = self.vertline_bool)
     self.pdfpage.sethoriline(color = self.pdfline_color , thickness = self.pdfline_thickness,visible = self.pdfline_bool)
-    pdfimage_i = self.pdfpage.loadpage(1)
+    pdfimage_i = self.pdfpage.loadpage()
     #print(f"dct = {dct}\ndct2 = {dct2}\ndct3 = {dct3}")
     
     #%% display result
@@ -938,8 +968,10 @@ def notes2paper(self):
             MessageBox(0, "If you have the PDF opened in another file, close it and try it again.", "Warning", ICON_EXCLAIM)
         TT.stop()
     
-    self.m_TotalPDFPages.SetValue(str(''))
-    self.m_TotalPDFPages.SetValue(str(len(self.allimages_v)))
+    #page info
+    currentpage, maxpage = self.pdfpage.getpageinfo()
+    self.m_pdfCurrentPage.SetValue(str(currentpage))
+    self.m_TotalPDFPages.SetValue(str(maxpage))
     print("end "*3)
     TT.stop()
     
