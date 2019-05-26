@@ -402,6 +402,7 @@ class MainFrame(gui.MyFrame):
         
     def m_OpenPrintOnButtonClick(self,event):
         self.onlyonce = 0
+        self.onlyatinitialize = 0
         self.CardsCatalog = CardsCatalog()
         self.CardsDeck.reset()
         """START MAIN PROGRAM : PRINT PDF NOTES"""
@@ -677,48 +678,50 @@ class MainFrame(gui.MyFrame):
         t_preview = lambda self : threading.Thread(target = m3.preview_refresh, name = 't_preview' , args=(self, )).run()
         t_preview(self) 
     def m_pdfButtonPrevOnButtonClick( self, event ):
-        self.pdfpage.prevpage()
-        pdfimage_i = self.pdfpage.loadpage()
-        # display result
-        _, PanelHeight = self.m_panel32.GetSize()
-        PanelWidth = round(float(PanelHeight)/1754.0*1240.0)
-        #only select first page and display it on the bitmap
-        
-        image = pdfimage_i
-        image = image.resize((PanelWidth, PanelHeight), PIL.Image.ANTIALIAS)
-        image2 = wx.Image( image.size)
-        image2.SetData( image.tobytes() )
-        
-        bitmapimage = wx.Bitmap(image2)
-        self.m_bitmap3.SetBitmap(bitmapimage)
-        self.Layout()
+        switchpage = self.pdfpage.prevpage()
+        if switchpage:
+            pdfimage_i = self.pdfpage.loadpage()
+            # display result
+            _, PanelHeight = self.m_panel32.GetSize()
+            PanelWidth = round(float(PanelHeight)/1754.0*1240.0)
+            #only select first page and display it on the bitmap
+            
+            image = pdfimage_i
+            image = image.resize((PanelWidth, PanelHeight), PIL.Image.ANTIALIAS)
+            image2 = wx.Image( image.size)
+            image2.SetData( image.tobytes() )
+            
+            bitmapimage = wx.Bitmap(image2)
+            self.m_bitmap3.SetBitmap(bitmapimage)
+            self.Layout()
+            
+            #page info
+            currentpage, maxpage = self.pdfpage.getpageinfo()
+            self.m_pdfCurrentPage.SetValue(f"{currentpage}/{maxpage}")
         self.SetCursor(wx.Cursor(wx.CURSOR_ARROW))
-        #page info
-        currentpage, maxpage = self.pdfpage.getpageinfo()
-        self.m_pdfCurrentPage.SetValue(str(currentpage))
-        self.m_TotalPDFPages.SetValue(str(maxpage))
 	
     def m_pdfButtonNextOnButtonClick( self, event ):
-        self.pdfpage.nextpage()
-        pdfimage_i = self.pdfpage.loadpage()
-        # display result
-        _, PanelHeight = self.m_panel32.GetSize()
-        PanelWidth = round(float(PanelHeight)/1754.0*1240.0)
-        #only select first page and display it on the bitmap
-        
-        image = pdfimage_i
-        image = image.resize((PanelWidth, PanelHeight), PIL.Image.ANTIALIAS)
-        image2 = wx.Image( image.size)
-        image2.SetData( image.tobytes() )
-        
-        bitmapimage = wx.Bitmap(image2)
-        self.m_bitmap3.SetBitmap(bitmapimage)
-        self.Layout()
+        switchpage = self.pdfpage.nextpage()
+        if switchpage:
+            pdfimage_i = self.pdfpage.loadpage()
+            # display result
+            _, PanelHeight = self.m_panel32.GetSize()
+            PanelWidth = round(float(PanelHeight)/1754.0*1240.0)
+            #only select first page and display it on the bitmap
+            
+            image = pdfimage_i
+            image = image.resize((PanelWidth, PanelHeight), PIL.Image.ANTIALIAS)
+            image2 = wx.Image( image.size)
+            image2.SetData( image.tobytes() )
+            
+            bitmapimage = wx.Bitmap(image2)
+            self.m_bitmap3.SetBitmap(bitmapimage)
+            self.Layout()
+            
+            #page info
+            currentpage, maxpage = self.pdfpage.getpageinfo()
+            self.m_pdfCurrentPage.SetValue(f"{currentpage}/{maxpage}")
         self.SetCursor(wx.Cursor(wx.CURSOR_ARROW))
-        #page info
-        currentpage, maxpage = self.pdfpage.getpageinfo()
-        self.m_pdfCurrentPage.SetValue(str(currentpage))
-        self.m_TotalPDFPages.SetValue(str(maxpage))
         
     #%% menu item events
     " menu item events "
@@ -1216,9 +1219,11 @@ class MainFrame(gui.MyFrame):
         self.pdfmousepos = self.m_bitmap3.ScreenToClient(wx.GetMousePosition())
         
         W, H = self.m_panel32.GetSize()
-        Wp = self.pdfmousepos[0]/W*self.a4page_w
-        Hp = self.pdfmousepos[1]/H*self.a4page_h
-        self.RectangleDetection = m3.RectangleDetection(self.pdfpagedict)
+        Wp = self.pdfmousepos[0]/W*self.a4page_w - round(0.05 * self.a4page_w)/W
+        Hp = self.pdfmousepos[1]/H*self.a4page_h - round(0.05 * self.a4page_h)/H
+        
+        pagerectdict = self.pdfpage.get_cardrect()
+        self.RectangleDetection = m3.RectangleDetection(pagerectdict)
         print(f"pos = {Wp,Hp}")
         key = self.RectangleDetection.findRect((Wp,Hp))
         index = key[0][1:]
@@ -1273,10 +1278,13 @@ class MainFrame(gui.MyFrame):
                         for line in file_lines:
                             output.write(line)
                     #reload cards
+                    self.onlyonce = 0
                     self.CardsDeck.reset()
-                    linefile = f2.loadfile(self.booknamepath)
-                    cards = f2.File_to_Cards(self,linefile)                       # converts to raw cards
-                    self.CardsDeck.set_cards(cards=cards,notesdir=self.notesdir)
+                    m3.notes2paper(self)
+                    #self.CardsDeck.reset()
+                    #linefile = f2.loadfile(self.booknamepath)
+                    #cards = f2.File_to_Cards(self,linefile)                       # converts to raw cards
+                    #self.CardsDeck.set_cards(cards=cards,notesdir=self.notesdir)
                     
                     self.Refresh()
                     
