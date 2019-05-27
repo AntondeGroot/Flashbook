@@ -32,7 +32,7 @@ def Display(text,self):
 MB_ICONINFORMATION = 0x00000040
 
 def clientprocedure_sendlastfiles(HOST,PORT,self):    
-    N = 5
+    N = 1
     sendtoClient_abs = [os.path.join(self.basedir,x) for x in self.sendtoClient]
     f4.SendGroupOfFiles(self,sendtoClient_abs,N,HOST,PORT)
     print("otherway finished also")
@@ -52,7 +52,7 @@ def clientprocedure(HOST,PORT,self):
             print("CLIENT: received sendtoserver")
             paths_rel = datadict['data']
             paths_abs = [os.path.join(self.basedir,x) for x in paths_rel]
-            N = 5
+            N = 1
             f4.SendGroupOfFiles(self,paths_abs,N,HOST,PORT)
             data_in = f4.SEND('finished','',HOST,PORT)
             
@@ -74,7 +74,7 @@ def clientprocedure(HOST,PORT,self):
                 paths_rel = datadict['data']
                 
                 paths_abs = [os.path.join(self.basedir,x) for x in paths_rel]
-                N = 5
+                N = 1
                 f4.SendGroupOfFiles(self,paths_abs,N,HOST,PORT)
                 data_in = f4.SEND('finished','',HOST,PORT)
                 
