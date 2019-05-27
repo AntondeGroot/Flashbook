@@ -120,6 +120,7 @@ You can also sync two devices. It will automatically display the IP address of t
 - Customizable colors for Flashbook: the user should be able to choose the color of the temporary and permanent borders. 
 - Sync: sync should indicate it is working. This can be implemented by a stopable thread and custom events to trigger actions outside the thread to display loading dots (...). But also it says "starting client" but not that it is sending data, when it is actually sending data.
 - sync should be optimized: when a lot of files need to be transfered it might take quite a while (~20 minutes). But when most of the files have been updated it'll be very quick. Perhaps 
+- some Dialog windows are unnecessary. Just use the Dialogs with 2 bitmaps and when there is only 1 picture to be shown then the second bitmap can just be an empty bitmap. 
 
 #### Possible Issues:
 - pdf conversion may not be supported: pdftoppm.exe is called on laptop via miktex. Explicit import needed in spec file? Now this is hopefully accounted for by including poppler.rar in the executables and adding it as 'path variable' if there is no 'pdftoppm.exe' already available. 
