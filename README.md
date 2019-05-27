@@ -115,15 +115,15 @@ You can also sync two devices. It will automatically display the IP address of t
 
 ### TODO
 #### To add:
-- Clean up code: make it PEP-8 compliant, add clear docstrings to the functions, perhaps move more code from modules to functions in order to make the modules clearer and shorter. Perhaps use more Classes and methods.
+- Clean up code: make it PEP-8 compliant, add clear docstrings to the functions, perhaps move more code from modules to functions in order to make the modules clearer and shorter. 
+- Use more Classes and methods instead of functions from different files: all initialization files could then be removed and incorporated in the respective classes.
 - Customizable colors for Flashbook: the user should be able to choose the color of the temporary and permanent borders. 
-
+- Sync: sync should indicate it is working. This can be implemented by a stopable thread and custom events to trigger actions outside the thread to display loading dots (...). But also it says "starting client" but not that it is sending data, when it is actually sending data.
+- sync should be optimized: when a lot of files need to be transfered it might take quite a while (~20 minutes). But when most of the files have been updated it'll be very quick. Perhaps 
 
 #### Possible Issues:
 - pdf conversion may not be supported: pdftoppm.exe is called on laptop via miktex. Explicit import needed in spec file? Now this is hopefully accounted for by including poppler.rar in the executables and adding it as 'path variable' if there is no 'pdftoppm.exe' already available. 
 - the statsgraph might not show the time spend in Flashbook if the bookname also occurs in Flashcard. Only seen this error occur once.
 
 #### Bugs:
-- Sync: it tries to send 5 files at a time, which works fine for small files, but for large (~10MB) PDFs it works very slowly, ideally this should be adaptive depending on the file size. 
-- Sync: sending files between an empty laptop and a desktop containing all the files is not commutative. For some reason it only worked when the laptop started as server, but not the other way around.
-- Sync: sync should indicate it is working. This can be implemented by a stopable thread and custom events to trigger actions outside the thread to display loading dots (...). But also it says "starting client" but not that it is sending data, when it is actually sending data.
+- currently no known bugs
