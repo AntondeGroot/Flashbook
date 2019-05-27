@@ -185,7 +185,6 @@ def SyncDevices(self, mode, HOST):
         else:
             print("CLIENT: has stopped")        
     Display("Sync completed",self)
-    ctypes.windll.user32.MessageBoxW(0, "Both devices are now synchronized", "Info", MB_ICONINFORMATION) 
     #except:
     #    ctypes.windll.user32.MessageBoxW(0, "Cannot start server: no internet connection detected", "Warning", 1)   
     #self.m_txtStatus.SetValue("Synching complete!")
