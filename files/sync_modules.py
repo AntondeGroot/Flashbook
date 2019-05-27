@@ -45,7 +45,7 @@ def clientprocedure(HOST,PORT,self):
     #send all filenames from Client to server
     msg = f4.GetDataList(self.basedir, self.appendDir, self.excludeDir, mode='relative', PICKLE=True)
     data_in = f4.SEND('compare',msg,HOST,PORT)
-    
+    Display("client is receiving data ...",self)
     if data_in != None and data_in != b'':
         datadict = json.loads(data_in.decode('utf-8'))
         if 'sendtoServer' in datadict.keys():
@@ -163,12 +163,9 @@ def SyncDevices(self, mode, HOST):
             Display("finished server, starting client",self)
             time.sleep(2)
             Display("starting client",self)
-            testthread = f4.DisplayStatus()
-            testthread.set_status("HELLO WORLD!")
-            testthread.start()
+            Display("client is sending data",self)
             HOST = self.IP2
             clientprocedure_sendlastfiles(HOST,PORT,self)
-            testthread.stop()
         else:
             Display("Sync completed",self)
     elif mode == "CLIENT":# first start client, then afterwards server but make sure it starts before a new client is stqarted
