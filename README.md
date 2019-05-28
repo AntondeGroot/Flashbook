@@ -30,7 +30,7 @@ The program will open with the following menu.
 ## Flashbook
 
 
-Open a book by pressing on the `browse` button. You can then create your own Q&A cards by selecting areas with you mouse. It will draw a box around your selection. Which can easily be undone by clicking your right mouse button.
+You can create your own Q&A cards by selecting areas with you mouse. It will draw a box around your selection. Which can easily be undone by clicking your right mouse button.
 
 ![alt text](https://github.com/AntondeGroot/Flashbook/blob/master/readme%20images/fb_selection2.png)
 
@@ -53,7 +53,7 @@ It is also possible to enter LaTeX code
 ![alt text](https://github.com/AntondeGroot/Flashbook/blob/master/readme%20images/fb_latex2.png) ![alt text](https://github.com/AntondeGroot/Flashbook/blob/master/readme%20images/fb_latex.png) 
 
 ## Flashbook: add webpage screenshots
-And finally, you can also add a printscreen you took. For example to add extra info you want to include from the internet.
+You can also add a printscreen you took. For example to add extra info or graphics you want to include.
 
 ![alt text](https://github.com/AntondeGroot/Flashbook/blob/master/readme%20images/prtscr2.png)
 
