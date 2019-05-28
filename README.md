@@ -50,7 +50,7 @@ It is also possible to enter LaTeX code
 ### Flashbook: add webpage screenshots
 You can also add a printscreen you took. For example to add extra info or graphics you want to include.
 
-<img src="https://github.com/AntondeGroot/Flashbook/blob/master/readme%20images/prtscr2.png" alt="alt text" width="300" height="">
+<img src="https://github.com/AntondeGroot/Flashbook/blob/master/readme%20images/prtscr2.png" alt="alt text" width="500" height="">
 
 
 
