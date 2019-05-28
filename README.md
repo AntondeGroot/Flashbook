@@ -27,7 +27,7 @@ You can create your own Q&A cards by selecting areas with you mouse. It will dra
 
 You can choose how the selections are stitched together, for example:
 
-![alt text](https://github.com/AntondeGroot/Flashbook/blob/master/readme%20images/fb_selection_entered21.png)
+![alt text](https://github.com/AntondeGroot/Flashbook/blob/master/readme%20images/fb_selection_entered21.png | width=100)
 
 
 or
