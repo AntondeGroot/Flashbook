@@ -34,7 +34,7 @@ Open a book by pressing on the `browse` button. You can then create your own Q&A
 
 ![alt text](https://github.com/AntondeGroot/Flashbook/blob/master/readme%20images/fb_selection2.png)
 
-Once you entered your selection a pop up window will appear, showing you your selection. The pop up will disappear once you move with your cursor over it.
+You can choose how the selections are stitched together:
 
 ![alt text](https://github.com/AntondeGroot/Flashbook/blob/master/readme%20images/fb_selection_entered21.png)
 
