@@ -29,11 +29,12 @@ You can create your own Q&A cards by selecting areas with you mouse. It will dra
 You can choose how the selections are stitched together, for example:
 
 
-<img src="https://github.com/AntondeGroot/Flashbook/blob/master/readme%20images/fb_selection_entered21.png" alt="alt text" width="500" height="">
+<img src="https://github.com/AntondeGroot/Flashbook/blob/master/readme%20images/fb_selection_entered21.png" alt="alt text" width="400" height="">
 
 or
 
-![alt text](https://github.com/AntondeGroot/Flashbook/blob/master/readme%20images/fb_selection_entered22.png)
+<img src="https://github.com/AntondeGroot/Flashbook/blob/master/readme%20images/fb_selection_entered22.png" alt="alt text" width="400" height="">
+
 
 
 It is possible to combine multiple notes and then use that to rehearse or to print it as a PDF, for example if you want to combine lecture notes with homework assignments.
