@@ -43,7 +43,8 @@ It is possible to combine multiple notes and then use that to rehearse or to pri
 ### Flashbook: LaTeX
 It is also possible to enter LaTeX code 
 
-<img src="https://github.com/AntondeGroot/Flashbook/blob/master/readme%20images/fb_latex2.png" alt="alt text" width="500" height="">
+<img src="https://github.com/AntondeGroot/Flashbook/blob/master/readme%20images/fb_latex2.png" alt="alt text" width="100" height="">
+<img src="https://github.com/AntondeGroot/Flashbook/blob/master/readme%20images/fb_latex.png" alt="alt text" width="200" height="">
 
 
 
