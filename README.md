@@ -38,12 +38,12 @@ or
 It is possible to combine multiple notes and then use that to rehearse or to print it as a PDF, for example if you want to combine lecture notes with homework assignments.
 
 
-## Flashbook: LaTeX
+### Flashbook: LaTeX
 It is also possible to enter LaTeX code 
 
 ![alt text](https://github.com/AntondeGroot/Flashbook/blob/master/readme%20images/fb_latex2.png) ![alt text](https://github.com/AntondeGroot/Flashbook/blob/master/readme%20images/fb_latex.png) 
 
-## Flashbook: add webpage screenshots
+### Flashbook: add webpage screenshots
 You can also add a printscreen you took. For example to add extra info or graphics you want to include.
 
 ![alt text](https://github.com/AntondeGroot/Flashbook/blob/master/readme%20images/prtscr2.png)
