@@ -43,18 +43,22 @@ It is possible to combine multiple notes and then use that to rehearse or to pri
 ### Flashbook: LaTeX
 It is also possible to enter LaTeX code 
 
-![alt text](https://github.com/AntondeGroot/Flashbook/blob/master/readme%20images/fb_latex2.png) ![alt text](https://github.com/AntondeGroot/Flashbook/blob/master/readme%20images/fb_latex.png) 
+<img src="https://github.com/AntondeGroot/Flashbook/blob/master/readme%20images/fb_latex2.png" alt="alt text" width="300" height="">
+
+
 
 ### Flashbook: add webpage screenshots
 You can also add a printscreen you took. For example to add extra info or graphics you want to include.
 
-![alt text](https://github.com/AntondeGroot/Flashbook/blob/master/readme%20images/prtscr2.png)
+<img src="https://github.com/AntondeGroot/Flashbook/blob/master/readme%20images/prtscr2.png" alt="alt text" width="300" height="">
+
+
 
 # Flashcard
 
 Your progress will be saved after each answer given. So you can continue exactly where you left off.
 
-![alt text](https://github.com/AntondeGroot/Flashbook/blob/master/readme%20images/fc3.png)
+<img src="https://github.com/AntondeGroot/Flashbook/blob/master/readme%20images/fc3.png" alt="alt text" width="500" height="">
 
 Then you can either use your mouse or your arrow keys to: flip the card or to indicate your answer is correct / wrong.
 
@@ -63,13 +67,15 @@ Then you can either use your mouse or your arrow keys to: flip the card or to in
 
 The program will also keep track of your progress and indicate how many minutes you've spend learning and reading the past N days. 
 
-![alt text](https://github.com/AntondeGroot/Flashbook/blob/master/readme%20images/statsgraph2.png)
+
+<img src="https://github.com/AntondeGroot/Flashbook/blob/master/readme%20images/statsgraph2.png" alt="alt text" width="300" height="">
 
 # Print
 
 When you click on the 'print' button you get to the following preview window, where you can modify it to your liking. If you press 'apply' a pdf will be made.
 
-![alt text](https://github.com/AntondeGroot/Flashbook/blob/master/readme%20images/print5.png)
+<img src="https://github.com/AntondeGroot/Flashbook/blob/master/readme%20images/print5.png" alt="alt text" width="500" height="">
+
 
  
 
@@ -80,8 +86,8 @@ You can edit a card by clicking on it and entering the Question and/or Answer. Y
 
 You can also sync two devices. It will automatically display the IP address of the device the app is running on. Then you only need to add the other device's IP address.
 
+<img src="https://github.com/AntondeGroot/Flashbook/blob/master/readme%20images/sync_gui2.png" alt="alt text" width="300" height="">
 
-![alt text](https://github.com/AntondeGroot/Flashbook/blob/master/readme%20images/sync_gui2.png)
 
 
 
