@@ -66,40 +66,23 @@ The program will also keep track of your progress and indicate how many minutes 
 ![alt text](https://github.com/AntondeGroot/Flashbook/blob/master/readme%20images/statsgraph2.png)
 ## Print
 
-When you click on the 'print' button you get to the following preview window:
+When you click on the 'print' button you get to the following preview window, where you can modify it to your liking. If you press 'apply' a pdf will be made.
 
 ![alt text](https://github.com/AntondeGroot/Flashbook/blob/master/readme%20images/print5.png)
 
-where you can modify it to your liking. You add lines between Q&A cards (if present) and between each horizontal row of cards. You can also change the color and thickness of these lines. If you press 'apply' a pdf will be made. The location of this folder can be opened via the menubar.
+ 
 
 #### Edit the cards
 You can edit a card by clicking on it and entering the Question and/or Answer. You also have the option to add a topic to a card. Topics will be the page wide black bar with text as you can see in the above image. When the very first card does not contain a topic it will automatically create the title of the book.
 
 ## Synchronizing Devices
 
-You can also sync two devices. It will automatically display the IP address of the device the app is running on. Then you only need to add the other device's IP address. Right now it can only be used on a local wifi network. 
+You can also sync two devices. It will automatically display the IP address of the device the app is running on. Then you only need to add the other device's IP address.
 
 
 ![alt text](https://github.com/AntondeGroot/Flashbook/blob/master/readme%20images/sync_gui2.png)
 
 
 
-### NB
-- In the ‘files’ subfolder you can define your own LaTeX macros
--	LaTeX environments like matrices are not included
 
-### TODO
-#### To add:
-- Clean up code: make it PEP-8 compliant, add clear docstrings to the functions, perhaps move more code from modules to functions in order to make the modules clearer and shorter. 
-- Use more Classes and methods instead of functions from different files: all initialization files could then be removed and incorporated in the respective classes.
-- Customizable colors for Flashbook: the user should be able to choose the color of the temporary and permanent borders. 
-- Sync: sync should indicate it is working. This can be implemented by a stopable thread and custom events to trigger actions outside the thread to display loading dots (...). But also it says "starting client" but not that it is sending data, when it is actually sending data.
-- sync should be optimized: when a lot of files need to be transfered it might take quite a while (~20 minutes). But when most of the files have been updated it'll be very quick. Perhaps 
-- some Dialog windows are unnecessary. Just use the Dialogs with 2 bitmaps and when there is only 1 picture to be shown then the second bitmap can just be an empty bitmap. 
 
-#### Possible Issues:
-- pdf conversion may not be supported: pdftoppm.exe is called on laptop via miktex. Explicit import needed in spec file? Now this is hopefully accounted for by including poppler.rar in the executables and adding it as 'path variable' if there is no 'pdftoppm.exe' already available. 
-- the statsgraph might not show the time spend in Flashbook if the bookname also occurs in Flashcard. Only seen this error occur once.
-
-#### Bugs:
-- currently no known bugs
