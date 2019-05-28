@@ -52,19 +52,10 @@ It is also possible to enter LaTeX code
 
 ![alt text](https://github.com/AntondeGroot/Flashbook/blob/master/readme%20images/fb_latex2.png) ![alt text](https://github.com/AntondeGroot/Flashbook/blob/master/readme%20images/fb_latex.png) 
 
-It's even possible to add your own LaTeX macros so that you can avoid typing long sequences of code. 
-
-<sub><sup>(Read the file /Flashbook/files/usercommands.txt for more information)</sup></sub>
-
-
-![alt text](https://github.com/AntondeGroot/Flashbook/blob/master/readme%20images/fb_latex4.png) ![alt text](https://github.com/AntondeGroot/Flashbook/blob/master/readme%20images/fb_latex3.png) 
-
 ## Flashbook: add webpage screenshots
 And finally, you can also add a printscreen you took. For example to add extra info you want to include from the internet.
 
 ![alt text](https://github.com/AntondeGroot/Flashbook/blob/master/readme%20images/prtscr2.png)
-
-you can first crop the image before it is imported. You can then select portions of it to form a Q&A card as if it were a regular page.
 
 ## Flashcard
 
