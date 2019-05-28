@@ -16,8 +16,8 @@ for a more in depth guide see the [wiki](https://github.com/AntondeGroot/Flashbo
   
 
 The program will open with the following menu.
+<img src="https://github.com/AntondeGroot/Flashbook/blob/master/readme%20images/main2.png" alt="alt text" width="500" height="">
 
-![alt text](https://github.com/AntondeGroot/Flashbook/blob/master/readme%20images/main2.png)
 # Flashbook
 
 
