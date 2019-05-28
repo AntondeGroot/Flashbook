@@ -14,12 +14,8 @@ for a more in depth guide see the [wiki](https://github.com/AntondeGroot/Flashbo
   
   4) Synchronize multiple devices.
   
-I created this GUI to ease the arduous task of reading physics study books that contain a lot of formulas and long derivations of said formulas.
-
 You can take notes by simply selecting an area with your mouse, a rectangle will be drawn, you can do this multiple times and they will be combined to a single question or answer card. In addition to this you can type an additional question or answer in a textbox that will be combined with the selected areas. In this textbox you can include regular text but also LaTeX code, e.g. `$\partial\beta$` to show `∂β`.
 
-
-# The program explained
 
 The program will open with the following menu.
 
@@ -56,11 +52,7 @@ You can also add a printscreen you took. For example to add extra info or graphi
 
 ## Flashcard
 
-When you open Flashcard and open a book for which you have taken notes - you'll see a pop up window with the settings
-
-![alt text](https://github.com/AntondeGroot/Flashbook/blob/master/readme%20images/fc.png)
-
-Your progress will be saved after each answer given. Although, the 'continue last session' overrides any other setting and uses the last used settings and score, continuing exactly where you left off.
+Your progress will be saved after each answer given. So you can continue exactly where you left off.
 
 ![alt text](https://github.com/AntondeGroot/Flashbook/blob/master/readme%20images/fc3.png)
 
