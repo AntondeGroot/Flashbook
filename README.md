@@ -14,8 +14,6 @@ for a more in depth guide see the [wiki](https://github.com/AntondeGroot/Flashbo
   
   4) Synchronize multiple devices.
   
-You can take notes by simply selecting an area with your mouse, a rectangle will be drawn, you can do this multiple times and they will be combined to a single question or answer card. In addition to this you can type an additional question or answer in a textbox that will be combined with the selected areas. In this textbox you can include regular text but also LaTeX code, e.g. `$\partial\beta$` to show `∂β`.
-
 
 The program will open with the following menu.
 
@@ -23,7 +21,7 @@ The program will open with the following menu.
 ## Flashbook
 
 
-You can create your own Q&A cards by selecting areas with you mouse. It will draw a box around your selection. Which can easily be undone by clicking your right mouse button.
+You can create your own Q&A cards by selecting areas with you mouse. It will draw a box around your selection. Which can easily be undone by clicking your right mouse button. In addition to this you can type an additional question or answer in a textbox that will be combined with the selected areas. In this textbox you can include regular text but also LaTeX code, e.g. `$\partial\beta$` to show `∂β`.
 
 ![alt text](https://github.com/AntondeGroot/Flashbook/blob/master/readme%20images/fb_selection2.png)
 
