@@ -478,10 +478,12 @@ def resetselection(self,event):
     #reset all values:
     self.tempdictionary = {}
     self.Flashcard.reset()
+    self.m_modeDisplay.SetValue(self.Flashcard.getmode()+":")
     # update drawn borders
     self.pageimage = self.pageimagecopy
     f.LoadPage(self)
     f.ShowPage_fb(self)
+    
     
     
 def switchpage(self,event):
