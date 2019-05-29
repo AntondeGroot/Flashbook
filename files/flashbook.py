@@ -1307,8 +1307,10 @@ class MainFrame(gui.MyFrame):
         self.FilePickEvent = False
         RGB = self.m_colorPDFline.GetColour()
         self.pdfline_color  = (RGB.Red(),RGB.Green(),RGB.Blue())    
-            
+        
+        print("pdfline")
         if self.m_checkBoxSameColor.GetValue() == True:
+            print(f" bools  = {self.vertline_color != original_color}, {self.pdfline_color != original_color}")    
             if self.vertline_color != original_color or self.pdfline_color != original_color:
                 self.vertline_color  = self.pdfline_color 
                 self.m_colorVERTline.SetColour(self.pdfline_color)
@@ -1321,13 +1323,16 @@ class MainFrame(gui.MyFrame):
         
     def m_colorVERTlineOnColourChanged( self, event):
         original_color = self.vertline_color
+        RGB = self.m_colorVERTline.GetColour()
         if self.m_checkBoxSameColor.GetValue() == True:
-            self.vertline_color  = self.pdfline_color 
+            #self.vertline_color  = self.pdfline_color
+            self.vertline_color = (RGB.Red(),RGB.Green(),RGB.Blue()) 
+            self.pdfline_color  = self.vertline_color
             new_color = self.pdfline_color
-            self.m_colorVERTline.SetColour(self.pdfline_color)
+            self.m_colorVERTline.SetColour(self.vertline_color)
+            self.m_colorPDFline.SetColour(self.pdfline_color)
         else:
             self.FilePickEvent = False
-            RGB = self.m_colorVERTline.GetColour()
             self.vertline_color  = (RGB.Red(),RGB.Green(),RGB.Blue())    
             new_color = self.vertline_color 
             
