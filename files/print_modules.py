@@ -578,14 +578,16 @@ class pdfpage():
             self.page_nr -= 1
             return True
         else: 
-            return False
+            self.page_nr = self.page_max - 1 
+            return True
         
     def nextpage(self):
         if self.page_nr != self.page_max-1:
             self.page_nr += 1
             return True
         else:
-            return False
+            self.page_nr = 0
+            return True
         
     def getmode(self):
         pass
