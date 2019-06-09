@@ -411,7 +411,7 @@ def import_screenshot(self,event):
 
 def print_preview(self,event): 
     ini3.initializeparameters(self) 
-    startprogram(self,event)
+    notes2paper(self)
     #resize to A4 format
     _, PanelHeight = self.m_panel32.GetSize()
     PanelWidth = round(float(PanelHeight)/1754.0*1240.0)
@@ -426,33 +426,21 @@ def print_preview(self,event):
     self.m_bitmap3.SetBitmap(bitmapimage)
     self.Layout()
     self.SetCursor(wx.Cursor(wx.CURSOR_ARROW))
-    """
     
-    image = PIL.Image.open(self.allimages_v[0])
-    image = image.resize((PanelWidth, PanelHeight), PIL.Image.ANTIALIAS)
-    image2 = wx.Image( image.size)
-    image2.SetData( image.tobytes() )
-    
-    bitmapimage = wx.Bitmap(image2)
-    self.m_bitmap3.SetBitmap(bitmapimage)
-    self.Layout()
-    self.SetCursor(wx.Cursor(wx.CURSOR_ARROW))
-    """
 def preview_refresh(self):
-    
+    print("preview refresh")
     self.SetCursor(wx.Cursor(wx.CURSOR_ARROWWAIT))
     notes2paper(self)
-    #startprogram(self,event)
     _, PanelHeight = self.m_panel32.GetSize()
     PanelWidth = round(float(PanelHeight)/1754.0*1240.0)
     #only select first page and display it on the bitmap
-    #image = self.allimages_v[0]
-    #image = PIL.Image.open(self.allimages_v[0])
-    #image = image.resize((PanelWidth, PanelHeight), PIL.Image.ANTIALIAS) 
-    #image2 = wx.Image( image.size)
-    #image2.SetData( image.tobytes() )
-    #bitmapimage = wx.Bitmap(image2)
-    #self.m_bitmap3.SetBitmap(bitmapimage)
+    image = self.allimages_v[0]
+    image = image.resize((PanelWidth, PanelHeight), PIL.Image.ANTIALIAS) 
+    image2 = wx.Image( image.size)
+    image2.SetData( image.tobytes() )
+    bitmapimage = wx.Bitmap(image2)
+    self.m_bitmap3.SetBitmap(bitmapimage)
+    
     self.Layout()
     self.SetCursor(wx.Cursor(wx.CURSOR_ARROW))
     
@@ -469,6 +457,7 @@ class pdfpage():
         self.horiline_bool = False
         self.vertline_thickness = 0
         self.horiline_thickness = 0
+        self.qaline_color   = (0,0,0)
         self.vertline_color = (0,0,0)
         self.horiline_color = (0,0,0)
         self.tempdir = tempdir
@@ -488,14 +477,22 @@ class pdfpage():
         self.page_nr = nr
     def getpageinfo(self):
         return self.page_nr+1,self.page_max
+    
+    def setqaline(self,color = (0,0,0), thickness = 0 , visible = False):
+        self.QAline_bool      = visible
+        self.QAline_thickness = thickness
+        self.QAline_color     = color
+        
     def setvertline(self,color = (0,0,0), thickness = 0, visible = False):
-        self.vertline_bool = visible
+        self.vertline_bool      = visible
         self.vertline_thickness = thickness
-        self.vertline_color = color
+        self.vertline_color     = color
+        
     def sethoriline(self,color = (0,0,0), thickness = 0, visible = False):
-        self.horiline_bool = visible
+        self.horiline_bool      = visible
         self.horiline_thickness = thickness
-        self.horiline_color = color    
+        self.horiline_color     = color    
+        
     def pagekey(self):
         return f"pdfpage{self.page_nr}"
     def createpdf(self):
@@ -538,9 +535,11 @@ class pdfpage():
             
             cards = self.dict2[key][line]
             for cardname in cards:
-                #print(f"cardinfo : key {key}, cardname {cardname} line {line} , cards {cards}")
+                print(f"cardinfo : key {key}, cardname {cardname} line {line} , cards {cards}")
                 
                 basecard = self.dict3[key][cardname]
+                basecard.setQAvisible(self.QAline_bool)
+                basecard.setQAthickness(self.QAline_thickness)
                 im = basecard.createimage()
                 
                 x,y,w,h = self.dict1[key][cardname]
@@ -551,7 +550,13 @@ class pdfpage():
                 ypos += [y+h]
                 linerect = (min(linerect[0],x),max(linerect[1],y),linerect[2]+w,max(linerect[3],h))
                 imcanvas.paste(im,(x,y))
-        
+                if self.QAline_bool:
+                    print(f"HAS QALINE {basecard.hasQAline()}")
+                    if basecard.hasQAline():
+                        
+                        print("HAS QALINE2")
+                        imcanvas.paste(PIL.Image.new("RGB", (w, self.QAline_thickness), self.QAline_color), (x,y+basecard.QAlineposition()  ))
+            
             if self.vertline_bool:
                 #imcanvas.paste(PIL.Image.new("RGB", (self.vertline_thickness, linerect[3]), self.vertline_color), (linerect[0],linerect[1]))
                 for x_i in xpos:
@@ -610,16 +615,23 @@ class basiscard():
         self.total_width  = 0
         self.total_height = 0
         self.linecolor    = (0,0,0)
-        
+        self.scale        = 1
         self.topiccard    = False
         self.QAbool       = False
+        self.QAvisible    = False
         self.pos_QAline   = 0
-        self.QAline_thickness = 5
+        self.QAline_thickness = 0
         self.textq = None#[path, size]
         self.picq  = None#[path, size]
         self.texta = None#[path, size]
         self.pica  = None#[path, size]
         self.bordersize = (0,0)
+    def setQAthickness(self,thickness):
+        self.QAline_thickness = thickness
+    def hasQAline(self):
+        return self.QAbool
+    def QAlineposition(self):
+        return self.pos_QAline
     def addbordersize(self,size):
         assert type(size) == tuple and len(size) == 2
         w,h = size
@@ -633,6 +645,9 @@ class basiscard():
     def __str__(self):
         return f"textq = {self.textq} , picq = {self.picq} \n texta = {self.texta}, pica = {self.pica}\n topic = {self.topiccard} \n size = {self.total_width,self.total_height}"
     
+    def setQAvisible(self,value):
+        self.QAvisible = value
+    
     def settopic(self):
         self.topiccard = True
     
@@ -640,13 +655,14 @@ class basiscard():
         
         height = 0
         width  = 0
-        im = PIL.Image.new("RGB", (self.total_width+self.bordersize[0]*2 ,self.total_height+self.bordersize[1]*2), 'white')
+        im = PIL.Image.new("RGB", (int(self.total_width*self.scale)+self.bordersize[0]*2 ,int(self.total_height*self.scale)+self.bordersize[1]*2+self.QAline_thickness), 'white')
         
         d0 = self.displacement[0]+self.bordersize[0]
         d1 = self.displacement[1]+self.bordersize[1]
         if self.textq != None:
             path = self.textq[0]
             w,h = self.textq[1]
+            w,h = int(w*self.scale),int(h*self.scale)
             im0 = PIL.Image.open(path).resize((w,h), PIL.Image.ANTIALIAS)
             im.paste(im0,(d0,d1))
             
@@ -656,13 +672,14 @@ class basiscard():
         if self.picq != None:
             path = self.picq[0]
             w,h = self.picq[1]
+            w,h = int(w*self.scale),int(h*self.scale)
             im0 = PIL.Image.open(path).resize((w,h), PIL.Image.ANTIALIAS)
             im.paste(im0,(d0,d1))
             height += h
             width  += w
             d1  += h
             
-        if self.QAbool == True:
+        if self.QAbool == True and self.QAvisible:
             self.pos_QAline = d1
             d1 += self.QAline_thickness
             height += self.QAline_thickness
@@ -671,6 +688,7 @@ class basiscard():
         if self.texta != None:
             path = self.texta[0]
             w,h = self.texta[1]
+            w,h = int(w*self.scale),int(h*self.scale)
             im0 = PIL.Image.open(path).resize((w,h), PIL.Image.ANTIALIAS)
             im.paste(im0,(d0,d1))
             
@@ -680,19 +698,20 @@ class basiscard():
         if self.pica != None:
             path = self.pica[0]
             w,h = self.pica[1]
+            w,h = int(w*self.scale),int(h*self.scale)
             im0 = PIL.Image.open(path).resize((w,h), PIL.Image.ANTIALIAS)
             im.paste(im0,(d0,d1))
             height += h
             width  += w
             d1 += h
         realw,realh = w,h
-        if self.QAbool == True:
-            im.paste(PIL.Image.new("RGB", (width ,self.QAline_thickness), self.linecolor), (self.displacement[0],self.pos_QAline))
+        #if self.QAbool == True:
+        #    im.paste(PIL.Image.new("RGB", (width ,self.QAline_thickness), self.linecolor), (self.displacement[0],self.pos_QAline))
         
         return im
         
     def addsize(self,size):
-        self.total_height += size[1] 
+        self.total_height += size[1]
         self.total_width = max(self.total_width,size[0])
     
     def setq_text(self,path,size):
@@ -711,9 +730,12 @@ class basiscard():
         self.pica = [path,size]
         self.addsize(size)
         self.QAbool = True
-    def resize(self,size):
+    def resize(self,scale):
+        self.scale = scale
+        """
         Wp = size[0]/self.total_width
         Hp = size[1]/self.total_height
+        
         self.total_width = size[0]
         #print(f"WpHp = {Wp,Hp}")
         #make sure that the dividing line between Q and A is NOT resized
@@ -737,18 +759,28 @@ class basiscard():
             height += h
         self.total_height = height + self.QAline_thickness
         #print(f"totalsize = {self.total_width,self.total_height}")
-        
+        """
     def getsize_ini(self):
         #when used the first time otherwise the QAline thickness is not included
         return self.total_width+self.QAline_thickness, self.total_height
     def getsize(self):
-        return self.total_width+self.bordersize[0]*2, self.total_height+self.bordersize[1]*2
+        if self.QAvisible:
+            extraThickness = 0#self.QAline_thickness
+        else:
+            extraThickness = 0
+        return int(self.total_width*self.scale)+self.bordersize[0]*2, int(self.total_height*self.scale)+self.bordersize[1]*2 + extraThickness
     def hasline(self):
         return self.QAbool
     def getrect(self):
         x,y = self.basecoordinates
-        w,h = self.total_width,self.total_height
+        if self.QAvisible:
+            extraThickness = 0
+        else:
+            extraThickness = 0
+        w,h = int(self.total_width*self.scale),int(self.total_height*self.scale)
+        h += extraThickness
         return (x,y,w,h)
+    
 def createbasiscards(self,index,card_mode_nr,cardsdicts,library,CardsDeckEntries):
     #print(f"carkey_nr = {card_mode_nr}")
     #Entries may contain card_t0 / card_q0 / card_a0
@@ -821,7 +853,7 @@ def createbasiscards(self,index,card_mode_nr,cardsdicts,library,CardsDeckEntries
                         basiscard_i.seta_pic(path,imagesize)    
         
     #print(basiscard_i)
-    library[index] = {'mode': mode[0].lower(), 'card': basiscard_i,'line':line_nr,'cardname': mode[0].lower()+line_nr,'size':basiscard_i.getsize()}
+    self.library[index] = {'mode': mode[0].lower(), 'card': basiscard_i,'line':line_nr,'cardname': mode[0].lower()+line_nr,'size':basiscard_i.getsize()}
     #{'card0': {'textq': ['txt', (w,h)],'picq': ['path',(w,h)],'texta':['text':(w,h)],'pica':['path',(w,h)],'totalsize':(max(w),max(h)) }  }
     
 def notes2paper(self):
@@ -887,18 +919,35 @@ def notes2paper(self):
     TT.update("Create the QA cards")
     """All text images are created and saved, and their [path,size] is stored 
     For all other pictures it only checks their sizes and stores [path,size] as well"""
+    
+    if self.onlyinitiate == 0:
+        print("\nINITIATED")
+        nrUnique   = self.CardsDeck.len_uniquecards()
+        self.checkcard  = [True] * nrUnique
+        CardsDeckEntries = self.CardsDeck.getcards().keys()
+        nrUnique   = self.CardsDeck.len_uniquecards()
+        cardsdicts = self.CardsDeck.getcards()            
+        
+        self.library    = [None] * nrUnique
+    self.onlyinitiate += 1
+    
     if self.onlyonce == 0:
         CardsDeckEntries = self.CardsDeck.getcards().keys()
         nrUnique   = self.CardsDeck.len_uniquecards()
         cardsdicts = self.CardsDeck.getcards()            
-        checkcard  = [True] * nrUnique
-        library    = [None] * nrUnique
+        
+        #library    = [None] * nrUnique
         CardsDeckUniqueCards = [x for x in CardsDeckEntries if 'card_a' not in x]
+        cnt = 0 
         for index,card_mode_nr in enumerate(CardsDeckUniqueCards):
-            if checkcard[index] == True:
+            print(f"cardmodenr = {card_mode_nr}")
+            if self.checkcard[index] == True:
+                cnt += 1
                 #print(f"index,cardmode_nr {index,card_mode_nr}")
-                createbasiscards(self,index,card_mode_nr,cardsdicts,library,CardsDeckEntries)
-        self.library = list(library[:])
+                createbasiscards(self,index,card_mode_nr,cardsdicts,self.library,CardsDeckEntries)
+        
+        #self.library = list(library[:])
+        
     self.onlyonce += 1
     #print(f"library = ")
     #[print(x) for x in library]
@@ -907,6 +956,7 @@ def notes2paper(self):
         delattr(self,'library2')
     self.library2 = list(self.library[:])
     TT.update('resize all the images')
+    #print(f"\ncount is {cnt}")
     
     if ColumnSliders(self) != []:
         columns = ColumnSliders(self)
@@ -925,7 +975,9 @@ def notes2paper(self):
                         newsize = (int(NearestCol),int(NearestCol/w*h))
                         if newsize != (w,h):
                             #print(f"newsize = {newsize}")
-                            basiscard_j.resize(newsize)
+                            scale = NearestCol/w
+                            basiscard_j.resize(scale)
+                            #basiscard_j.resize(newsize)
                             entrydict['card'] = basiscard_j
                             try:
                                 assert entrydict['card'].getsize() == newsize
@@ -936,7 +988,7 @@ def notes2paper(self):
     
     #%% add border to the images:
     TT.update('add borders to all the images')
-    if self.vertline_bool or self.pdfline_bool:
+    if self.vertline_bool or self.horiline_bool:
         for i,entrydict in enumerate(self.library2):
             entrydict = self.library[i]
             if entrydict['mode'] != 't':
@@ -945,8 +997,8 @@ def notes2paper(self):
                 height = 0
                 if self.vertline_bool:
                     width += self.vertline_thickness + self.linesep
-                if self.pdfline_bool:
-                    height += self.pdfline_thickness + self.linesep
+                if self.horiline_bool:
+                    height += self.horiline_thickness + self.linesep
                 bordersize = (width,height)
                 if i == 1:
                     print(f"bordersize = {bordersize}")
@@ -983,8 +1035,9 @@ def notes2paper(self):
     else:
         pagenr = 0
     self.pdfpage = pdfpage(pagenr,dct,dct2,dct3,self.a4page_w,self.a4page_h,tempdir = self.tempdir)
-    self.pdfpage.setvertline(color = self.vertline_color , thickness = self.vertline_thickness,visible = self.vertline_bool)
-    self.pdfpage.sethoriline(color = self.pdfline_color , thickness = self.pdfline_thickness,visible = self.pdfline_bool)
+    self.pdfpage.setqaline(  color = self.QAline_color   , thickness = self.QAline_thickness   , visible = self.QAline_bool  )
+    self.pdfpage.setvertline(color = self.vertline_color , thickness = self.vertline_thickness , visible = self.vertline_bool)
+    self.pdfpage.sethoriline(color = self.horiline_color , thickness = self.horiline_thickness , visible = self.horiline_bool)
     pdfimage_i = self.pdfpage.loadpage()
     #print(f"dct = {dct}\ndct2 = {dct2}\ndct3 = {dct3}")
     
@@ -1028,24 +1081,6 @@ def notes2paper(self):
     currentpage, maxpage = self.pdfpage.getpageinfo()
     self.m_pdfCurrentPage.SetValue(f"{currentpage}/{maxpage}")
     TT.stop()
-    
-    
-    
-    
-
-def add_border(self,img,mode):
-    if self.pdfline_bool == True:
-        if mode == "single":
-            new_im = PIL.Image.new("RGB", (self.a4page_w,img.size[1]+self.pdfline_thickness),"white")    
-            border = PIL.Image.new("RGB", (img.size[0] ,self.pdfline_thickness), self.pdfline_color)    
-        else:
-            new_im = PIL.Image.new("RGB", (self.a4page_w,img.size[1]+self.pdfline_thickness),"white")    
-            border = PIL.Image.new("RGB", (self.combinedwidth ,self.pdfline_thickness), self.pdfline_color)    
-        new_im.paste(border, (0,img.size[1]))
-        new_im.paste(img, (0,0))
-        return new_im
-    else:
-        return img
 
 
     
@@ -1058,5 +1093,5 @@ def add_margins(self,img):
     return new_im
 
 # main program that does all the preprocessing
-def startprogram(self,event): 
-    notes2paper(self)
+#def startprogram(self,event): 
+#    notes2paper(self)
