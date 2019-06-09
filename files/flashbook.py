@@ -112,7 +112,7 @@ def CombineBookTitles(booknames):
         else:
             C += '_'+ ''.join([c for c in string.title() if c.isupper()])
     return C
-    
+  
 #% path to resources: 
 def setup_sources(self):
     if _platform == 'Windows':
@@ -135,113 +135,116 @@ def setup_sources(self):
     self.path_repeat  = Path(rdir,"repeat.png")
     self.path_repeat_na = Path(rdir,"repeat_na.png")
 #%% settings   
-def settings_get(self):
-    try:
-        with open(Path(self.dirsettings,"settings.txt"), 'r') as file:
-            settings = json.load(file)
-            self.debugmode          = settings['debugmode']
-            self.pdfmultiplier      = settings['pdfmultiplier'] 
-            self.QAline_thickness   = settings['QAline_thickness']
-            self.pdfline_thickness  = settings['pdfline_thickness']
-            self.vertline_thickness = settings['vertline_thickness']
-            self.QAline_color       = tuple(settings['QAline_color'])
-            self.pdfline_color      = tuple(settings['pdfline_color']) 
-            self.vertline_color     = tuple(settings['vertline_color'])
-            self.QAline_bool        = settings['QAline_bool']
-            self.pdfline_bool       = settings['pdfline_bool']
-            self.vertline_bool      = settings['vertline_bool']
-            self.samecolor_bool     = settings['samecolor_bool']
-            self.pdfPageColsPos     = settings['pdfPageColsPos']
-            self.pdfPageColsChecks  = settings['pdfPageColsChecks']
-            self.LaTeXfontsize      = settings['LaTeXfontsize']
-            self.bordercolors       = settings['bordercolors']
-            self.drawborders        = settings['drawborders']
-            self.cursor             = settings['cursor']
-            self.GraphNdays         = settings['GraphNdays']
-            self.Graph_bool         = settings['Graph_bool']
-            self.NrCardsPreview     = settings['NrCardsPreview']
-        file.close()
-    except:
-        # Just in case when the settings.txt has been tempered with        
-        settingsfile = Path(self.dirsettings,"settings.txt")
-        if settingsfile.exists():
-            settingsfile.unlink()
-        settings_create(self)
-        settings_get(self)
-
-        
-         
-def settings_create(self):
-    settingsfile = Path(self.dirsettings,"settings.txt")
-    if not settingsfile.exists():   
-        with settingsfile.open(mode='w') as file:
-            file.write(json.dumps({'debugmode' : False,
-                                   'pdfmultiplier': 1.0, 
-                                   'QAline_thickness' : 1, 
-                                   'pdfline_thickness' : 5,
-                                   'vertline_thickness': 5,
-                                   'QAline_color' : (0,0,0), 
-                                   'pdfline_color' : (18,5,250),
-                                   'vertline_color' : (255,128,0),
-                                   'QAline_bool': True,
-                                   'pdfline_bool': True ,
-                                   'vertline_bool': True,
-                                   'samecolor_bool': False,
-                                   'pdfPageColsPos' : [30 , 46 , 75],
-                                   'pdfPageColsChecks' : [True, True, False],
-                                   'LaTeXfontsize' : 20,
-                                   'bordercolors' : [[0,0,0],[200,0,0]],
-                                   'drawborders' : True,
-                                   'cursor' : False,
-                                   'GraphNdays':10,
-                                   'Graph_bool': True,
-                                   'NrCardsPreview':15}))
+class settings():
+    def __init__(self,settings_dir):
+        self.dirsettings = settings_dir
+    
+    def settings_get(self):
+        try:
+            with open(Path(self.dirsettings,"settings.txt"), 'r') as file:
+                settings = json.load(file)
+                self.debugmode          = settings['debugmode']
+                self.pdfmultiplier      = settings['pdfmultiplier'] 
+                self.QAline_thickness   = settings['QAline_thickness']
+                self.horiline_thickness = settings['horiline_thickness']
+                self.vertline_thickness = settings['vertline_thickness']
+                self.QAline_color       = tuple(settings['QAline_color'])
+                self.horiline_color     = tuple(settings['horiline_color']) 
+                self.vertline_color     = tuple(settings['vertline_color'])
+                self.QAline_bool        = settings['QAline_bool']
+                self.horiline_bool      = settings['horiline_bool']
+                self.vertline_bool      = settings['vertline_bool']
+                self.samecolor_bool     = settings['samecolor_bool']
+                self.pdfPageColsPos     = settings['pdfPageColsPos']
+                self.pdfPageColsChecks  = settings['pdfPageColsChecks']
+                self.LaTeXfontsize      = settings['LaTeXfontsize']
+                self.bordercolors       = settings['bordercolors']
+                self.drawborders        = settings['drawborders']
+                self.cursor             = settings['cursor']
+                self.GraphNdays         = settings['GraphNdays']
+                self.Graph_bool         = settings['Graph_bool']
+                self.NrCardsPreview     = settings['NrCardsPreview']
             file.close()
+        except:
+            # Just in case when the settings.txt has been tempered with        
+            settingsfile = Path(self.dirsettings,"settings.txt")
+            if settingsfile.exists():
+                settingsfile.unlink()
+            self.settings_create()
+            self.settings_get()
             
-def settings_set(self):
-    settingsfile = Path(self.dirsettings,"settings.txt")
-    with settingsfile.open(mode='w') as file:
-        file.write(json.dumps({'debugmode' : self.debugmode, 
-                               'pdfmultiplier': self.pdfmultiplier,
-                               'QAline_thickness' : self.QAline_thickness, 
-                               'pdfline_thickness': self.pdfline_thickness, 
-                               'vertline_thickness': self.vertline_thickness,
-                               'QAline_color' : self.QAline_color, 
-                               'pdfline_color' : self.pdfline_color,
-                               'vertline_color' : self.vertline_color,
-                               'QAline_bool': self.QAline_bool,
-                               'pdfline_bool': self.pdfline_bool,
-                               'vertline_bool': self.vertline_bool,
-                               'samecolor_bool': self.samecolor_bool,
-                               'pdfPageColsPos' : self.pdfPageColsPos,
-                               'pdfPageColsChecks': self.pdfPageColsChecks,
-                               'LaTeXfontsize' : self.LaTeXfontsize,
-                               'bordercolors' : self.bordercolors,
-                               'drawborders' : self.drawborders,
-                               'cursor' : self.cursor,
-                               'GraphNdays' :self.GraphNdays,
-                               'Graph_bool': self.Graph_bool,
-                               'NrCardsPreview': self.NrCardsPreview}))
-        file.close()
+    def settings_create(self):
+        settingsfile = Path(self.dirsettings,"settings.txt")
+        if not settingsfile.exists():   
+            with settingsfile.open(mode='w') as file:
+                file.write(json.dumps({'debugmode'     : False,
+                                       'pdfmultiplier' : 1.0, 
+                                       'QAline_thickness'   : 1, 
+                                       'horiline_thickness' : 5,
+                                       'vertline_thickness' : 5,
+                                       'QAline_color'  : (0,0,0), 
+                                       'horiline_color': (18,5,250),
+                                       'vertline_color': (255,128,0),
+                                       'QAline_bool'   : True,
+                                       'horiline_bool'  : True ,
+                                       'vertline_bool' : True,
+                                       'samecolor_bool': False,
+                                       'pdfPageColsPos': [30 , 46 , 75],
+                                       'pdfPageColsChecks' : [True, True, False],
+                                       'LaTeXfontsize' : 20,
+                                       'bordercolors'  : [[0,0,0],[200,0,0]],
+                                       'drawborders'   : True,
+                                       'cursor'        : False,
+                                       'GraphNdays'    : 10,
+                                       'Graph_bool'    : True,
+                                       'NrCardsPreview':15}))
+                file.close()
+                
+    def settings_set(self):
+        settingsfile = Path(self.dirsettings,"settings.txt")
+        with settingsfile.open(mode='w') as file:
+            file.write(json.dumps({'debugmode' : self.debugmode, 
+                                   'pdfmultiplier': self.pdfmultiplier,
+                                   'QAline_thickness' : self.QAline_thickness, 
+                                   'horiline_thickness': self.horiline_thickness, 
+                                   'vertline_thickness': self.vertline_thickness,
+                                   'QAline_color'   : self.QAline_color, 
+                                   'horiline_color' : self.horiline_color,
+                                   'vertline_color' : self.vertline_color,
+                                   'QAline_bool': self.QAline_bool,
+                                   'horiline_bool': self.horiline_bool,
+                                   'vertline_bool': self.vertline_bool,
+                                   'samecolor_bool': self.samecolor_bool,
+                                   'pdfPageColsPos' : self.pdfPageColsPos,
+                                   'pdfPageColsChecks': self.pdfPageColsChecks,
+                                   'LaTeXfontsize' : self.LaTeXfontsize,
+                                   'bordercolors' : self.bordercolors,
+                                   'drawborders' : self.drawborders,
+                                   'cursor' : self.cursor,
+                                   'GraphNdays' :self.GraphNdays,
+                                   'Graph_bool': self.Graph_bool,
+                                   'NrCardsPreview': self.NrCardsPreview}))
+            file.close()
 
 def settings_reset(self):
     settingsfile = Path(self.dirsettings,"settings.txt")
     if settingsfile.exists():
         settingsfile.unlink()
-    settings_create(self)
-    settings_get(self)
+        
+    self.settings.create()
+    self.settings.get()
     self.m_checkBoxSelections.Check(self.drawborders)
     if self.panel3.IsShown():
         self.m_colorQAline.SetColour(self.QAline_color)
-        self.m_colorPDFline.SetColour(self.pdfline_color)
+        self.m_colorPDFline.SetColour(self.horiline_color)
         self.m_colorVERTline.SetColour(self.vertline_color)
         
-        self.m_lineWpdf.SetValue(str(self.pdfline_thickness))
+        self.m_lineWpdf.SetValue(str(self.horiline_thickness))
         self.m_lineWqa.SetValue(str(self.QAline_thickness))
         self.m_lineWvert.SetValue(str(self.vertline_thickness))
         
         self.m_lineQA.SetValue(self.QAline_bool)
-        self.m_linePDF.SetValue(self.pdfline_bool)            
+        self.m_linePDF.SetValue(self.horiline_bool)            
         self.m_lineVERT.SetValue(self.vertline_bool)
         self.m_checkBoxSameColor.SetValue(self.samecolor_bool)
         
@@ -252,7 +255,22 @@ def settings_reset(self):
         self.m_checkBox_col1.SetValue(self.pdfPageColsChecks[0])
         self.m_checkBox_col2.SetValue(self.pdfPageColsChecks[1])
         self.m_checkBox_col3.SetValue(self.pdfPageColsChecks[2])
-    
+
+
+def checkcardcheck(self):
+    try:
+        #self.checkcard = [False] * len(self.checkcard)
+        self.onlyonce = 0
+        for i,item in enumerate(self.checkcard):
+            basecard = self.library[i]['card']
+            if basecard.hasQAline():
+                print(f"{i} -- {basecard.hasQAline()}")
+                self.checkcard[i] = True
+            else:
+                self.checkcard[i] = False
+    except:
+        pass
+   
 #%%
 def initialize(self):
     datadir = os.getenv("LOCALAPPDATA")
@@ -327,7 +345,7 @@ def save2latexfile(self,files,title):
 
 
 
-class MainFrame(gui.MyFrame):
+class MainFrame(gui.MyFrame,settings):
     
     """ INITIALIZE """
     def __init__(self,parent): 
@@ -338,12 +356,21 @@ class MainFrame(gui.MyFrame):
         #initialize parent class
         icons = [wx.Bitmap(str(self.path_folder)) , wx.Bitmap(str(self.path_convert)) ]
         gui.MyFrame.__init__(self,parent,icons) #added extra argument, so that WXpython.py can easily add the Dialog Windows (which require an extra argument), which is now used to add extra icons to the menubar             
+        settings.__init__(self,self.dirsettings)
+        print(dir(settings))
         self.Flashcard = Flashcard()
         self.CardsDeck = CardsDeck()
         
-        settings_create(self)
-        settings_get(self)
-        settings_set(self)
+        #self.settings = settings(self.dirsettings)
+        self.settings_create()
+        self.settings_get()
+        self.settings_set()
+        
+        self.checkcard = [False]
+        self.library   = [None]
+        #settings_create(self)
+        #settings_get(self)
+        #settings_set(self)
         #settings_set(self)
         self.m_menubar1.EnableTop(2, False)#disable Flashcard menu
         self.Maximize(True) # open the app window maximized
@@ -401,6 +428,7 @@ class MainFrame(gui.MyFrame):
         m4.initialize(self)
         
     def m_OpenPrintOnButtonClick(self,event):
+        self.onlyinitiate = 0
         self.onlyonce = 0
         self.onlyatinitialize = 0
         self.CardsCatalog = CardsCatalog()
@@ -408,19 +436,19 @@ class MainFrame(gui.MyFrame):
         """START MAIN PROGRAM : PRINT PDF NOTES"""
         t_panel = lambda self,page : threading.Thread(target = p.SwitchPanel , args=(self,page )).start()
         t_panel(self, 3) 
-        settings_get(self)                
+        self.settings_get()                
         
         
         self.m_colorQAline.SetColour(self.QAline_color)
-        self.m_colorPDFline.SetColour(self.pdfline_color)
+        self.m_colorPDFline.SetColour(self.horiline_color)
         self.m_colorVERTline.SetColour(self.vertline_color)
         
-        self.m_lineWpdf.SetValue(str(self.pdfline_thickness))
+        self.m_lineWpdf.SetValue(str(self.horiline_thickness))
         self.m_lineWqa.SetValue(str(self.QAline_thickness))
         self.m_lineWvert.SetValue(str(self.vertline_thickness))
         
         self.m_lineQA.SetValue(self.QAline_bool)
-        self.m_linePDF.SetValue(self.pdfline_bool)            
+        self.m_linePDF.SetValue(self.horiline_bool)            
         self.m_lineVERT.SetValue(self.vertline_bool)
         self.m_checkBoxSameColor.SetValue(self.samecolor_bool)
         
@@ -639,7 +667,7 @@ class MainFrame(gui.MyFrame):
 
     def m_slider_col1OnScrollChanged(self, event):
         self.pdfPageColsPos[0] = self.m_slider_col1.GetValue()
-        settings_set(self)
+        self.settings_set()
         if BoxesChecked(self,1):
             t_preview = lambda self : threading.Thread(target = m3.preview_refresh, name = 't_preview' , args=(self, )).run()
             t_preview(self) 
@@ -648,33 +676,33 @@ class MainFrame(gui.MyFrame):
             
     def m_slider_col2OnScrollChanged(self, event):
         self.pdfPageColsPos[1] = self.m_slider_col2.GetValue()
-        settings_set(self)
+        self.settings_set()
         if BoxesChecked(self,2):
             t_preview = lambda self : threading.Thread(target = m3.preview_refresh, name = 't_preview' , args=(self, )).run()
             t_preview(self) 
             
     def m_slider_col3OnScrollChanged(self, event):
         self.pdfPageColsPos[2] = self.m_slider_col3.GetValue()
-        settings_set(self)
+        self.settings_set()
         if BoxesChecked(self,3):
             t_preview = lambda self : threading.Thread(target = m3.preview_refresh, name = 't_preview' , args=(self, )).run()
             t_preview(self) 
             
     def m_checkBox_col1OnCheckBox( self, event ):
         self.pdfPageColsChecks[0] = self.m_checkBox_col1.GetValue()
-        settings_set(self)
+        self.settings_set()
         t_preview = lambda self : threading.Thread(target = m3.preview_refresh, name = 't_preview' , args=(self, )).run()
         t_preview(self) 
             
     def m_checkBox_col2OnCheckBox( self, event ):
         self.pdfPageColsChecks[1] = self.m_checkBox_col2.GetValue()
-        settings_set(self)
+        self.settings_set()
         t_preview = lambda self : threading.Thread(target = m3.preview_refresh, name = 't_preview' , args=(self, )).run()
         t_preview(self) 
             
     def m_checkBox_col3OnCheckBox( self, event ):
         self.pdfPageColsChecks[2] = self.m_checkBox_col3.GetValue()
-        settings_set(self)
+        self.settings_set()
         t_preview = lambda self : threading.Thread(target = m3.preview_refresh, name = 't_preview' , args=(self, )).run()
         t_preview(self) 
     def m_pdfButtonPrevOnButtonClick( self, event ):
@@ -966,12 +994,12 @@ class MainFrame(gui.MyFrame):
     def m_checkBoxCursorOnCheckBox( self, event ):
         self.cursor = not self.cursor
         m.setcursor(self)
-        settings_set(self)
+        self.settings_set()
     
     # show drawn borders 
     def m_checkBoxSelectionsOnCheckBox( self, event ):
         self.drawborders = self.m_checkBoxSelections.IsChecked()   
-        settings_set(self)
+        self.settings_set()
         try:
             print(f"checkbox is {self.drawborders}")
             self.pageimage = self.pageimagecopy # reset image
@@ -1193,25 +1221,27 @@ class MainFrame(gui.MyFrame):
     """ print the notes """
     def m_sliderPDFsizeOnScrollChanged(self,event):
         self.pdfmultiplier = float(200-self.m_sliderPDFsize.GetValue())/100
-        settings_set(self)
+        self.settings_set()
         m3.preview_refresh(self)
     
     def m_lineQAOnCheckBox( self, event ):
+        checkcardcheck(self)
+        self.onlyonce = 0
         self.FilePickEvent = False
         self.QAline_bool = self.m_lineQA.GetValue()
-        settings_set(self)
+        self.settings_set()
         m3.preview_refresh(self)
         
     def m_linePDFOnCheckBox( self, event ):
         self.FilePickEvent = False
-        self.pdfline_bool = self.m_linePDF.GetValue()
-        settings_set(self)
+        self.horiline_bool = self.m_linePDF.GetValue()
+        self.settings_set()
         m3.preview_refresh(self)
         
     def m_lineVERTOnCheckBox( self, event):
         self.FilePickEvent = False
         self.vertline_bool = self.m_lineVERT.GetValue()
-        settings_set(self)
+        self.settings_set()
         m3.preview_refresh(self)
     
     def m_bitmap3OnLeftDown(self, event):
@@ -1271,14 +1301,18 @@ class MainFrame(gui.MyFrame):
                 if question == '':
                     """ If you remove the question then the entire card will be deleted"""
                     file_lines.pop(trueindex)
+                    self.checkcard.pop(trueindex)
                 else:
                     file_lines[trueindex] = r"\quiz{"+str(question)+"}"+r"\ans{"+str(answer)+"}" +r"\topic{"+str(topic)+  "}"+"\n"
+                    self.checkcard[trueindex] = True
+                    print(f"self checkcard = {self.checkcard} {trueindex}")
                 #save changes
                 with open(str(Path(self.notesdir, self.filename)), 'w') as output: 
                     for line in file_lines:
                         output.write(line)
                 #reload cards
                 self.onlyonce = 0
+                
                 self.CardsDeck.reset()
                 m3.notes2paper(self)
                 #self.CardsDeck.reset()
@@ -1299,38 +1333,38 @@ class MainFrame(gui.MyFrame):
         RGB = self.m_colorQAline.GetColour()
         self.QAline_color  = (RGB.Red(),RGB.Green(),RGB.Blue())   
         if original_color != self.QAline_color:
-            settings_set(self)
+            self.settings_set()
             m3.preview_refresh(self)
         
     def m_colorPDFlineOnColourChanged( self, event ):
-        original_color = self.pdfline_color
+        original_color = self.horiline_color
         self.FilePickEvent = False
         RGB = self.m_colorPDFline.GetColour()
-        self.pdfline_color  = (RGB.Red(),RGB.Green(),RGB.Blue())    
+        self.horiline_color  = (RGB.Red(),RGB.Green(),RGB.Blue())    
         
-        print("pdfline")
+        print("horiline")
         if self.m_checkBoxSameColor.GetValue() == True:
-            print(f" bools  = {self.vertline_color != original_color}, {self.pdfline_color != original_color}")    
-            if self.vertline_color != original_color or self.pdfline_color != original_color:
-                self.vertline_color  = self.pdfline_color 
-                self.m_colorVERTline.SetColour(self.pdfline_color)
-                settings_set(self)
+            print(f" bools  = {self.vertline_color != original_color}, {self.horiline_color != original_color}")    
+            if self.vertline_color != original_color or self.horiline_color != original_color:
+                self.vertline_color  = self.horiline_color 
+                self.m_colorVERTline.SetColour(self.horiline_color)
+                self.settings_set()
                 m3.preview_refresh(self)
         else:
-            if self.pdfline_color != original_color:
-                settings_set(self)
+            if self.horiline_color != original_color:
+                self.settings_set()
                 m3.preview_refresh(self)
         
     def m_colorVERTlineOnColourChanged( self, event):
         original_color = self.vertline_color
         RGB = self.m_colorVERTline.GetColour()
         if self.m_checkBoxSameColor.GetValue() == True:
-            #self.vertline_color  = self.pdfline_color
+            #self.vertline_color  = self.horiline_color
             self.vertline_color = (RGB.Red(),RGB.Green(),RGB.Blue()) 
-            self.pdfline_color  = self.vertline_color
-            new_color = self.pdfline_color
+            self.horiline_color  = self.vertline_color
+            new_color = self.horiline_color
             self.m_colorVERTline.SetColour(self.vertline_color)
-            self.m_colorPDFline.SetColour(self.pdfline_color)
+            self.m_colorPDFline.SetColour(self.horiline_color)
         else:
             self.FilePickEvent = False
             self.vertline_color  = (RGB.Red(),RGB.Green(),RGB.Blue())    
@@ -1338,7 +1372,7 @@ class MainFrame(gui.MyFrame):
             
         if original_color != new_color:
             #In case you chose the exact same color do nothing
-            settings_set(self)
+            self.settings_set()
             m3.preview_refresh(self)
         
         
@@ -1370,7 +1404,7 @@ class MainFrame(gui.MyFrame):
             elif int(var) > 0:
                 self.NrCardsPreview = int(var)
                 
-            settings_set(self)
+            self.settings_set()
             m3.preview_refresh(self)
         except:
             log.ERRORMESSAGE("Error: invalid entry in CtrlNrCardsOnText")
@@ -1379,23 +1413,25 @@ class MainFrame(gui.MyFrame):
         
         try:            
             if int(self.m_lineWpdf.GetValue()) >= 0:
-                if int(self.m_lineWpdf.GetValue()) != self.pdfline_thickness:
+                if int(self.m_lineWpdf.GetValue()) != self.horiline_thickness:
                     #only execute if the value has changed
-                    self.pdfline_thickness = int(self.m_lineWpdf.GetValue())
-                    settings_set(self)
+                    self.horiline_thickness = int(self.m_lineWpdf.GetValue())
+                    self.settings_set()
                     m3.preview_refresh(self)
         except:
             log.ERRORMESSAGE("Error: invalid entry in lineWpdf")
             
     def m_lineWqaOnText( self, event ):
+        
+        checkcardcheck(self)
         try:            
             if int(self.m_lineWqa.GetValue()) >= 0:
                 if int(self.m_lineWqa.GetValue()) != self.QAline_thickness:
                     self.QAline_thickness = int(self.m_lineWqa.GetValue())
-                    settings_set(self)
+                    self.settings_set()
                     m3.preview_refresh(self)
         except:
-            log.ERRORMESSAGE("Error: invalid entry")
+            log.ERRORMESSAGE("Error: invalid entry QAline thickness")
             
     def m_lineWvertOnText( self, event ):
         try:            
@@ -1403,7 +1439,7 @@ class MainFrame(gui.MyFrame):
                 if int(self.m_lineWvert.GetValue()) != self.vertline_thickness:
                     #only execute if the value has changed
                     self.vertline_thickness = int(self.m_lineWvert.GetValue())
-                    settings_set(self)
+                    self.settings_set()
                     m3.preview_refresh(self)
         except:
             log.ERRORMESSAGE("Error: invalid entry")  
@@ -1411,9 +1447,9 @@ class MainFrame(gui.MyFrame):
         self.samecolor_bool = self.m_checkBoxSameColor.IsChecked()
         #check if it has been checked
         if self.samecolor_bool == True:
-            if self.vertline_color != self.pdfline_color:
+            if self.vertline_color != self.horiline_color:
                 self.FilePickEvent = False
-                self.vertline_color = self.pdfline_color     
+                self.vertline_color = self.horiline_color     
                 self.m_colorVERTline.SetColour(self.vertline_color)     
                 settings_set(self)
                 m3.preview_refresh(self)
