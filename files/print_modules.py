@@ -626,7 +626,7 @@ class basiscard():
         self.texta = None#[path, size]
         self.pica  = None#[path, size]
         self.bordersize = (0,0)
-    def setQAthickness(self,thickness):
+    def setQAthickness(self, thickness):
         self.QAline_thickness = thickness
     def hasQAline(self):
         return self.QAbool
@@ -732,40 +732,12 @@ class basiscard():
         self.QAbool = True
     def resize(self,scale):
         self.scale = scale
-        """
-        Wp = size[0]/self.total_width
-        Hp = size[1]/self.total_height
-        
-        self.total_width = size[0]
-        #print(f"WpHp = {Wp,Hp}")
-        #make sure that the dividing line between Q and A is NOT resized
-        height = 0
-        if self.textq != None:
-            w,h = int(self.textq[1][0]*Wp) , int(self.textq[1][1]*Hp)
-            self.textq = [self.textq[0],(w,h)]
-            height += h
-        if self.picq != None:
-            w,h = int(self.picq[1][0]*Wp) , int(self.picq[1][1]*Hp)
-            self.picq = [self.picq[0],(w,h)]
-            height += h
-        self.pos_QAline = height
-        if self.texta != None:
-            w,h = int(self.texta[1][0]*Wp) , int(self.texta[1][1]*Hp)
-            self.texta = [self.texta[0],(w,h)]
-            height += h
-        if self.pica != None:
-            w,h = int(self.pica[1][0]*Wp) , int(self.pica[1][1]*Hp)
-            self.pica = [self.pica[0],(w,h)]    
-            height += h
-        self.total_height = height + self.QAline_thickness
-        #print(f"totalsize = {self.total_width,self.total_height}")
-        """
-    def getsize_ini(self):
-        #when used the first time otherwise the QAline thickness is not included
-        return self.total_width+self.QAline_thickness, self.total_height
+    def getsize_withoutQA(self): #for rescaling purposes
+        return self.total_width, self.total_height
+    
     def getsize(self):
         if self.QAvisible:
-            extraThickness = 0#self.QAline_thickness
+            extraThickness = self.QAline_thickness
         else:
             extraThickness = 0
         return int(self.total_width*self.scale)+self.bordersize[0]*2, int(self.total_height*self.scale)+self.bordersize[1]*2 + extraThickness
@@ -774,12 +746,58 @@ class basiscard():
     def getrect(self):
         x,y = self.basecoordinates
         if self.QAvisible:
-            extraThickness = 0
+            extraThickness = self.QAline_thickness
         else:
             extraThickness = 0
         w,h = int(self.total_width*self.scale),int(self.total_height*self.scale)
         h += extraThickness
         return (x,y,w,h)
+    
+class checkcard():  
+    def __init__(self):
+        self.checkcard  = {}
+    def initialize(self,dictionary):
+        print(f"checkcard dictionary is {dictionary}")
+        """Each card has a key associated with it: card_t0 , card_q0, card_a3 etc."""
+        assert type(dictionary) == dict
+        print(f"dictionary keys {dictionary.keys()}")
+        
+        ##
+        keys = dictionary.keys()
+        for i,card_mode_nr in enumerate(keys):
+            number = card_mode_nr[6:]
+            self.checkcard[number] = True
+        print(f"\ncheckcard initialized= {self.checkcard}")
+    def set_True(self,index):
+        index = str(index)
+        self.checkcard[index] = True
+        
+    def alldone(self):
+        for i,item in enumerate(self.checkcard):
+            self.checkcard[item] = False
+    def check_allQA(self,library):
+        try:
+            for i,libraryentry in enumerate(library):
+                basecard = libraryentry['card']
+                if basecard.hasQAline() == True:
+                    index = libraryentry['cardname'][1:] #cardname is t0/q0/q1...
+                    self.checkcard[index] = True
+                    
+        except:
+            pass
+        
+    def check_i(self,index):
+        try:
+            int(index)
+        except ValueError:
+            index = index[6:]
+            
+        if index in self.checkcard:
+            return self.checkcard[index]
+        else:
+            return False
+        
+            
     
 def createbasiscards(self,index,card_mode_nr,cardsdicts,library,CardsDeckEntries):
     #print(f"carkey_nr = {card_mode_nr}")
@@ -793,7 +811,7 @@ def createbasiscards(self,index,card_mode_nr,cardsdicts,library,CardsDeckEntries
     #print(f"cardsdicts = {cardsdicts}")
    
     basiscard_i = basiscard()    
-    
+    basiscard_i.setQAthickness(self.QAline_thickness)
     #print(f"mode = {mode}")
     
     if mode == 'Topic':
@@ -821,6 +839,7 @@ def createbasiscards(self,index,card_mode_nr,cardsdicts,library,CardsDeckEntries
                 imgsize = img_text.size
                 saveimage(img_text,imagepathname)
                 basiscard_i.setq_text(imagepathname,imgsize)
+                
         if 'pic' in currentcard.keys():
             key = 'card_'+t
             FOUNDPIC, imagesize,path = findpicturesize(self,key)
@@ -873,6 +892,7 @@ def notes2paper(self):
     ini2.initializeparameters(self) 
     # open file
     if self.onlyatinitialize == 0:
+        
         try:
             if self.FilePickEvent == True:
                 self.path         = self.fileDialog.GetPath()      
@@ -923,8 +943,10 @@ def notes2paper(self):
     if self.onlyinitiate == 0:
         print("\nINITIATED")
         nrUnique   = self.CardsDeck.len_uniquecards()
-        self.checkcard  = [True] * nrUnique
+        self.checkcard = checkcard()
+        self.checkcard.initialize(self.CardsDeck.getcards())
         CardsDeckEntries = self.CardsDeck.getcards().keys()
+        CardsDeckUniqueCards = [x for x in CardsDeckEntries if 'card_a' not in x]        
         nrUnique   = self.CardsDeck.len_uniquecards()
         cardsdicts = self.CardsDeck.getcards()            
         
@@ -940,12 +962,13 @@ def notes2paper(self):
         CardsDeckUniqueCards = [x for x in CardsDeckEntries if 'card_a' not in x]
         cnt = 0 
         for index,card_mode_nr in enumerate(CardsDeckUniqueCards):
-            print(f"cardmodenr = {card_mode_nr}")
-            if self.checkcard[index] == True:
+            #print(f"cardmodenr = {card_mode_nr}")
+            if self.checkcard.check_i(card_mode_nr) == True:
                 cnt += 1
                 #print(f"index,cardmode_nr {index,card_mode_nr}")
                 createbasiscards(self,index,card_mode_nr,cardsdicts,self.library,CardsDeckEntries)
-        
+        self.checkcard.alldone()
+        print(f"\n!  count is {cnt}\n")
         #self.library = list(library[:])
         
     self.onlyonce += 1
@@ -958,6 +981,7 @@ def notes2paper(self):
     TT.update('resize all the images')
     #print(f"\ncount is {cnt}")
     
+    assert None not in self.library2
     if ColumnSliders(self) != []:
         columns = ColumnSliders(self)
         ColumnWidths = [int(col/100*self.a4page_w) for col in columns if col != 0]                       
@@ -969,7 +993,7 @@ def notes2paper(self):
                     #w,h = imgsize
                 elif entrydict['mode'] == 'q':
                     basiscard_j = entrydict['card']
-                    w,h = basiscard_j.getsize_ini()
+                    w,h = basiscard_j.getsize_withoutQA()
                     if w > min(ColumnWidths) and w > 0:
                         NearestCol = min(ColumnWidths, key=lambda x:abs(x-w))
                         newsize = (int(NearestCol),int(NearestCol/w*h))
