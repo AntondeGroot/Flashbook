@@ -257,19 +257,7 @@ def settings_reset(self):
         self.m_checkBox_col3.SetValue(self.pdfPageColsChecks[2])
 
 
-def checkcardcheck(self):
-    try:
-        #self.checkcard = [False] * len(self.checkcard)
-        self.onlyonce = 0
-        for i,item in enumerate(self.checkcard):
-            basecard = self.library[i]['card']
-            if basecard.hasQAline():
-                print(f"{i} -- {basecard.hasQAline()}")
-                self.checkcard[i] = True
-            else:
-                self.checkcard[i] = False
-    except:
-        pass
+
    
 #%%
 def initialize(self):
@@ -366,7 +354,7 @@ class MainFrame(gui.MyFrame,settings):
         self.settings_get()
         self.settings_set()
         
-        self.checkcard = [False]
+        
         self.library   = [None]
         #settings_create(self)
         #settings_get(self)
@@ -1225,7 +1213,8 @@ class MainFrame(gui.MyFrame,settings):
         m3.preview_refresh(self)
     
     def m_lineQAOnCheckBox( self, event ):
-        checkcardcheck(self)
+        if hasattr(self,'checkcard'):
+            self.checkcard.check_allQA(self.library)
         self.onlyonce = 0
         self.FilePickEvent = False
         self.QAline_bool = self.m_lineQA.GetValue()
@@ -1304,7 +1293,7 @@ class MainFrame(gui.MyFrame,settings):
                     self.checkcard.pop(trueindex)
                 else:
                     file_lines[trueindex] = r"\quiz{"+str(question)+"}"+r"\ans{"+str(answer)+"}" +r"\topic{"+str(topic)+  "}"+"\n"
-                    self.checkcard[trueindex] = True
+                    self.checkcard.set_True(trueindex)
                     print(f"self checkcard = {self.checkcard} {trueindex}")
                 #save changes
                 with open(str(Path(self.notesdir, self.filename)), 'w') as output: 
@@ -1422,8 +1411,9 @@ class MainFrame(gui.MyFrame,settings):
             log.ERRORMESSAGE("Error: invalid entry in lineWpdf")
             
     def m_lineWqaOnText( self, event ):
-        
-        checkcardcheck(self)
+        if hasattr(self,'checkcard'):
+            self.checkcard.check_allQA(self.library)
+            self.onlyonce = 0
         try:            
             if int(self.m_lineWqa.GetValue()) >= 0:
                 if int(self.m_lineWqa.GetValue()) != self.QAline_thickness:
