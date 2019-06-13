@@ -501,6 +501,7 @@ def CreateSingularCard(self,mode):
         else:
             return image, True
     except IndexError:
+        log.ERRORMESSAGE("Error: index error")
         print(f"index = {self.index}")
         print(f"cardorder = {self.cardorder}")
         print(f"len cardorder = {len(self.cardorder)}")
@@ -559,16 +560,19 @@ def TopicCard(self,key):
     return bool_textcard, imagetext    
 
 def CreateTextCard(self,mode,arg1):
-    """This function is used for 2 different purposes
+    """This function is used for 3 different purposes
     1) Flashbook: create a textcard from user input -- this requires user input: self.usertext
     2) Flashcard: create a textcard from saved data -- this requires a dict key: 'key'
+    3) Manual:    
     The creation of a card can fail because the userinput was incorrect it can see something starting with '\' as LaTeX code
     when it should not, or if the user used some undefined function.
     """
     
-    if (mode == 'flashbook' and self.usertext != '') or (mode == 'flashcard' and 'text' in self.CardsDeck.getcards()[arg1].keys()):
+    if (mode == 'flashbook' and self.usertext != '') or (mode == 'flashcard' and 'text' in self.CardsDeck.getcards()[arg1].keys()) or (mode == 'manual' and arg1 != ''):
         try:
             if mode == 'flashbook':
+                usertext = arg1
+            if mode == 'manual':
                 usertext = arg1
             if mode == 'flashcard':
                 # acquire text
@@ -617,6 +621,7 @@ def CreateTextCard(self,mode,arg1):
         
         imagetext = cropimage(imagetext,0)
         imagetext = cropimage(imagetext,1)
+        
         #print(colored(imagetext.size,"red"))
     else: 
         #if mode == 'flashcard' but the key is not in dict
@@ -656,8 +661,9 @@ def File_to_Cards(self,linefile):
         q = argument(self.question_command,line)
         a = argument(self.answer_command,line)
         t = argument(self.topic_command,line)
+        s = argument(self.size_command,line)
         
-        cards.append({'q': q, 'a': a, 't': t})  
+        cards.append({'q': q, 'a': a, 't': t,'size':s})  
     print("keycards")
     print(cards[0].keys())
     return cards
