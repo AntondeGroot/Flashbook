@@ -256,12 +256,15 @@ def selectionentered(self,event):
         PICS_DRAWN = self.Flashcard.nrpics("Question")
         QUESTION_MODE = self.Flashcard.getquestionmode()
         if  USER_textinput != '' or PICS_DRAWN > 0:
+            print("selection")
             usertext = USER_textinput
             if QUESTION_MODE:
+                print("selection + questionmode") 
                 # change mode to answer
                 self.usertext = f.text_to_latex(self,usertext)
                 self.Flashcard.switchmode()
                 self.m_modeDisplay.SetValue(self.Flashcard.getmode()+":")
+                self.Flashcard.setT(self.m_TopicInput.GetValue())
                 self.m_userInput.SetValue("")
                 self.Refresh()
                 # check for [[1,2,3]]
@@ -272,7 +275,8 @@ def selectionentered(self,event):
                     list_ = list2path(list_)
                     #if type(list_[0]) is list:
                     self.Flashcard.setpiclist('Question',list_)   
-                    self.Flashcard.setQ(usertext + r" \pic{" + os.path.basename(list_)+r"}")                
+                    self.Flashcard.setQ(usertext)                
+                    self.Flashcard.setQpic(r" \pic{" + os.path.basename(list_)+r"}")
                 elif PICS_DRAWN == 1:
                     
                     list_ = self.Flashcard.getpiclist("Question")
@@ -286,13 +290,15 @@ def selectionentered(self,event):
                         list_ = list2path(list_)
                         
                         print("is not a list")
-                    self.Flashcard.setQ(usertext + r" \pic{" + os.path.basename(list_)+r"}")
+                    self.Flashcard.setQ(usertext)
+                    self.Flashcard.setQpic(r" \pic{" + os.path.basename(list_)+r"}")
                 elif PICS_DRAWN == 0:
                     print("PICS DRAWN = 0")                    
                     self.Flashcard.setQ(usertext)
                 f.ShowInPopup(self,event,"Question")
                 
             else:#ANSWER mode
+                print("selection + answer")
                 self.usertext = f.text_to_latex(self,usertext)
                 self.questionmode = True
                 
@@ -325,13 +331,16 @@ def selectionentered(self,event):
                     f.CombinePics(self,list_A)
                     if type(list_A[0]) is list:
                         list_A[0] = list_A[0][0]
-                    self.Flashcard.setA(usertext + r" \pic{" + os.path.basename(list_A[0])+r"}")
+                    self.Flashcard.setA(usertext)
+                    self.Flashcard.setApic(r" \pic{" + os.path.basename(list_A[0])+r"}")
                 elif len(list_A) == 1:
                     if type(list_A[0]) is list:        
                         f.CombinePics(self,list_A)
-                        self.Flashcard.setA(usertext + r" \pic{" + os.path.basename(list_A[0])+r"}")
+                        self.Flashcard.setA(usertext)
+                        self.Flashcard.setApic(r" \pic{" + os.path.basename(list_A[0])+r"}")
                     else:
-                        self.Flashcard.setA(usertext + r" \pic{" + os.path.basename(list_A[0])+r"}")
+                        self.Flashcard.setA(usertext)
+                        self.Flashcard.setApic(r" \pic{" + os.path.basename(list_A[0])+r"}")
                         print("is not a list")                
                 else:
                     self.Flashcard.setA(usertext)
@@ -352,8 +361,9 @@ def selectionentered(self,event):
                 
                 
         elif QUESTION_MODE == False:
+            print("selection Answer without any input")
             # if in question mode the user only typed in some text and want to save that 
-            
+            self.Flashcard.setT(self.m_TopicInput.GetValue())
             self.tempdictionary = {}
             # remove temporary borders
             self.pageimage = self.pageimagecopy
@@ -382,7 +392,9 @@ def selectionentered(self,event):
                 self.Flashcard.saveCard(path)
             #reset all
             self.Flashcard.reset()
-            
+            self.m_modeDisplay.SetValue(self.Flashcard.getmode()+":")
+            self.m_TopicInput.SetValue('')
+            self.m_userInput.SetValue("")
             
 def arrowscroll(self,event,direction):
     
