@@ -14,6 +14,7 @@ def initializeparameters(self):
     self.question_command = r'\\quiz{'
     self.answer_command   = r"\\ans{"
     self.topic_command    = r"\\topic{"
+    self.size_command     = r"\\size{"
     # initialize variables:
     self.bookname       = ''
     self.image          = []
