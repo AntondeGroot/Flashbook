@@ -214,8 +214,8 @@ def startprogram(self,event):
         log.ERRORMESSAGE("Error: Couldn't open path")
     self.resumedata = {self.bookname : {'score': self.score, 'index': self.index, 'nr_questions':self.nr_questions}}
     #try:
-    linefile = f2.loadfile(eventpath)
-    cards = f2.File_to_Cards(self,linefile)                       # converts to raw cards
+    self.Latexfile.loadfile(eventpath)
+    cards = self.Latexfile.file_to_rawcards()
     self.CardsDeck.set_cards(cards=cards,notesdir=self.notesdir)  # set_cards converts the text to somthing Matplotlib can understand
     
     #except:
