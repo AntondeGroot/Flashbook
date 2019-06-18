@@ -10,6 +10,7 @@ except:
     pass
 #------------------------------------------------------------------- general
 import os
+import ast
 import json
 from pathlib import Path
 import PIL
@@ -37,6 +38,9 @@ import program as p
 import fb_initialization as ini 
 import fc_initialization as ini2 
 import print_initialization as ini3
+from settingsfile import settings
+from latexoperations import Latexfile
+from latexoperations import Commands as cmd
 import resources
 import fb_modules    as m
 import fc_modules    as m2
@@ -135,96 +139,6 @@ def setup_sources(self):
     self.path_repeat  = Path(rdir,"repeat.png")
     self.path_repeat_na = Path(rdir,"repeat_na.png")
 #%% settings   
-class settings():
-    def __init__(self,settings_dir):
-        self.dirsettings = settings_dir
-    
-    def settings_get(self):
-        try:
-            with open(Path(self.dirsettings,"settings.txt"), 'r') as file:
-                settings = json.load(file)
-                self.debugmode          = settings['debugmode']
-                self.pdfmultiplier      = settings['pdfmultiplier'] 
-                self.QAline_thickness   = settings['QAline_thickness']
-                self.horiline_thickness = settings['horiline_thickness']
-                self.vertline_thickness = settings['vertline_thickness']
-                self.QAline_color       = tuple(settings['QAline_color'])
-                self.horiline_color     = tuple(settings['horiline_color']) 
-                self.vertline_color     = tuple(settings['vertline_color'])
-                self.QAline_bool        = settings['QAline_bool']
-                self.horiline_bool      = settings['horiline_bool']
-                self.vertline_bool      = settings['vertline_bool']
-                self.samecolor_bool     = settings['samecolor_bool']
-                self.pdfPageColsPos     = settings['pdfPageColsPos']
-                self.pdfPageColsChecks  = settings['pdfPageColsChecks']
-                self.LaTeXfontsize      = settings['LaTeXfontsize']
-                self.bordercolors       = settings['bordercolors']
-                self.drawborders        = settings['drawborders']
-                self.cursor             = settings['cursor']
-                self.GraphNdays         = settings['GraphNdays']
-                self.Graph_bool         = settings['Graph_bool']
-                self.NrCardsPreview     = settings['NrCardsPreview']
-            file.close()
-        except:
-            # Just in case when the settings.txt has been tempered with        
-            settingsfile = Path(self.dirsettings,"settings.txt")
-            if settingsfile.exists():
-                settingsfile.unlink()
-            self.settings_create()
-            self.settings_get()
-            
-    def settings_create(self):
-        settingsfile = Path(self.dirsettings,"settings.txt")
-        if not settingsfile.exists():   
-            with settingsfile.open(mode='w') as file:
-                file.write(json.dumps({'debugmode'     : False,
-                                       'pdfmultiplier' : 1.0, 
-                                       'QAline_thickness'   : 1, 
-                                       'horiline_thickness' : 5,
-                                       'vertline_thickness' : 5,
-                                       'QAline_color'  : (0,0,0), 
-                                       'horiline_color': (18,5,250),
-                                       'vertline_color': (255,128,0),
-                                       'QAline_bool'   : True,
-                                       'horiline_bool'  : True ,
-                                       'vertline_bool' : True,
-                                       'samecolor_bool': False,
-                                       'pdfPageColsPos': [30 , 46 , 75],
-                                       'pdfPageColsChecks' : [True, True, False],
-                                       'LaTeXfontsize' : 20,
-                                       'bordercolors'  : [[0,0,0],[200,0,0]],
-                                       'drawborders'   : True,
-                                       'cursor'        : False,
-                                       'GraphNdays'    : 10,
-                                       'Graph_bool'    : True,
-                                       'NrCardsPreview':15}))
-                file.close()
-                
-    def settings_set(self):
-        settingsfile = Path(self.dirsettings,"settings.txt")
-        with settingsfile.open(mode='w') as file:
-            file.write(json.dumps({'debugmode' : self.debugmode, 
-                                   'pdfmultiplier': self.pdfmultiplier,
-                                   'QAline_thickness' : self.QAline_thickness, 
-                                   'horiline_thickness': self.horiline_thickness, 
-                                   'vertline_thickness': self.vertline_thickness,
-                                   'QAline_color'   : self.QAline_color, 
-                                   'horiline_color' : self.horiline_color,
-                                   'vertline_color' : self.vertline_color,
-                                   'QAline_bool': self.QAline_bool,
-                                   'horiline_bool': self.horiline_bool,
-                                   'vertline_bool': self.vertline_bool,
-                                   'samecolor_bool': self.samecolor_bool,
-                                   'pdfPageColsPos' : self.pdfPageColsPos,
-                                   'pdfPageColsChecks': self.pdfPageColsChecks,
-                                   'LaTeXfontsize' : self.LaTeXfontsize,
-                                   'bordercolors' : self.bordercolors,
-                                   'drawborders' : self.drawborders,
-                                   'cursor' : self.cursor,
-                                   'GraphNdays' :self.GraphNdays,
-                                   'Graph_bool': self.Graph_bool,
-                                   'NrCardsPreview': self.NrCardsPreview}))
-            file.close()
 
 def settings_reset(self):
     settingsfile = Path(self.dirsettings,"settings.txt")
@@ -261,22 +175,8 @@ def settings_reset(self):
    
 #%%
 def initialize(self):
-    datadir = os.getenv("LOCALAPPDATA")
-    app = Path(datadir,"Flashbook")
-    self.appdir = app
-    self.notesdir = Path(app,"files")
-    self.picsdir = Path(app,"pics")
-    self.booksdir = Path(app,"books")
-    self.tempdir = Path(app,"temporary")
-    self.bordersdir = Path(app,"borders")
-    self.resourcedir = Path(app,"resources")
-    self.dirIP = Path(app,"IPadresses")
-    self.dirpdf = Path(app,"PDF folder")
-    self.dirpdfbook = Path(app,"PDF books")
-    self.dirsettings = Path(app,"settings")
-    self.statsdir = Path(self.dirsettings, 'data_sessions.json')
     
-    dirs = [self.appdir, self.notesdir, self.picsdir, self.booksdir, self.tempdir, self.bordersdir, self.resourcedir, self.dirpdf, self.dirsettings, self.dirIP, self.dirpdfbook]
+    
     try:
         if not Path(self.dirIP,'IPadresses.txt').exists():          
             wmi_obj = wmi.WMI()
@@ -290,11 +190,7 @@ def initialize(self):
     except:
         log.ERRORMESSAGE("Error: could not access internet")
         
-    print("="*90)
-    print(f"\nThe files will be saved to the following directory: {self.appdir}\n")
-    for item in dirs:
-        if not item.exists():
-            item.mkdir()
+    
     
     #unpack png images used in the gui
     resources.resourceimages(self.resourcedir,self.notesdir) 
@@ -337,29 +233,29 @@ class MainFrame(gui.MyFrame,settings):
     
     """ INITIALIZE """
     def __init__(self,parent): 
-        initialize(self)
+        
         
         setup_sources(self)
         
         #initialize parent class
         icons = [wx.Bitmap(str(self.path_folder)) , wx.Bitmap(str(self.path_convert)) ]
         gui.MyFrame.__init__(self,parent,icons) #added extra argument, so that WXpython.py can easily add the Dialog Windows (which require an extra argument), which is now used to add extra icons to the menubar             
-        settings.__init__(self,self.dirsettings)
-        print(dir(settings))
-        self.Flashcard = Flashcard()
-        self.CardsDeck = CardsDeck()
+        settings.__init__(self)
         
-        #self.settings = settings(self.dirsettings)
+        initialize(self)
+        
+        #settings class
         self.settings_create()
         self.settings_get()
         self.settings_set()
         
+        self.Latexfile = Latexfile()
+        self.Flashcard = Flashcard(self.LaTeXfontsize)
+        self.CardsDeck = CardsDeck()#Flashcard(self.LaTeXfontsize))
+        
         
         self.library   = [None]
-        #settings_create(self)
-        #settings_get(self)
-        #settings_set(self)
-        #settings_set(self)
+        
         self.m_menubar1.EnableTop(2, False)#disable Flashcard menu
         self.Maximize(True) # open the app window maximized
         t_books = lambda self,delay : threading.Thread(target = p.checkBooks , args=(self,delay )).start()
@@ -380,9 +276,6 @@ class MainFrame(gui.MyFrame,settings):
         self.m_checkBoxDebug.Check(self.debugmode)
         
         m.setcursor(self)
-        
-        
-        
         m7.AcceleratorTableSetup(self,"general","set")
     #%% MAIN PROGRAMS
     """ MAIN PROGRAMS """ 
@@ -818,6 +711,7 @@ class MainFrame(gui.MyFrame,settings):
                 question = dlg.m_textCtrl24.GetValue()
                 answer   = dlg.m_textCtrl25.GetValue()
                 topic    = dlg.m_textCtrl30.GetValue()
+                size     = (0,0)
                 #open file
                 with open(Path(self.notesdir,self.filename),'r') as file:
                     file_lines = file.readlines()
@@ -834,18 +728,15 @@ class MainFrame(gui.MyFrame,settings):
                     print("true index")
                     print(trueindex)
                     self.m_TotalCards.SetValue(f"{self.nr_questions}")
-                    file_lines.insert(trueindex, r"\quiz{"+str(question)+"}"+r"\ans{"+str(answer)+"}" +r"\topic{"+str(topic)+  "}"+"\n")
+                    file_lines.insert(trueindex, cmd().question()+str(question)+"}"+cmd().answer()+str(answer)+"}" +cmd().topic()+str(topic)+  "}"+r"\size{"+str(size)+"}"+"\n")
                     #save changes
                     with open(str(Path(self.notesdir, self.filename)), 'w') as output: 
                         for line in file_lines:
                             output.write(line)
                     #reload cards
                     self.CardsDeck.reset()
-                    linefile = f2.loadfile(self.booknamepath)
-                    
-                    print(f"linefile = {linefile}")
-                    print(f"linefilelen = {len(linefile)}")
-                    cards = f2.File_to_Cards(self,linefile)                       # converts to raw cards
+                    self.Latexfile.loadfile(self.booknamepath)
+                    cards = self.Latexfile.file_to_rawcards()#cards contains q,a,t,s
                     print(f"cards = {cards}")
                     self.CardsDeck.set_cards(cards=cards,notesdir=self.notesdir)
                     f2.switch_bitmap(self)
@@ -931,29 +822,12 @@ class MainFrame(gui.MyFrame,settings):
                             output.write(line)
                     #reload cards
                     self.CardsDeck.reset()
-                    linefile = f2.loadfile(self.booknamepath)
-                    cards = f2.File_to_Cards(self,linefile)                       # converts to raw cards
+                    self.Latexfile.loadfile(self.booknamepath)
+                    cards = self.Latexfile.file_to_rawcards()#cards contains q,a,t,s
                     self.CardsDeck.set_cards(cards=cards,notesdir=self.notesdir)
                     f2.switch_bitmap(self)
                     f2.displaycard(self)
-                    self.Refresh()
-                    
-                    #if Path(self.notesdir,self.filename).exists():
-                    #    file = open(Path(self.notesdir,self.filename), 'r')
-                    #    letterfile = str(file.read())                    
-                    #self.q_hookpos , self.a_hookpos = f2.File_to_hookpositions(self,letterfile)
-                    #self.nr_cards = len(self.q_hookpos)
-                    #f2.FindArgumentsCards(self,self.q_hookpos,self.a_hookpos,letterfile)
-                    #f2.Cards_ReplaceUserCommands(self)
-                    #f2.SeparatePicsFromCards(self)
-                    #f2.Cards_To_TextDicts(self)
-                    #f2.switch_bitmap(self)
-                    #image,_ = f2.CreateSingularCard(self,'Question')
-                    
-                    #BMP = f2.PILimage_to_Bitmap(image)
-                    #self.m_bitmapScrollFC.SetBitmap(BMP)
-                    #self.Refresh()
-                
+                    self.Refresh()                
                 print("success!!")
                 
     def m_menuPreviousCardOnMenuSelection( self, event ):
@@ -1146,9 +1020,7 @@ class MainFrame(gui.MyFrame,settings):
                 t_sync = lambda self,mode,HOST :threading.Thread(target=m4.SyncDevices,args=(self,mode,HOST)).start()
                 t_sync(self,"CLIENT",HOST)        
             else:
-                ctypes.windll.user32.MessageBoxW(0, "Server is not online. \nMake sure you start the server before you start the client.\nTry to connect again.", "Warning", ICON_STOP)   
-            
-            
+                ctypes.windll.user32.MessageBoxW(0, "Server is not online. \nMake sure you start the server before you start the client.\nTry to connect again.", "Warning", ICON_STOP)               
         else:
             HOST = self.IP1
             print(f"HOST IS {HOST}")
@@ -1267,11 +1139,8 @@ class MainFrame(gui.MyFrame,settings):
             BMP_a = wx.NullBitmap
             bool2 = False
         print(f"bools = {bool1,bool2}")
-        
-        
-        
-        data = [BMP_q,BMP_a,rawcard['q'] , rawcard['a'] , rawcard['t'] ]
-        
+                
+        data = [BMP_q,BMP_a,rawcard['q'] , rawcard['a'] , rawcard['t'] ]        
         
         with gui.MyDialog9(self,data) as dlg:
             if dlg.ShowModal() == wx.ID_OK:
@@ -1282,8 +1151,7 @@ class MainFrame(gui.MyFrame,settings):
                 #open file
                 with open(Path(self.notesdir,self.filename),'r') as file:
                     file_lines = file.readlines()
-                    file.close()
-                    
+                    file.close()                    
                 print(question,answer,topic)
                 
                 #make changes
@@ -1292,7 +1160,7 @@ class MainFrame(gui.MyFrame,settings):
                     file_lines.pop(trueindex)
                     self.checkcard.pop(trueindex)
                 else:
-                    file_lines[trueindex] = r"\quiz{"+str(question)+"}"+r"\ans{"+str(answer)+"}" +r"\topic{"+str(topic)+  "}"+"\n"
+                    file_lines[trueindex] = cmd().question()+str(question)+"}"+cmd().answer()+str(answer)+"}" +cmd().topic()+str(topic)+  "}"+"\n"
                     self.checkcard.set_True(trueindex)
                     print(f"self checkcard = {self.checkcard} {trueindex}")
                 #save changes
@@ -1300,18 +1168,10 @@ class MainFrame(gui.MyFrame,settings):
                     for line in file_lines:
                         output.write(line)
                 #reload cards
-                self.onlyonce = 0
-                
+                self.onlyonce = 0                
                 self.CardsDeck.reset()
-                m3.notes2paper(self)
-                #self.CardsDeck.reset()
-                #linefile = f2.loadfile(self.booknamepath)
-                #cards = f2.File_to_Cards(self,linefile)                       # converts to raw cards
-                #self.CardsDeck.set_cards(cards=cards,notesdir=self.notesdir)
-                
-                self.Refresh()
-                    
-                
+                m3.notes2paper(self)                
+                self.Refresh()                                    
                 print("success!!")
             else: #dialog closed by user
                 print(f"bookname = {self.booknamepath}")
@@ -1498,7 +1358,7 @@ class MainFrame(gui.MyFrame,settings):
 ###############################################################################
 """
 class CardsDeck():
-    def __init__(self):
+    def __init__(self):#,flashcard):
         """ - cards are dicts because then you can easily delete a card from the deck
             - you can then use cardorder to switch cards and just omit a cardnumber from that list"""
         self.cards = {}
@@ -1512,6 +1372,7 @@ class CardsDeck():
         self.rawkey = "card"
         self.key = "card_"
         self.bookname = ''
+        #self.flashcard = flashcard
     
     def reset(self):
         self.cards = {}
@@ -1544,12 +1405,11 @@ class CardsDeck():
         return len(self.cards.keys())
         
     def getcards(self):
-        return self.cards
+        return self.cards #cards are qi:{text: ... pic: ... size: ...}
         
     def set_cards(self, cards=None, notesdir=None):
-        assert type(cards) == list
+        assert type(cards) == dict #cards contains q,a,t,s
         assert type(self.cards_raw) == dict
-        ##
         
         def addtodict(self, _key_, card):
             if _key_ in self.cards.keys():
@@ -1560,35 +1420,62 @@ class CardsDeck():
         if notesdir != None and cards != None:
             file = open(str(Path(notesdir, "usercommands.txt")), 'r')
             commandsfile = file.readlines()
-            for i,card in enumerate(cards):
+            self.nrcards = len(cards)
+            print(f"NR CARDS = {self.nrcards}\n"*10)
+            for i,item in enumerate(cards):
+                card = cards[i]
                 #print(f"card = {card}")
                 _key = self.rawkey + str(i)
                 self.cards_raw[_key] = card #dict with keys q,a,t
+                try:
+                    sizelist = ast.literal_eval(card['size'])
+                except:
+                    pass
+                    #print(f"ERROR CARD SIZE {card['size']} , {i,item,self.nrcards}")
+                    #if i == 1504:
+                    #    print(cards)
+                def getsize_i(sizelist,mode,index):
+                    if mode == 'q':
+                        s = [sizelist[x] for x in index]
+                    elif mode == 'a':
+                        s = [sizelist[x+2] for x in index]
+                    elif mode == 't':
+                        s = [sizelist[x+4] for x in index]
+                    return s
+                
+                
                 for mode in ['t','q','a']:
                     
                     line = card[mode]
                     line = f2.ReplaceUserCommands(commandsfile,line)
                     text, picname = f2.SeparatePicsFromText(self,line)
+                    # the very first card should contain the title of the book
+                    titletext = None
                     if mode == 't' and i == 0:
                         text = self.bookname
-                    #print(mode,text,picname)
+                        titletext = text
+                    #key of the card
                     key = self.key + f"{mode}{i}"
-                    
                     if text!= None and picname != None:
-                        _card_ = {'text': text, 'pic': picname}
+                        index = [0,1]
+                        size = getsize_i(sizelist,mode,index)
+                        _card_ = {'text': text, 'pic': picname, 'size' : size}
                         addtodict(self, key, _card_)
                     elif text != None and picname == None:
-                        _card_ = {'text': text}
+                        index = [0]
+                        size = getsize_i(sizelist,mode,index)
+                        if titletext != None:
+                            size = [Latexfile().topicsize(text)]                            
+                        _card_ = {'text': text, 'size':size}
                         addtodict(self, key, _card_)
                     elif text == None and picname != None:
-                        _card_ = {'pic': picname}
+                        index = [1]
+                        size = getsize_i(sizelist,mode,index)
+                        _card_ = {'pic': picname, 'size':size}
                         addtodict(self, key, _card_)
                     else:#nothing to add to the dict
                         pass
-                    
-                    
-                
-            self.nrcards = len(cards)
+        #print(self.cards)                 
     def get_nrcards(self):
         return self.nrcards
     def get_cardorder(self):
@@ -1600,12 +1487,16 @@ class CardsDeck():
     def get_rawcard_i(self,index):
         return self.cards_raw[self.rawkey + str(index)]
 
-        
+
+    
 class Flashcard():
-    def __init__(self):
+    def __init__(self,fontsize):
+        self.a4page_w = 1240
         self.question = None
-        self.answer   = ''
-        self.mode     = 'Question'
+        self.questionpic = ''
+        self.answer    = ''
+        self.answerpic = ''
+        self.mode      = 'Question'
         self.questionmode = True
         self.topic    = ''
         self.pic_question     = []
@@ -1613,10 +1504,18 @@ class Flashcard():
         self.pic_question_dir = []
         self.pic_answer_dir   = []
         self.usertext         = ''
-        
+        self.size_q_txt = (0,0)
+        self.size_q_pic = (0,0)
+        self.size_a_txt = (0,0)
+        self.size_a_pic = (0,0)
+        self.size_topic = (0,0)
+        self.sizelist = '[(0,0),(0,0),(0,0),(0,0),(0,0)]'
+        self.LaTeXfontsize = fontsize
     def reset(self):
         self.question = None
+        self.questionpic = ''
         self.answer   = ''
+        self.answerpic = ''
         self.mode     = 'Question'
         self.questionmode = True
         self.topic    = ''
@@ -1625,7 +1524,13 @@ class Flashcard():
         self.pic_question_dir = []
         self.pic_answer_dir   = []
         self.usertext         = ''
-        
+        self.size_q_txt = (0,0)
+        self.size_q_pic = (0,0)
+        self.size_a_txt = (0,0)
+        self.size_a_pic = (0,0)
+        self.size_topic = (0,0)
+        self.sizelist = '[(0,0),(0,0),(0,0),(0,0),(0,0)]'
+    
     def setpiclist(self,mode,text):
         if mode.lower() == 'question':
             self.pic_question_dir = text
@@ -1649,15 +1554,8 @@ class Flashcard():
         if len(self.pic_answer_dir) > 0:
             dir_ = self.pic_answer_dir    
             unlinkpics(dir_)
-            
-        
     
-    def addpic(self,mode,orientation,name,path):
-        if orientation == 'vertical':
-            pass
-        elif orientation == 'horizontal':
-            pass
-        
+    def addpic(self,mode,orientation,name,path):        
         if mode == 'Question':
             if orientation == 'vertical':
                 self.pic_question.append(name)  
@@ -1712,33 +1610,66 @@ class Flashcard():
             return True
         else:
             return False
-    def getpiclist(self,var):
-        if var == 'Question':
+    def getpiclist(self,mode):
+        if mode.lower() == 'question':
             return self.pic_question_dir
-        elif var == 'Answer':
+        elif mode.lower() == 'answer':
             return self.pic_answer_dir
-        
     def nrpics(self,mode):
         if mode.lower() == 'question':
             return len(self.pic_question)
         elif mode.lower() == 'answer':
             return len(self.pic_answer)
-        
-    
-        
-        
+    def setSizes(self):
+        if len(self.pic_question_dir) == 1:
+            path = self.pic_question_dir[0]
+            try:
+                w,h = PIL.Image.open(path).size
+            except:
+                w,h = 'Error','Error'
+            self.size_q_pic = (w,h)
+        if len(self.pic_answer_dir) == 1:
+            path = self.pic_question_dir[0]
+            try:
+                w,h = PIL.Image.open(path).size
+            except:
+                w,h = 'Error','Error'
+            self.size_a_pic = (w,h)
+        self.sizelist = str([self.size_q_txt, self.size_q_pic, self.size_a_txt, self.size_a_pic, self.size_topic])
+    #store user data and save sizes of images/text
     def setT(self,text):
         self.topic = text
-    def setQ(self,text):
-        #raw question includes \question{} \pic{} \answer{}
-        self.question = text
-    def setA(self,text):
-        self.answer = text
+        width_card = self.a4page_w
+        height_card = int(math.ceil(len(text)/40))*0.75*100
+        print(f"! topic = {text}, size = {width_card},{height_card}")
+        if height_card != 0:
+            print("anton topic size",width_card,height_card)
+            self.size_topic = (width_card,height_card)                
+    def setQ(self,usertext):
+        self.question = r"\text{" + usertext + r"}"
+        imbool, im = f2.CreateTextCard(self,'manual',usertext)
+        print(f"anton text size is {imbool} {usertext}")
+        if imbool:
+            self.size_q_txt = im.size
+    def setQpic(self,partialpath):
+        self.questionpic = r"\pic{" + partialpath + r"}"        
+    def setA(self,usertext):
+        self.answer = r"\text{" + usertext + r"}"
+        imbool, im = f2.CreateTextCard(self,'manual',usertext)
+        if imbool:
+            self.size_a_txt = im.size 
+    def setApic(self,partialpath):
+        self.answerpic = r"\pic{" + partialpath + r"}"
+    #save the final card  
     def saveCard(self,path):
+        self.setSizes()
+        print(f"anton path is {self.pic_question_dir}")
+        
         with open(path, 'a') as output:
-            output.write(r"\quiz{" + self.question + "}")
-            output.write(r"\ans{"  + self.answer   + "}")
-            output.write(r"\topic{"+ self.topic    + "}"+"\n")
+            output.write(r"\quiz{"  + self.question + self.questionpic + "}")
+            output.write(r"\ans{"   + self.answer   + self.answerpic   + "}")
+            output.write(r"\topic{" + self.topic    + "}")
+            output.write(r"\size{"  + self.sizelist + "}" + "\n")
     
     def switchmode(self):
         if self.mode == 'Question':
@@ -1747,21 +1678,10 @@ class Flashcard():
         else:
             self.mode = 'Question'
             self.questionmode = True
-            
-    def getmode(self):
-        return self.mode
     def getquestionmode(self):
         return self.questionmode
     def getQ(self):
         return self.question
-    def getA(self):
-        return self.answer
-    def getTopic(self):
-        return self.topic
-    def getcard(self):
-        return {'q':self.question,'a':self.answer,'t':self.topic}
-    def hasanswer(self):
-        return self.answer != None
 
 class CardsCatalog():
     """The goal is to know exactly where on each page of the created PDF which card is located
