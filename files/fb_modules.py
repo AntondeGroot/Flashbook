@@ -276,7 +276,7 @@ def selectionentered(self,event):
                     #if type(list_[0]) is list:
                     self.Flashcard.setpiclist('Question',list_)   
                     self.Flashcard.setQ(usertext)                
-                    self.Flashcard.setQpic(r" \pic{" + os.path.basename(list_)+r"}")
+                    self.Flashcard.setQpic(os.path.basename(list_))
                 elif PICS_DRAWN == 1:
                     
                     list_ = self.Flashcard.getpiclist("Question")
@@ -291,7 +291,7 @@ def selectionentered(self,event):
                         
                         print("is not a list")
                     self.Flashcard.setQ(usertext)
-                    self.Flashcard.setQpic(r" \pic{" + os.path.basename(list_)+r"}")
+                    self.Flashcard.setQpic(os.path.basename(list_))
                 elif PICS_DRAWN == 0:
                     print("PICS DRAWN = 0")                    
                     self.Flashcard.setQ(usertext)
@@ -332,12 +332,12 @@ def selectionentered(self,event):
                     if type(list_A[0]) is list:
                         list_A[0] = list_A[0][0]
                     self.Flashcard.setA(usertext)
-                    self.Flashcard.setApic(r" \pic{" + os.path.basename(list_A[0])+r"}")
+                    self.Flashcard.setApic(os.path.basename(list_A[0]))
                 elif len(list_A) == 1:
                     if type(list_A[0]) is list:        
                         f.CombinePics(self,list_A)
                         self.Flashcard.setA(usertext)
-                        self.Flashcard.setApic(r" \pic{" + os.path.basename(list_A[0])+r"}")
+                        self.Flashcard.setApic(os.path.basename(list_A[0]))
                     else:
                         self.Flashcard.setA(usertext)
                         self.Flashcard.setApic(r" \pic{" + os.path.basename(list_A[0])+r"}")
@@ -376,13 +376,15 @@ def selectionentered(self,event):
                 f.CombinePics(self,list_A)
                 if type(list_A[0]) is list:
                     list_A[0] = list_A[0][0]
-                self.Flashcard.setA(usertext + r" \pic{" + str(list_A[0])+r"}")
+                self.Flashcard.setA(usertext)
+                self.Flashcard.setApic(str(list_A[0]))
             elif len(list_A) == 1:
                 if type(list_A[0]) is list:        
                     f.CombinePics(self,list_A)
                 else:
                     print("is not a list")
-                self.Flashcard.setA(usertext + r" \pic{" + str(list_A[0])+r"}")               
+                self.Flashcard.setA(usertext)
+                self.Flashcard.setApic(str(list_A[0]))               
             
 
             f.ShowInPopup(self,event,"Answer")                    
