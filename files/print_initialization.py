@@ -7,14 +7,7 @@ Created on Fri Sep 14 14:09:07 2018
 import print_functions as f
 import wx
 
-def initializeparameters(self):
-    # some commands used to create the flashcards and seperate elements: question/answer/picture
-    # this way it will remain clear for the user so that he could manually change an entry.
-    self.pic_command      = "\pic{"
-    self.question_command = r'\\quiz{'
-    self.answer_command   = r"\\ans{"
-    self.size_command     = r"\\size{"
-    
+def initializeparameters(self):    
     # initialize variables:
     self.bookname       = ''
     self.BorderCoords   = []         
