@@ -645,38 +645,6 @@ def DeleteCurrentCard(self):
     save_stats(self)
     print("success!!")
 
-def File_to_Cards(self,linefile):
-    assert type(linefile) == list
-    cards = []
-    def argument(command,line):
-        startpos   = [m.start() for m in re.finditer(command, line)]
-        if startpos != []:
-            hookpos = list(np.array(startpos)+len(command)-2)[0]
-            end_index = find_hook(hookpos,line)
-            return line[hookpos+1:end_index]
-        else:
-            return ''
-            
-    for line in linefile:
-        q = argument(self.question_command,line)
-        a = argument(self.answer_command,line)
-        t = argument(self.topic_command,line)
-        s = argument(self.size_command,line)
-        
-        cards.append({'q': q, 'a': a, 't': t,'size':s})  
-    print("keycards")
-    print(cards[0].keys())
-    return cards
-    
-
-def oFile_to_hookpositions(self,letterfile):
-    # positions of Questions and Answers
-    q_pos   = [m.start() for m in re.finditer(self.question_command, letterfile)]
-    a_pos   = [m.start() for m in re.finditer(self.answer_command, letterfile)]
-    q_hookpos = list(np.array(q_pos)+len(self.question_command)-2)              #position of argument \command{} q_pos indicates where it starts: "\", added the length of the command -2, because it counts 2 extra '\'
-    a_hookpos = list(np.array(a_pos)+len(self.answer_command)-2)
-    return q_hookpos, a_hookpos
-
 def FindArgumentsCards(self,q_hookpos,a_hookpos,letterfile):
     nr_cards = len(q_hookpos)
     self.questions_raw = []
@@ -797,11 +765,6 @@ def Cards_ReplaceUserCommands(self):
                 A = self.answers[index2]
                 self.answers[index2] = replace_allcommands(defined_command, LaTeX_command, A, nr_arg)
 
-def loadfile(eventpath):
-    if Path(eventpath).exists():
-        file = open(eventpath, 'r',newline='\r')
-        linefile = file.readlines()      
-    return linefile
 def SeparatePicsFromText(self,line):
     T_F, QnA, picname = remove_pics(line,"\pic{")
     if QnA.strip() == '':
