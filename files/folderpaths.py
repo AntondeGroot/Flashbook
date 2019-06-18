@@ -32,4 +32,6 @@ class paths():
                 item.mkdir()
     def notes(self):
         return self.notesdir
+    def pics(self):
+        return self.picsdir
     
