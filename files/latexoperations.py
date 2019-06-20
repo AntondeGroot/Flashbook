@@ -45,12 +45,6 @@ def argument(command,line):
         return line[hookpos+1:end_index]
     else:
         return ''
-def separatetext(command,line):
-    startpos   = [m.start() for m in re.finditer(command, line)]
-    if startpos != []:
-        return line[0:startpos[0]]
-    else:#no \pic command so it is only text
-        return line
 
 def findchar(char,string,nr):
     """find a character in a string 
@@ -211,10 +205,9 @@ class Latexfile(Commands,settings):
         if Path(self.filepath).exists():
             file = open(self.filepath, 'r',newline='\r')
             linefile = file.readlines()
-        assert type(linefile) == list
+
         linefile = [x for x in linefile if x.strip() != ''] #exclude empty lines
-        print(f"!! len linefile = {len(linefile)}\n")
-        #check if file is up-to-date and has \sizes{[0,0,0,0,0]}
+        ## check if file is up-to-date and has \sizes{[0,0,0,0,0]}
         count = 0
         for i, line in enumerate(linefile):
             if '\size{' not in line and line.strip() != '':
@@ -225,12 +218,12 @@ class Latexfile(Commands,settings):
                 newline = self.insert_line(question = q, answer = a, topic = t)
                 linefile[i] = newline
         if count != 0:
-            #print(f"\n\n path {self.filepath}")
             self.save_file(linefile)
-            
+        ##  
         self.linefile_raw = linefile
         self.linefile_plt = linefile
         return linefile
+    
     def save_file(self,linefile):
         with open(self.filepath, 'w') as output: 
             file = ''
@@ -257,7 +250,7 @@ class Latexfile(Commands,settings):
             t = argument(self.topic_command,line)
             s = argument(self.size_command,line)
             
-            cards[index] = {'q': q, 'a': a, 't': t,'size':s} #cards contains q,a,t,s
+            cards[index] = {'q': r"\quiz{"+q+"}"+r"\ans{"+a+"}", 't': t,'size':s} #cards contains q,t,s
         self.cards = cards
         
         return cards
@@ -270,7 +263,6 @@ class Latexfile(Commands,settings):
             text = f2.ReplaceUserCommands(commandsfile,text)
             # get image size
             imbool, im = f2.CreateTextCard(self,'manual',text)
-            
             if imbool:
                 return im.size
             else:
@@ -297,19 +289,13 @@ class Latexfile(Commands,settings):
 
     
     def insert_line(self, question = '', answer = '', topic = '', size = [(0,0),(0,0),(0,0),(0,0),(0,0)]):
-        cmd = self.pic_command
-        qpic = argument(cmd,question)
-        qtext = separatetext(self.pic_command,question)
-        apic = argument(self.pic_command,answer)
-        atext = separatetext(self.pic_command,answer)
+        cmd   = self.pic_command
+        qpic  = argument(cmd,question)
+        qtext = argument(r"\\text{",question)
+        apic  = argument(self.pic_command,answer)
+        atext = argument(r"\\text{",answer)
         # convert qtext/atext to text without user defined LaTeX : is done in textsize
         
         size = str([self.textsize(qtext),self.picsize(qpic), self.textsize(atext),self.picsize(apic),self.topicsize(topic)])
         return r"\quiz{" + question + "}" + r"\ans{" + answer + "}" + r"\topic{" + topic + "}" + r"\size{" + size + "}"
-    
-        
-        #self.answer + anwser + "}"
-        #self.topic + topic + "}"
-        #self.size + size + "}"
-                
 
