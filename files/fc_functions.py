@@ -508,6 +508,57 @@ def CreateSingularCard(self,mode):
     except:
         log.ERRORMESSAGE("Error: could not display card")
 
+def TopicCardFromText(self,text):
+    width_card = 8
+    INVERT = True
+    if INVERT:
+        fcolor, tcolor = 'black', 'white'
+    else:
+        fcolor, tcolor = 'white', 'black'
+        
+
+    #try:
+    usertext = text
+    width_card = self.a4page_w/100
+    # display text in a plot
+    height_card = int(math.ceil(len(usertext)/40))*0.75
+    figure = Figure(figsize=[width_card, height_card],dpi=100,facecolor=fcolor)
+    figure.add_axes([0,0,1,1])
+    ax = figure.gca()
+    #ax.plot([0, 0, 0, height_card],color = (1,1,1,1))
+    ax.axis('off')
+    #ax.text(-0.5, height_card/2,usertext, fontsize = self.LaTeXfontsize, horizontalalignment='left', verticalalignment='center',wrap = True)
+    ax.text(0.5, 0.5,usertext, fontsize = int(self.LaTeXfontsize*2), horizontalalignment='center', verticalalignment='center',wrap = True,color=tcolor)
+    # convert picture to data, if the text is illegitimate the error will occur in canvas.draw()
+    canvas = FigureCanvas(figure)
+    canvas.draw()
+    """
+    except:
+        
+        #MessageBox(0, f"Error in line {str(int(key[6:])+1)} mode {modekey}\nline: {self.CardsDeck.getcards()[key]}\nFaulty text or command used.\nGo to .../Flashbook/files/... and edit it manually.\nOr edit it in Flashcard.", "Message", ICON_STOP)
+        LaTeXcode =  "Error for this page: invalid code"
+        height_card = math.ceil(len(LaTeXcode)/40)/2
+        fig = Figure(figsize=[width_card, height_card],dpi=100)
+        ax = fig.gca()
+        ax.plot([0, 0, 0, height_card],color = (1,1,1,1))
+        ax.axis('off')
+        ax.text(-0.5, height_card/2,LaTeXcode, fontsize = self.LaTeXfontsize, horizontalalignment='left', verticalalignment='center',wrap = True,color = 'r')    
+        canvas = FigureCanvas(fig)
+        canvas.draw()
+    """    
+    renderer = canvas.get_renderer()
+    raw_data = renderer.tostring_rgb()
+    size = canvas.get_width_height()
+    # output
+    bool_textcard = True
+    imagetext = PIL.Image.frombytes("RGB", size, raw_data, decoder_name = 'raw', )
+    #crop image
+    #print(colored(imagetext.size,"red"))
+    
+    return bool_textcard, imagetext    
+
+
+
 def TopicCard(self,key):
     width_card = 8
     INVERT = True
