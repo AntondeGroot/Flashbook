@@ -4,6 +4,7 @@ Created on Sat Jun 15 18:18:50 2019
 
 @author: aammd
 """
+import ast
 from settingsfile import settings
 import PIL
 import os
@@ -217,9 +218,17 @@ class Latexfile(Commands,settings):
                 q,a,t,_ = self.line_to_components(line)     
                 newline = self.insert_line(question = q, answer = a, topic = t)
                 linefile[i] = newline
+            if i ==0:
+                self.bookname
+                q,a,t,_ = self.line_to_components(line)
+                t = self.bookname
+                newline = self.insert_line(question = q, answer = a, topic = t)
+                linefile[i] = newline
+                
         if count != 0:
             self.save_file(linefile)
         ##  
+        
         self.linefile_raw = linefile
         self.linefile_plt = linefile
         return linefile
@@ -240,17 +249,36 @@ class Latexfile(Commands,settings):
         s = argument(self.size_command,line)
         return q,a,t,s
     
+    def combine_tuples(self,tuples_list):
+        if type(tuples_list) == tuple:
+            tuples_list = [tuples_list]
+        w0,h0 = 0, 0 
+        #print(tuples_list)
+        for size in tuples_list:
+            w,h = size
+            w0 = max(w0,w)
+            h0 += h
+        return w0,h0
     def file_to_rawcards(self):
         assert self.linefile_raw != []
-        cards = {}
+        cards = []
         
         for index, line in enumerate(self.linefile_raw):
             q = argument(self.question_command,line)
             a = argument(self.answer_command,line)
             t = argument(self.topic_command,line)
             s = argument(self.size_command,line)
+            s = ast.literal_eval(s)
+            if s[4] != (0,0):
+                size = s[4]
+                cards.append({'index':index,'t': t,'size':size,'page':999,'pos':(0,0),'scale':1})
+            size = self.combine_tuples(s[:4])
+            if a.strip() != '':
+                cards.append({'index':index,'q' : q, 'a' : a, 'size':size,'page':999,'pos':(0,0),'scale':1,'border' : (0,0)})
+            else:
+                cards.append({'index':index,'q' : q, 'size':size,'page':999,'pos':(0,0),'scale':1,'border' : (0,0)})
             
-            cards[index] = {'q': r"\quiz{"+q+"}"+r"\ans{"+a+"}", 't': t,'size':s} #cards contains q,t,s
+            
         self.cards = cards
         
         return cards
