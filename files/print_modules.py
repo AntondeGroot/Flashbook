@@ -133,10 +133,13 @@ def createimage(self,card_i):
         
         scale = card_i['scale']
         if qtext.strip() != '':
+            
             #self.usertext = text
-            w,h = self.sizelist[0]
-            w,h = int(w*scale),int(h*scale)
+            #w,h = self.sizelist[0]
+            #w,h = int(w*scale),int(h*scale)
             _, imagetext = f2.CreateTextCard(self,'manual',qtext)
+            w,h = int(imagetext.size[0]*scale),int(imagetext.size[1]*scale)
+            #_, imagetext = f2.CreateTextCard(self,'manual',qtext)
             im0 = imagetext.resize((w,h), PIL.Image.ANTIALIAS)
             #im0 = PIL.Image.open(path).resize((w,h), PIL.Image.ANTIALIAS)
             im.paste(im0,(d0,d1))
@@ -653,16 +656,6 @@ class pdfpage(settings):
         imcanvas = im = PIL.Image.new("RGB", (self.a4page_w ,self.a4page_h), 'white')        
         
         
-        """
-        pdflist = [None] * len(range(self.page_max))        
-        for i in range(self.page_max):
-            
-            threads[i] = threading.Thread(target = threadfunction  , args=(self,i,pdflist))
-            threads[i].start()
-                            
-        for i,thread in enumerate(threads):
-            thread.join()
-        """
         
         threads = [None]*len(linenumbers)
         
@@ -1187,20 +1180,25 @@ def notes2paper(self):
     #print(f"dct = {dct}\ndct2 = {dct2}\ndct3 = {dct3}")
     
     #%% display result
+    TT.update("get panel size")
     _, PanelHeight = self.m_panel32.GetSize()
     PanelWidth = round(float(PanelHeight)/1754.0*1240.0)
+    TT.update("set panel size")
+    self.m_panel32.SetSize((PanelWidth,PanelHeight))
+    
     #only select first page and display it on the bitmap
     TT.update("image to bitmap resize")
     image = pdfimage_i
+    
     #the following makes the transition smoother when the image is displayed on the bitmap, but it makes a difference of 0.2 sec of 1-1.3 sec omitting this makes it faster and more stable in runtime
-    #image = image.resize((PanelWidth, PanelHeight), PIL.Image.ANTIALIAS) 
+    TT.update("set bitmap to gui")
     image2 = wx.Image( image.size)
-    TT.update("image set to bitmap")
+    #TT.update("image set to bitmap")
     image2.SetData( image.tobytes() )
-    TT.update("image set to bitmap2")
-    bitmapimage = wx.Bitmap(image2)
-    TT.update("image set to bitmap3")
-    self.m_bitmap3.SetBitmap(bitmapimage)
+    self.m_bitmap3.SetBitmap(wx.Bitmap(image2)) #using setbitmap(wxbitmap) is either equally fast or a little faster than a = wxbitmap() and then doing setbitmap(a)
+    
+    
+    
     TT.update("layout")
     self.Layout()
     self.SetCursor(wx.Cursor(wx.CURSOR_ARROW))
