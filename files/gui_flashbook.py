@@ -310,10 +310,6 @@ class MyFrame ( wx.Frame ):
 		bSizer2 = wx.BoxSizer( wx.VERTICAL )
 		
 		self.m_toolBar1 = wx.ToolBar( self.panel11, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TB_HORIZONTAL ) 
-		self.m_dirPickerFB = wx.DirPickerCtrl( self.m_toolBar1, wx.ID_ANY, wx.EmptyString, u"Select a folder", wx.DefaultPosition, wx.DefaultSize, 0 )
-		self.m_dirPickerFB.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
-		
-		self.m_toolBar1.AddControl( self.m_dirPickerFB )
 		self.m_toolPlusFB = self.m_toolBar1.AddTool( wx.ID_ANY, u"plus", wx.Bitmap( path_add, wx.BITMAP_TYPE_ANY ), wx.NullBitmap, wx.ITEM_NORMAL, wx.EmptyString, wx.EmptyString, None ) 
 		
 		self.m_toolMinFB = self.m_toolBar1.AddTool( wx.ID_ANY, u"min", wx.Bitmap( path_min, wx.BITMAP_TYPE_ANY ), wx.NullBitmap, wx.ITEM_NORMAL, wx.EmptyString, wx.EmptyString, None ) 
@@ -471,10 +467,6 @@ class MyFrame ( wx.Frame ):
 		bSizer211 = wx.BoxSizer( wx.VERTICAL )
 		
 		self.m_toolBar3 = wx.ToolBar( self.panel21, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TB_HORIZONTAL ) 
-		self.m_filePickerFC = wx.FilePickerCtrl( self.m_toolBar3, wx.ID_ANY, wx.EmptyString, u"Select a file", u"*.tex*", wx.DefaultPosition, wx.DefaultSize, 0 )
-		self.m_filePickerFC.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
-		
-		self.m_toolBar3.AddControl( self.m_filePickerFC )
 		self.m_toolSwitchFC = self.m_toolBar3.AddTool( wx.ID_ANY, u"Switch", wx.Bitmap( path_switch, wx.BITMAP_TYPE_ANY ), wx.NullBitmap, wx.ITEM_NORMAL, wx.EmptyString, wx.EmptyString, None ) 
 		
 		self.m_modeDisplayFC = wx.TextCtrl( self.m_toolBar3, wx.ID_ANY, u"Question:", wx.DefaultPosition, wx.Size( -1,18 ), wx.TE_READONLY|wx.NO_BORDER )
@@ -1194,7 +1186,6 @@ class MyFrame ( wx.Frame ):
 		self.m_OpenFlashcard.Bind( wx.EVT_BUTTON, self.m_OpenFlashcardOnButtonClick )
 		self.m_OpenPrint.Bind( wx.EVT_BUTTON, self.m_OpenPrintOnButtonClick )
 		self.m_OpenTransfer.Bind( wx.EVT_BUTTON, self.m_OpenTransferOnButtonClick )
-		self.m_dirPickerFB.Bind( wx.EVT_DIRPICKER_CHANGED, self.m_dirPickerFBOnDirChanged )
 		self.Bind( wx.EVT_TOOL, self.m_toolPlusFBOnToolClicked, id = self.m_toolPlusFB.GetId() )
 		self.Bind( wx.EVT_TOOL, self.m_toolMinFBOnToolClicked, id = self.m_toolMinFB.GetId() )
 		self.Bind( wx.EVT_TOOL, self.m_pageBackFBOnToolClicked, id = self.m_pageBackFB.GetId() )
@@ -1243,7 +1234,6 @@ class MyFrame ( wx.Frame ):
 		self.m_toolStitch.Bind( wx.EVT_BUTTON, self.m_toolStitchOnButtonClick )
 		self.m_btnScreenshot.Bind( wx.EVT_BUTTON, self.m_btnScreenshotOnButtonClick )
 		self.m_resetselection.Bind( wx.EVT_BUTTON, self.m_resetselectionOnButtonClick )
-		self.m_filePickerFC.Bind( wx.EVT_FILEPICKER_CHANGED, self.m_filePickerFCOnFileChanged )
 		self.Bind( wx.EVT_TOOL, self.m_toolSwitchFCOnToolClicked, id = self.m_toolSwitchFC.GetId() )
 		self.m_CurrentCard.Bind( wx.EVT_KEY_DOWN, self.m_CurrentCardOnKeyDown )
 		self.m_CurrentCard.Bind( wx.EVT_KEY_UP, self.m_CurrentCardOnKeyUp )
@@ -1413,9 +1403,6 @@ class MyFrame ( wx.Frame ):
 	def m_OpenTransferOnButtonClick( self, event ):
 		event.Skip()
 	
-	def m_dirPickerFBOnDirChanged( self, event ):
-		event.Skip()
-	
 	def m_toolPlusFBOnToolClicked( self, event ):
 		event.Skip()
 	
@@ -1486,9 +1473,6 @@ class MyFrame ( wx.Frame ):
 		event.Skip()
 	
 	def m_resetselectionOnButtonClick( self, event ):
-		event.Skip()
-	
-	def m_filePickerFCOnFileChanged( self, event ):
 		event.Skip()
 	
 	def m_toolSwitchFCOnToolClicked( self, event ):
