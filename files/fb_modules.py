@@ -42,7 +42,7 @@ def list2path(templist):
     
     return output
 #%%
-def dirchanged(self,event):
+def dirchanged(self,path):
     
     """For scrolling: only remember last few positions, append and pop 
     if the numbers repeat [0,...,0] or [X,...,X] then you know you've reached either 
@@ -52,7 +52,7 @@ def dirchanged(self,event):
     self.scrollpos = self.scrollpos_reset
     
     #Keep track of "nrlist" which is a 4 digit nr 18-> "0018" so that it is easily sorted in other programs
-    eventpath = Path(event.GetPath())
+    eventpath = Path(path)#Path(event.GetPath())
     nrlist = []
     picnames = [str(pic) for pic in eventpath.iterdir() if pic.suffix == '.jpg']
     self.totalpages = len(picnames)
