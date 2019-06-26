@@ -107,10 +107,8 @@ def run_flashbook(self):
     ##
     self.stayonpage = False
     self.resetselection = False
-    self.m_dirPickerFB.SetInitialDirectory(str(self.booksdir))
     #short cuts
     ini.initializeparameters(self)
-    #m.SetKeyboardShortcuts(self) anton set it to the correct one
     
     
 
@@ -119,14 +117,10 @@ def run_flashcard(self):
     ini2.initializeparameters(self)
     def initialize2(self):
         # set all directories
-                
-        self.m_filePickerFC.SetInitialDirectory(str(self.notesdir)+'\.') #for filepicker you can't just set a directory like dirPicker, in this case it should end in "\." so that it has to look for files, otherwise it will see a folder as a file...
-        os.chdir(self.notesdir)        
-        
+        os.chdir(self.notesdir)                
         dirs = [self.appdir,self.notesdir,self.picsdir,self.booksdir,self.tempdir,self.bordersdir,self.resourcedir]        
         print("="*90)
-        print(f"\nThe files will be saved to the following directory: {self.appdir}\n")
-        
+        print(f"\nThe files will be saved to the following directory: {self.appdir}\n")     
         for dir_ in dirs:
             if not dir_.exists():
                 dir_.mkdir()
