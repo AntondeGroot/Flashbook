@@ -244,6 +244,9 @@ class MainFrame(gui.MyFrame,settings):
         
         initialize(self)
         
+        PanelWidth, PanelHeight = self.m_panel32.GetSize()
+        PanelWidth = round(float(PanelHeight)/1754.0*1240.0)
+        self.m_panel32.SetSize(PanelWidth,PanelHeight)
         #settings class
         self.settings_create()
         self.settings_get()
@@ -284,13 +287,23 @@ class MainFrame(gui.MyFrame,settings):
         """START MAIN PROGRAM : FLASHBOOK"""
         self.stayonpage = False
         self.stitchmode_v = True # stich vertical or horizontal
-        self.m_dirPickerFB.SetInitialDirectory(str(self.booksdir))
-        self.m_dirPickerFB.SetPath(str(self.booksdir))
+        #self.m_dirPickerFB.SetInitialDirectory(str(self.booksdir))
+        #self.m_dirPickerFB.SetPath(str(self.booksdir))
         self.m_bitmapScroll.SetWindowStyleFlag(False)  # first disable the border of the bitmap, otherwise you get a bordered empty bitmap. Enable the border only when there is a bitmap
         setup_sources(self)
         p.SwitchPanel(self,1)      
         m7.AcceleratorTableSetup(self,"flashbook","set")
         p.run_flashbook(self)
+        with wx.DirDialog(self, "Choose which book to open",style=wx.DD_DEFAULT_STYLE | wx.DD_DIR_MUST_EXIST,defaultPath=str(self.booksdir)) as DirDialog:
+            #fileDialog.SetPath(str(self.notesdir)+'\.')
+            if DirDialog.ShowModal() == wx.ID_CANCEL:
+                p.SwitchPanel(self,0) 
+                return None    # the user changed their mind
+            else:
+                dirpath = DirDialog.GetPath()
+                print(f"opened dirdialog {dirpath}")
+                m.dirchanged(self,dirpath)
+                
         
         
     def m_OpenFlashcardOnButtonClick( self, event ):
@@ -1395,22 +1408,21 @@ class CardsDeck():
     
     def __len__(self):
         """nr of cards"""
-        return len(self.cards_raw)
+        return len(self.cards)
     
     def len_uniquecards(self):
         """You need to separate topic cards from Q/A cards"""
-        return len([x for x in self.cards.keys() if 'card_a' not in x])
+        return len(self.cards)
     def len_totalcards(self):
         """You need to separate topic cards from Q/A cards"""
         return len(self.cards.keys())
         
     def getcards(self):
-        return self.cards #cards are qi:{text: ... pic: ... size: ...}
+        return self.cards #cards are ti/qi:{text: ... size: ...}
         
     def set_cards(self, cards=None, notesdir=None):
-        assert type(cards) == dict #cards contains q,a,t,s
-        assert type(self.cards_raw) == dict
-        
+        #assert type(cards) == dict #cards contains q,a,t,s
+        #assert type(self.cards_raw) == dict
         def addtodict(self, _key_, card):
             if _key_ in self.cards.keys():
                 self.cards[_key_].update(card)
@@ -1418,63 +1430,32 @@ class CardsDeck():
                 self.cards[_key_] = card
         
         if notesdir != None and cards != None:
-            file = open(str(Path(notesdir, "usercommands.txt")), 'r')
-            commandsfile = file.readlines()
             self.nrcards = len(cards)
             print(f"NR CARDS = {self.nrcards}\n"*10)
             for i,item in enumerate(cards):
-                card = cards[i]
-                #print(f"card = {card}")
-                _key = self.rawkey + str(i)
-                self.cards_raw[_key] = card #dict with keys q,a,t
-                try:
-                    sizelist = ast.literal_eval(card['size'])
-                except:
-                    pass
-                    #print(f"ERROR CARD SIZE {card['size']} , {i,item,self.nrcards}")
-                    #if i == 1504:
-                    #    print(cards)
-                def getsize_i(sizelist,mode,index):
-                    if mode == 'q':
-                        s = [sizelist[x] for x in index]
-                    elif mode == 'a':
-                        s = [sizelist[x+2] for x in index]
-                    elif mode == 't':
-                        s = [sizelist[x+4] for x in index]
-                    return s
+                card = cards[i] # cards i : {qi,ti,si}
+                sizelist = card['size']                
                 
-                
-                for mode in ['t','q','a']:
-                    
-                    line = card[mode]
-                    line = f2.ReplaceUserCommands(commandsfile,line)
-                    text, picname = f2.SeparatePicsFromText(self,line)
-                    # the very first card should contain the title of the book
-                    titletext = None
-                    if mode == 't' and i == 0:
-                        text = self.bookname
-                        titletext = text
-                    #key of the card
+                if 't' in card:
+                    mode = 't'
+                    #for mode in ['t']:
                     key = self.key + f"{mode}{i}"
-                    if text!= None and picname != None:
-                        index = [0,1]
-                        size = getsize_i(sizelist,mode,index)
-                        _card_ = {'text': text, 'pic': picname, 'size' : size}
+                    if i == 0:
+                        line = self.bookname
+                    else:
+                        line = card[mode]                    
+                    if line.strip() != '':
+                        _card_ = {'text': line, 'size' : sizelist}
                         addtodict(self, key, _card_)
-                    elif text != None and picname == None:
-                        index = [0]
-                        size = getsize_i(sizelist,mode,index)
-                        if titletext != None:
-                            size = [Latexfile().topicsize(text)]                            
-                        _card_ = {'text': text, 'size':size}
-                        addtodict(self, key, _card_)
-                    elif text == None and picname != None:
-                        index = [1]
-                        size = getsize_i(sizelist,mode,index)
-                        _card_ = {'pic': picname, 'size':size}
-                        addtodict(self, key, _card_)
-                    else:#nothing to add to the dict
-                        pass
+                if 'q' in card:
+                    sizecard  = sizelist[:4]
+                    mode = 'q'
+                    #for mode in ['q']:
+                    key = self.key + f"{mode}{i}"
+                    line = card[mode]
+                    _card_ = {'text': line, 'size' : sizecard}
+                    addtodict(self, key, _card_)
+                    
         #print(self.cards)                 
     def get_nrcards(self):
         return self.nrcards
