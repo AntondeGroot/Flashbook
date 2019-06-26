@@ -181,7 +181,7 @@ def switchCard(self):
         log.ERRORMESSAGE("Error: Couldn't switch card")
         
 
-def startprogram(self,event): 
+def startprogram(self,filepath): 
     """main program that does all the preprocessing"""
     self.runprogram   = True
     self.nr_questions = 0
@@ -201,9 +201,12 @@ def startprogram(self,event):
     
     # open file
     try:
-        eventpath = event.GetPath()
+        if type(filepath) == list:
+            filepath = filepath[0]
+        eventpath = filepath
         print(f"path = {eventpath}")
         self.filename = Path(eventpath).name
+        print(f"test test = {Path(eventpath).name}")
         self.bookname = Path(eventpath).stem
         self.booknamepath = eventpath
         print(f"book = {self.bookname} ")
