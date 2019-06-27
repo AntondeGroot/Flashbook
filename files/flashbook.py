@@ -145,8 +145,8 @@ def settings_reset(self):
     if settingsfile.exists():
         settingsfile.unlink()
         
-    self.settings.create()
-    self.settings.get()
+    self.settings_create()
+    self.settings_get()
     self.m_checkBoxSelections.Check(self.drawborders)
     if self.panel3.IsShown():
         self.m_colorQAline.SetColour(self.QAline_color)
@@ -287,8 +287,6 @@ class MainFrame(gui.MyFrame,settings):
         """START MAIN PROGRAM : FLASHBOOK"""
         self.stayonpage = False
         self.stitchmode_v = True # stich vertical or horizontal
-        #self.m_dirPickerFB.SetInitialDirectory(str(self.booksdir))
-        #self.m_dirPickerFB.SetPath(str(self.booksdir))
         self.m_bitmapScroll.SetWindowStyleFlag(False)  # first disable the border of the bitmap, otherwise you get a bordered empty bitmap. Enable the border only when there is a bitmap
         setup_sources(self)
         p.SwitchPanel(self,1)      
@@ -305,14 +303,21 @@ class MainFrame(gui.MyFrame,settings):
                 m.dirchanged(self,dirpath)
                 
         
-        
     def m_OpenFlashcardOnButtonClick( self, event ):
         """START MAIN PROGRAM : FLASCARD"""
         self.CardsDeck = CardsDeck()
         m7.AcceleratorTableSetup(self,"flashcard","set")
         p.SwitchPanel(self,2)
         p.run_flashcard(self)
-        
+        with wx.FileDialog(self, "Choose topic to rehearse",defaultDir=str(self.notesdir), wildcard="*.tex",style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST) as fileDialog:
+            if fileDialog.ShowModal() == wx.ID_CANCEL:
+                #the user changed their mind
+                p.SwitchPanel(self,0) 
+                return None    
+            else:
+                self.m_menubar1.EnableTop(2,True)
+                filepath = fileDialog.GetPaths()
+                m2.startprogram(self,filepath)
         
     def m_OpenTransferOnButtonClick(self,event):
         """START MAIN PROGRAM : WIFI SYNC"""
@@ -936,13 +941,7 @@ class MainFrame(gui.MyFrame,settings):
         m.panel4_bitmapleftup(self,event)   
         self.panel4.Layout()
         self.Update()
-        self.Refresh()
-        
-    def m_dirPickerFBOnDirChanged( self, event ):
-        print("dir has changed")
-        self.m_bitmapScroll.SetWindowStyleFlag(wx.SIMPLE_BORDER)
-        m.dirchanged(self,event)        
-        
+        self.Refresh()       
     
 	# zoom in #================================================================
     def m_toolPlusFBOnToolClicked( self, event ):
@@ -1314,7 +1313,7 @@ class MainFrame(gui.MyFrame,settings):
                 self.FilePickEvent = False
                 self.vertline_color = self.horiline_color     
                 self.m_colorVERTline.SetColour(self.vertline_color)     
-                settings_set(self)
+                self.settings_set()
                 m3.preview_refresh(self)
         
     #%% Help menu
@@ -1329,13 +1328,13 @@ class MainFrame(gui.MyFrame,settings):
     #%%
     def m_checkBoxDebugOnMenuSelection( self, event ):
         self.debugmode = not self.debugmode
-        settings_set(self)
+        self.settings_set()
     def m_menuResetLogOnMenuSelection( self, event ):
         folder = self.tempdir
         [file.unlink() for file in folder.iterdir() if ("logging" in file.name and file.suffix =='.out' )]
     def m_menuItemGraphOnMenuSelection( self, event ):
         self.Graph_bool = not self.Graph_bool
-        settings_set(self)
+        self.settings_set()
         historygraph.DisplayGraph(self)
         
     #%% timecount
