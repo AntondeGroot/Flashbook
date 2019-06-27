@@ -632,6 +632,9 @@ class pdfpage(settings):
             path = os.path.join(self.tempdir,f"temporary_pdfpage{i}.png")
             self.page_nr = i
             im = self.loadpage()
+            w,h = im.size
+            scale = 0.5
+            im = im.resize((int(w*scale),int(h*scale)), PIL.Image.ANTIALIAS)
             im.save(path)
             pdflist[i] = path
             
@@ -1108,7 +1111,9 @@ def notes2paper(self):
     #%%    
     """ create all the individual images """
     TT.update("make checklist")
-    
+    # this can still be implemented to verify whether a specific card needs to be created 
+    # or whether it already has been created. This might shave off 0.5 of 1.2 seconds on my laptop
+    # but only shave off 0.05 of .2 seconds on my desktop
 
     TT.update('resize all the images')
     #print(f"\ncount is {cnt}")
