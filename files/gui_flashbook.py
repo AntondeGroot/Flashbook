@@ -1309,6 +1309,7 @@ class MyFrame ( wx.Frame ):
 		self.m_PrintFinal.Bind( wx.EVT_BUTTON, self.m_PrintFinalOnButtonClick )
 		self.m_panel32.Bind( wx.EVT_MOUSEWHEEL, self.m_panel32OnMouseWheel )
 		self.m_bitmap3.Bind( wx.EVT_LEFT_DOWN, self.m_bitmap3OnLeftDown )
+		self.m_bitmap3.Bind( wx.EVT_MOUSEWHEEL, self.m_bitmap3OnMouseWheel )
 		self.m_bitmap4.Bind( wx.EVT_LEFT_DOWN, self.m_bitmap4OnLeftDown )
 		self.m_bitmap4.Bind( wx.EVT_LEFT_UP, self.m_bitmap4OnLeftUp )
 		self.m_btnUndoChanges.Bind( wx.EVT_BUTTON, self.m_btnUndoChangesOnButtonClick )
@@ -1624,6 +1625,9 @@ class MyFrame ( wx.Frame ):
 		event.Skip()
 	
 	def m_bitmap3OnLeftDown( self, event ):
+		event.Skip()
+	
+	def m_bitmap3OnMouseWheel( self, event ):
 		event.Skip()
 	
 	def m_bitmap4OnLeftDown( self, event ):
