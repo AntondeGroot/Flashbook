@@ -200,6 +200,7 @@ class Latexfile(Commands,settings):
         self.cards = {}
         self.filename = ''
     def loadfile(self,path):
+        print("file loaded\n"*10)
         if path != None:
             self.filepath = path
             self.bookname = Path(path).stem
@@ -218,13 +219,15 @@ class Latexfile(Commands,settings):
                 q,a,t,_ = self.line_to_components(line)     
                 newline = self.insert_line(question = q, answer = a, topic = t)
                 linefile[i] = newline
+            
             if i ==0:
                 self.bookname
                 q,a,t,_ = self.line_to_components(line)
                 t = self.bookname
                 newline = self.insert_line(question = q, answer = a, topic = t)
                 linefile[i] = newline
-                
+            
+            
         if count != 0:
             self.save_file(linefile)
         ##  
@@ -280,6 +283,7 @@ class Latexfile(Commands,settings):
             
             
         self.cards = cards
+        print(f"CCCC {cards}")
         
         return cards
     def textsize(self,text):
