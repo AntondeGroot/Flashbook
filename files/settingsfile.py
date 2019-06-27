@@ -70,7 +70,7 @@ class settings(paths):
                                        'cursor'        : False,
                                        'GraphNdays'    : 10,
                                        'Graph_bool'    : True,
-                                       'NrCardsPreview':15}))
+                                       'NrCardsPreview': 15}))
                 file.close()
                 
     def settings_set(self):
