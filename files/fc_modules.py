@@ -33,6 +33,8 @@ MessageBox = ctypes.windll.user32.MessageBoxW
 
 
 
+
+
 def buttonCorrect(self):
     f2.clearbitmap(self)
     if hasattr(self,'nr_questions') and self.nr_questions != 0 and hasattr(self,'bookname') and self.bookname != '':
