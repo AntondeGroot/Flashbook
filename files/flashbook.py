@@ -58,6 +58,7 @@ import sync_functions  as f4
 import random
 import itertools
 
+
 import math
 import pylab
 pylab.ioff() # make sure it is inactive, otherwise possible qwindows error    .... https://stackoverflow.com/questions/26970002/matplotlib-cant-suppress-figure-window
@@ -318,19 +319,11 @@ class MainFrame(gui.MyFrame,settings):
                 self.m_menubar1.EnableTop(2,True)
                 filepath = fileDialog.GetPaths()
                 m2.startprogram(self,filepath)
-        
-    def m_OpenTransferOnButtonClick(self,event):
-        """START MAIN PROGRAM : WIFI SYNC"""
-        p.SwitchPanel(self,5)
-        p.get_IP(self,event)
-        
-        m4.initialize(self)
-        
     def m_OpenPrintOnButtonClick(self,event):
         self.onlyinitiate = 0
         self.onlyonce = 0
         self.onlyatinitialize = 0
-        self.CardsCatalog = CardsCatalog()
+        #self.CardsCatalog = CardsCatalog()
         self.CardsDeck.reset()
         """START MAIN PROGRAM : PRINT PDF NOTES"""
         t_panel = lambda self,page : threading.Thread(target = p.SwitchPanel , args=(self,page )).start()
@@ -371,6 +364,15 @@ class MainFrame(gui.MyFrame,settings):
                 
                 t_preview = lambda self,evt : threading.Thread(target = m3.print_preview, name = 't_preview' , args=(self,evt )).run()
                 t_preview(self, event) 
+                
+    def m_OpenTransferOnButtonClick(self,event):
+        """START MAIN PROGRAM : WIFI SYNC"""
+        p.SwitchPanel(self,5)
+        p.get_IP(self,event)
+        
+        m4.initialize(self)
+        
+    
                 
     def m_buttonDLG3OKOnButtonClick( self, event ):
         print("pressed OK dlg3")
@@ -1091,6 +1093,18 @@ class MainFrame(gui.MyFrame,settings):
         
     #%% print the notes
     """ print the notes """
+    def m_bitmap3OnMouseWheel( self, event ):
+        wheel_rotation  = event.GetWheelRotation()   # get rotation from mouse wheel
+        wheel_scrollsup = wheel_rotation > 0 
+        wheel_scrollsdown = wheel_rotation < 0
+        if wheel_scrollsup:
+            self.m_pdfButtonPrevOnButtonClick(event)
+        if wheel_scrollsdown:
+            self.m_pdfButtonNextOnButtonClick(event)
+        
+    
+
+
     def m_sliderPDFsizeOnScrollChanged(self,event):
         self.pdfmultiplier = float(200-self.m_sliderPDFsize.GetValue())/100
         self.settings_set()
@@ -1317,13 +1331,13 @@ class MainFrame(gui.MyFrame,settings):
                 m3.preview_refresh(self)
         
     #%% Help menu
-    def m_richText1OnLeftDown(self,event):
+    def m_richText1OnLeftDown(self,event): #helpmenuitem
         p.SwitchPanel(self,self.lastpage)
-    def m_richText2OnLeftDown(self,event):
+    def m_richText2OnLeftDown(self,event): #helpmenuitem
         p.SwitchPanel(self,self.lastpage)
-    def m_richText3OnLeftDown(self,event):
+    def m_richText3OnLeftDown(self,event): #helpmenuitem
         p.SwitchPanel(self,self.lastpage)
-    def m_richText4OnLeftDown(self,event):
+    def m_richText4OnLeftDown(self,event): #helpmenuitem
         p.SwitchPanel(self,self.lastpage)
     #%%
     def m_checkBoxDebugOnMenuSelection( self, event ):
@@ -1431,8 +1445,11 @@ class CardsDeck():
         if notesdir != None and cards != None:
             self.nrcards = len(cards)
             print(f"NR CARDS = {self.nrcards}\n"*10)
-            for i,item in enumerate(cards):
+            cardindex = 0
+            for _,item in enumerate(cards):
+                i = cardindex
                 card = cards[i] # cards i : {qi,ti,si}
+                card = item
                 sizelist = card['size']                
                 
                 if 't' in card:
@@ -1446,15 +1463,18 @@ class CardsDeck():
                     if line.strip() != '':
                         _card_ = {'text': line, 'size' : sizelist}
                         addtodict(self, key, _card_)
+                    
                 if 'q' in card:
                     sizecard  = sizelist[:4]
                     mode = 'q'
                     #for mode in ['q']:
                     key = self.key + f"{mode}{i}"
+                    
                     line = card[mode]
                     _card_ = {'text': line, 'size' : sizecard}
                     addtodict(self, key, _card_)
-                    
+                    cardindex += 1
+        #print(f"\n anton {self.cards}")           
         #print(self.cards)                 
     def get_nrcards(self):
         return self.nrcards
