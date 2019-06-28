@@ -97,7 +97,7 @@ def findpicturesize(self,key):
 
 def createimage(self,card_i):
         
-    print(f"card_i = {card_i} ,has t {'t' in card_i}")
+    #print(f"card_i = {card_i} ,has t {'t' in card_i}")
     w,h = card_i['size']
     w,h = int(w),int(h)
     
@@ -535,6 +535,8 @@ def import_screenshot(self,event):
 def print_preview(self,event): 
     ini3.initializeparameters(self) 
     notes2paper(self)
+    
+    """
     #resize to A4 format
     _, PanelHeight = self.m_panel32.GetSize()
     PanelWidth = round(float(PanelHeight)/1754.0*1240.0)
@@ -547,13 +549,16 @@ def print_preview(self,event):
     
     bitmapimage = wx.Bitmap(image2)
     self.m_bitmap3.SetBitmap(bitmapimage)
+    """
     self.Layout()
+    
     self.SetCursor(wx.Cursor(wx.CURSOR_ARROW))
     
 def preview_refresh(self):
     print("preview refresh")
     self.SetCursor(wx.Cursor(wx.CURSOR_ARROWWAIT))
     notes2paper(self)
+    """
     _, PanelHeight = self.m_panel32.GetSize()
     PanelWidth = round(float(PanelHeight)/1754.0*1240.0)
     #only select first page and display it on the bitmap
@@ -563,7 +568,7 @@ def preview_refresh(self):
     image2.SetData( image.tobytes() )
     bitmapimage = wx.Bitmap(image2)
     self.m_bitmap3.SetBitmap(bitmapimage)
-    
+    """
     self.Layout()
     self.SetCursor(wx.Cursor(wx.CURSOR_ARROW))
     
@@ -1046,6 +1051,7 @@ def createbasiscards(self,index,card_mode_nr,cardsdicts,library,CardsDeckEntries
     self.library[index] = {'mode': mode[0].lower(), 'card': basiscard_i,'line':line_nr}#'cardname': mode[0].lower()+line_nr}
     
 def notes2paper(self):
+    print(f"PANEL SIZE = {self.m_panel32.GetSize()}\n"*10)
     #%% initialize
     """ initialize the cards """
     TT = Timing("Initialize the cards")
@@ -1194,7 +1200,7 @@ def notes2paper(self):
     #only select first page and display it on the bitmap
     TT.update("image to bitmap resize")
     image = pdfimage_i
-    
+    image = image.resize((PanelWidth, PanelHeight), PIL.Image.ANTIALIAS)
     #the following makes the transition smoother when the image is displayed on the bitmap, but it makes a difference of 0.2 sec of 1-1.3 sec omitting this makes it faster and more stable in runtime
     TT.update("set bitmap to gui")
     image2 = wx.Image( image.size)
@@ -1203,6 +1209,9 @@ def notes2paper(self):
     self.m_bitmap3.SetBitmap(wx.Bitmap(image2)) #using setbitmap(wxbitmap) is either equally fast or a little faster than a = wxbitmap() and then doing setbitmap(a)
     
     
+    
+    
+    #%%
     
     TT.update("layout")
     self.Layout()
@@ -1232,7 +1241,9 @@ def notes2paper(self):
     #page info
     currentpage, maxpage = self.pdfpage.getpageinfo()
     self.m_pdfCurrentPage.SetValue(f"{currentpage}/{maxpage}")
-    
+    self.Layout()
+    self.Update()
+    self.Refresh()
     TT.stop()
 
 
