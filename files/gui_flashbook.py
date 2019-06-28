@@ -100,7 +100,7 @@ class MyFrame ( wx.Frame ):
 		self.m_menubar1.Append( self.m_menuCards, u"Flashcard" ) 
 		
 		self.m_menuHelpbar = wx.Menu()
-		self.m_menuHelp = wx.MenuItem( self.m_menuHelpbar, wx.ID_ANY, u"How to use ...", wx.EmptyString, wx.ITEM_CHECK )
+		self.m_menuHelp = wx.MenuItem( self.m_menuHelpbar, wx.ID_ANY, u"How to use ...", wx.EmptyString, wx.ITEM_NORMAL )
 		self.m_menuHelpbar.Append( self.m_menuHelp )
 		
 		self.m_menuHelpbar.AppendSeparator()
@@ -2949,7 +2949,7 @@ class MyDialogAbout ( wx.Dialog ):
 		
 		bSizer91.Add( self.m_staticText58, 0, wx.ALL, 0 )
 		
-		self.m_staticText59 = wx.StaticText( self.m_panel33, wx.ID_ANY, 'Version 1.4.1', wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_staticText59 = wx.StaticText( self.m_panel33, wx.ID_ANY, 'Version 1.5.0', wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.m_staticText59.Wrap( -1 )
 		self.m_staticText59.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
 		
