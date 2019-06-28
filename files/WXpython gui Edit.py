@@ -1,5 +1,5 @@
 
-versionnumber = '1.4.1'
+versionnumber = '1.5.0'
 
 
 filename = "gui_flashbook.py"
