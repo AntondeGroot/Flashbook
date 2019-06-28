@@ -238,13 +238,15 @@ class Latexfile(Commands,settings):
     
     def save_file(self,linefile):
         with open(self.filepath, 'w') as output: 
-            file = ''
+            #file = ''
             for i,line in enumerate(linefile):
-                file += line
-                if i != len(linefile)-1:
-                    file += "\n"
+                if line.strip() != '':
+                    #file += line
+                    #if i != len(linefile)-1:
+                    #file += "\n"
+                    output.write(line)
             
-            output.write(file)
+            
     def line_to_components(self,line):
         q = argument(self.question_command,line)
         a = argument(self.answer_command,line)
@@ -280,10 +282,8 @@ class Latexfile(Commands,settings):
                 cards.append({'index':index,'q' : q, 'a' : a, 'size':size,'page':999,'pos':(0,0),'scale':1,'border' : (0,0)})
             else:
                 cards.append({'index':index,'q' : q, 'size':size,'page':999,'pos':(0,0),'scale':1,'border' : (0,0)})
-            
-            
         self.cards = cards
-        print(f"CCCC {cards}")
+        
         
         return cards
     def textsize(self,text):
@@ -341,6 +341,29 @@ class Latexfile(Commands,settings):
         
         return {'qtext':qtext,'qpic':qpic,'atext':atext,'apic':apic,'t':t,'q':q,'a':a}
     
+    def popline(self,index):
+        index = int(index)
+        self.linefile.pop(index)
+        self.save_file(self.linefile)
+        
+    def replace_line(self,index, qtext= '', qpic = '', atext = '',apic = '', topic = '', size = [(0,0),(0,0),(0,0),(0,0),(0,0)]):
+        
+        size = str([self.textsize(qtext),self.picsize(qpic), self.textsize(atext),self.picsize(apic),self.topicsize(topic)])
+        
+        question = ''
+        if qtext != '':
+            question += r"\text{"+qtext+"}"
+        if qpic != '':
+            question += r"\pic{"+qpic+"}"
+        answer = ''
+        if atext != '':
+            answer += r"\text{"+atext+"}"
+        if apic != '':
+            answer += r"\pic{"+apic+"}"
+                        
+        line =  r"\quiz{" + question + "}" + r"\ans{" + answer + "}" + r"\topic{" + topic + "}" + r"\size{" + size + "}"
+        self.linefile[index] = line
+        self.save_file(self.linefile)
     
     def insert_line(self, question = '', answer = '', topic = '', size = [(0,0),(0,0),(0,0),(0,0),(0,0)]):
         cmd   = self.pic_command
