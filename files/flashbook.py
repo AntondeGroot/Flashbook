@@ -360,7 +360,6 @@ class CardsDeck():
         print(f"CARDS\n"*10)
         print(self.cards)
         return self.cards[self.key + str(index)]
-        #return self.cards[self.rawkey + str(index)]
 
 
     
