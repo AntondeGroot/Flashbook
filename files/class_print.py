@@ -13,6 +13,7 @@ import fc_functions    as f2
 import print_modules as m3
 from pathlib import Path
 from latexoperations import Commands as cmd
+import imageoperations as imop
 import log_module    as log
 ICON_EXCLAIM=0x30
 
@@ -101,8 +102,6 @@ class printer(gui.MyFrame):
         m3.preview_refresh(self)
     
     def m_lineQAOnCheckBox( self, event ):
-        if hasattr(self,'checkcard'):
-            self.checkcard.check_allQA(self.library)
         self.onlyonce = 0
         self.FilePickEvent = False
         self.QAline_bool = self.m_lineQA.GetValue()
@@ -122,6 +121,8 @@ class printer(gui.MyFrame):
         m3.preview_refresh(self)
     
     def m_bitmap3OnLeftDown(self, event):
+        print("\n"*10)
+        
         print("klikte op pdf")
         self.pdfmousepos = self.m_bitmap3.ScreenToClient(wx.GetMousePosition())
         
@@ -138,60 +139,71 @@ class printer(gui.MyFrame):
         
         print(f"index = {index}")
         trueindex = int(index)
-        rawcard = self.CardsDeck.get_rawcard_i(trueindex)
-        data = ['Edit the card', rawcard['q'] , rawcard['a'] , rawcard['t'] ]
-        print(f"popup data = {data}")
+        rawcard = self.Latexfile.getline_i_card(trueindex)
+        
+        #%% create images
+        qtext = rawcard['qtext']
+        qpic  = rawcard['qpic'] 
+        atext = rawcard['atext']
+        apic  = rawcard['apic']
+        topic = rawcard['t']
+        
+        bool_textcard, img_text = f2.CreateTextCard(self,'manual',qtext)
+        bool_piccard,  img_pic  = imop.findpicture_path(self,qpic)
+        bool_textcard2, img_text2 = f2.CreateTextCard(self,'manual',atext)
+        bool_piccard2,  img_pic2  = imop.findpicture_path(self,apic)
+        image = imop.CombinePics(img_text,img_pic)
+        image2 = imop.CombinePics(img_text2,img_pic2)
+        
+        #%%    
+        #rawcard = self.CardsDeck.get_rawcard_i(trueindex)
+        #data = ['Edit the card', rawcard['q'] , rawcard['a'] , rawcard['t'] ]
+        #print(f"popup data = {data}")
         self.cardorder = [index]
         self.index = 0
-        image1,bool1 = f2.CreateSingularCard(self,'Question')
-        image1 = image1.resize((int(image1.size[0]/2),int(image1.size[1]/2)), PIL.Image.ANTIALIAS)
-        
-        BMP_q = f2.PILimage_to_Bitmap(image1)
+        #%% resize images
+        image = image.resize((int(image.size[0]/2),int(image.size[1]/2)), PIL.Image.ANTIALIAS)
+        BMP_q = imop.PILimage_to_Bitmap(image)
         try:
-            image2,bool2 = f2.CreateSingularCard(self,'Answer')
             image2 = image2.resize((int(image2.size[0]/2),int(image2.size[1]/2)), PIL.Image.ANTIALIAS)
-            BMP_a = f2.PILimage_to_Bitmap(image2)
+            BMP_a = imop.PILimage_to_Bitmap(image2)
         except:
             BMP_a = wx.NullBitmap
-            bool2 = False
-        print(f"bools = {bool1,bool2}")
-                
-        data = [BMP_q,BMP_a,rawcard['q'] , rawcard['a'] , rawcard['t'] ]        
+        #%% images to dialog window                
+        data = [BMP_q, BMP_a, qtext, qpic, atext, apic, topic]        
         
         with gui.MyDialog9(self,data) as dlg:
             if dlg.ShowModal() == wx.ID_OK:
+                print(f"pressed ok\n"*10)
                 #Get user data
-                question = dlg.m_textCtrl241.GetValue()
-                answer   = dlg.m_textCtrl251.GetValue()
-                topic    = dlg.m_textCtrl301.GetValue()
-                #open file
-                with open(Path(self.notesdir,self.filename),'r') as file:
-                    file_lines = file.readlines()
-                    file.close()                    
-                print(question,answer,topic)
+                qtext = dlg.m_textCtrlQtext.GetValue()
+                qpic  = dlg.m_textCtrlQpic.GetValue()
+                atext = dlg.m_textCtrlAtext.GetValue()
+                apic  = dlg.m_textCtrlApic.GetValue()
+                topic = dlg.m_textCtrlTopic.GetValue()                  
+                DelCard = dlg.m_checkBoxDel.GetValue()
+                print(f"DelCard = {DelCard}")
                 
                 #make changes
-                if question == '':
-                    """ If you remove the question then the entire card will be deleted"""
-                    file_lines.pop(trueindex)
-                    self.checkcard.pop(trueindex)
+                if DelCard == True or (qtext.strip() == '' and qpic.strip() ==''):
+                    """the entire card will be deleted"""
+                    print("CArd is deleted\n"*10)
+                    self.Latexfile.popline(trueindex)
                 else:
-                    file_lines[trueindex] = cmd().question()+str(question)+"}"+cmd().answer()+str(answer)+"}" +cmd().topic()+str(topic)+  "}"+"\n"
-                    self.checkcard.set_True(trueindex)
-                    print(f"self checkcard = {self.checkcard} {trueindex}")
+                    self.Latexfile.replace_line(trueindex, qtext= qtext, qpic = qpic, atext = atext,apic = apic, topic = topic, size = [(0,0),(0,0),(0,0),(0,0),(0,0)])
+                    #file_lines[trueindex] = cmd().question()+str(question)+"}"+cmd().answer()+str(answer)+"}" +cmd().topic()+str(topic)+  "}"+"\n"   
                 #save changes
-                with open(str(Path(self.notesdir, self.filename)), 'w') as output: 
-                    for line in file_lines:
-                        output.write(line)
+                
                 #reload cards
                 self.onlyonce = 0                
                 self.CardsDeck.reset()
+                
                 m3.notes2paper(self)                
                 self.Refresh()                                    
                 print("success!!")
             else: #dialog closed by user
-                print(f"bookname = {self.booknamepath}")
-        
+                print(f"bookname = {self.booknamepath}\n"*10)
+    
     def m_colorQAlineOnColourChanged( self, event ):
         original_color = self.QAline_color
         self.FilePickEvent = False
@@ -287,9 +299,7 @@ class printer(gui.MyFrame):
             log.ERRORMESSAGE("Error: invalid entry in lineWpdf")
             
     def m_lineWqaOnText( self, event ):
-        if hasattr(self,'checkcard'):
-            self.checkcard.check_allQA(self.library)
-            self.onlyonce = 0
+        self.onlyonce = 0
         try:            
             if int(self.m_lineWqa.GetValue()) >= 0:
                 if int(self.m_lineWqa.GetValue()) != self.QAline_thickness:
