@@ -15,6 +15,7 @@ import print_modules as m3
 import fc_modules as m2
 from pathlib import Path
 from latexoperations import Commands as cmd
+import imageoperations as imop
 import log_module    as log
 ICON_EXCLAIM=0x30
 
@@ -78,10 +79,10 @@ class flashcardmenu(gui.MyFrame):
         if self.SwitchCard == True: #there is also an Answer card
             modereset = self.mode
             image,_ = f2.CreateSingularCard(self,'Question')
-            BMP_q = f2.PILimage_to_Bitmap(image)
+            BMP_q = imop.PILimage_to_Bitmap(image)
             
             image,_ = f2.CreateSingularCard(self,'Answer')
-            BMP_a = f2.PILimage_to_Bitmap(image)
+            BMP_a = imop.PILimage_to_Bitmap(image)
             
             data = [BMP_q,BMP_a]
             self.mode = modereset
@@ -102,7 +103,7 @@ class flashcardmenu(gui.MyFrame):
         elif self.SwitchCard == False: #there is only a Question card
             
             image,_ = f2.CreateSingularCard(self,'Question')
-            BMP_q = f2.PILimage_to_Bitmap(image)
+            BMP_q = imop.PILimage_to_Bitmap(image)
             
             with gui.MyDialog7(self,BMP_q) as dlg:
                 if dlg.ShowModal() == wx.ID_OK:  
