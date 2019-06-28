@@ -1112,7 +1112,7 @@ class MyFrame ( wx.Frame ):
 		self.m_panel41.SetSizer( bSizer63 )
 		self.m_panel41.Layout()
 		bSizer63.Fit( self.m_panel41 )
-		self.m_notebook.AddPage( self.m_panel41, u"Flashbook", True )
+		self.m_notebook.AddPage( self.m_panel41, u"Flashbook", False )
 		self.m_panel42 = wx.Panel( self.m_notebook, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TAB_TRAVERSAL )
 		bSizer64 = wx.BoxSizer( wx.VERTICAL )
 		
@@ -1138,7 +1138,7 @@ class MyFrame ( wx.Frame ):
 		self.m_panel43.SetSizer( bSizer65 )
 		self.m_panel43.Layout()
 		bSizer65.Fit( self.m_panel43 )
-		self.m_notebook.AddPage( self.m_panel43, u"Synchronize", False )
+		self.m_notebook.AddPage( self.m_panel43, u"Synchronize", True )
 		
 		bSizer442.Add( self.m_notebook, 1, wx.EXPAND |wx.ALL, 5 )
 		
@@ -2738,7 +2738,7 @@ class MyDialog9 ( wx.Dialog ):
 	def __init__( self, parent, data ):
 		wx.Dialog.__init__ ( self, parent, id = wx.ID_CLOSE, title = u"Edit the pdf card", pos = wx.DefaultPosition, size = wx.Size( -1,-1 ), style = wx.DEFAULT_DIALOG_STYLE )
 		
-		self.SetSizeHints( wx.DefaultSize, wx.DefaultSize )
+		self.SetSizeHints( wx.Size( 650,268 ), wx.DefaultSize )
 		
 		bSizer78 = wx.BoxSizer( wx.VERTICAL )
 		
@@ -2767,21 +2767,64 @@ class MyDialog9 ( wx.Dialog ):
 		
 		bSizer1111.Add( ( 0, 0), 1, wx.EXPAND, 5 )
 		
-		fgSizer5 = wx.FlexGridSizer( 0, 2, 0, 0 )
+		fgSizer5 = wx.FlexGridSizer( 0, 3, 0, 0 )
 		fgSizer5.SetFlexibleDirection( wx.BOTH )
 		fgSizer5.SetNonFlexibleGrowMode( wx.FLEX_GROWMODE_SPECIFIED )
 		
-		self.m_staticText55 = wx.StaticText( self.m_panel32, wx.ID_ANY, u"Question", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_staticText71 = wx.StaticText( self.m_panel32, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_staticText71.Wrap( -1 )
+		fgSizer5.Add( self.m_staticText71, 0, wx.ALL, 5 )
+		
+		bSizer1112 = wx.BoxSizer( wx.HORIZONTAL )
+		
+		
+		bSizer1112.Add( ( 0, 0), 1, wx.EXPAND, 5 )
+		
+		self.m_staticText72 = wx.StaticText( self.m_panel32, wx.ID_ANY, u"Text", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_staticText72.Wrap( -1 )
+		self.m_staticText72.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
+		
+		bSizer1112.Add( self.m_staticText72, 0, wx.ALIGN_CENTER_HORIZONTAL|wx.ALL, 5 )
+		
+		
+		bSizer1112.Add( ( 0, 0), 1, wx.EXPAND, 5 )
+		
+		
+		fgSizer5.Add( bSizer1112, 1, wx.EXPAND, 5 )
+		
+		bSizer112 = wx.BoxSizer( wx.HORIZONTAL )
+		
+		
+		bSizer112.Add( ( 0, 0), 1, wx.EXPAND, 5 )
+		
+		self.m_staticText73 = wx.StaticText( self.m_panel32, wx.ID_ANY, u"Picture name", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_staticText73.Wrap( -1 )
+		self.m_staticText73.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
+		
+		bSizer112.Add( self.m_staticText73, 0, wx.ALL, 5 )
+		
+		
+		bSizer112.Add( ( 0, 0), 1, wx.EXPAND, 5 )
+		
+		
+		fgSizer5.Add( bSizer112, 1, wx.EXPAND, 5 )
+		
+		self.m_staticText55 = wx.StaticText( self.m_panel32, wx.ID_ANY, u"Question", wx.DefaultPosition, wx.Size( -1,-1 ), 0 )
 		self.m_staticText55.Wrap( -1 )
 		self.m_staticText55.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
 		
 		fgSizer5.Add( self.m_staticText55, 0, wx.ALL, 5 )
 		
-		self.m_textCtrl241 = wx.TextCtrl( self.m_panel32, wx.ID_ANY, data[2], wx.DefaultPosition, wx.DefaultSize, 0 )
-		self.m_textCtrl241.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
-		self.m_textCtrl241.SetMinSize( wx.Size( 400,-1 ) )
+		self.m_textCtrlQtext = wx.TextCtrl( self.m_panel32, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.Size( -1,-1 ), 0 )
+		self.m_textCtrlQtext.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
+		self.m_textCtrlQtext.SetMinSize( wx.Size( 200,-1 ) )
 		
-		fgSizer5.Add( self.m_textCtrl241, 1, wx.ALL, 5 )
+		fgSizer5.Add( self.m_textCtrlQtext, 1, wx.ALL, 5 )
+		
+		self.m_textCtrlQpic = wx.TextCtrl( self.m_panel32, wx.ID_ANY, data[3], wx.DefaultPosition, wx.Size( -1,-1 ), 0 )
+		self.m_textCtrlQpic.SetMinSize( wx.Size( 200,-1 ) )
+		
+		fgSizer5.Add( self.m_textCtrlQpic, 0, wx.ALL, 5 )
 		
 		self.m_staticText56 = wx.StaticText( self.m_panel32, wx.ID_ANY, u"Answer", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.m_staticText56.Wrap( -1 )
@@ -2789,11 +2832,16 @@ class MyDialog9 ( wx.Dialog ):
 		
 		fgSizer5.Add( self.m_staticText56, 0, wx.ALL, 5 )
 		
-		self.m_textCtrl251 = wx.TextCtrl( self.m_panel32, wx.ID_ANY, data[3], wx.DefaultPosition, wx.DefaultSize, 0 )
-		self.m_textCtrl251.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
-		self.m_textCtrl251.SetMinSize( wx.Size( 400,-1 ) )
+		self.m_textCtrlAtext = wx.TextCtrl( self.m_panel32, wx.ID_ANY, data[4], wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_textCtrlAtext.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
+		self.m_textCtrlAtext.SetMinSize( wx.Size( 200,-1 ) )
 		
-		fgSizer5.Add( self.m_textCtrl251, 0, wx.ALL, 5 )
+		fgSizer5.Add( self.m_textCtrlAtext, 0, wx.ALL, 5 )
+		
+		self.m_textCtrlApic = wx.TextCtrl( self.m_panel32, wx.ID_ANY, data[5], wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_textCtrlApic.SetMinSize( wx.Size( 200,-1 ) )
+		
+		fgSizer5.Add( self.m_textCtrlApic, 0, wx.ALL, 5 )
 		
 		self.m_staticText68 = wx.StaticText( self.m_panel32, wx.ID_ANY, u"Topic", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.m_staticText68.Wrap( -1 )
@@ -2801,10 +2849,24 @@ class MyDialog9 ( wx.Dialog ):
 		
 		fgSizer5.Add( self.m_staticText68, 0, wx.ALL, 5 )
 		
-		self.m_textCtrl301 = wx.TextCtrl( self.m_panel32, wx.ID_ANY, data[4], wx.DefaultPosition, wx.DefaultSize, 0 )
-		self.m_textCtrl301.SetMinSize( wx.Size( 400,-1 ) )
+		self.m_textCtrlTopic = wx.TextCtrl( self.m_panel32, wx.ID_ANY, data[6], wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_textCtrlTopic.SetMinSize( wx.Size( 200,-1 ) )
 		
-		fgSizer5.Add( self.m_textCtrl301, 0, wx.ALL, 5 )
+		fgSizer5.Add( self.m_textCtrlTopic, 0, wx.ALL, 5 )
+		
+		bSizer113 = wx.BoxSizer( wx.HORIZONTAL )
+		
+		self.m_staticText74 = wx.StaticText( self.m_panel32, wx.ID_ANY, u"Delete card: ", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_staticText74.Wrap( -1 )
+		self.m_staticText74.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
+		
+		bSizer113.Add( self.m_staticText74, 0, wx.ALL, 5 )
+		
+		self.m_checkBoxDel = wx.CheckBox( self.m_panel32, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
+		bSizer113.Add( self.m_checkBoxDel, 0, wx.ALL, 5 )
+		
+		
+		fgSizer5.Add( bSizer113, 1, wx.EXPAND, 5 )
 		
 		
 		bSizer1111.Add( fgSizer5, 0, wx.EXPAND, 5 )
