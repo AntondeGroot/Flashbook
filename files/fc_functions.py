@@ -521,12 +521,7 @@ def displaycard(self):
     #except:
     #    log.ERRORMESSAGE("Error: could not display card")
         
-def PILimage_to_Bitmap(image): 
-    """ PIL image to wxBitmap """
-    image2 = wx.Image( image.size)
-    image2.SetData( image.tobytes() )
-    image2 = wx.Bitmap(image2)
-    return image2
+
 
 def CreateTopicCard(self):
     key = f'card_{self.mode[0].lower()}{self.cardorder[self.index]}'
