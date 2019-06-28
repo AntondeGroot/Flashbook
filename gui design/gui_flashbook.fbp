@@ -354,7 +354,7 @@
                         <property name="enabled">1</property>
                         <property name="help"></property>
                         <property name="id">wxID_ANY</property>
-                        <property name="kind">wxITEM_CHECK</property>
+                        <property name="kind">wxITEM_NORMAL</property>
                         <property name="label">How to use ...</property>
                         <property name="name">m_menuHelp</property>
                         <property name="permission">none</property>
@@ -9653,7 +9653,7 @@
                                                 <event name="OnMiddleUp"></event>
                                                 <event name="OnMotion"></event>
                                                 <event name="OnMouseEvents"></event>
-                                                <event name="OnMouseWheel"></event>
+                                                <event name="OnMouseWheel">m_bitmap3OnMouseWheel</event>
                                                 <event name="OnPaint"></event>
                                                 <event name="OnRightDClick"></event>
                                                 <event name="OnRightDown"></event>
@@ -12000,7 +12000,7 @@
                                     <object class="notebookpage" expanded="1">
                                         <property name="bitmap"></property>
                                         <property name="label">Flashbook</property>
-                                        <property name="select">1</property>
+                                        <property name="select">0</property>
                                         <object class="wxPanel" expanded="1">
                                             <property name="BottomDockable">1</property>
                                             <property name="LeftDockable">1</property>
@@ -12368,7 +12368,7 @@
                                     <object class="notebookpage" expanded="1">
                                         <property name="bitmap"></property>
                                         <property name="label">Synchronize</property>
-                                        <property name="select">0</property>
+                                        <property name="select">1</property>
                                         <object class="wxPanel" expanded="1">
                                             <property name="BottomDockable">1</property>
                                             <property name="LeftDockable">1</property>
