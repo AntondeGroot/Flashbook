@@ -8,6 +8,7 @@ import gui_flashbook as gui
 import threading
 import wx
 import PIL
+import imageoperations as imop
 import program as p
 import fc_functions    as f2
 import print_modules as m3
@@ -45,7 +46,7 @@ class helpmenu(gui.MyFrame):
     def m_menuItemAboutOnMenuSelection( self, event ):      
         image = PIL.Image.open(str(Path(self.resourcedir,"flashbook_logo.png")))
         image = image.resize((100, 100), PIL.Image.ANTIALIAS)
-        BMP = f2.PILimage_to_Bitmap(image)
+        BMP = imop.PILimage_to_Bitmap(image)
         data = BMP
         with gui.MyDialogAbout(self,data) as dlg:
             if dlg.ShowModal() == wx.ID_OK:
