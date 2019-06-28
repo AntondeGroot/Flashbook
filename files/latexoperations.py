@@ -232,7 +232,7 @@ class Latexfile(Commands,settings):
             self.save_file(linefile)
         ##  
         
-        self.linefile_raw = linefile
+        self.linefile = linefile
         self.linefile_plt = linefile
         return linefile
     
@@ -263,10 +263,10 @@ class Latexfile(Commands,settings):
             h0 += h
         return w0,h0
     def file_to_rawcards(self):
-        assert self.linefile_raw != []
+        assert self.linefile != []
         cards = []
         
-        for index, line in enumerate(self.linefile_raw):
+        for index, line in enumerate(self.linefile):
             q = argument(self.question_command,line)
             a = argument(self.answer_command,line)
             t = argument(self.topic_command,line)
@@ -317,8 +317,30 @@ class Latexfile(Commands,settings):
         else:
             return (0,0)
     
+    def getline_i_card(self,index):
+        line = self.linefile[index]
+        q,a,t,_ = self.line_to_components(line)
+        qtext = argument(r"\\text{",q)
+        qpic  = argument(r"\\pic{",q)
+        atext = argument(r"\\text{",a)
+        apic  = argument(r"\\pic{",a)
+        
+        if qpic.strip() != '' and qtext.strip() != '':
+            q = qtext+r"\pic{"+qpic+"}"
+        if qpic.strip() != '' and qtext.strip() == '':
+            q = r"\pic{"+qpic+"}"
+        if qpic.strip() == '' and qtext.strip() != '':
+            q = qtext
+        
+        if apic.strip() != '' and atext.strip() != '':
+            a = atext+r"\pic{"+apic+"}"
+        if apic.strip() != '' and atext.strip() == '':
+            a = r"\pic{"+apic+"}"
+        if apic.strip() == '' and atext.strip() != '':
+            a = atext
+        
+        return {'qtext':qtext,'qpic':qpic,'atext':atext,'apic':apic,'t':t,'q':q,'a':a}
     
-
     
     def insert_line(self, question = '', answer = '', topic = '', size = [(0,0),(0,0),(0,0),(0,0),(0,0)]):
         cmd   = self.pic_command
