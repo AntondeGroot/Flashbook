@@ -158,6 +158,7 @@ def settings_reset(self):
 
 from class_print import printer
 from class_flashbook import flashbook
+from class_flashcard import flashcard
 from class_filetransfer import transfer
 from class_menusettings import menusettings
 from class_helpmenu import helpmenu
@@ -173,7 +174,7 @@ from class_menubooks import booksmenu
 
 
 
-class MainFrame(settings,flashbook,printer,transfer,menusettings,helpmenu,menuopen,flashcardmenu,booksmenu):
+class MainFrame(settings,flashbook,flashcard,printer,transfer,menusettings,helpmenu,menuopen,flashcardmenu,booksmenu):
     
     """ INITIALIZE """
     def __init__(self,parent): 
@@ -221,11 +222,7 @@ class MainFrame(settings,flashbook,printer,transfer,menusettings,helpmenu,menuop
         
         m.setcursor(self)
         m7.AcceleratorTableSetup(self,"general","set")    
-    #%% menu item events
-    " menu item events "
-    
         
-
     #%% timecount
     def m_scrolledWindow1OnMouseEvents( self, event ):
         SaveTime(self)
