@@ -61,40 +61,6 @@ def findfullpicpath(self,picname):
         MessageBox(0, f"Error: Picture '{picname}' could not be found in any folder.", "Message", ICON_STOP)
             
 
-def findpicturesize(self,key):
-    """Instead of just opening the path of a picture
-    Try to find out if the path exists
-    if it does not exist, try to look in all other folders.
-    This problem may occur if you have combined several books.
-    If the picture really doesn't exist, then the user gets notified with a messagebox."""
-    FOUNDPIC = False
-    imagesize = None
-    path = None
-    #if key in self.picdictionary:
-    if 'pic' in self.CardsDeck.getcards()[key].keys():
-        picname = self.CardsDeck.getcards()[key]['pic']
-        path = os.path.join(self.picsdir, self.bookname, picname)
-        if os.path.exists(path):
-            imagesize = PIL.Image.open(str(path)).size
-            FOUNDPIC = True
-        else:
-            folders = os.listdir(self.picsdir)
-            for i,item in enumerate(folders):
-                path = os.path.join(self.picsdir, item, picname)
-                if os.path.exists(path):
-                    imagesize = PIL.Image.open(str(path)).size
-                    FOUNDPIC = True
-        if FOUNDPIC == False:
-            """Notify User and create a fake picture with the error message 
-            as replacement for the missing picture."""
-            
-            MessageBox(0, f"Error in line {str(int(key[6:])+1)} mode {key[0]}\nline: {picname}\nPicture could not be found in any folder.", "Message", ICON_STOP)
-            
-    else:
-        #picture does not exist and should not exist, so this is fine
-        pass
-    return FOUNDPIC, imagesize, path
-
 def createimage(self,card_i):
         
     #print(f"card_i = {card_i} ,has t {'t' in card_i}")
@@ -985,8 +951,6 @@ class checkcard():
         #print(f"checkcard dictionary is {dictionary}")
         """Each card has a key associated with it: card_t0 , card_q0, card_a3 etc."""
         assert type(dictionary) == dict
-        #print(f"dictionary keys {dictionary.keys()}")
-        ##
         keys = dictionary.keys()
         for i,card_mode_nr in enumerate(keys):
             number = card_mode_nr[6:]
@@ -1022,33 +986,6 @@ class checkcard():
             return self.checkcard[index]
         else:
             return False
-        
-            
-    
-def createbasiscards(self,index,card_mode_nr,cardsdicts,library,CardsDeckEntries):
-    
-    #Entries may contain card_t0 / card_q0 
-    # initialize variables
-    t = card_mode_nr[5:]
-    line_nr = card_mode_nr[6:]
-    
-    mode = getmode(card_mode_nr)
-    currentcard = cardsdicts[card_mode_nr] #cards are qi:{text: ... pic: ... size: ...}
-    #print(f"cardsdicts = {cardsdicts}")
-   
-    basiscard_i = basiscard()
-    basiscard_i.setbookname(self.bookname)    
-    basiscard_i.setQAthickness(self.QAline_thickness)
-    #print(f"mode = {mode}")
-    ##print(f"current card is {currentcard}")
-    size_of_card = currentcard['size']
-    text = currentcard['text']     
-    if mode == 'Topic':        
-        basiscard_i.set_topiccard(text,size_of_card)                
-    elif mode == 'Question':        
-        basiscard_i.set_regularcard(text,size_of_card)
-    
-    self.library[index] = {'mode': mode[0].lower(), 'card': basiscard_i,'line':line_nr}#'cardname': mode[0].lower()+line_nr}
     
 def notes2paper(self):
     print(f"PANEL SIZE = {self.m_panel32.GetSize()}\n"*10)
@@ -1086,12 +1023,6 @@ def notes2paper(self):
         self.Latexfile.loadfile(self.path)
         TT.update("Latex To cards")
         cards = self.Latexfile.file_to_rawcards() # cards contains keys: q,a,t,s
-        #TT.update("Latexcards To cardsdeck")
-        self.CardsDeck.set_bookname(self.bookname)
-        self.CardsDeck.set_cards(cards=cards,notesdir=self.notesdir)   #cardsdeck contains ti, qi,ai
-        
-        #self.nr_cards = len(self.CardsDeck)
-        #self.nr_questions = len(self.CardsDeck)
     except:
         log.ERRORMESSAGE("Error: finding questions/answers")
     
@@ -1112,7 +1043,6 @@ def notes2paper(self):
             print(f"carorder = {self.cardorder[:10]}")
         else:
             print(f"carorder = {self.cardorder}")    
-    nrUnique = self.CardsDeck.len_uniquecards()
     
     #%%    
     """ create all the individual images """
@@ -1122,9 +1052,6 @@ def notes2paper(self):
     # but only shave off 0.05 of .2 seconds on my desktop
 
     TT.update('resize all the images')
-    #print(f"\ncount is {cnt}")
-    
-    #assert None not in self.library2
     if ColumnSliders(self) != []:
         columns = ColumnSliders(self)
         ColumnWidths = [int(col/100*self.a4page_w) for col in columns if col != 0]                       
@@ -1132,10 +1059,7 @@ def notes2paper(self):
             for _idx_ , card_i in enumerate(cards):
                 if 't' in card_i:
                     pass #don't resize
-                    #resize topic card always to the pagewidth
-                    #w,h = imgsize
-                else:
-                    
+                else:                    
                     w,h = card_i["size"]
                     if w > min(ColumnWidths) and w > 0:
                         NearestCol = min(ColumnWidths, key=lambda x:abs(x-w))
@@ -1156,13 +1080,9 @@ def notes2paper(self):
                                     #border_w += self.vertline_thickness
                                 if self.horiline_bool:
                                     h0 = self.horiline_thickness + self.linesep
-                                    #border_h += self.horiline_thickness
-                                
+                                    #border_h += self.horiline_thickness                                
                                 card_i["border"] = (w0,h0)
                                 card_i["size"] = (w+2*w0,h+2*h0)
-                                
-                                #anton resize if images is too wide for the page!!
-                                
                 cards[_idx_] = card_i
     
 
@@ -1175,7 +1095,6 @@ def notes2paper(self):
     self.SortImages = SortImages(library = cards, page_width = self.a4page_w, page_height = self.a4page_h)
     dct,dct2,dct3 = self.SortImages.sortpages()
     
-    #print(f"dict3 = {dct3}")
     #%% create test page
     TT.update("create single pdf page") 
     
@@ -1188,7 +1107,6 @@ def notes2paper(self):
     self.pdfpage.setvertline(color = self.vertline_color , thickness = self.vertline_thickness , visible = self.vertline_bool)
     self.pdfpage.sethoriline(color = self.horiline_color , thickness = self.horiline_thickness , visible = self.horiline_bool)
     pdfimage_i = self.pdfpage.loadpage()
-    #print(f"dct = {dct}\ndct2 = {dct2}\ndct3 = {dct3}")
     
     #%% display result
     TT.update("get panel size")
@@ -1204,21 +1122,17 @@ def notes2paper(self):
     #the following makes the transition smoother when the image is displayed on the bitmap, but it makes a difference of 0.2 sec of 1-1.3 sec omitting this makes it faster and more stable in runtime
     TT.update("set bitmap to gui")
     image2 = wx.Image( image.size)
-    #TT.update("image set to bitmap")
+    TT.update("image set to bitmap")
     image2.SetData( image.tobytes() )
     self.m_bitmap3.SetBitmap(wx.Bitmap(image2)) #using setbitmap(wxbitmap) is either equally fast or a little faster than a = wxbitmap() and then doing setbitmap(a)
     
-    
-    
-    
     #%%
-    
     TT.update("layout")
     self.Layout()
-    self.SetCursor(wx.Cursor(wx.CURSOR_ARROW))
-       
+    self.SetCursor(wx.Cursor(wx.CURSOR_ARROW))   
     self.allimages_v = [pdfimage_i]
     TT.update("create pdf") 
+    
     #%% export to PDF file    
     self.SetCursor(wx.Cursor(wx.CURSOR_ARROW))
     if self.printpreview == False:
@@ -1237,7 +1151,6 @@ def notes2paper(self):
             self.printsuccessful = False
             MessageBox(0, "If you have the PDF opened in another file, close it and try it again.", "Warning", ICON_EXCLAIM)
         TT.stop()
-    
     #page info
     currentpage, maxpage = self.pdfpage.getpageinfo()
     self.m_pdfCurrentPage.SetValue(f"{currentpage}/{maxpage}")
