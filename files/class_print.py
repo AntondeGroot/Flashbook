@@ -46,7 +46,6 @@ class printer(gui.MyFrame):
         self.onlyinitiate = 0
         self.onlyonce = 0
         self.onlyatinitialize = 0
-        self.CardsDeck.reset()
         """START MAIN PROGRAM : PRINT PDF NOTES"""
         t_panel = lambda self,page : threading.Thread(target = p.SwitchPanel , args=(self,page )).start()
         t_panel(self, 3) 
@@ -156,9 +155,6 @@ class printer(gui.MyFrame):
         image2 = imop.CombinePics(img_text2,img_pic2)
         
         #%%    
-        #rawcard = self.CardsDeck.get_rawcard_i(trueindex)
-        #data = ['Edit the card', rawcard['q'] , rawcard['a'] , rawcard['t'] ]
-        #print(f"popup data = {data}")
         self.cardorder = [index]
         self.index = 0
         #%% resize images
@@ -190,13 +186,10 @@ class printer(gui.MyFrame):
                     print("CArd is deleted\n"*10)
                     self.Latexfile.popline(trueindex)
                 else:
-                    self.Latexfile.replace_line(trueindex, qtext= qtext, qpic = qpic, atext = atext,apic = apic, topic = topic, size = [(0,0),(0,0),(0,0),(0,0),(0,0)])
-                    #file_lines[trueindex] = cmd().question()+str(question)+"}"+cmd().answer()+str(answer)+"}" +cmd().topic()+str(topic)+  "}"+"\n"   
-                #save changes
+                    self.Latexfile.replace_line(trueindex, qtext= qtext, qpic = qpic, atext = atext,apic = apic, topic = topic)
                 
                 #reload cards
                 self.onlyonce = 0                
-                self.CardsDeck.reset()
                 
                 m3.notes2paper(self)                
                 self.Refresh()                                    
