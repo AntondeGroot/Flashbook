@@ -178,7 +178,6 @@ def switchCard(self):
             f2.switch_bitmap(self)       
             f2.displaycard(self)
             f2.SetScrollbars_fc(self)
-            #self.Refresh()
     except:
         log.ERRORMESSAGE("Error: Couldn't switch card")
         
