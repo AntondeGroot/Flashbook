@@ -424,7 +424,9 @@ def switch_bitmap(self):
         # you always start with a question, check if there is an answer:
         _key_ = f'card_a{self.cardorder[self.index]}' # do not use self.key: only check if there is an answer, don't change the key
         print(f"switch key is {_key_}")
+        print(f"keys = {self.CardsDeck.getcards().keys()}")
         try:
+            
             if _key_ not in self.CardsDeck.getcards().keys(): # there is no answer card!
                 print("there is no answer card")
                 self.mode = 'Question'
