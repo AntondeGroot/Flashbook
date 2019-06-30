@@ -43,6 +43,23 @@ class printer(gui.MyFrame):
     def __init__(self):
         pass
     def m_OpenPrintOnButtonClick(self,event):
+        #initialize variables
+        self.bookname       = ''
+        self.BorderCoords   = []         
+        self.colorlist      = self.bordercolors
+        self.currentpage    = 1
+        self.cursor         = False    # normal cursor
+        self.drawborders    = True
+        self.image          = []
+        self.imagecopy      = []
+        self.tempdictionary = {}
+        self.panel_pos      = (0,0)        
+        self.questionmode   = True
+        self.zoom           = 1.0
+        
+        
+        
+        
         self.onlyinitiate = 0
         self.onlyonce = 0
         self.onlyatinitialize = 0
@@ -98,26 +115,26 @@ class printer(gui.MyFrame):
     def m_sliderPDFsizeOnScrollChanged(self,event):
         self.pdfmultiplier = float(200-self.m_sliderPDFsize.GetValue())/100
         self.settings_set()
-        m3.preview_refresh(self)
+        m3.print_preview(self)
     
     def m_lineQAOnCheckBox( self, event ):
         self.onlyonce = 0
         self.FilePickEvent = False
         self.QAline_bool = self.m_lineQA.GetValue()
         self.settings_set()
-        m3.preview_refresh(self)
+        m3.print_preview(self)
         
     def m_linePDFOnCheckBox( self, event ):
         self.FilePickEvent = False
         self.horiline_bool = self.m_linePDF.GetValue()
         self.settings_set()
-        m3.preview_refresh(self)
+        m3.print_preview(self)
         
     def m_lineVERTOnCheckBox( self, event):
         self.FilePickEvent = False
         self.vertline_bool = self.m_lineVERT.GetValue()
         self.settings_set()
-        m3.preview_refresh(self)
+        m3.print_preview(self)
     
     def m_bitmap3OnLeftDown(self, event):
         print("\n"*10)
@@ -204,7 +221,7 @@ class printer(gui.MyFrame):
         self.QAline_color  = (RGB.Red(),RGB.Green(),RGB.Blue())   
         if original_color != self.QAline_color:
             self.settings_set()
-            m3.preview_refresh(self)
+            m3.print_preview(self)
         
     def m_colorPDFlineOnColourChanged( self, event ):
         original_color = self.horiline_color
@@ -219,11 +236,11 @@ class printer(gui.MyFrame):
                 self.vertline_color  = self.horiline_color 
                 self.m_colorVERTline.SetColour(self.horiline_color)
                 self.settings_set()
-                m3.preview_refresh(self)
+                m3.print_preview(self)
         else:
             if self.horiline_color != original_color:
                 self.settings_set()
-                m3.preview_refresh(self)
+                m3.print_preview(self)
         
     def m_colorVERTlineOnColourChanged( self, event):
         original_color = self.vertline_color
@@ -243,7 +260,7 @@ class printer(gui.MyFrame):
         if original_color != new_color:
             #In case you chose the exact same color do nothing
             self.settings_set()
-            m3.preview_refresh(self)
+            m3.print_preview(self)
         
         
         
@@ -254,7 +271,7 @@ class printer(gui.MyFrame):
         self.printsuccessful = False
         self.printpreview    = False
         self.FilePickEvent   = False
-        m3.preview_refresh(self)
+        m3.print_preview(self)
         if self.printsuccessful == True:
             self.printpreview = True
             p.SwitchPanel(self,0)
@@ -275,7 +292,7 @@ class printer(gui.MyFrame):
                 self.NrCardsPreview = int(var)
                 
             self.settings_set()
-            m3.preview_refresh(self)
+            m3.print_preview(self)
         except:
             log.ERRORMESSAGE("Error: invalid entry in CtrlNrCardsOnText")
             
@@ -287,7 +304,7 @@ class printer(gui.MyFrame):
                     #only execute if the value has changed
                     self.horiline_thickness = int(self.m_lineWpdf.GetValue())
                     self.settings_set()
-                    m3.preview_refresh(self)
+                    m3.print_preview(self)
         except:
             log.ERRORMESSAGE("Error: invalid entry in lineWpdf")
             
@@ -298,7 +315,7 @@ class printer(gui.MyFrame):
                 if int(self.m_lineWqa.GetValue()) != self.QAline_thickness:
                     self.QAline_thickness = int(self.m_lineWqa.GetValue())
                     self.settings_set()
-                    m3.preview_refresh(self)
+                    m3.print_preview(self)
         except:
             log.ERRORMESSAGE("Error: invalid entry QAline thickness")
             
@@ -309,7 +326,7 @@ class printer(gui.MyFrame):
                     #only execute if the value has changed
                     self.vertline_thickness = int(self.m_lineWvert.GetValue())
                     self.settings_set()
-                    m3.preview_refresh(self)
+                    m3.print_preview(self)
         except:
             log.ERRORMESSAGE("Error: invalid entry")  
     def m_checkBoxSameColorOnCheckBox(self,event):
@@ -321,12 +338,12 @@ class printer(gui.MyFrame):
                 self.vertline_color = self.horiline_color     
                 self.m_colorVERTline.SetColour(self.vertline_color)     
                 self.settings_set()
-                m3.preview_refresh(self)
+                m3.print_preview(self)
     def m_slider_col1OnScrollChanged(self, event):
         self.pdfPageColsPos[0] = self.m_slider_col1.GetValue()
         self.settings_set()
         if BoxesChecked(self,1):
-            t_preview = lambda self : threading.Thread(target = m3.preview_refresh, name = 't_preview' , args=(self, )).run()
+            t_preview = lambda self : threading.Thread(target = m3.print_preview, name = 't_preview' , args=(self, )).run()
             t_preview(self) 
             
             
@@ -335,32 +352,32 @@ class printer(gui.MyFrame):
         self.pdfPageColsPos[1] = self.m_slider_col2.GetValue()
         self.settings_set()
         if BoxesChecked(self,2):
-            t_preview = lambda self : threading.Thread(target = m3.preview_refresh, name = 't_preview' , args=(self, )).run()
+            t_preview = lambda self : threading.Thread(target = m3.print_preview, name = 't_preview' , args=(self, )).run()
             t_preview(self) 
             
     def m_slider_col3OnScrollChanged(self, event):
         self.pdfPageColsPos[2] = self.m_slider_col3.GetValue()
         self.settings_set()
         if BoxesChecked(self,3):
-            t_preview = lambda self : threading.Thread(target = m3.preview_refresh, name = 't_preview' , args=(self, )).run()
+            t_preview = lambda self : threading.Thread(target = m3.print_preview, name = 't_preview' , args=(self, )).run()
             t_preview(self) 
             
     def m_checkBox_col1OnCheckBox( self, event ):
         self.pdfPageColsChecks[0] = self.m_checkBox_col1.GetValue()
         self.settings_set()
-        t_preview = lambda self : threading.Thread(target = m3.preview_refresh, name = 't_preview' , args=(self, )).run()
+        t_preview = lambda self : threading.Thread(target = m3.print_preview, name = 't_preview' , args=(self, )).run()
         t_preview(self) 
             
     def m_checkBox_col2OnCheckBox( self, event ):
         self.pdfPageColsChecks[1] = self.m_checkBox_col2.GetValue()
         self.settings_set()
-        t_preview = lambda self : threading.Thread(target = m3.preview_refresh, name = 't_preview' , args=(self, )).run()
+        t_preview = lambda self : threading.Thread(target = m3.print_preview, name = 't_preview' , args=(self, )).run()
         t_preview(self) 
             
     def m_checkBox_col3OnCheckBox( self, event ):
         self.pdfPageColsChecks[2] = self.m_checkBox_col3.GetValue()
         self.settings_set()
-        t_preview = lambda self : threading.Thread(target = m3.preview_refresh, name = 't_preview' , args=(self, )).run()
+        t_preview = lambda self : threading.Thread(target = m3.print_preview, name = 't_preview' , args=(self, )).run()
         t_preview(self) 
     def m_pdfButtonPrevOnButtonClick( self, event ):
         switchpage = self.pdfpage.prevpage()
