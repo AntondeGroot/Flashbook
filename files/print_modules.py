@@ -30,13 +30,6 @@ import threading
 from timingmodule import Timing
 import latexoperations as ltx
 
-def CreateTopicCard(self,key):
-    bool_textcard, img_text = f2.TopicCard(self,key)
-    if bool_textcard:
-        return img_text
-    else:
-        return None
-
 def findfullpicpath(self,picname):
     """Instead of just opening the path of a picture
     Try to find out if the path exists
