@@ -32,7 +32,7 @@ import time
 from datetime import datetime
 import random
 
-
+import imageoperations as imop
 
 
 #% FUNCTIONS
@@ -186,8 +186,8 @@ def drawlegend(totalbooks, totalvalues, legendbackup, hatchlist):
     img = PIL.Image.frombytes("RGB", size, raw_data, decoder_name='raw', )
     #cut down image
     color = ( 254, 240, 231 )
-    img = f2.cropimage(img, 0, backgroundcolor = color, border = 5)
-    img = f2.cropimage(img, 1, backgroundcolor = color, border = 5)
+    img = imop.cropimage(img, 0, backgroundcolor = color, border = 5)
+    img = imop.cropimage(img, 1, backgroundcolor = color, border = 5)
     
     return img
 
