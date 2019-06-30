@@ -319,21 +319,17 @@ def SwitchPanel(self,n):
             else:
                 self.m_panelGraph.Hide()
         else:
-            self.m_panelGraph.Hide()
-            
+            self.m_panelGraph.Hide()            
     elif n == 1:
         self.panel1.Show()
-        #self.panel11.Show()
     elif n == 2:
         self.panel2.Show()
-        #self.panel21.Show()
     elif n ==3:
         self.panel3.Show()
     elif n == 4:
         self.panel4.Show()
     elif n == 5:
         self.panel5.Show()
-        #self.panel51.Show()
     elif n == 6:
         self.panelHelp.Show()        
     #reset mouse arrow
