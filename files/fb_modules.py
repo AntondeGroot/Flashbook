@@ -350,7 +350,7 @@ def selectionentered(self,event):
                 # save the user inputs in .tex file
                 
                 self.Flashcard.setT(self.m_TopicInput.GetValue())
-                if self.Flashcard.getQ() != None:
+                if self.Flashcard.QuestionExists():
                     path = str(Path(self.notesdir, self.bookname +'.tex'))
                     self.Flashcard.saveCard(path)
                 #reset all
