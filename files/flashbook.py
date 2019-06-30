@@ -102,35 +102,7 @@ def setup_sources(self):
     self.path_repeat_na = Path(rdir,"repeat_na.png")
 #%% settings   
 
-def settings_reset(self):
-    settingsfile = Path(self.dirsettings,"settings.txt")
-    if settingsfile.exists():
-        settingsfile.unlink()
-        
-    self.settings_create()
-    self.settings_get()
-    self.m_checkBoxSelections.Check(self.drawborders)
-    if self.panel3.IsShown():
-        self.m_colorQAline.SetColour(self.QAline_color)
-        self.m_colorPDFline.SetColour(self.horiline_color)
-        self.m_colorVERTline.SetColour(self.vertline_color)
-        
-        self.m_lineWpdf.SetValue(str(self.horiline_thickness))
-        self.m_lineWqa.SetValue(str(self.QAline_thickness))
-        self.m_lineWvert.SetValue(str(self.vertline_thickness))
-        
-        self.m_lineQA.SetValue(self.QAline_bool)
-        self.m_linePDF.SetValue(self.horiline_bool)            
-        self.m_lineVERT.SetValue(self.vertline_bool)
-        self.m_checkBoxSameColor.SetValue(self.samecolor_bool)
-        
-        self.m_sliderPDFsize.SetValue(int(200-self.pdfmultiplier*100))
-        self.m_slider_col1.SetValue(self.pdfPageColsPos[0])
-        self.m_slider_col2.SetValue(self.pdfPageColsPos[1])
-        self.m_slider_col3.SetValue(self.pdfPageColsPos[2])
-        self.m_checkBox_col1.SetValue(self.pdfPageColsChecks[0])
-        self.m_checkBox_col2.SetValue(self.pdfPageColsChecks[1])
-        self.m_checkBox_col3.SetValue(self.pdfPageColsChecks[2])
+
 
 
         
@@ -247,6 +219,7 @@ class CardsDeck():
         self.key = "card_"
         self.bookname = ''
         #self.flashcard = flashcard
+        #self.zoom = 1.0
     
     def reset(self):
         self.cards = {}
@@ -339,7 +312,7 @@ class CardsDeck():
 class Flashcard():
     def __init__(self,fontsize):
         self.a4page_w = 1240
-        self.question = None
+        self.question = ''
         self.questionpic = ''
         self.answer    = ''
         self.answerpic = ''
@@ -359,7 +332,7 @@ class Flashcard():
         self.sizelist = '[(0,0),(0,0),(0,0),(0,0),(0,0)]'
         self.LaTeXfontsize = fontsize
     def reset(self):
-        self.question = None
+        self.question = ''
         self.questionpic = ''
         self.answer   = ''
         self.answerpic = ''
@@ -453,10 +426,9 @@ class Flashcard():
                 self.pic_answer[-1] = [self.pic_answer[-1]]
                 self.pic_answer_dir[-1] = [self.pic_answer_dir[-1]]
     def QuestionExists(self):
-        if self.question != '' and self.question != None:
+        if self.question.strip() != '' or self.questionpic.strip() != '':
             return True
-        else:
-            return False
+        
     def getpiclist(self,mode):
         if mode.lower() == 'question':
             return self.pic_question_dir
@@ -493,18 +465,22 @@ class Flashcard():
             print("topic size",width_card,height_card)
             self.size_topic = (width_card,height_card)                
     def setQ(self,usertext):
-        self.question = r"\text{" + usertext + r"}"
-        imbool, im = f2.CreateTextCard(self,'manual',usertext)
-        print(f"text size is {imbool} {usertext}")
-        if imbool:
-            self.size_q_txt = im.size
+        if usertext.strip() != '':
+            self.question = r"\text{" + usertext + r"}"
+            imbool, im = f2.CreateTextCard(self,'manual',usertext)
+            print(f"text size is {imbool} {usertext}")
+            if imbool:
+                self.size_q_txt = im.size
     def setQpic(self,partialpath):
         self.questionpic = r"\pic{" + partialpath + r"}"        
     def setA(self,usertext):
-        self.answer = r"\text{" + usertext + r"}"
-        imbool, im = f2.CreateTextCard(self,'manual',usertext)
-        if imbool:
-            self.size_a_txt = im.size 
+        if usertext.strip() != '':
+            self.answer = r"\text{" + usertext + r"}"
+            imbool, im = f2.CreateTextCard(self,'manual',usertext)
+            if imbool:
+                self.size_a_txt = im.size 
+    def getmode(self):
+        return str(self.mode)
     def setApic(self,partialpath):
         self.answerpic = r"\pic{" + partialpath + r"}"
     #save the final card  
@@ -527,8 +503,6 @@ class Flashcard():
             self.questionmode = True
     def getquestionmode(self):
         return self.questionmode
-    def getQ(self):
-        return self.question
 
 
     
