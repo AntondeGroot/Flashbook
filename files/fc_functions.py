@@ -8,6 +8,7 @@ import latexoperations as ltx
 import json
 import math
 import os
+import imageoperations as imop
 import PIL
 import PIL.Image
 import program as p
@@ -134,66 +135,6 @@ def findpicture(self,key):
         pass
     return FOUNDPIC, imagepic
 
-def cropimage(img, x, backgroundcolor=(255,255,255), border=20):
-    # standard RGB color:
-    # white = (255,255,255)
-    # black = (0,0,0)
-    SEARCH1 = True
-    SEARCH2 = True
-    var1 = 0
-    var2 = 0
-    var3 = 0
-    var4 = 0
-    array = np.array(img)- backgroundcolor
-    img_array = np.sum(np.sum(array,2),x) #summed over x-axis
-    #print(f"length is {len(img_array)}")
-    while (SEARCH1 or SEARCH2):
-        for i,pixel in enumerate(img_array):
-            j = len(img_array) - i - 1
-            pixel1 = img_array[i]
-            pixel2 = img_array[j]
-            if pixel1 != 0:
-                if SEARCH1:
-                    var1 = i
-                    SEARCH1 = False
-                var3 = i
-            if pixel2 != 0:
-                if SEARCH2:
-                    var2 = j
-                    SEARCH2 = False
-                var4 = j
-            # if from both directions the border is found
-            if var1 != 0 and var2 != 0:
-                SEARCH1 = False
-                SEARCH2 = False
-                break
-            # if they both meat in the middle, the whole image has been scanned
-            # and can be stopped
-            if j <= i: 
-                if var4 == 0:
-                    var2 = var3
-                if var3 == 0:
-                    var1 = var4
-                SEARCH1 = False
-                SEARCH2 = False
-                break
-    if var2 + border >  img.size[x]:
-        var2 = img.size[x]
-    else:
-        var2 = var2 + border
-        
-    if var1-border < 0:
-        var1 = 0
-    else:
-        var1 = var1 - border
-    #crop
-    if x == 1:
-        img = img.crop((0, var1, img.size[0], var2))
-    if x == 0:
-        img = img.crop((var1, 0, var2, img.size[1]))
-        
-    #print(var1,var2,var3,var4)
-    return img    
 
 
 def is_number(s):
@@ -427,7 +368,8 @@ def switch_bitmap(self):
         print(f"keys = {self.CardsDeck.getcards().keys()}")
         try:
             
-            if _key_ not in self.CardsDeck.getcards().keys(): # there is no answer card!
+            #if _key_ not in self.CardsDeck.getcards().keys(): # there is no answer card!
+            if not self.ANSWER_CARD: # there is no answer card!
                 print("there is no answer card")
                 self.mode = 'Question'
                 self.SwitchCard = False        
@@ -498,40 +440,45 @@ def TryCombinePicText(self,key):
     else:
         self.image = self.imagetext
         
-def TryOnlyTextPic(self):
-    try:
-        self.image = findpicture(self,self.key)
-        ShowPage_fc(self)
-    except:
-        print("Error: could not load singular picture (no text available)")
         
 def displaycard(self):
     #try:
-    key = f'card_{self.mode[0].lower()}{self.cardorder[self.index]}'
-    # try to create a TextCard
-    line = self.CardsDeck.getcards()[key]['text']
-    txt = ltx.argument(r"\\text{",line)
-    pic = ltx.argument(r"\\pic{",line)
-    print(f"\nANTON {self.CardsDeck.getcards()[key].keys()}"*10)
-    print(f"text = {txt}")
+    trueindex = self.cardorder[self.index]
+    print("displaycard\n"*10)
+    rawcard = self.Latexfile.getline_i_card(trueindex)
     
-    bool_textcard, img_txt = CreateTextCard(self,'manual',txt)    
-    bool_piccard, img_pic  = findpicture_path(self,pic)
-    image = CombinePicText_fc(bool_textcard,img_txt,bool_piccard,img_pic)
-    ShowPage_fc(self,image) 
+    qtext = rawcard['qtext']
+    qpic  = rawcard['qpic'] 
+    atext = rawcard['atext']
+    apic  = rawcard['apic']
+    topic = rawcard['t']
     
-    #except:
-    #    log.ERRORMESSAGE("Error: could not display card")
-        
-
-
-def CreateTopicCard(self):
-    key = f'card_{self.mode[0].lower()}{self.cardorder[self.index]}'
-    bool_textcard, img_text = TopicCard(self,key)
-    if bool_textcard:
-        return img_text
+    bool_textcard, img_text = CreateTextCard(self,'manual',qtext)
+    bool_piccard,  img_pic  = imop.findpicture_path(self,qpic)
+    bool_textcard2, img_text2 = CreateTextCard(self,'manual',atext)
+    bool_piccard2,  img_pic2  = imop.findpicture_path(self,apic)
+    image = imop.CombinePics(img_text,img_pic)
+    image2 = imop.CombinePics(img_text2,img_pic2)
+    
+    #%% resize images
+    BMP_q = imop.PILimage_to_Bitmap(image)
+    self.ANSWER_CARD = False
+    try:
+        BMP_a = imop.PILimage_to_Bitmap(image2)
+        self.ANSWER_CARD = True
+    except:
+        BMP_a = wx.NullBitmap
+    
+    
+    if self.mode[0].lower() == 'q' :
+        if self.NEWCARD == False and  not self.ANSWER_CARD:
+            pass
+        #if self.NEWCARD == True:
+        ShowPageBMP(self,BMP_q)
+        self.NEWCARD = False
     else:
-        return None
+        ShowPageBMP(self,BMP_a)
+        self.NEWCARD = True
 
 def CreateSingularCard(self,mode):
     self.mode = mode
@@ -543,8 +490,8 @@ def CreateSingularCard(self,mode):
         bool_piccard,  img_pic  = findpicture(self,key)
         image = CombinePicText_fc(bool_textcard,img_text,bool_piccard,img_pic)
         #ShowPage_fc(self,image)
-        image = cropimage(image,0)
-        image = cropimage(image,1)
+        image = imop.cropimage(image,0)
+        image = imop.cropimage(image,1)
         if bool_textcard == False and bool_piccard == True:
             """Make sure you don't need to save it, you can just load it"""
             return image, False
@@ -720,8 +667,8 @@ def CreateTextCard(self,mode,arg1):
         imagetext = PIL.Image.frombytes("RGB", size, raw_data, decoder_name = 'raw', )
         #crop image
         
-        imagetext = cropimage(imagetext,0)
-        imagetext = cropimage(imagetext,1)
+        imagetext = imop.cropimage(imagetext,0)
+        imagetext = imop.cropimage(imagetext,1)
         
         #print(colored(imagetext.size,"red"))
     else: 
@@ -865,59 +812,20 @@ def Cards_ReplaceUserCommands(self):
                 # select the right answer and replace all the commands
                 A = self.answers[index2]
                 self.answers[index2] = replace_allcommands(defined_command, LaTeX_command, A, nr_arg)
-
-def SeparatePicsFromText(self,line):
-    T_F, QnA, picname = remove_pics(line,"\pic{")
-    if QnA.strip() == '':
-        QnA = None
-    return QnA, picname
-
-def SeparatePicsFromCards(self):
-    ## replace all \pics out of the QnA and save the picture names.
-    self.picdictionary  = {}
-    self.textdictionary = {}
-    self.q_pics = []
-    self.a_pics = []
-    # remove all \pic{} commands
-    for i in range(len(self.CardsDeck)):
-        SEARCH1 = True
-        SEARCH2 = True            
-        # Questions: replace pics{}
-        while SEARCH1 == True:#find all pic commands
-            [T_F, QnA, picname] = remove_pics(self.questions[i],self.pic_command)
-            self.questions[i] = QnA # removed pic{} from Question
-            if T_F == True:
-                self.picdictionary.update({f'Q{i}': picname})
-            SEARCH1 = T_F
-              
-        while SEARCH2 == True: 
-            [T_F2,QnA,picname] = remove_pics(self.answers[i],self.pic_command) 
-            self.answers[i] = QnA # removed pic{} from Answer
-            if T_F2 == True:
-                self.picdictionary.update({f'A{i}': picname})
-            SEARCH2 = T_F2  
             
-def Cards_To_TextDicts(self):
-    # reformat QnA
-    questions2 = []
-    answers2 = []
-    for i,question in enumerate(self.questions):
-        answer = self.answers[i]
-        questions2.append(question.strip())
-        answers2.append(answer.strip())
-    # save questions and answers in dictionaries
-    for i,item in enumerate(self.questions):
-        if questions2[i] != '':
-            self.textdictionary.update({f'Q{i}' : questions2[i]})
-        if answers2[i] != '':
-           self.textdictionary.update({f'A{i}' : answers2[i]})
-           
 
+           
+def ShowPageBMP(self,bmp):
+    try:      
+        self.m_bitmapScrollFC.SetBitmap(bmp)     
+        self.Refresh()
+    except:        
+        log.ERRORMESSAGE("Error: cannot show image")
     
 def ShowPage_fc(self,image):
     try:
-        image = cropimage(image,0)
-        image = cropimage(image,1)
+        image = imop.cropimage(image,0)
+        image = imop.cropimage(image,1)
         width, height = image.size
         image2 = wx.Image( width, height )
         image2.SetData( image.tobytes() )        
