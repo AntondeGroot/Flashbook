@@ -24,6 +24,38 @@ MessageBox = ctypes.windll.user32.MessageBoxW
 MB_YESNO = 0x00000004
 MB_DEFBUTTON2 = 0x00000100
 
+def settings_reset(self):
+    settingsfile = Path(self.dirsettings,"settings.txt")
+    if settingsfile.exists():
+        settingsfile.unlink()
+        
+    self.settings_create()
+    self.settings_get()
+    self.m_checkBoxSelections.Check(self.drawborders)
+    if self.panel3.IsShown():
+        self.m_colorQAline.SetColour(self.QAline_color)
+        self.m_colorPDFline.SetColour(self.horiline_color)
+        self.m_colorVERTline.SetColour(self.vertline_color)
+        
+        self.m_lineWpdf.SetValue(str(self.horiline_thickness))
+        self.m_lineWqa.SetValue(str(self.QAline_thickness))
+        self.m_lineWvert.SetValue(str(self.vertline_thickness))
+        
+        self.m_lineQA.SetValue(self.QAline_bool)
+        self.m_linePDF.SetValue(self.horiline_bool)            
+        self.m_lineVERT.SetValue(self.vertline_bool)
+        self.m_checkBoxSameColor.SetValue(self.samecolor_bool)
+        
+        self.m_sliderPDFsize.SetValue(int(200-self.pdfmultiplier*100))
+        self.m_slider_col1.SetValue(self.pdfPageColsPos[0])
+        self.m_slider_col2.SetValue(self.pdfPageColsPos[1])
+        self.m_slider_col3.SetValue(self.pdfPageColsPos[2])
+        self.m_checkBox_col1.SetValue(self.pdfPageColsChecks[0])
+        self.m_checkBox_col2.SetValue(self.pdfPageColsChecks[1])
+        self.m_checkBox_col3.SetValue(self.pdfPageColsChecks[2])
+
+
+
 class menusettings(gui.MyFrame):
     def __init__(self):
         pass
@@ -67,7 +99,7 @@ class menusettings(gui.MyFrame):
         self.m_checkBoxDebug.Check(self.debugmode)
         m.setcursor(self)   
         try:
-            m3.preview_refresh(self)
+            m3.print_preview(self)
         except:
             pass
     def m_checkBoxDebugOnMenuSelection( self, event ):
