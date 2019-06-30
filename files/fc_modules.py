@@ -36,6 +36,7 @@ MessageBox = ctypes.windll.user32.MessageBoxW
 
 
 def buttonCorrect(self):
+    self.NEWCARD = True
     f2.clearbitmap(self)
     if hasattr(self,'nr_questions') and self.nr_questions != 0 and hasattr(self,'bookname') and self.bookname != '':
         #import
@@ -86,6 +87,7 @@ def buttonCorrect(self):
         self.runprogram = runprogram
     
 def buttonWrong(self):
+    self.NEWCARD = True
     matplotlib.pyplot.close('all') # otherwise too many pyplot figures will be opened -> memory
     f2.clearbitmap(self)
     if hasattr(self,'nr_questions') and self.nr_questions != 0 and hasattr(self,'bookname') and self.bookname != '':
@@ -220,6 +222,9 @@ def startprogram(self,filepath):
     #try:
     self.Latexfile.loadfile(eventpath)
     cards = self.Latexfile.file_to_rawcards()
+    print(colored("cards from latex\n"*10,"red"))
+    print(cards) #contains the keys #index:  ,.... 'q' and if applicable also 'a'
+    
     self.CardsDeck.set_cards(cards=cards,notesdir=self.notesdir)  # set_cards converts the text to somthing Matplotlib can understand
     
     #except:
