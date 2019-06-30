@@ -9,30 +9,17 @@ import time
 import os
 joinpath = os.path.join
 import json
-import shutil
 import PIL
 from pathlib import Path
 #-------------------------------------------------------------------- gui
-import threading
 import wx
 import wx.adv as adv
 import wx.richtext
 import wx.html as html
 import wx._html
-import gui_flashbook as gui
 #------------------------------------------------------------------- modules
-import fb_initialization as ini 
-import fc_initialization as ini2 
-import print_initialization as ini3
-import resources
 import fb_modules    as m
-import fc_modules    as m2
-import print_modules as m3
-import sync_modules  as m4
-import accelerators_module as m7
 import fb_functions    as f
-import fc_functions    as f2
-import print_functions as f3
 #for colored error messages
 from termcolor import colored
 
@@ -96,47 +83,6 @@ def checkBooks(self,sleeptime):
     
     return pdfs2send, library, pathlib, categories 
     
-
-
-def run_flashbook(self):
-    resetparameters(self)
-    print("Welcome to Flashbook , one moment ...")     
-    self.m_bitmapScroll.SetBitmap(wx.Bitmap(wx.Image( 1,1 ))) # always empty bitmap, in case someone reruns the program
-    self.m_CurrentPageFB.SetValue('')
-    self.m_TotalPagesFB.SetValue('')                      
-    ##
-    self.stayonpage = False
-    self.resetselection = False
-    #short cuts
-    ini.initializeparameters(self)
-    
-    
-
-def run_flashcard(self):    
-    resetparameters(self)
-    ini2.initializeparameters(self)
-    def initialize2(self):
-        # set all directories
-        os.chdir(self.notesdir)                
-        dirs = [self.appdir,self.notesdir,self.picsdir,self.booksdir,self.tempdir,self.bordersdir,self.resourcedir]        
-        print("="*90)
-        print(f"\nThe files will be saved to the following directory: {self.appdir}\n")     
-        for dir_ in dirs:
-            if not dir_.exists():
-                dir_.mkdir()
-                
-    # initialize
-    initialize2(self)
-    ini2.initializeparameters(self) 
-    
-    
-    f2.SetScrollbars_fc(self)
-    
-        
-    
-        
-    
-
       
 def get_IP(self,event):
     with open(os.path.join(self.dirIP,'IPadresses.txt'),'r') as file:
@@ -345,43 +291,18 @@ def Imgpath_to_SquareBitmap(path,size):
     image2 = wx.Bitmap(image2)
     return image2    
 
-def set_bitmapbuttons(self):
-    
-    
-    
-    #image2 = Img2Bitmap(str(self.path_fb),105)
+def set_bitmapbuttons(self):    
     BMP = Imgpath_to_SquareBitmap(str(self.path_fb),105)
     self.m_OpenFlashbook.SetBitmap(BMP)
     
-    #image2 = Img2Bitmap(str(self.path_fc),105)
     BMP = Imgpath_to_SquareBitmap(str(self.path_fc),105)
     self.m_OpenFlashcard.SetBitmap(BMP)
     
-    #image2 = Img2Bitmap(str(self.path_pr),105)
     BMP = Imgpath_to_SquareBitmap(str(self.path_pr),105)
     self.m_OpenPrint.SetBitmap(BMP)
     
-    #image2 = Img2Bitmap(str(self.path_wifi),105)
     BMP = Imgpath_to_SquareBitmap(str(self.path_wifi),105)
     self.m_OpenTransfer.SetBitmap(BMP)
     
-    #image2 = Img2Bitmap(self.path_arrow,32)
     f.SetToolStitchArrow(self,orientation="vertical")
     
-def resetparameters(self):
-    self.m_bitmapScroll.SetBitmap(wx.Bitmap(wx.Image( 1,1 ))) # always empty bitmap, in case someone reruns the program
-    self.m_bitmapScrollFC.SetBitmap(wx.Bitmap(wx.Image( 1,1 ))) # always empty bitmap, in case someone reruns the program
-    #variables for Flashbook
-    selfvars_fb = ['bookname','BorderCoords','colorlist','currentpage','image','imagecopy','tempdictionary','panel_pos','questionmode','zoom']
-    #variables for Flashcard
-    selfvars_fc = ['dir_LaTeX','dir_LaTeX_commands','dir_pics','pic_command','question_command','answer_command','bookname','image','panel_pos','zoom','index','score','nr_questions','mode','cardorder','questions','answers','questions2']
-    for i,var in enumerate(selfvars_fb+selfvars_fc):
-        if hasattr(self,var):
-            delattr(self,var)
-    self.m_CurrentCard.SetValue('')
-    self.m_TotalCards.SetValue('')
-    self.m_Score.SetValue('')
-    #reset icon in flashcard
-    path_repeat    = Path(self.resourcedir,"repeat.png")
-    id_ = self.m_toolSwitchFC.GetId()
-    self.m_toolBar3.SetToolNormalBitmap(id_, wx.Bitmap( str(path_repeat), wx.BITMAP_TYPE_ANY ))
