@@ -71,7 +71,7 @@ for i,item in enumerate(funclist):
         len_1 = funcnamelen - len(item)
         len_2 = filenamelen - len(funclist[item][1]) + 2
         print(colored("unused function:","red")+f"    {item}"+f"{' '*len_1}" +colored(" file    ","red") + f"{funclist[item][1]}"+f"{' '*len_2}" + colored(" line ","red") + f"{funclist[item][2]}")
-print(f"funclist")
+
 
 if COUNT == 0 :
     print("No unused functions have been found")
