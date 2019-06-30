@@ -331,29 +331,6 @@ def replace_allcommands(defined_command, LaTeX_command, STRING, nr_arg):
     return STRING
 
 
-
-
-
-
-def remove_pics(string, pic_command):
-    
-    """by design, there is only 1 picture per Q/A, in the form: 
-    'some text \pic{name.jpg} some text'   """
-    
-    if pic_command in string: # if \pic is found in text
-        # start and endpoints of brackets
-        pic_start = [m.start() for m in re.finditer(r'\{}'.format(pic_command), string )][0]        
-        pic_end   = find_hook(pic_start,string)
-        # output
-        BOOLEAN = True
-        picname = find_arguments(pic_start,string,pic_command,1)[0][0] # returns string instead of list
-        string  = string[:pic_start] + string[pic_end+1:]                 # Question without picture
-    else:
-        BOOLEAN = False
-        picname = None
-    return BOOLEAN, string, picname
-
-
 def switch_bitmap(self):
     path_repeat_na = Path(self.resourcedir,"repeat_na.png")
     path_repeat = Path(self.resourcedir,"repeat.png")
@@ -420,25 +397,6 @@ def CombinePicText_fc(bool_text,imagetext,bool_pic,imagepic):
 def clearbitmap(self):
     """to clear it: just display a 1x1 empty bitmap"""
     self.m_bitmapScrollFC.SetBitmap(wx.Bitmap(wx.Image( 1,1 )))
-
-def TryCreateTextCard(self,key):
-    # try to create a TextCard]
-    key = self.key
-    if key in self.textdictionary:
-        try:
-            TextCard, imagetext = CreateTextCard(self,'flashcard',key)
-        except:
-            log.ERRORMESSAGE("Error: could not create textcard")
-            
-def TryCombinePicText(self,key):
-    if key in self.picdictionary:
-        try:
-            imagetext = self.imagetext
-            self.image = CombinePicText_fc(self,key,imagetext)
-        except:
-            pass
-    else:
-        self.image = self.imagetext
         
         
 def displaycard(self):
@@ -693,21 +651,6 @@ def DeleteCurrentCard(self):
     save_stats(self)
     print("success!!")
 
-def FindArgumentsCards(self,q_hookpos,a_hookpos,letterfile):
-    nr_cards = len(q_hookpos)
-    self.questions_raw = []
-    self.answers_raw   = []
-    self.questions     = []
-    self.answers       = []
-    for N in range(nr_cards):   
-        end_q_index = find_hook(q_hookpos[N],letterfile)
-        end_a_index = find_hook(a_hookpos[N],letterfile)    
-        # collect all Questions and Answers
-        self.questions.append(letterfile[q_hookpos[N]+1:end_q_index])
-        self.answers.append(letterfile[a_hookpos[N]+1:end_a_index]) 
-        #store the unedited questions and answers. This will be used when the user wants to edit the original Q and A
-        self.questions_raw.append(letterfile[self.q_hookpos[N]+1:end_q_index])
-        self.answers_raw.append(letterfile[self.a_hookpos[N]+1:end_a_index])
 
 def stringcontains(string,substring):
     ans = None
