@@ -10,11 +10,11 @@ import threading
 import wx
 import PIL
 import program as p
-import fc_functions    as f2
 import print_modules as m3
 import fc_modules as m2
 from pathlib import Path
 from latexoperations import Commands as cmd
+import imageoperations as imop
 import log_module    as log
 import os
 import random
@@ -227,8 +227,8 @@ class booksmenu(gui.MyFrame):
                     raw_data = renderer.tostring_rgb()
                     size = canvas.get_width_height()
                     imagetext = PIL.Image.frombytes("RGB", size, raw_data, decoder_name='raw', )
-                    imagetext = f2.cropimage(imagetext,0)
-                    imagetext = f2.cropimage(imagetext,1)
+                    imagetext = imop.cropimage(imagetext,0)
+                    imagetext = imop.cropimage(imagetext,1)
                     print(bookname)
                     path = Path(self.booksdir,bookname,bookname+"-0001.jpg")
                     print(path)
