@@ -66,7 +66,6 @@ class flashcard(gui.MyFrame):
         self.NEWCARD = True
         m7.AcceleratorTableSetup(self,"flashcard","set")
         p.SwitchPanel(self,2)
-        #p.run_flashcard(self)
         with wx.FileDialog(self, "Choose a subject to study",defaultDir=str(self.notesdir), wildcard="*.tex",style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST) as fileDialog:
             if fileDialog.ShowModal() == wx.ID_CANCEL:
                 #the user changed their mind
