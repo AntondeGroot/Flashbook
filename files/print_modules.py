@@ -492,44 +492,12 @@ def import_screenshot(self,event):
 
 
 def print_preview(self,event): 
-    ini3.initializeparameters(self) 
-    notes2paper(self)
-    
-    """
-    #resize to A4 format
-    _, PanelHeight = self.m_panel32.GetSize()
-    PanelWidth = round(float(PanelHeight)/1754.0*1240.0)
-    #only select first page and display it on the bitmap
-    
-    image = self.allimages_v[0]
-    image = image.resize((PanelWidth, PanelHeight), PIL.Image.ANTIALIAS)
-    image2 = wx.Image( image.size)
-    image2.SetData( image.tobytes() )
-    
-    bitmapimage = wx.Bitmap(image2)
-    self.m_bitmap3.SetBitmap(bitmapimage)
-    """
-    self.Layout()
-    
-    self.SetCursor(wx.Cursor(wx.CURSOR_ARROW))
-    
-def preview_refresh(self):
     print("preview refresh")
     self.SetCursor(wx.Cursor(wx.CURSOR_ARROWWAIT))
     notes2paper(self)
-    """
-    _, PanelHeight = self.m_panel32.GetSize()
-    PanelWidth = round(float(PanelHeight)/1754.0*1240.0)
-    #only select first page and display it on the bitmap
-    image = self.allimages_v[0]
-    image = image.resize((PanelWidth, PanelHeight), PIL.Image.ANTIALIAS) 
-    image2 = wx.Image( image.size)
-    image2.SetData( image.tobytes() )
-    bitmapimage = wx.Bitmap(image2)
-    self.m_bitmap3.SetBitmap(bitmapimage)
-    """
     self.Layout()
     self.SetCursor(wx.Cursor(wx.CURSOR_ARROW))
+    
     
 class pdfpage(settings):
     def __init__(self,pagenr,dict1,dict2,dict3,a4page_w,a4page_h,tempdir = None,bookname = '', TT = ''):
