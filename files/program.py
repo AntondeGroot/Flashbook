@@ -124,27 +124,7 @@ def run_flashcard(self):
         for dir_ in dirs:
             if not dir_.exists():
                 dir_.mkdir()
-        
-        # unpack png images used in the gui
-        resources.resourceimages(self.resourcedir,self.notesdir) 
-    
-    #%%
-    
-    def onShowPopup(self, event):
-        win = gui.MyFrame2(self.GetTopLevelParent(), wx.SIMPLE_BORDER)
-        btn = event.GetEventObject()
-        
-        pos = self.panel_pos
-        sz =  btn.GetSize()
-        win.Position(pos, (0, sz[1]))
-        win.Show(True)    
-    
-    def SettingsPopUp( self, event ):
-        win = gui.MyFrame2(self.GetTopLevelParent(), wx.SIMPLE_BORDER)
-        pos = wx.GetMousePosition()
-        win.Position(pos,(0,0))
-        win.Show(True)      
-
+                
     # initialize
     initialize2(self)
     ini2.initializeparameters(self) 
