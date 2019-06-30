@@ -31,13 +31,41 @@ class flashbook(gui.MyFrame):
     
     def m_OpenFlashbookOnButtonClick( self, event ):
         """START MAIN PROGRAM : FLASHBOOK"""
+        print("Welcome to Flashbook , one moment ...")     
+        ## initialize
+        self.zoom = 1.0
+        self.m_bitmapScroll.SetBitmap(wx.Bitmap(wx.Image( 1,1 ))) # always empty bitmap, in case someone reruns the program
+        self.m_CurrentPageFB.SetValue('')
+        self.m_TotalPagesFB.SetValue('')                      
         self.stayonpage = False
+        self.resetselection = False
+        #short cuts
+        
+        self.m_bitmapScroll.Bind( wx.EVT_RIGHT_DOWN, self.m_resetselectionOnButtonClick )
+        self.m_bitmapScroll.Bind( wx.EVT_MIDDLE_DOWN, self.m_enterselectionOnButtonClick )
+        # for scrolling: only remember current and last position, append and pop, if the numbers repeat [0,0] or [X,X] then you know you've reached either the beginning or the end of the window: then flip page 
+        # initialize variables:
+        self.bookname       = ''
+        self.BorderCoords   = []         
+        self.colorlist      = self.bordercolors
+        self.currentpage    = 1
+        self.image          = []
+        self.imagecopy      = []
+        self.tempdictionary = {}
+        self.panel_pos      = (0,0)        
+        self.questionmode   = True
+        #self.zoom           = 1.0
+        self.m_modeDisplay.SetValue("Question:")
+        self.m_ZoomFB.SetValue(f"{int(self.zoom*100)}%")  
+        #f.ResetQuestions(self)
+        f.SetScrollbars(self)
+            
+        
         self.stitchmode_v = True # stich vertical or horizontal
         self.m_bitmapScroll.SetWindowStyleFlag(False)  # first disable the border of the bitmap, otherwise you get a bordered empty bitmap. Enable the border only when there is a bitmap
         #setup_sources(self)
         p.SwitchPanel(self,1)      
         m7.AcceleratorTableSetup(self,"flashbook","set")
-        p.run_flashbook(self)
         with wx.DirDialog(self, "Choose which book to open",style=wx.DD_DEFAULT_STYLE | wx.DD_DIR_MUST_EXIST,defaultPath=str(self.booksdir)) as DirDialog:
             #fileDialog.SetPath(str(self.notesdir)+'\.')
             if DirDialog.ShowModal() == wx.ID_CANCEL:
