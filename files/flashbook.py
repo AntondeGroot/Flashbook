@@ -38,23 +38,10 @@ import fc_initialization as ini2
 import print_initialization as ini3
 from settingsfile import settings
 from latexoperations import Latexfile
-from latexoperations import Commands as cmd
 import resources
 import fb_modules    as m
-import fc_modules    as m2
-import print_modules as m3
-import sync_modules  as m4
-import pdf_modules   as m5
-import timingmodule  as m6
 import accelerators_module as m7
-import historygraph
-import log_module    as log
-import fb_functions    as f
 import fc_functions    as f2
-import print_functions as f3
-import sync_functions  as f4
-import random
-import itertools
 
 
 import math
@@ -92,8 +79,6 @@ def SaveTime(self):
     if hasattr(self,'TC') and hasattr(self,'bookname') and self.bookname != '':
         self.TC.update()       
 
-
-  
 #% path to resources: 
 def setup_sources(self):
     if _platform == 'Windows':
@@ -148,12 +133,6 @@ def settings_reset(self):
         self.m_checkBox_col3.SetValue(self.pdfPageColsChecks[2])
 
 
-
-   
-#%%
-    
-    
-
         
 
 from class_print import printer
@@ -170,9 +149,6 @@ from class_menubooks import booksmenu
 #####              MAINFRAME                                              #####
 ###############################################################################
 """
-
-
-
 
 class MainFrame(settings,flashbook,flashcard,printer,transfer,menusettings,helpmenu,menuopen,flashcardmenu,booksmenu):
     
