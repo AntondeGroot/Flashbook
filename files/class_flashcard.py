@@ -33,7 +33,7 @@ class flashcard(gui.MyFrame):
         pass
     def m_OpenFlashcardOnButtonClick( self, event ):
         """START MAIN PROGRAM : FLASCARD"""
-        
+        self.NEWCARD = True
         m7.AcceleratorTableSetup(self,"flashcard","set")
         p.SwitchPanel(self,2)
         p.run_flashcard(self)
@@ -47,7 +47,8 @@ class flashcard(gui.MyFrame):
                 filepath = fileDialog.GetPaths()
                 m2.startprogram(self,filepath)
     # button events
-    def m_buttonCorrectOnButtonClick( self, event ):        
+    def m_buttonCorrectOnButtonClick( self, event ): 
+        
         m2.buttonCorrect(self)
         SaveTime(self)
         event.Skip()
