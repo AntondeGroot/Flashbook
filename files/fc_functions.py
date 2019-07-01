@@ -4,9 +4,11 @@ Created on Fri Sep 14 12:39:47 2018
 
 @author: Anton
 """
+import latexoperations as ltx
 import json
 import math
 import os
+import imageoperations as imop
 import PIL
 import PIL.Image
 import program as p
@@ -40,6 +42,51 @@ MB_DEFBUTTON2 = 0x00000100
 #   find_arguments(5)         - finds all the arguments for a certain command
 #   replace_allcommands(4)    - replaces user defined commands into LaTeX commands that are known.
 """
+
+def findpicture_path(self,picname):
+    """Instead of just opening the path of a picture
+    Try to find out if the path exists
+    if it does not exist, try to look in all other folders.
+    This problem may occur if you have combined several books.
+    If the picture really doesn't exist, then the user gets notified with a messagebox."""
+    FOUNDPIC = False
+    imagepic = None
+    #if key in self.picdictionary:
+    
+    path = Path(self.picsdir, self.bookname, picname)
+    if path.exists():
+        imagepic = PIL.Image.open(str(path))
+        FOUNDPIC = True
+    else:
+        folders = os.listdir(self.picsdir)
+        for i,item in enumerate(folders):
+            path = Path(self.picsdir, item, picname)
+            if path.exists():
+                imagepic = PIL.Image.open(str(path))
+                FOUNDPIC = True
+    if FOUNDPIC == False:
+        """Notify User and create a fake picture with the error message 
+        as replacement for the missing picture."""
+        
+        MessageBox(0, f"Error in line : {picname}\nPicture could not be found in any folder.", "Message", ICON_STOP)
+        LaTeXcode =  "This image does not exist"
+        height_card = math.ceil(len(LaTeXcode)/40)/2
+        fig = Figure(figsize=[8, height_card],dpi=100)
+        ax = fig.gca()
+        ax.plot([0, 0,0, height_card],color = (1,1,1,1))
+        ax.axis('off')
+        ax.text(-0.5, height_card/2,LaTeXcode, fontsize = self.LaTeXfontsize, horizontalalignment='left', verticalalignment='center',wrap = True,color = 'r')    
+        canvas = FigureCanvas(fig)
+        canvas.draw()        
+        renderer = canvas.get_renderer()
+        raw_data = renderer.tostring_rgb()
+        size = canvas.get_width_height()
+        # output
+        imagepic = PIL.Image.frombytes("RGB", size, raw_data, decoder_name = 'raw', )
+        FOUNDPIC = True #the user should be informed and shown that the picture does not exist, because it should exist!
+
+    return FOUNDPIC, imagepic
+
 
 def findpicture(self,key):
     """Instead of just opening the path of a picture
@@ -88,66 +135,6 @@ def findpicture(self,key):
         pass
     return FOUNDPIC, imagepic
 
-def cropimage(img, x, backgroundcolor=(255,255,255), border=20):
-    # standard RGB color:
-    # white = (255,255,255)
-    # black = (0,0,0)
-    SEARCH1 = True
-    SEARCH2 = True
-    var1 = 0
-    var2 = 0
-    var3 = 0
-    var4 = 0
-    array = np.array(img)- backgroundcolor
-    img_array = np.sum(np.sum(array,2),x) #summed over x-axis
-    #print(f"length is {len(img_array)}")
-    while (SEARCH1 or SEARCH2):
-        for i,pixel in enumerate(img_array):
-            j = len(img_array) - i - 1
-            pixel1 = img_array[i]
-            pixel2 = img_array[j]
-            if pixel1 != 0:
-                if SEARCH1:
-                    var1 = i
-                    SEARCH1 = False
-                var3 = i
-            if pixel2 != 0:
-                if SEARCH2:
-                    var2 = j
-                    SEARCH2 = False
-                var4 = j
-            # if from both directions the border is found
-            if var1 != 0 and var2 != 0:
-                SEARCH1 = False
-                SEARCH2 = False
-                break
-            # if they both meat in the middle, the whole image has been scanned
-            # and can be stopped
-            if j <= i: 
-                if var4 == 0:
-                    var2 = var3
-                if var3 == 0:
-                    var1 = var4
-                SEARCH1 = False
-                SEARCH2 = False
-                break
-    if var2 + border >  img.size[x]:
-        var2 = img.size[x]
-    else:
-        var2 = var2 + border
-        
-    if var1-border < 0:
-        var1 = 0
-    else:
-        var1 = var1 - border
-    #crop
-    if x == 1:
-        img = img.crop((0, var1, img.size[0], var2))
-    if x == 0:
-        img = img.crop((var1, 0, var2, img.size[1]))
-        
-    #print(var1,var2,var3,var4)
-    return img    
 
 
 def is_number(s):
@@ -344,29 +331,6 @@ def replace_allcommands(defined_command, LaTeX_command, STRING, nr_arg):
     return STRING
 
 
-
-
-
-
-def remove_pics(string, pic_command):
-    
-    """by design, there is only 1 picture per Q/A, in the form: 
-    'some text \pic{name.jpg} some text'   """
-    
-    if pic_command in string: # if \pic is found in text
-        # start and endpoints of brackets
-        pic_start = [m.start() for m in re.finditer(r'\{}'.format(pic_command), string )][0]        
-        pic_end   = find_hook(pic_start,string)
-        # output
-        BOOLEAN = True
-        picname = find_arguments(pic_start,string,pic_command,1)[0][0] # returns string instead of list
-        string  = string[:pic_start] + string[pic_end+1:]                 # Question without picture
-    else:
-        BOOLEAN = False
-        picname = None
-    return BOOLEAN, string, picname
-
-
 def switch_bitmap(self):
     path_repeat_na = Path(self.resourcedir,"repeat_na.png")
     path_repeat = Path(self.resourcedir,"repeat.png")
@@ -378,8 +342,11 @@ def switch_bitmap(self):
         # you always start with a question, check if there is an answer:
         _key_ = f'card_a{self.cardorder[self.index]}' # do not use self.key: only check if there is an answer, don't change the key
         print(f"switch key is {_key_}")
+        print(f"keys = {self.CardsDeck.getcards().keys()}")
         try:
-            if _key_ not in self.CardsDeck.getcards().keys(): # there is no answer card!
+            
+            #if _key_ not in self.CardsDeck.getcards().keys(): # there is no answer card!
+            if not self.ANSWER_CARD: # there is no answer card!
                 print("there is no answer card")
                 self.mode = 'Question'
                 self.SwitchCard = False        
@@ -430,82 +397,122 @@ def CombinePicText_fc(bool_text,imagetext,bool_pic,imagepic):
 def clearbitmap(self):
     """to clear it: just display a 1x1 empty bitmap"""
     self.m_bitmapScrollFC.SetBitmap(wx.Bitmap(wx.Image( 1,1 )))
-
-def TryCreateTextCard(self,key):
-    # try to create a TextCard]
-    key = self.key
-    if key in self.textdictionary:
-        try:
-            TextCard, imagetext = CreateTextCard(self,'flashcard',key)
-        except:
-            log.ERRORMESSAGE("Error: could not create textcard")
-            
-def TryCombinePicText(self,key):
-    if key in self.picdictionary:
-        try:
-            imagetext = self.imagetext
-            self.image = CombinePicText_fc(self,key,imagetext)
-        except:
-            pass
-    else:
-        self.image = self.imagetext
         
-def TryOnlyTextPic(self):
-    try:
-        self.image = findpicture(self,self.key)
-        ShowPage_fc(self)
-    except:
-        print("Error: could not load singular picture (no text available)")
         
 def displaycard(self):
     #try:
-    key = f'card_{self.mode[0].lower()}{self.cardorder[self.index]}'
-    # try to create a TextCard
-    bool_textcard, img_txt = CreateTextCard(self,'flashcard',key)
-    bool_piccard, img_pic  = findpicture(self,key)
-    image = CombinePicText_fc(bool_textcard,img_txt,bool_piccard,img_pic)
-    ShowPage_fc(self,image) 
+    trueindex = self.cardorder[self.index]
+    print("displaycard\n"*10)
+    rawcard = self.Latexfile.getline_i_card(trueindex)
     
-    #except:
-    #    log.ERRORMESSAGE("Error: could not display card")
-        
-def PILimage_to_Bitmap(image): 
-    """ PIL image to wxBitmap """
-    image2 = wx.Image( image.size)
-    image2.SetData( image.tobytes() )
-    image2 = wx.Bitmap(image2)
-    return image2
-
-def CreateTopicCard(self):
-    key = f'card_{self.mode[0].lower()}{self.cardorder[self.index]}'
-    bool_textcard, img_text = TopicCard(self,key)
-    if bool_textcard:
-        return img_text
+    qtext = rawcard['qtext']
+    qpic  = rawcard['qpic'] 
+    atext = rawcard['atext']
+    apic  = rawcard['apic']
+    topic = rawcard['t']
+    
+    bool_textcard, img_text = CreateTextCard(self,'manual',qtext)
+    bool_piccard,  img_pic  = imop.findpicture_path(self,qpic)
+    bool_textcard2, img_text2 = CreateTextCard(self,'manual',atext)
+    bool_piccard2,  img_pic2  = imop.findpicture_path(self,apic)
+    image = imop.CombinePics(img_text,img_pic)
+    image2 = imop.CombinePics(img_text2,img_pic2)
+    
+    #%% resize images
+    BMP_q = imop.PILimage_to_Bitmap(image)
+    self.ANSWER_CARD = False
+    try:
+        BMP_a = imop.PILimage_to_Bitmap(image2)
+        self.ANSWER_CARD = True
+    except:
+        BMP_a = wx.NullBitmap
+    
+    
+    if self.mode[0].lower() == 'q' :
+        if self.NEWCARD == False and  not self.ANSWER_CARD:
+            pass
+        #if self.NEWCARD == True:
+        ShowPageBMP(self,BMP_q)
+        self.NEWCARD = False
     else:
-        return None
+        ShowPageBMP(self,BMP_a)
+        self.NEWCARD = True
 
 def CreateSingularCard(self,mode):
     self.mode = mode
     try:
         key = f'card_{self.mode[0].lower()}{self.cardorder[self.index]}'
         # try to create a TextCard
+        
         bool_textcard, img_text = CreateTextCard(self,'flashcard',key)
         bool_piccard,  img_pic  = findpicture(self,key)
         image = CombinePicText_fc(bool_textcard,img_text,bool_piccard,img_pic)
         #ShowPage_fc(self,image)
-        image = cropimage(image,0)
-        image = cropimage(image,1)
+        image = imop.cropimage(image,0)
+        image = imop.cropimage(image,1)
         if bool_textcard == False and bool_piccard == True:
             """Make sure you don't need to save it, you can just load it"""
             return image, False
         else:
             return image, True
     except IndexError:
+        log.ERRORMESSAGE("Error: index error")
         print(f"index = {self.index}")
         print(f"cardorder = {self.cardorder}")
         print(f"len cardorder = {len(self.cardorder)}")
     except:
         log.ERRORMESSAGE("Error: could not display card")
+
+def TopicCardFromText(self,text):
+    width_card = 8
+    INVERT = True
+    if INVERT:
+        fcolor, tcolor = 'black', 'white'
+    else:
+        fcolor, tcolor = 'white', 'black'
+        
+
+    #try:
+    usertext = text
+    width_card = self.a4page_w/100
+    # display text in a plot
+    height_card = int(math.ceil(len(usertext)/40))*0.75
+    figure = Figure(figsize=[width_card, height_card],dpi=100,facecolor=fcolor)
+    figure.add_axes([0,0,1,1])
+    ax = figure.gca()
+    #ax.plot([0, 0, 0, height_card],color = (1,1,1,1))
+    ax.axis('off')
+    #ax.text(-0.5, height_card/2,usertext, fontsize = self.LaTeXfontsize, horizontalalignment='left', verticalalignment='center',wrap = True)
+    ax.text(0.5, 0.5,usertext, fontsize = int(self.LaTeXfontsize*2), horizontalalignment='center', verticalalignment='center',wrap = True,color=tcolor)
+    # convert picture to data, if the text is illegitimate the error will occur in canvas.draw()
+    canvas = FigureCanvas(figure)
+    canvas.draw()
+    """
+    except:
+        
+        #MessageBox(0, f"Error in line {str(int(key[6:])+1)} mode {modekey}\nline: {self.CardsDeck.getcards()[key]}\nFaulty text or command used.\nGo to .../Flashbook/files/... and edit it manually.\nOr edit it in Flashcard.", "Message", ICON_STOP)
+        LaTeXcode =  "Error for this page: invalid code"
+        height_card = math.ceil(len(LaTeXcode)/40)/2
+        fig = Figure(figsize=[width_card, height_card],dpi=100)
+        ax = fig.gca()
+        ax.plot([0, 0, 0, height_card],color = (1,1,1,1))
+        ax.axis('off')
+        ax.text(-0.5, height_card/2,LaTeXcode, fontsize = self.LaTeXfontsize, horizontalalignment='left', verticalalignment='center',wrap = True,color = 'r')    
+        canvas = FigureCanvas(fig)
+        canvas.draw()
+    """    
+    renderer = canvas.get_renderer()
+    raw_data = renderer.tostring_rgb()
+    size = canvas.get_width_height()
+    # output
+    bool_textcard = True
+    imagetext = PIL.Image.frombytes("RGB", size, raw_data, decoder_name = 'raw', )
+    #crop image
+    #print(colored(imagetext.size,"red"))
+    
+    return bool_textcard, imagetext    
+
+
 
 def TopicCard(self,key):
     width_card = 8
@@ -559,16 +566,19 @@ def TopicCard(self,key):
     return bool_textcard, imagetext    
 
 def CreateTextCard(self,mode,arg1):
-    """This function is used for 2 different purposes
+    """This function is used for 3 different purposes
     1) Flashbook: create a textcard from user input -- this requires user input: self.usertext
     2) Flashcard: create a textcard from saved data -- this requires a dict key: 'key'
+    3) Manual:    
     The creation of a card can fail because the userinput was incorrect it can see something starting with '\' as LaTeX code
     when it should not, or if the user used some undefined function.
     """
     
-    if (mode == 'flashbook' and self.usertext != '') or (mode == 'flashcard' and 'text' in self.CardsDeck.getcards()[arg1].keys()):
+    if (mode == 'flashbook' and self.usertext != '') or (mode == 'flashcard' and 'text' in self.CardsDeck.getcards()[arg1].keys()) or (mode == 'manual' and arg1 != ''):
         try:
             if mode == 'flashbook':
+                usertext = arg1
+            if mode == 'manual':
                 usertext = arg1
             if mode == 'flashcard':
                 # acquire text
@@ -615,8 +625,9 @@ def CreateTextCard(self,mode,arg1):
         imagetext = PIL.Image.frombytes("RGB", size, raw_data, decoder_name = 'raw', )
         #crop image
         
-        imagetext = cropimage(imagetext,0)
-        imagetext = cropimage(imagetext,1)
+        imagetext = imop.cropimage(imagetext,0)
+        imagetext = imop.cropimage(imagetext,1)
+        
         #print(colored(imagetext.size,"red"))
     else: 
         #if mode == 'flashcard' but the key is not in dict
@@ -640,52 +651,6 @@ def DeleteCurrentCard(self):
     save_stats(self)
     print("success!!")
 
-def File_to_Cards(self,linefile):
-    assert type(linefile) == list
-    cards = []
-    def argument(command,line):
-        startpos   = [m.start() for m in re.finditer(command, line)]
-        if startpos != []:
-            hookpos = list(np.array(startpos)+len(command)-2)[0]
-            end_index = find_hook(hookpos,line)
-            return line[hookpos+1:end_index]
-        else:
-            return ''
-            
-    for line in linefile:
-        q = argument(self.question_command,line)
-        a = argument(self.answer_command,line)
-        t = argument(self.topic_command,line)
-        
-        cards.append({'q': q, 'a': a, 't': t})  
-    print("keycards")
-    print(cards[0].keys())
-    return cards
-    
-
-def oFile_to_hookpositions(self,letterfile):
-    # positions of Questions and Answers
-    q_pos   = [m.start() for m in re.finditer(self.question_command, letterfile)]
-    a_pos   = [m.start() for m in re.finditer(self.answer_command, letterfile)]
-    q_hookpos = list(np.array(q_pos)+len(self.question_command)-2)              #position of argument \command{} q_pos indicates where it starts: "\", added the length of the command -2, because it counts 2 extra '\'
-    a_hookpos = list(np.array(a_pos)+len(self.answer_command)-2)
-    return q_hookpos, a_hookpos
-
-def FindArgumentsCards(self,q_hookpos,a_hookpos,letterfile):
-    nr_cards = len(q_hookpos)
-    self.questions_raw = []
-    self.answers_raw   = []
-    self.questions     = []
-    self.answers       = []
-    for N in range(nr_cards):   
-        end_q_index = find_hook(q_hookpos[N],letterfile)
-        end_a_index = find_hook(a_hookpos[N],letterfile)    
-        # collect all Questions and Answers
-        self.questions.append(letterfile[q_hookpos[N]+1:end_q_index])
-        self.answers.append(letterfile[a_hookpos[N]+1:end_a_index]) 
-        #store the unedited questions and answers. This will be used when the user wants to edit the original Q and A
-        self.questions_raw.append(letterfile[self.q_hookpos[N]+1:end_q_index])
-        self.answers_raw.append(letterfile[self.a_hookpos[N]+1:end_a_index])
 
 def stringcontains(string,substring):
     ans = None
@@ -790,64 +755,20 @@ def Cards_ReplaceUserCommands(self):
                 # select the right answer and replace all the commands
                 A = self.answers[index2]
                 self.answers[index2] = replace_allcommands(defined_command, LaTeX_command, A, nr_arg)
-
-def loadfile(eventpath):
-    if Path(eventpath).exists():
-        file = open(eventpath, 'r',newline='\r')
-        linefile = file.readlines()      
-    return linefile
-def SeparatePicsFromText(self,line):
-    T_F, QnA, picname = remove_pics(line,"\pic{")
-    if QnA.strip() == '':
-        QnA = None
-    return QnA, picname
-
-def SeparatePicsFromCards(self):
-    ## replace all \pics out of the QnA and save the picture names.
-    self.picdictionary  = {}
-    self.textdictionary = {}
-    self.q_pics = []
-    self.a_pics = []
-    # remove all \pic{} commands
-    for i in range(len(self.CardsDeck)):
-        SEARCH1 = True
-        SEARCH2 = True            
-        # Questions: replace pics{}
-        while SEARCH1 == True:#find all pic commands
-            [T_F, QnA, picname] = remove_pics(self.questions[i],self.pic_command)
-            self.questions[i] = QnA # removed pic{} from Question
-            if T_F == True:
-                self.picdictionary.update({f'Q{i}': picname})
-            SEARCH1 = T_F
-              
-        while SEARCH2 == True: 
-            [T_F2,QnA,picname] = remove_pics(self.answers[i],self.pic_command) 
-            self.answers[i] = QnA # removed pic{} from Answer
-            if T_F2 == True:
-                self.picdictionary.update({f'A{i}': picname})
-            SEARCH2 = T_F2  
             
-def Cards_To_TextDicts(self):
-    # reformat QnA
-    questions2 = []
-    answers2 = []
-    for i,question in enumerate(self.questions):
-        answer = self.answers[i]
-        questions2.append(question.strip())
-        answers2.append(answer.strip())
-    # save questions and answers in dictionaries
-    for i,item in enumerate(self.questions):
-        if questions2[i] != '':
-            self.textdictionary.update({f'Q{i}' : questions2[i]})
-        if answers2[i] != '':
-           self.textdictionary.update({f'A{i}' : answers2[i]})
-           
 
+           
+def ShowPageBMP(self,bmp):
+    try:      
+        self.m_bitmapScrollFC.SetBitmap(bmp)     
+        self.Refresh()
+    except:        
+        log.ERRORMESSAGE("Error: cannot show image")
     
 def ShowPage_fc(self,image):
     try:
-        image = cropimage(image,0)
-        image = cropimage(image,1)
+        image = imop.cropimage(image,0)
+        image = imop.cropimage(image,1)
         width, height = image.size
         image2 = wx.Image( width, height )
         image2.SetData( image.tobytes() )        

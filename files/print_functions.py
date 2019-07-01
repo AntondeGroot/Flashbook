@@ -14,7 +14,6 @@ from PIL import ImageOps
 import pylab
 from pathlib import Path
 import fb_functions    as f
-import fc_functions    as f2
 import log_module      as log
 import program as p
 import json

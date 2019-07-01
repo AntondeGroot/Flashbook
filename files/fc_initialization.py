@@ -8,12 +8,6 @@ import fc_functions as f2
 import wx
 
 def initializeparameters(self):
-    # some commands used to create the flashcards and seperate elements: question/answer/picture
-    # this way it will remain clear for the user so that he could manually change an entry.
-    self.pic_command      = "\pic{"
-    self.question_command = r'\\quiz{'
-    self.answer_command   = r"\\ans{"
-    self.topic_command    = r"\\topic{"
     # initialize variables:
     self.bookname       = ''
     self.image          = []

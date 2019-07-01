@@ -33,7 +33,10 @@ MessageBox = ctypes.windll.user32.MessageBoxW
 
 
 
+
+
 def buttonCorrect(self):
+    self.NEWCARD = True
     f2.clearbitmap(self)
     if hasattr(self,'nr_questions') and self.nr_questions != 0 and hasattr(self,'bookname') and self.bookname != '':
         #import
@@ -84,6 +87,7 @@ def buttonCorrect(self):
         self.runprogram = runprogram
     
 def buttonWrong(self):
+    self.NEWCARD = True
     matplotlib.pyplot.close('all') # otherwise too many pyplot figures will be opened -> memory
     f2.clearbitmap(self)
     if hasattr(self,'nr_questions') and self.nr_questions != 0 and hasattr(self,'bookname') and self.bookname != '':
@@ -176,12 +180,11 @@ def switchCard(self):
             f2.switch_bitmap(self)       
             f2.displaycard(self)
             f2.SetScrollbars_fc(self)
-            #self.Refresh()
     except:
         log.ERRORMESSAGE("Error: Couldn't switch card")
         
 
-def startprogram(self,event): 
+def startprogram(self,filepath): 
     """main program that does all the preprocessing"""
     self.runprogram   = True
     self.nr_questions = 0
@@ -201,9 +204,12 @@ def startprogram(self,event):
     
     # open file
     try:
-        eventpath = event.GetPath()
+        if type(filepath) == list:
+            filepath = filepath[0]
+        eventpath = filepath
         print(f"path = {eventpath}")
         self.filename = Path(eventpath).name
+        print(f"test test = {Path(eventpath).name}")
         self.bookname = Path(eventpath).stem
         self.booknamepath = eventpath
         print(f"book = {self.bookname} ")
@@ -214,8 +220,11 @@ def startprogram(self,event):
         log.ERRORMESSAGE("Error: Couldn't open path")
     self.resumedata = {self.bookname : {'score': self.score, 'index': self.index, 'nr_questions':self.nr_questions}}
     #try:
-    linefile = f2.loadfile(eventpath)
-    cards = f2.File_to_Cards(self,linefile)                       # converts to raw cards
+    self.Latexfile.loadfile(eventpath)
+    cards = self.Latexfile.file_to_rawcards()
+    print(colored("cards from latex\n"*10,"red"))
+    print(cards) #contains the keys #index:  ,.... 'q' and if applicable also 'a'
+    
     self.CardsDeck.set_cards(cards=cards,notesdir=self.notesdir)  # set_cards converts the text to somthing Matplotlib can understand
     
     #except:
