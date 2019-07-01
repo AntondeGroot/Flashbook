@@ -17,6 +17,7 @@ import json
 import PIL
 import numpy as np
 from PIL import ImageOps
+import imageoperations as imop
 import fc_functions as fc
 import program as p
 import log_module as log
@@ -385,35 +386,25 @@ def CombinePicText_fb(self,directory):
 
 
 def ShowInPopup(self,event,mode):
-    #try:# a picture directory may not exist
+    # a picture directory may not exist
     dir_ = self.Flashcard.getpiclist(mode)
-    print(f"dir = {dir_}")
     try:
         if type(dir_) == list: 
             directory = dir_[0]
         else: 
             directory = dir_
-        
-        if directory != '':
-            image = PIL.Image.open(directory)
-            self.image = image
     except:
         pass
-        #except: 
-        #    log.ERRORMESSAGE("Error: could not open file in popup ")
-        
+    
+    usertext = self.usertext
+    _, img_text  = imop.CreateTextCard(self,usertext)
     try:
-        CreateTextCard(self)
+        _, img_pic   = imop.findpicture_path(self,directory)
+        self.image  = imop.CombinePics(img_text,img_pic)
     except:
-        pass
-    try:
-        CombinePicText_fb(self,Path(directory))
-    except:
-        try:
-            print("Only contains text not image")
-            self.image = self.imagetext
-        except:
-            pass
+        self.image = img_text
+    
+    
     try:
         image = self.image
         """Try to access mousepos, if there wasn't any mouseclick: then just place the popupwindow in the middle of your screen. 
@@ -437,9 +428,66 @@ def ShowInPopup(self,event,mode):
 
 #%% turn user LaTeX macro into useable LaTeX code
 
+def is_number(s):
+    try:
+        int(s)
+        return True
+    except ValueError:
+        return False
 
+def findchar(char,string,nr):
+    """find a character in a string 
+    arguments: 
+        nr = "" : finds all values
+        nr = N  : finds the N-th instance
+    """
+    ans = [m.start() for m in re.finditer(r'{}'.format(char), string )]
+    if is_number(nr):
+        return ans[nr] 
+    else:
+        return ans 
+    
+def find_arguments(hookpos, sentence, defined_command, nr_arguments):
+    """ find all the hooks for N arguments
+    Example:
+    defined command = " \secpar{a}{b}   "
+    nr_arguments = 2
+    sentence = "if we take the second partial derivative \secpar{X+Y}{t}"
+    returns: position where (X+Y), (t)  begin and end and in the string and the arguments (x+y), (t)"""
+    
+    k = 0
+    hookcount = 0      
+    SEARCH = True
+    argcount = 0
+    argclose_index = [] 
+    argopen_index  = []
 
+    cstr_start = [m.start() for m in re.finditer(r'\{}'.format(defined_command), sentence )][0]
+    
+    for i in range(cstr_start,len(sentence)):            # make sure it starts with {
+        if (SEARCH == True):
+            k += 1
+            char = sentence[i]
+            
+            if char == '{':
+                hookcount += 1
+                if hookcount == 1:
+                    argopen_index.append(k+cstr_start-1)  #save opening indices
+                
+            if char == '}':
+                hookcount -= 1
+                if hookcount == 0:
+                    argcount += 1
+                    if argcount == nr_arguments:
+                        SEARCH = False
+                    argclose_index.append(k+cstr_start-1) #save closing indices
+    arguments = []
+    for i in range(nr_arguments):
+        arguments.append(sentence[argopen_index[i]+1:argclose_index[i]])
+    return arguments, argopen_index, argclose_index
 
+    
+    
 def text_to_latex(self,usertext):
     """EXAMPLE:
     defined command = " \secpar{x}{t}}   " for the second partial derivative of a wrt b
@@ -459,12 +507,9 @@ def text_to_latex(self,usertext):
             index = i+1
     # remove the lines that precede the ###     
     commandsfile[:index] = []
-    # only look at lines containing "newcommand"
-    
-    commands = [x for x in commandsfile if ("newcommand"  in x) and ("Note:" not in x)]
-    
-    ###  how to replace a user defined command with a command that is known in latex ###
-    
+    # only look at lines containing "newcommand" 
+    commands = [x for x in commandsfile if ("newcommand"  in x) and ("Note:" not in x)] 
+    ###  how to replace a user defined command with a command that is known in latex ### 
     # check for all commands
     for _, command_line in enumerate(commands):
         # extract all the data from a commandline
@@ -494,10 +539,10 @@ def replacecommands(defined_command,LaTeX_command,inputstring,nr_arg):
         # if a command has arguments: you need to find their positions
         if nr_arg != 0:
             cmd_start = [m.start() for m in re.finditer(r'\{}'.format(defined_command), inputstring )][0]
-            arguments = fc.find_arguments(cmd_start, inputstring, defined_command, nr_arg)[0]
+            arguments = find_arguments(cmd_start, inputstring, defined_command, nr_arg)[0]
             
-            index1 = fc.find_arguments(cmd_start, inputstring ,defined_command, nr_arg)[1][0]-length_c
-            index2 = fc.find_arguments(cmd_start, inputstring ,defined_command, nr_arg)[2][1]+1
+            index1 = find_arguments(cmd_start, inputstring ,defined_command, nr_arg)[1][0]-length_c
+            index2 = find_arguments(cmd_start, inputstring ,defined_command, nr_arg)[2][1]+1
             
             #replace the command by a LaTeX command
             inputstring = inputstring.replace(inputstring[index1:index2], LaTeX_command )
