@@ -99,13 +99,7 @@ def setup_sources(self):
     self.path_convert = Path(rdir,"convert.png")
     self.path_folder  = Path(rdir,"folder.png")
     self.path_repeat  = Path(rdir,"repeat.png")
-    self.path_repeat_na = Path(rdir,"repeat_na.png")
-#%% settings   
-
-
-
-
-        
+    self.path_repeat_na = Path(rdir,"repeat_na.png") 
 
 from class_print import printer
 from class_flashbook import flashbook
