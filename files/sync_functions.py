@@ -341,10 +341,11 @@ Created on Thu Mar 21 19:23:41 2019
 
 import threading
 import time
-import flashbook as fb
+#import flashbook as fb
+"""
 class StoppableDisplayThread(threading.Thread):
-    """Thread class with a stop() method. The thread itself has to check
-    regularly for the stopped() condition."""
+    ""Thread class with a stop() method. The thread itself has to check
+    regularly for the stopped() condition.""
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._stop_event = threading.Event()
@@ -381,13 +382,13 @@ def Display(text,self):
 class DisplayStatus(fb.MainFrame,StoppableDisplayThread):
     def __init__(self):
         super(DisplayStatus, self).__init__()
-    """To Use:
+    ""To Use:
     t = DisplayStatus()
     t.set_status("some text") #after status dots will be printed
     t.start()
     ...
     t.stop()
-    """
+    ""
     def run(self):
         mod = self.get_nrdots()+1
         i = 0 
@@ -396,7 +397,7 @@ class DisplayStatus(fb.MainFrame,StoppableDisplayThread):
             message = self.get_status()+" "+"."*int(i%mod)+" "*int(mod-i%mod)+self.get_msg()
             Display(message,self)
             i += 1
-
+""" 
 
 
 
