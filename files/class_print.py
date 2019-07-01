@@ -100,8 +100,8 @@ class printer(gui.MyFrame):
                 self.fileDialog = fileDialog
                 self.FilePickEvent = True
                 
-                t_preview = lambda self,evt : threading.Thread(target = m3.print_preview, name = 't_preview' , args=(self,evt )).run()
-                t_preview(self, event) 
+                t_preview = lambda self : threading.Thread(target = m3.print_preview, name = 't_preview' , args=(self,)).run()
+                t_preview(self) 
                 
     def m_bitmap3OnMouseWheel( self, event ):
         wheel_rotation  = event.GetWheelRotation()   # get rotation from mouse wheel
