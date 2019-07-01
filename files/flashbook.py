@@ -33,9 +33,6 @@ if _platform == 'Windows':
 #------------------------------------------------------------------- modules
 import gui_flashbook as gui
 import program as p
-import fb_initialization as ini 
-import fc_initialization as ini2 
-import print_initialization as ini3
 from settingsfile import settings
 from latexoperations import Latexfile
 import resources
