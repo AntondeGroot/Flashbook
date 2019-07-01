@@ -10,8 +10,6 @@ except:
     pass
 #------------------------------------------------------------------- general
 import os
-import ast
-import json
 from pathlib import Path
 import PIL
 import shutil
@@ -23,12 +21,7 @@ import wx.richtext
 import wx.html as html
 import wx._html
 import platform
-_platform = platform.system()
-if _platform == 'Windows':
-    import ctypes # pop up messages
-    import wmi            # for IPaddress: WindowsManagementInstrumentation
-    import win32clipboard #
-    from win32api import GetSystemMetrics    
+_platform = platform.system() 
     
 #------------------------------------------------------------------- modules
 import gui_flashbook as gui
@@ -40,23 +33,14 @@ import fb_modules    as m
 import accelerators_module as m7
 import fc_functions    as f2
 
-
 import math
 import pylab
 pylab.ioff() # make sure it is inactive, otherwise possible qwindows error    .... https://stackoverflow.com/questions/26970002/matplotlib-cant-suppress-figure-window
-from matplotlib.figure import Figure
-from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
+
 
 sys.setrecursionlimit(5000)
 PIL.Image.MAX_IMAGE_PIXELS = 1000000000  
-#ctypes:
-ICON_EXCLAIM=0x30
 
-ICON_STOP = 0x10
-MB_ICONINFORMATION = 0x00000040
-MessageBox = ctypes.windll.user32.MessageBoxW
-MB_YESNO = 0x00000004
-MB_DEFBUTTON2 = 0x00000100
 """when using Pyinstaller to create the .exe file: it will standardly give an error that it is missing the module 'qwindows.dll'
 since the .exe created by --onefile takes ages to start, i won't be using that option and then module can be found in the folder below
 it is resolved by simply copying the qwindows.dll module next to the .exe file"""
