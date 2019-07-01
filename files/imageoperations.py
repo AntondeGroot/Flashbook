@@ -148,6 +148,10 @@ def findpicture_path(self,picname,errorbox = False):
 
 
 def CombinePics(image1,image2):
+    """Tries to combine 2 pictures but only when they are both PIL images
+    It always returns an image if at least one of the inputs is valid. 
+    One of the inputs may even be Nonetype."""
+    
     def isPILimage(img):
         return 'PIL' in str(type(img))
     def isnotPILimage(img):
@@ -158,7 +162,7 @@ def CombinePics(image1,image2):
         total_height = sum(heights)
         max_width = max(widths)
         new_im = PIL.Image.new('RGB', (max_width, total_height), "white")
-        #combine images to 1
+        #combine images vertically
         y_offset = 0
         for im in images:
             new_im.paste(im, (0,y_offset))
@@ -168,3 +172,71 @@ def CombinePics(image1,image2):
         return image1
     elif isnotPILimage(image1) and isPILimage(image2):
         return image2
+
+def CreateTextCard(self,usertext):
+    """The creation of a card can fail because the userinput was incorrect it can see something starting with '\' as LaTeX code
+    when it should not, or if the user used some undefined function.
+    """
+    if usertext.strip() != '':
+        try:            
+            # display text in a plot
+            height_card = math.ceil(len(usertext)/40)/2
+            figure = Figure(figsize=[8, height_card],dpi=100)
+            ax = figure.gca()
+            ax.plot([0, 0, 0, height_card],color = (1,1,1,1))
+            ax.axis('off')
+            ax.text(-0.5, height_card/2,usertext, fontsize = self.LaTeXfontsize, horizontalalignment='left', verticalalignment='center',wrap = True)
+            # convert picture to data, if the text is invalid the error will occur in canvas.draw()
+            canvas = FigureCanvas(figure)
+            canvas.draw()
+        except:
+            MessageBox(0, f"Error in text given by user: {usertext} could not be rendered. \nPerhaps because of a backslash.", "Message", ICON_STOP)
+            LaTeXcode =  "Error for this page: invalid code"
+            height_card = math.ceil(len(LaTeXcode)/40)/2
+            fig = Figure(figsize=[8, height_card],dpi=100)
+            ax = fig.gca()
+            ax.plot([0, 0, 0, height_card],color = (1,1,1,1))
+            ax.axis('off')
+            ax.text(-0.5, height_card/2,LaTeXcode, fontsize = self.LaTeXfontsize, horizontalalignment='left', verticalalignment='center',wrap = True,color = 'r')    
+            canvas = FigureCanvas(fig)
+            canvas.draw()            
+        renderer = canvas.get_renderer()
+        raw_data = renderer.tostring_rgb()
+        size = canvas.get_width_height()
+        # output
+        bool_textcard = True
+        imagetext = PIL.Image.frombytes("RGB", size, raw_data, decoder_name = 'raw', )
+        #crop image        
+        imagetext = cropimage(imagetext,0)
+        imagetext = cropimage(imagetext,1)
+    else: 
+        #if mode == 'flashcard' but the key is not in dict
+        bool_textcard = False
+        imagetext = None
+    return bool_textcard, imagetext
+
+def TopicCardFromText(self,text):
+    width_card = 8
+    INVERT = True
+    if INVERT:
+        fcolor, tcolor = 'black', 'white'
+    else:
+        fcolor, tcolor = 'white', 'black'
+    usertext = text
+    width_card = self.a4page_w/100
+    # display text in a plot
+    height_card = int(math.ceil(len(usertext)/40))*0.75
+    figure = Figure(figsize=[width_card, height_card],dpi=100,facecolor=fcolor)
+    figure.add_axes([0,0,1,1])
+    ax = figure.gca()
+    ax.axis('off')
+    ax.text(0.5, 0.5,usertext, fontsize = int(self.LaTeXfontsize*2), horizontalalignment='center', verticalalignment='center',wrap = True,color=tcolor)
+    canvas = FigureCanvas(figure)
+    canvas.draw()
+    renderer = canvas.get_renderer()
+    raw_data = renderer.tostring_rgb()
+    size = canvas.get_width_height()
+    # output
+    bool_textcard = True
+    imagetext = PIL.Image.frombytes("RGB", size, raw_data, decoder_name = 'raw', )    
+    return bool_textcard, imagetext    
