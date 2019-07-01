@@ -74,12 +74,10 @@ def createimage(self,card_i):
         #im = PIL.Image.new("RGB", (card_i['size']), 'white')
         #im = PIL.Image.new("RGB", (int(self.total_width*self.scale)+self.bordersize[0]*2 ,int(self.total_height*self.scale)+self.bordersize[1]*2+self.QAline_thickness), 'white')
         if topic != '':
-            _, imagetext = imop.TopicCardFromText(self,topic)
+            _, imagetext = imop.CreateTopicCard(self,topic)
             im = imagetext
         return im
     else:
-        #d0 = self.displacement[0]+card_i['border'][0]
-        #d1 = self.displacement[1]+card_i['border'][1]
         d0 = card_i['pos'][0]+card_i['border'][0]
         d1 = card_i['pos'][1]+card_i['border'][1]
         
@@ -771,7 +769,7 @@ class basiscard(settings):
         if self.topiccard:
             self.LaTeXfontsize = 20
             if topic != '':
-                _, imagetext = imop.TopicCardFromText(self,topic)
+                _, imagetext = imop.CreateTopicCard(self,topic)
                 im = imagetext
                 imagetext.show()
         else:
