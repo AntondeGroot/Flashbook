@@ -9,7 +9,6 @@ import threading
 import wx
 import PIL
 import program as p
-import fc_functions    as f2
 import print_modules as m3
 from pathlib import Path
 from latexoperations import Commands as cmd
@@ -164,10 +163,10 @@ class printer(gui.MyFrame):
         apic  = rawcard['apic']
         topic = rawcard['t']
         
-        bool_textcard, img_text = f2.CreateTextCard(self,'manual',qtext)
-        bool_piccard,  img_pic  = imop.findpicture_path(self,qpic)
-        bool_textcard2, img_text2 = f2.CreateTextCard(self,'manual',atext)
-        bool_piccard2,  img_pic2  = imop.findpicture_path(self,apic)
+        _, img_text  = imop.CreateTextCard(self,qtext)
+        _, img_pic   = imop.findpicture_path(self,qpic)
+        _, img_text2 = imop.CreateTextCard(self,atext)
+        _, img_pic2  = imop.findpicture_path(self,apic)
         image = imop.CombinePics(img_text,img_pic)
         image2 = imop.CombinePics(img_text2,img_pic2)
         
