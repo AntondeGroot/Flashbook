@@ -215,7 +215,7 @@ def CreateTextCard(self,usertext):
         imagetext = None
     return bool_textcard, imagetext
 
-def TopicCardFromText(self,text):
+def CreateTopicCard(self,text):
     width_card = 8
     INVERT = True
     if INVERT:
