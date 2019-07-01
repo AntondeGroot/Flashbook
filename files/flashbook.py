@@ -423,7 +423,7 @@ class Flashcard():
                 w,h = 'Error','Error'
             self.size_q_pic = (w,h)
         if len(self.pic_answer_dir) == 1:
-            path = self.pic_question_dir[0]
+            path = self.pic_answer_dir[0]
             try:
                 w,h = PIL.Image.open(path).size
             except:
