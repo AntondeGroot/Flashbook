@@ -5,25 +5,15 @@ Created on Fri Sep 14 13:26:43 2018
 @author: Anton
 """
 
-import os
-import numpy as np
-import PIL
 from termcolor import colored
 import wx
 import matplotlib
 import math
-import PIL
 from pathlib import Path
 import random
-import re
-import textwrap
-import pylab
-import matplotlib.backends.backend_agg as agg
-#matplotlib.use('TKAgg')
 import fc_functions as f2
 import timingmodule as m6
 import log_module as log
-import program as p
 import json
 import ctypes
 import gui_flashbook as gui
