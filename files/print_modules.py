@@ -489,7 +489,7 @@ def import_screenshot(self,event):
 
 
 
-def print_preview(self,event): 
+def print_preview(self): 
     print("preview refresh")
     self.SetCursor(wx.Cursor(wx.CURSOR_ARROWWAIT))
     notes2paper(self)
