@@ -7,8 +7,6 @@ from settingsfile import settings
 import bisect
 import ctypes
 import img2pdf
-import fc_initialization as ini2
-import print_initialization as ini3
 import json
 import numpy as np
 from pathlib import Path
@@ -963,7 +961,6 @@ def notes2paper(self):
     self.mode     = 'Question'    
     self.questions   = []
     self.answers     = []
-    ini2.initializeparameters(self) 
     # open file
     if self.onlyatinitialize == 0:
         
