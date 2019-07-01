@@ -7,19 +7,13 @@ from settingsfile import settings
 import bisect
 import ctypes
 import img2pdf
-import json
 import numpy as np
 from pathlib import Path
 import os
 from PIL import Image
 import PIL
-import fb_functions as f
-import fc_functions as f2
-import print_functions as f3
-import fc_modules    as m2
 import program as p
 import log_module as log
-import re
 from termcolor import colored
 import win32clipboard
 from win32api import GetSystemMetrics
@@ -27,6 +21,7 @@ import wx
 import threading
 from timingmodule import Timing
 import latexoperations as ltx
+import imageoperations as imop
 
 def findfullpicpath(self,picname):
     """Instead of just opening the path of a picture
@@ -79,7 +74,7 @@ def createimage(self,card_i):
         #im = PIL.Image.new("RGB", (card_i['size']), 'white')
         #im = PIL.Image.new("RGB", (int(self.total_width*self.scale)+self.bordersize[0]*2 ,int(self.total_height*self.scale)+self.bordersize[1]*2+self.QAline_thickness), 'white')
         if topic != '':
-            _, imagetext = f2.TopicCardFromText(self,topic)
+            _, imagetext = imop.TopicCardFromText(self,topic)
             im = imagetext
         return im
     else:
@@ -90,15 +85,9 @@ def createimage(self,card_i):
         
         scale = card_i['scale']
         if qtext.strip() != '':
-            
-            #self.usertext = text
-            #w,h = self.sizelist[0]
-            #w,h = int(w*scale),int(h*scale)
-            _, imagetext = f2.CreateTextCard(self,'manual',qtext)
+            _, imagetext = imop.CreateTextCard(self,qtext)
             w,h = int(imagetext.size[0]*scale),int(imagetext.size[1]*scale)
-            #_, imagetext = f2.CreateTextCard(self,'manual',qtext)
             im0 = imagetext.resize((w,h), PIL.Image.ANTIALIAS)
-            #im0 = PIL.Image.open(path).resize((w,h), PIL.Image.ANTIALIAS)
             im.paste(im0,(d0,d1))
             
             height += h
@@ -107,8 +96,6 @@ def createimage(self,card_i):
         if qpic.strip() != '':
             picname = qpic
             fullpath = findfullpicpath(self,picname)
-            #w,h = card_i['size']#self.sizelist[1]
-            #w,h = int(w*scale),int(h*scale)
             im0 = PIL.Image.open(fullpath)
             w,h = int(im0.size[0]*scale),int(im0.size[1]*scale)
             im0 = im0.resize((w,h), PIL.Image.ANTIALIAS)
@@ -127,7 +114,7 @@ def createimage(self,card_i):
             #self.usertext = text
             #w,h = self.sizelist[2]
             #w,h = int(w*scale),int(h*scale)
-            _, imagetext = f2.CreateTextCard(self,'manual',atext)
+            _, imagetext = imop.CreateTextCard(self,atext)
             
             w,h = int(imagetext.size[0]*scale),int(imagetext.size[1]*scale)
             im0 = imagetext.resize((w,h), PIL.Image.ANTIALIAS)
@@ -784,18 +771,16 @@ class basiscard(settings):
         if self.topiccard:
             self.LaTeXfontsize = 20
             if topic != '':
-                _, imagetext = f2.TopicCardFromText(self,topic)
+                _, imagetext = imop.TopicCardFromText(self,topic)
                 im = imagetext
                 imagetext.show()
         else:
             
             if qtext.strip() != '':
-                #self.usertext = text
                 w,h = self.sizelist[0]
                 w,h = int(w*self.scale),int(h*self.scale)
-                _, imagetext = f2.CreateTextCard(self,'manual',qtext)
+                _, imagetext = imop.CreateTextCard(self,qtext)
                 im0 = imagetext.resize((w,h), PIL.Image.ANTIALIAS)
-                #im0 = PIL.Image.open(path).resize((w,h), PIL.Image.ANTIALIAS)
                 im.paste(im0,(d0,d1))
                 
                 height += h
@@ -824,9 +809,8 @@ class basiscard(settings):
                 #self.usertext = text
                 w,h = self.sizelist[2]
                 w,h = int(w*self.scale),int(h*self.scale)
-                _, imagetext = f2.CreateTextCard(self,'manual',atext)
+                _, imagetext = imop.CreateTextCard(self,atext)
                 im0 = imagetext.resize((w,h), PIL.Image.ANTIALIAS)
-                #im0 = PIL.Image.open(path).resize((w,h), PIL.Image.ANTIALIAS)
                 im.paste(im0,(d0,d1))
                 height += h
                 width  += w
