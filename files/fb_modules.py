@@ -25,22 +25,21 @@ MessageBox = ctypes.windll.user32.MessageBoxW
 def list2path(templist):
     output = None
     if type(templist) == list:
-        if len(templist)>1:
+        if len(templist) > 1:
             if type(templist[0]) == str:
                 print(f"mode1 {templist}")
                 output = templist[0]
             elif type(templist[0]) == list:
                 output = templist[0][0]
-        elif len(templist)==1:
+        elif len(templist) == 1:
             if type(templist[0]) == str:
                 print(f"mode2 {templist}")
                 output = templist[0]
             elif type(templist[0]) == list:
                 print(f"mode2 {templist}")
                 output = templist[0][0]
-            
-    
     return output
+
 #%%
 def dirchanged(self,path):
     
@@ -246,13 +245,10 @@ def panel4_bitmapleftup(self,event):
         # show current page
         f.ShowPrintScreen(self)     
     
-
-   
 def selectionentered(self,event):
     
     if hasattr(self,'bookname') and self.bookname != '':
-        USER_textinput = self.m_userInput.GetValue()
-        
+        USER_textinput = self.m_userInput.GetValue()       
         PICS_DRAWN = self.Flashcard.nrpics("Question")
         QUESTION_MODE = self.Flashcard.getquestionmode()
         if  USER_textinput != '' or PICS_DRAWN > 0:
@@ -301,10 +297,6 @@ def selectionentered(self,event):
                 print("selection + answer")
                 self.usertext = f.text_to_latex(self,usertext)
                 self.questionmode = True
-                
-                #self.m_modeDisplay.SetValue("Question:")
-                #self.m_userInput.SetValue("")
-                
                 # save everything
                 findic = self.dictionary
                 tempdic = self.tempdictionary
@@ -406,8 +398,7 @@ def arrowscroll(self,event,direction):
     elif direction == 'up':     
         newpos = scrollWin.GetScrollPos(1)-1
     
-    # check if you should go to the next/previous page
-    
+    # check if you should go to the next/previous page   
     self.scrollpos.append(scrollWin.GetScrollPos(0))
     self.scrollpos.pop(0)
     
