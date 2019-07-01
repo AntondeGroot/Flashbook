@@ -42,13 +42,12 @@ def initialize(self):
         log.ERRORMESSAGE("Error: could not access internet")
 
 
-class transfer(gui.MyFrame):
+class filetransfer(gui.MyFrame):
     def __init__(self):
-        initialize(self)
         pass
-        
     
     def m_OpenTransferOnButtonClick(self,event):
+        initialize(self)
         """START MAIN PROGRAM : WIFI SYNC"""
         p.SwitchPanel(self,5)
         p.get_IP(self,event)
