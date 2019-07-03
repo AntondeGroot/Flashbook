@@ -91,6 +91,7 @@ from class_helpmenu import helpmenu
 from class_menuopen import menuopen
 from class_menuflashcard import flashcardmenu
 from class_menubooks import booksmenu
+
 """
 ###############################################################################
 #####              MAINFRAME                                              #####
