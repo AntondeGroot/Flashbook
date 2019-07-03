@@ -216,8 +216,9 @@ class CardsDeck():
         return self.key+str(mode[0]).lower()+str(index)
     
     def __len__(self):
-        """nr of cards"""
-        return len(self.cards)
+        """nr of cards, without counting topics as separate cards"""
+        return len([x for x in self.cards.keys() if 't' not in x])
+        #return len(self.cards)
     
     def len_uniquecards(self):
         """You need to separate topic cards from Q/A cards"""
