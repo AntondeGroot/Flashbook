@@ -72,7 +72,7 @@ class booksmenu(gui.MyFrame):
     def __init__(self):
         pass
     def m_menuCombineBooksOnMenuSelection( self, event ):
-        with wx.FileDialog(self, "Choose which file to delete", wildcard="*.tex",style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST|wx.FD_MULTIPLE) as fileDialog:
+        with wx.FileDialog(self, "Select multiples files to combine", wildcard="*.tex",style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST|wx.FD_MULTIPLE) as fileDialog:
             fileDialog.SetPath(str(self.notesdir)+'\.')    
             if fileDialog.ShowModal() == wx.ID_OK:
                 filepath = fileDialog.GetPaths()
