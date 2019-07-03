@@ -235,18 +235,53 @@ class Latexfile(Commands,settings):
         self.linefile = linefile
         self.linefile_plt = linefile
         return linefile
+    def resetlatexfile(self):
+        ipath = self.filepath
+        """remove all extraneous \n's in the file
+        I tried to implement it in save_file but for some reason it doesn't work"""
+        file = open(ipath, 'r',newline='\r\n')
+        linefile = file.readlines()
+        linefile2 = []
+        for i, item in enumerate(linefile):
+            if type(item) == str:
+                if item.strip() != '':
+                    lst = item.split("\n")
+                    #%%
+                    for it in lst:
+                        it = it.lstrip("\n")
+                        linefile2.append(it)
+        
+        #%%
+    
+        with open(ipath, 'w') as output: 
+            for item in linefile2:
+                output.write("%s" % item)
+    
     
     def save_file(self,linefile):
-        with open(self.filepath, 'w') as output: 
-            #file = ''
-            for i,line in enumerate(linefile):
+        #edit linefile to remove superfluos "\n"
+        linefile2 = []
+        for i, line in enumerate(self.linefile):
+            if type(line) == str:
                 if line.strip() != '':
-                    #file += line
-                    #if i != len(linefile)-1:
-                    #file += "\n"
-                    output.write(line)
+                    splitline = line.split("\n")
+                    for string in splitline:
+                        #remove \n if the string starts with it
+                        string = string.lstrip("\n")
+                        string = string.rstrip("\r")
+                        string = string.rstrip("\n")
+                        linefile2.append(string)
+        self.linefile = linefile2
+        
+        try:
             
+            with open(self.filepath, 'w') as output: 
+                for item in linefile2:
+                    output.write("%s\n" % item)
+        except:
             
+            pass
+        self.resetlatexfile()
     def line_to_components(self,line):
         q = argument(self.question_command,line)
         a = argument(self.answer_command,line)
@@ -364,7 +399,17 @@ class Latexfile(Commands,settings):
         line =  r"\quiz{" + question + "}" + r"\ans{" + answer + "}" + r"\topic{" + topic + "}" + r"\size{" + size + "}"
         self.linefile[index] = line
         self.save_file(self.linefile)
-    
+    def addline(self,index = 0,question = '', answer = '', topic = '', size = [(0,0),(0,0),(0,0),(0,0),(0,0)]):
+        #when the user adds a question and answer, which by definition does not include a picture
+        qpic  = ''
+        qtext = question
+        apic  = ''
+        atext = answer
+        topic = topic
+        size = str([self.textsize(qtext),self.picsize(qpic), self.textsize(atext),self.picsize(apic),self.topicsize(topic)])
+        line = r"\quiz{" + r"\text{"+question+ "}" + "}" + r"\ans{" +r"\text{"+ answer+ "}" + "}" + r"\topic{" + topic + "}" + r"\size{" + size + "}"
+        self.linefile.insert(index,line)
+        self.save_file(self.linefile)
     def insert_line(self, question = '', answer = '', topic = '', size = [(0,0),(0,0),(0,0),(0,0),(0,0)]):
         cmd   = self.pic_command
         qpic  = argument(cmd,question)
@@ -375,4 +420,67 @@ class Latexfile(Commands,settings):
         
         size = str([self.textsize(qtext),self.picsize(qpic), self.textsize(atext),self.picsize(apic),self.topicsize(topic)])
         return r"\quiz{" + question + "}" + r"\ans{" + answer + "}" + r"\topic{" + topic + "}" + r"\size{" + size + "}"
+
+import wx
+import gui_flashbook as gui
+import imageoperations as imop
+def ShowPopupCard(self,trueindex):
+    # get the card
+    rawcard = self.Latexfile.getline_i_card(trueindex)
+    # get data from the cards
+    qtext = rawcard['qtext']
+    qpic  = rawcard['qpic'] 
+    atext = rawcard['atext']
+    apic  = rawcard['apic']
+    topic = rawcard['t']
+    #create the images
+    _, img_text  = imop.CreateTextCard(self,qtext)
+    _, img_pic   = imop.findpicture_path(self,qpic)
+    _, img_text2 = imop.CreateTextCard(self,atext)
+    _, img_pic2  = imop.findpicture_path(self,apic)
+    image  = imop.CombinePics(img_text,img_pic)
+    image2 = imop.CombinePics(img_text2,img_pic2)
+    
+    #%%    
+    #self.cardorder = [index]
+    #self.index = 0
+    #%% resize images
+    image = image.resize((int(image.size[0]/2),int(image.size[1]/2)), PIL.Image.ANTIALIAS)
+    BMP_q = imop.PILimage_to_Bitmap(image)
+    try:
+        image2 = image2.resize((int(image2.size[0]/2),int(image2.size[1]/2)), PIL.Image.ANTIALIAS)
+        BMP_a = imop.PILimage_to_Bitmap(image2)
+    except:
+        BMP_a = wx.NullBitmap
+    #%% images to dialog window                
+    data = [BMP_q, BMP_a, qtext, qpic, atext, apic, topic]        
+    
+    with gui.MyDialog9(self,data) as dlg:
+        if dlg.ShowModal() == wx.ID_OK:
+            print(f"pressed ok\n"*10)
+            #Get user data
+            qtext = dlg.m_textCtrlQtext.GetValue()
+            qpic  = dlg.m_textCtrlQpic.GetValue()
+            atext = dlg.m_textCtrlAtext.GetValue()
+            apic  = dlg.m_textCtrlApic.GetValue()
+            topic = dlg.m_textCtrlTopic.GetValue()                  
+            DelCard = dlg.m_checkBoxDel.GetValue()
+            print(f"DelCard = {DelCard}")
+            
+            #make changes
+            if DelCard == True or (qtext.strip() == '' and qpic.strip() ==''):
+                """the entire card will be deleted"""
+                print("CArd is deleted\n"*10)
+                self.Latexfile.popline(trueindex)
+                try:
+                    self.nr_questions -= 1
+                except:
+                    pass
+            else:
+                self.Latexfile.replace_line(trueindex, qtext= qtext, qpic = qpic, atext = atext,apic = apic, topic = topic)
+            
+            self.Refresh()                                    
+            print("success!!")
+        else: #dialog closed by user
+            print(f"bookname = {self.booknamepath}\n"*10)
 
