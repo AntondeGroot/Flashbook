@@ -155,64 +155,11 @@ class printer(gui.MyFrame):
         print(f"index = {index}")
         trueindex = int(index)
         rawcard = self.Latexfile.getline_i_card(trueindex)
-        
-        #%% create images
-        qtext = rawcard['qtext']
-        qpic  = rawcard['qpic'] 
-        atext = rawcard['atext']
-        apic  = rawcard['apic']
-        topic = rawcard['t']
-        
-        _, img_text  = imop.CreateTextCard(self,qtext)
-        _, img_pic   = imop.findpicture_path(self,qpic)
-        _, img_text2 = imop.CreateTextCard(self,atext)
-        _, img_pic2  = imop.findpicture_path(self,apic)
-        image = imop.CombinePics(img_text,img_pic)
-        image2 = imop.CombinePics(img_text2,img_pic2)
-        
-        #%%    
-        self.cardorder = [index]
-        self.index = 0
-        #%% resize images
-        image = image.resize((int(image.size[0]/2),int(image.size[1]/2)), PIL.Image.ANTIALIAS)
-        BMP_q = imop.PILimage_to_Bitmap(image)
-        try:
-            image2 = image2.resize((int(image2.size[0]/2),int(image2.size[1]/2)), PIL.Image.ANTIALIAS)
-            BMP_a = imop.PILimage_to_Bitmap(image2)
-        except:
-            BMP_a = wx.NullBitmap
-        #%% images to dialog window                
-        data = [BMP_q, BMP_a, qtext, qpic, atext, apic, topic]        
-        
-        with gui.MyDialog9(self,data) as dlg:
-            if dlg.ShowModal() == wx.ID_OK:
-                print(f"pressed ok\n"*10)
-                #Get user data
-                qtext = dlg.m_textCtrlQtext.GetValue()
-                qpic  = dlg.m_textCtrlQpic.GetValue()
-                atext = dlg.m_textCtrlAtext.GetValue()
-                apic  = dlg.m_textCtrlApic.GetValue()
-                topic = dlg.m_textCtrlTopic.GetValue()                  
-                DelCard = dlg.m_checkBoxDel.GetValue()
-                print(f"DelCard = {DelCard}")
-                
-                #make changes
-                if DelCard == True or (qtext.strip() == '' and qpic.strip() ==''):
-                    """the entire card will be deleted"""
-                    print("CArd is deleted\n"*10)
-                    self.Latexfile.popline(trueindex)
-                else:
-                    self.Latexfile.replace_line(trueindex, qtext= qtext, qpic = qpic, atext = atext,apic = apic, topic = topic)
-                
-                #reload cards
-                self.onlyonce = 0                
-                
-                m3.notes2paper(self)                
-                self.Refresh()                                    
-                print("success!!")
-            else: #dialog closed by user
-                print(f"bookname = {self.booknamepath}\n"*10)
-    
+        import latexoperations as ltx
+        ltx.ShowPopupCard(self,trueindex)
+        print("done and done")
+        m3.notes2paper(self)     
+
     def m_colorQAlineOnColourChanged( self, event ):
         original_color = self.QAline_color
         self.FilePickEvent = False
