@@ -999,6 +999,8 @@ def notes2paper(self):
             for _idx_ , card_i in enumerate(cards):
                 if 't' in card_i:
                     pass #don't resize
+                    w,h = card_i["size"]
+                    card_i['size'] = (self.a4page_w,h)
                 else:                    
                     w,h = card_i["size"]
                     if w > min(ColumnWidths) and w > 0:
