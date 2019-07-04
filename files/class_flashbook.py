@@ -5,17 +5,13 @@ Created on Fri Jun 28 10:27:03 2019
 @author: Anton
 """
 import gui_flashbook as gui
-import threading
 import wx
 import PIL
 import program as p
-import fc_functions    as f2
 import fb_modules    as m
 import fb_functions as f
 import print_modules as m3
 from pathlib import Path
-from latexoperations import Commands as cmd
-import log_module    as log
 ICON_EXCLAIM=0x30
 import accelerators_module as m7
 import ctypes
