@@ -3,21 +3,12 @@
 Created on Fri Sep 14 12:39:47 2018
 @author: Anton
 """
-from termcolor import colored
 import numpy as np
 import PIL
-import wx
-import os
 import math
 from PIL import ImageOps
 #matplotlib.use('Agg')
 import pylab
-from pathlib import Path
-import fb_functions    as f
-import log_module      as log
-import program as p
-import json
-import re
 #import matplotlib.backends.backend_agg as agg
 pylab.ioff() # make sure it is inactive, otherwise possible qwindows error    .... https://stackoverflow.com/questions/26970002/matplotlib-cant-suppress-figure-window
 from matplotlib.figure import Figure
@@ -30,9 +21,6 @@ MB_ICONINFORMATION = 0x00000040
 MessageBox = ctypes.windll.user32.MessageBoxW
 MB_YESNO = 0x00000004
 MB_DEFBUTTON2 = 0x00000100
-
-
-
 
 def CreateTextCardPrint(self,key):
     
@@ -93,7 +81,3 @@ def CreateTextCardPrint(self,key):
         var = var + border
     imagetext = img.crop((0, 0, var, img.size[1]))
     return TextCard, imagetext 
-
-
-    
-
