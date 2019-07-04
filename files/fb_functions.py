@@ -7,19 +7,15 @@ from termcolor import colored
 import numpy as np
 import PIL
 import wx
-import os
 import math
 #matplotlib.use('Agg')
 import pylab
 from pathlib import Path
 import re
 import json
-import PIL
-import numpy as np
 from PIL import ImageOps
 import imageoperations as imop
 import fc_functions as fc
-import program as p
 import log_module as log
 #import matplotlib.backends.backend_agg as agg
 
@@ -427,13 +423,6 @@ def ShowInPopup(self,event,mode):
 
 
 #%% turn user LaTeX macro into useable LaTeX code
-
-def is_number(s):
-    try:
-        int(s)
-        return True
-    except ValueError:
-        return False
 
 def findchar(char,string,nr):
     """find a character in a string 
