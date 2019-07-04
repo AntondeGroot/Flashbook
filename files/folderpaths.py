@@ -25,8 +25,6 @@ class paths():
         
         dirs = [self.appdir, self.notesdir, self.picsdir, self.booksdir, self.tempdir, self.bordersdir, self.resourcedir, self.dirpdf, self.dirsettings, self.dirIP, self.dirpdfbook]
         
-        #print("="*90)
-        #print(f"\nThe files will be saved to the following directory: {self.appdir}\n")
         for item in dirs:
             if not item.exists():
                 item.mkdir()
@@ -34,4 +32,3 @@ class paths():
         return self.notesdir
     def pics(self):
         return self.picsdir
-    
