@@ -11,9 +11,11 @@ import os
 import fc_functions    as f2
 from pathlib import Path
 import numpy as np
-from folderpaths import paths
 import re
 import math
+import wx
+import gui_flashbook as gui
+import imageoperations as imop
 #%% functions
 
 def find_hook(hookpos, string):    
@@ -421,9 +423,7 @@ class Latexfile(Commands,settings):
         size = str([self.textsize(qtext),self.picsize(qpic), self.textsize(atext),self.picsize(apic),self.topicsize(topic)])
         return r"\quiz{" + question + "}" + r"\ans{" + answer + "}" + r"\topic{" + topic + "}" + r"\size{" + size + "}"
 
-import wx
-import gui_flashbook as gui
-import imageoperations as imop
+
 def ShowPopupCard(self,trueindex):
     # get the card
     rawcard = self.Latexfile.getline_i_card(trueindex)
