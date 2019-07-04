@@ -6,23 +6,11 @@ Created on Fri Jun 28 13:33:22 2019
 """
 import print_modules as m3
 import gui_flashbook as gui
-import threading
-import wx
-import PIL
-import program as p
 import fb_functions    as f
 import fb_modules as m
 from pathlib import Path
-from latexoperations import Commands as cmd
-import log_module    as log
 ICON_EXCLAIM=0x30
 import historygraph
-import ctypes
-ICON_STOP = 0x10
-MB_ICONINFORMATION = 0x00000040
-MessageBox = ctypes.windll.user32.MessageBoxW
-MB_YESNO = 0x00000004
-MB_DEFBUTTON2 = 0x00000100
 
 def settings_reset(self):
     settingsfile = Path(self.dirsettings,"settings.txt")
@@ -69,7 +57,6 @@ class menusettings(gui.MyFrame):
             path.unlink()
         historygraph.DisplayGraph(self)
         
-    
     def m_resetselectionOnButtonClick( self, event ):           
         m.resetselection(self,event)
     
