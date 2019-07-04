@@ -21,10 +21,6 @@ import gui_flashbook as gui
 MB_ICONINFORMATION = 0x00000040
 MessageBox = ctypes.windll.user32.MessageBoxW
 
-
-
-
-
 def buttonCorrect(self):
     self.NEWCARD = True
     f2.clearbitmap(self)
@@ -217,8 +213,7 @@ def startprogram(self,filepath):
     
     self.CardsDeck.set_cards(cards=cards,notesdir=self.notesdir)  # set_cards converts the text to somthing Matplotlib can understand
     
-    #except:
-    #    log.ERRORMESSAGE("Error: could not find questions/answers")
+
 
     #open dialog window
     """open My dialog, don't forget to add two parameters to "def __init__( self, parent,MaxValue,Value )" within MyDialog 
