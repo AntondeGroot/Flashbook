@@ -7,23 +7,14 @@ Created on Sat Apr 13 14:21:37 2019
 
 # sources: https://stackoverflow.com/questions/17667903/python-socket-receive-large-amount-of-data
 from termcolor import colored
-
-import wmi # Get IP address
-import os  # Directory settings
+import os  
 #%% The server
 import socket
 import struct
 import time
-import datetime as dt
-import sync_functions  as f4
 import threading
-import ctypes
 import json
-import wx
-import wx.richtext
 import base64
-
-
 
 def CheckServerStatus(HOST,PORT):
     BOOL = False
@@ -42,8 +33,6 @@ def CheckServerStatus(HOST,PORT):
     except:
         pass
     return BOOL
-    
-    
 
 def bytes2string(byt):
     str1 = base64.b64encode(byt)
@@ -80,7 +69,6 @@ def recvall(sock, n):
         data += packet
     return data
 
-
 def Socket_send(HOST, PORT, message):
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -89,15 +77,6 @@ def Socket_send(HOST, PORT, message):
         data = recv_msg(s)
         #print(' received' ,repr(data))
         return data
-
-import os
-import time
-import base64
-import struct
-import pickle
-import json
-
-
 
 def GetDataList(basedir,appendDir,excludeDir,mode,PICKLE):
     X = os.listdir(basedir)
@@ -138,11 +117,9 @@ def GetDataList(basedir,appendDir,excludeDir,mode,PICKLE):
                 elif mode == "absolute":
                     fileslist_a.append(path)    
                 #store    
-                
-           
-    #pickle it so you an send it over Sockets
-    msg = {'overwritefiles': fileslist_w, 'appendfiles': fileslist_a}
     
+    #pickle it so you can send it over Sockets
+    msg = {'overwritefiles': fileslist_w, 'appendfiles': fileslist_a} 
     return msg
 
 
