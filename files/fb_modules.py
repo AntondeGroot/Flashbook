@@ -4,14 +4,12 @@ Created on Fri Sep 14 13:26:43 2018
 @author: Anton
 """
 from random import randint
-from termcolor import colored
 import numpy as np
 import PIL
 import wx
 import os
 import fb_functions as f
 import timingmodule as m6
-import program as p
 import log_module as log
 import json
 import ctypes
