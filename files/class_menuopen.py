@@ -17,7 +17,10 @@ ICON_STOP = 0x10
 MB_ICONINFORMATION = 0x00000040
 MessageBox = ctypes.windll.user32.MessageBoxW
 MB_YESNO = 0x00000004
+MB_OKCANCEL = 0x00000001
+MB_YESNOCANCEL = 0x00000003
 MB_DEFBUTTON2 = 0x00000100
+IDOK = 1
 
 class menuopen(gui.MyFrame):
     def __init__(self):
@@ -34,9 +37,9 @@ class menuopen(gui.MyFrame):
         
     def m_menuItemBackToMainOnMenuSelection( self, event ):
         if self.panel0.IsShown():
-            val = MessageBox(0, "Are you sure you want to exit?", "Exit",  MB_YESNO | MB_DEFBUTTON2 )
+            value = MessageBox(0, "Are you sure you want to exit?", "Exit",  MB_OKCANCEL | MB_DEFBUTTON2 | MB_ICONINFORMATION)
             # Answer was yes, user wants to exit the app
-            if val == 6: 
+            if value == IDOK: 
                 self.Close()
         else:
             p.SwitchPanel(self,0)  
