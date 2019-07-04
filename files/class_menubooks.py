@@ -6,16 +6,10 @@ Created on Fri Jun 28 14:13:17 2019
 """
 import math
 import gui_flashbook as gui
-import threading
 import wx
 import PIL
-import program as p
-import print_modules as m3
-import fc_modules as m2
 from pathlib import Path
-from latexoperations import Commands as cmd
 import imageoperations as imop
-import log_module    as log
 import os
 import random
 import itertools
@@ -23,10 +17,8 @@ import pylab
 pylab.ioff() # make sure it is inactive, otherwise possible qwindows error    .... https://stackoverflow.com/questions/26970002/matplotlib-cant-suppress-figure-window
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
-
-ICON_EXCLAIM=0x30
-
 import ctypes
+ICON_EXCLAIM=0x30
 ICON_STOP = 0x10
 MB_ICONINFORMATION = 0x00000040
 MessageBox = ctypes.windll.user32.MessageBoxW
@@ -229,9 +221,7 @@ class booksmenu(gui.MyFrame):
                     imagetext = PIL.Image.frombytes("RGB", size, raw_data, decoder_name='raw', )
                     imagetext = imop.cropimage(imagetext,0)
                     imagetext = imop.cropimage(imagetext,1)
-                    print(bookname)
                     path = Path(self.booksdir,bookname,bookname+"-0001.jpg")
-                    print(path)
                     N = 1.3
                     a4page_w  = round(1240*N) # in pixels
                     a4page_h  = round(1754*N)
