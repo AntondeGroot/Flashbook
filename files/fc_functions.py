@@ -4,20 +4,15 @@ Created on Fri Sep 14 12:39:47 2018
 
 @author: Anton
 """
-import latexoperations as ltx
 import json
 import math
 import os
 import imageoperations as imop
 import PIL
 import PIL.Image
-import program as p
 import log_module as log
-import random
 import re
 from pathlib import Path
-from termcolor import colored
-import numpy as np
 import wx
 ## figures: the following makes sure there are no figures popping up
 #  make sure it is inactive, otherwise possible qwindows error might occur: https://stackoverflow.com/questions/26970002/matplotlib-cant-suppress-figure-window
