@@ -7,17 +7,12 @@ Created on Fri Jun 28 13:11:31 2019
 import gui_flashbook as gui
 import threading
 import wx
-import PIL
 import program as p
-import fc_functions    as f2
 import sync_functions  as f4
-import fc_modules as m2
 import sync_modules  as m4
 from pathlib import Path
-from latexoperations import Commands as cmd
 import log_module    as log
 ICON_EXCLAIM=0x30
-import accelerators_module as m7
 import json
 import ctypes
 import wmi
