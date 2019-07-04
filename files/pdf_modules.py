@@ -17,7 +17,7 @@ import program as p
 ICON_EXCLAIM=0x30
 ICON_STOP = 0x10
 MB_ICONINFORMATION = 0x00000040
-
+MessageBox = ctypes.windll.user32.MessageBoxW
 def AddPathvar():
     """
     A binary containing "Poppler for Windows", a PDF rendering library.
@@ -54,8 +54,7 @@ def ConvertPDF_to_JPG(self, PDFdir, tempdir, JPGdir):
         Use module pdf2image.
         Try functions 'convert_from_path' and 'convert_from_bytes' for conversion.
         If both methods fail user gets instructed to use online-converter instead."""
-    
-    MessageBox = ctypes.windll.user32.MessageBoxW     
+         
     t_MBox = lambda a,b,c,d :threading.Thread(target=MessageBox,args=(a,b,c,d)).start()
     
     t_MBox(0, f'The PDF -> JPG conversion has started.\nIt may take a few minutes per book.', "Message", MB_ICONINFORMATION)   
