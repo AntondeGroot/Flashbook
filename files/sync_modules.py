@@ -16,16 +16,10 @@ import wmi
 import os
 #%% The server
 import socket
-import struct
 import time
-import datetime as dt
 import sync_functions  as f4
-import threading
 import ctypes
 import json
-import wx
-import wx.richtext
-import base64
 
 def Display(text,self):
     self.m_txtStatus.SetValue(text)
