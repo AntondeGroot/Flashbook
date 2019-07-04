@@ -21,7 +21,6 @@ import wx._html
 import fb_modules    as m
 import fb_functions    as f
 #for colored error messages
-from termcolor import colored
 
 #ctypes:
 ICON_EXCLAIM=0x30
