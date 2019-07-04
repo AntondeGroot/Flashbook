@@ -5,15 +5,10 @@ Created on Fri Jun 28 10:44:11 2019
 @author: Anton
 """
 import gui_flashbook as gui
-import threading
 import wx
-import PIL
 import program as p
 import fc_functions    as f2
 import fc_modules as m2
-from pathlib import Path
-from latexoperations import Commands as cmd
-import log_module    as log
 ICON_EXCLAIM=0x30
 import accelerators_module as m7
 import os
@@ -62,7 +57,6 @@ class flashcard(gui.MyFrame):
         self.questions2  = []
         f2.SetScrollbars_fc(self)
         
-        
         self.NEWCARD = True
         m7.AcceleratorTableSetup(self,"flashcard","set")
         p.SwitchPanel(self,2)
@@ -94,9 +88,11 @@ class flashcard(gui.MyFrame):
     def m_scrolledWindow11OnLeftUp( self, event ):
         m2.buttonCorrect(self)
         event.Skip()
+        
     def m_scrolledWindow11OnRightUp( self, event ):
         m2.buttonWrong(self)
         event.Skip()
+        
     def m_scrolledWindow11OnMouseWheel( self, event ):
         m2.switchCard(self)
         event.Skip()
@@ -105,6 +101,7 @@ class flashcard(gui.MyFrame):
         m2.buttonWrong(self)
         SaveTime(self)
         event.Skip()
+        
     def m_bitmapScrollFCOnRightUp( self, event ):
         m2.buttonWrong(self)   
         event.Skip()
