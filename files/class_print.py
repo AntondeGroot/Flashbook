@@ -6,13 +6,11 @@ Created on Fri Jun 28 13:33:22 2019
 """
 import gui_flashbook as gui
 import threading
+import latexoperations as ltx
 import wx
 import PIL
 import program as p
 import print_modules as m3
-from pathlib import Path
-from latexoperations import Commands as cmd
-import imageoperations as imop
 import log_module    as log
 ICON_EXCLAIM=0x30
 
@@ -55,9 +53,6 @@ class printer(gui.MyFrame):
         self.panel_pos      = (0,0)        
         self.questionmode   = True
         self.zoom           = 1.0
-        
-        
-        
         
         self.onlyinitiate = 0
         self.onlyonce = 0
@@ -136,9 +131,7 @@ class printer(gui.MyFrame):
         m3.print_preview(self)
     
     def m_bitmap3OnLeftDown(self, event):
-        print("\n"*10)
         
-        print("klikte op pdf")
         self.pdfmousepos = self.m_bitmap3.ScreenToClient(wx.GetMousePosition())
         
         W, H = self.m_panel32.GetSize()
@@ -147,17 +140,10 @@ class printer(gui.MyFrame):
         
         pagerectdict = self.pdfpage.get_cardrect()
         self.RectangleDetection = m3.RectangleDetection(pagerectdict)
-        print(f"pos = {Wp,Hp}")
         key = self.RectangleDetection.findRect((Wp,Hp))
         index = key[0][1:]
-        print(f"pdf = {self.a4page_w}")
-        
-        print(f"index = {index}")
-        trueindex = int(index)
-        rawcard = self.Latexfile.getline_i_card(trueindex)
-        import latexoperations as ltx
+        trueindex = int(index)        
         ltx.ShowPopupCard(self,trueindex)
-        print("done and done")
         m3.notes2paper(self)     
 
     def m_colorQAlineOnColourChanged( self, event ):
@@ -175,9 +161,7 @@ class printer(gui.MyFrame):
         RGB = self.m_colorPDFline.GetColour()
         self.horiline_color  = (RGB.Red(),RGB.Green(),RGB.Blue())    
         
-        print("horiline")
         if self.m_checkBoxSameColor.GetValue() == True:
-            print(f" bools  = {self.vertline_color != original_color}, {self.horiline_color != original_color}")    
             if self.vertline_color != original_color or self.horiline_color != original_color:
                 self.vertline_color  = self.horiline_color 
                 self.m_colorVERTline.SetColour(self.horiline_color)
@@ -231,7 +215,6 @@ class printer(gui.MyFrame):
     def m_pdfCurrentPageOnTextEnter( self, event ):
         try:
             var = self.m_pdfCurrentPage.GetValue()
-            print(f"var is {var}")
             if var == "":
                 self.NrCardsPreview = ''
             elif int(var) > 0:
