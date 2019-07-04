@@ -5,24 +5,11 @@ Created on Fri Jun 28 13:44:04 2019
 @author: Anton
 """
 import gui_flashbook as gui
-import threading
 import wx
 import PIL
 import imageoperations as imop
 import program as p
-import fc_functions    as f2
-import print_modules as m3
 from pathlib import Path
-from latexoperations import Commands as cmd
-import log_module    as log
-ICON_EXCLAIM=0x30
-
-import ctypes
-ICON_STOP = 0x10
-MB_ICONINFORMATION = 0x00000040
-MessageBox = ctypes.windll.user32.MessageBoxW
-MB_YESNO = 0x00000004
-MB_DEFBUTTON2 = 0x00000100
 
 class helpmenu(gui.MyFrame):
     def __init__(self):
@@ -52,11 +39,14 @@ class helpmenu(gui.MyFrame):
             if dlg.ShowModal() == wx.ID_OK:
                 pass
             
-    def m_richText1OnLeftDown(self,event): #helpmenuitem
+    def m_richText1OnLeftDown(self,event): 
         p.SwitchPanel(self,self.lastpage)
-    def m_richText2OnLeftDown(self,event): #helpmenuitem
+        
+    def m_richText2OnLeftDown(self,event): 
         p.SwitchPanel(self,self.lastpage)
-    def m_richText3OnLeftDown(self,event): #helpmenuitem
+        
+    def m_richText3OnLeftDown(self,event): 
         p.SwitchPanel(self,self.lastpage)
-    def m_richText4OnLeftDown(self,event): #helpmenuitem
+        
+    def m_richText4OnLeftDown(self,event): 
         p.SwitchPanel(self,self.lastpage)
