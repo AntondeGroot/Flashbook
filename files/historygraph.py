@@ -1,24 +1,14 @@
 # -*- coding: utf-8 -*-
 """
-Created on Mon Mar 18 16:15:34 2019
-
-@author: Anton
-"""
-
-# -*- coding: utf-8 -*-
-"""
 Created on Fri Mar  8 21:18:48 2019
 
 @author: Anton
 """
-import fc_functions as f2
 import PIL
 import pylab
 import wx
 import textwrap
-
 pylab.ioff() 
-import os
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 from matplotlib.figure import Figure
@@ -30,10 +20,7 @@ from pathlib import Path
 import json
 import time
 from datetime import datetime
-import random
-
 import imageoperations as imop
-
 
 #% FUNCTIONS
 def GetValues(timedict,datethreshold):
@@ -106,8 +93,7 @@ def drawcard(X,Y,legend2):
         ax.bar(X[i],Y[i],edgecolor = 'black', color=legend[i][0] ,width = 1,  align='center', fill=True,linestyle = '--', snap=False, hatch=legend2[x][1])    
     ax.axis('on')
     
-    #Set limit of Y axis:
-    #The maximum of the Y-axis should be 10 Minutes unless it has been surpassed
+    #Set limit of Y axis: The maximum of the Y-axis should be 10 Minutes unless it has been surpassed
     if Y !=[] and max(Y) < 10: 
         ax.set_ylim(top=10)
     if Y == []:
@@ -124,20 +110,16 @@ def drawcard(X,Y,legend2):
 
 def TimeString(seconds): 
     """Convert nr Seconds to a string of one of the following formats: 
-        if it contains Hours:   at least | '01Hours00Minutes00Seconds' |  a leading '0'
-        if it contains Minutes: at least | '1Minutes00Seconds'         | no leading '0'
-        if it contains Seconds: at least | '1Seconds'                  | no leading '0'
+        if it contains Hours:   at least | '1Hours00Minutes'           | no seconds
+        if it contains Minutes: at least | '1Minutes00Seconds'         |
+        if it contains Seconds: at least | '1Seconds'                  |
         
         The variable Seconds will get subtracted unless we can no longer subtract [HOURS] and [MINUTES] and we know that the remainder is [SECONDS]
     """
     txt = ""
-    
     hours = int(seconds/3600)
     if hours > 0:
-        if len(str(hours)) == 1:
-            txt += f"0{hours}h"
-        else:
-            txt += f"{hours}h"
+        txt += f"{hours}h"
         seconds = seconds - hours*3600 
     
     minutes = int(seconds/60)
@@ -149,7 +131,7 @@ def TimeString(seconds):
         seconds = seconds - minutes*60
         
     seconds = int(seconds) #round off
-    if seconds >= 0:
+    if seconds >= 0 and hours == 0:
         if len(str(seconds)) == 1 and (minutes != 0 or hours != 0):
             txt += f"0{seconds}s"
         else:
