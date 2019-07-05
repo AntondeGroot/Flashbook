@@ -72,6 +72,8 @@ def textcard(TEXT,width,textpos):
     return PIL.Image.frombytes("RGB", size, raw_data, decoder_name='raw', )
 
 def drawcard(X,Y,legend2):
+    from matplotlib.ticker import MaxNLocator
+    
     Y = Sec2Min(Y) #the Y-axis has a scale in Minutes
     legend = [legend2[x] for x in X]
     
@@ -85,7 +87,7 @@ def drawcard(X,Y,legend2):
     legend = [x[2] for x in X2]
     
     height_card = 2
-    width_card = 3
+    width_card  = 3
     fig = Figure(figsize=[width_card, height_card],dpi=100)
     fig.patch.set_facecolor( (254/255, 240/255, 231/255, 1) ) #flashbook theme color rescaled to [0,1]
     ax = fig.gca()
@@ -96,8 +98,12 @@ def drawcard(X,Y,legend2):
     #Set limit of Y axis: The maximum of the Y-axis should be 10 Minutes unless it has been surpassed
     if Y !=[] and max(Y) < 10: 
         ax.set_ylim(top=10)
+    elif Y !=[] and max(Y) > 10:
+        ax.yaxis.set_major_locator(MaxNLocator(integer=True,steps=[1,2,3,4,5,10],nbins=6))
+        
     if Y == []:
         ax.set_ylim(top=10)
+    
     ax.get_xaxis().set_visible(False)
     
     canvas = FigureCanvas(fig)
@@ -168,8 +174,7 @@ def drawlegend(totalbooks, totalvalues, legendbackup, hatchlist):
     img = PIL.Image.frombytes("RGB", size, raw_data, decoder_name='raw', )
     #cut down image
     color = ( 254, 240, 231 )
-    img = imop.cropimage(img, 0, backgroundcolor = color, border = 5)
-    img = imop.cropimage(img, 1, backgroundcolor = color, border = 5)
+    img = imop.cropimage_wh(img, backgroundcolor=color, border=5)
     
     return img
 
@@ -211,6 +216,9 @@ def CreateGraph(self):
     #% COLLECT ALL DATA
     data_fb = GetValues(timedict_fb,datethreshold)
     data_fc = GetValues(timedict_fc,datethreshold)    
+    totalbooks_fb = data_fb[0]
+    totalbooks_fc = data_fc[0]
+    
     # COMBINE DATA
     sortedDATA = sortsubdata(data_fc) + sortsubdata(data_fb) #prioritize Flashcard statistics over Flashbook: (10s,1s) + (2s,20s) = > (1,10,2,20) ordered from small to large
     
@@ -240,51 +248,119 @@ def CreateGraph(self):
             legend[book] = tuple((color[i],hatchlist[i] ))
         legendbackup = legend    
         
+        center_column_1 = 0
+        center_column_2 = 0
+        center_row_1 = 0 
+        center_row_2 = 0
+        graphswidth = 0
+        legendwidth = 0
+        graphsheight = 0
+        row1_h = 0
+        row2_h = 0
         #CREATE TEXT IMAGES
+        # create columnlabels
         txt1 = textcard("Today",3.5,2)
+        txt1 = imop.cropimage_wh(txt1, backgroundcolor=(254,240,231), border=5)
         txt2 = textcard(f"Last {datethreshold} days", 3,2)
+        txt2 = imop.cropimage_wh(txt2, backgroundcolor=(254,240,231), border=5)
+        # rowlabels
         txt3 = textcard("Flashbook",2,4).rotate(90, expand = 1)
+        txt3 = imop.cropimage_wh(txt3, backgroundcolor=(254,240,231), border=5)
         txt4 = textcard("Flashcard",2,4).rotate(90, expand = 1)
+        txt4 = imop.cropimage_wh(txt4, backgroundcolor=(254,240,231), border=5)
         
         #CREATE IMAGES
-        im1 = drawcard(data_fb[2],data_fb[3],legend)
-        im2 = drawcard(data_fb[0],data_fb[1],legend)
-        im3 = drawcard(data_fc[2],data_fc[3],legend)
-        im4 = drawcard(data_fc[0],data_fc[1],legend)
+        if len(totalbooks_fb) > 0:
+            im1 = drawcard(data_fb[2],data_fb[3],legend)
+            im1 = imop.cropimage_wh(im1, backgroundcolor=(254,240,231), border=10)
+            im2 = drawcard(data_fb[0],data_fb[1],legend)
+            im2 = imop.cropimage_wh(im2, backgroundcolor=(254,240,231), border=10)
+            w1,h1 = im1.size
+            w2,h2 = im2.size
+            center_row_1 = int(h1/2)
+            center_column_1 = int(w1/2)
+            center_column_2 = w1 + int(w2/2)
+            graphswidth = w1 + w2
+            graphsheight += max(h1, h2)
+            row1_h = max(h1, h2)
+        else:
+            w1,h1,w2,h2 = 0,0,0,0
+        if len(totalbooks_fc) > 0 :
+            im3 = drawcard(data_fc[2],data_fc[3],legend)
+            im3 = imop.cropimage_wh(im3, backgroundcolor=(254,240,231), border=10)
+            im4 = drawcard(data_fc[0],data_fc[1],legend)
+            im4 = imop.cropimage_wh(im4, backgroundcolor=(254,240,231), border=10)
+            w3,h3 = im3.size
+            w4,h4 = im4.size
+            center_row_2 = h1 + int(h3/2)
+            center_column_1 = int(w3/2)
+            center_column_2 = w3 + int(w4/2)
+            graphswidth = w3 + w4
+            graphsheight += max(h3, h4)
+            row2_h = max(h3, h4)
+        else:
+            w3,h3,w4,h4 = 0,0,0,0
         im5 = drawlegend(totalbooks,totalvalues,legendbackup,hatchlist)
+        legendwidth = im5.width
+        legendheight = im5.height
         
+        #combine images into header
         # COMBINE ALL IMAGES TO A MOZAIC
-        width = im1.width + im2.width + txt3.width+im5.width
-        height = max(im1.height*2 + txt1.height, im5.height+txt2.height)
-        new_im = PIL.Image.new('RGB', (width, height), (254,240,231))
-        new_im.paste( txt1, (txt3.width , 0))
-        new_im.paste( txt3, (0 , txt1.height))
-        new_im.paste( txt4, (0 , txt1.height+txt3.height))
-        new_im.paste( txt2, (txt3.width + txt1.width , 0 ))
-        new_im.paste( im1,  (txt3.width , txt1.height))
-        new_im.paste( im2,  (txt3.width+im1.width , txt2.height))
-        new_im.paste( im3,  (txt3.width , txt1.height+im1.height))
-        new_im.paste( im4,  (txt3.width+im1.width , txt2.height+im2.height))
-        new_im.paste( im5,  (txt3.width+im1.width+im2.width , int(txt2.height*1.5)))
-        new_im.paste
+        
+        rowlabelwidth = max(txt3.width, txt4.width)
+        columnlabelheight = max(txt1.height, txt2.height)
+        
+        totalwidth = graphswidth + rowlabelwidth + legendwidth
+        totalheight = max(graphsheight + columnlabelheight, legendheight)
+        
+        new_im = PIL.Image.new('RGB', (totalwidth, totalheight), (254,240,231))
+        
+        new_im.paste( txt1, (rowlabelwidth + center_column_1 - int(txt1.width/2), 0))
+        new_im.paste( txt2, (rowlabelwidth + center_column_2 - int(txt2.width/2), 0 ))
+        print(f"centers = {center_column_1,center_column_2}")
+        if center_row_1 > 0:
+            center_row_1 += columnlabelheight
+            new_im.paste( txt3, (0 , center_row_1 - int(txt3.height/2)))
+        
+        if center_row_2 > 0 :
+            center_row_2 += columnlabelheight
+            new_im.paste( txt4, (0 , center_row_2 - int(txt4.height/2)))
+        
+        try:
+            new_im.paste( im1,  (rowlabelwidth , columnlabelheight))
+            new_im.paste( im2,  (rowlabelwidth + im1.width , columnlabelheight))
+        except: pass
+        try:
+            new_im.paste( im3,  (rowlabelwidth + center_column_1 - int(im3.width/2), center_row_2 - int(im3.height/2))) #txt1.height+h1))
+            new_im.paste( im4,  (rowlabelwidth + center_column_2 - int(im4.width/2), txt2.height+h2))
+        except: pass
+        
+        new_im.paste( im5,  (txt3.width+graphswidth , int(txt2.height*1.5)))
+        #new_im.paste
     else:
         new_im = PIL.Image.new('RGB', (1, 1), (254, 240, 231))
-    
+    print(f"image size = {new_im.size}")
     #resize horizontally
-    VirtualWidth = self.m_panelGraph.GetVirtualSize()[0]
-    VirtualWidth = int(VirtualWidth * 0.95)
-    if new_im.width == 0: #just to avoid /0 errors
-        new_im.width = 1
-    h = int(new_im.height/new_im.width*VirtualWidth)
-    w = VirtualWidth
-    
-    #resize vertically
-    if h > 440:
-        w = int(w/h*440)
-        h = 440
-    
+    try:
+        VirtualWidth, VirtualHeight = self.m_panelGraph.GetVirtualSize()
+        VirtualWidth  = int(VirtualWidth * 0.95)
+        VirtualHeight = int(VirtualHeight * 0.95)
+            
+        #resize image if it is too large
+        ImageWidth, ImageHeight = new_im.size
+        if ImageWidth > VirtualWidth:
+            ImageHeight = int(ImageHeight/ImageWidth*VirtualWidth)
+            ImageWidth = VirtualWidth
+        if ImageHeight > VirtualHeight:
+            ImageWidth = int(ImageWidth/ImageHeight*VirtualHeight)
+            ImageHeight = VirtualHeight
+
+        new_im = new_im.resize((ImageWidth, ImageHeight), PIL.Image.ANTIALIAS)
+    except:#if testgraph is used
+        w,h = 1207,270
     #output
-    new_im = new_im.resize((w, h), PIL.Image.ANTIALIAS)
+    
+    #new_im = new_im.resize((w, h), PIL.Image.ANTIALIAS)
     BOOL = len(totalvalues) > 0
     return BOOL, new_im
 
@@ -327,6 +403,14 @@ def testmodule():
     
     legendbackup = legend    
     im = drawlegend(totalbooks,totalvalues,legendbackup,hatchlist)
-    #im.show()
+    im.show()
     
 #testmodule()
+
+class testgraph():
+    def __init__(self):
+        self.dirsettings = r"C:\Users\Anton\AppData\Local\Flashbook\settings"
+        self.GraphNdays = 30
+        boolean, im = CreateGraph(self)
+        #im.show()
+test = testgraph()
