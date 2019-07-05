@@ -30,6 +30,10 @@ def PILimage_to_Bitmap(image):
     image2 = wx.Bitmap(image2)
     return image2
 
+def cropimage_wh(img, backgroundcolor=(255,255,255), border=20):
+    img = cropimage(img, 0, backgroundcolor=backgroundcolor, border=border)
+    img = cropimage(img, 1, backgroundcolor=backgroundcolor, border=border)
+    return img
 def cropimage(img, x, backgroundcolor=(255,255,255), border=20):
     # standard RGB color:
     # white = (255,255,255)
