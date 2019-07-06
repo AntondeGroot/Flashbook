@@ -148,7 +148,7 @@ def drawcard(x_values,y_values,legend_dict):
     return PIL.Image.frombytes("RGB", size, raw_data, decoder_name='raw', )
 
 
-def TimeString(seconds): 
+def seconds_to_timestring(seconds): 
     """Convert nr Seconds to a string of one of the following formats: 
         if it contains Hours:   at least | '1Hours00Minutes'           | no seconds
         if it contains Minutes: at least | '1Minutes00Seconds'         |
@@ -188,7 +188,7 @@ def drawlegend(totalbooks, totalvalues, legendbackup, hatchlist):
     
     totalvalue_it  = iter(totalvalues)
     labels = totalbooks
-    labels = [textwrap.fill(f"{x} ({ TimeString(next(totalvalue_it))})",40) for x in totalbooks]
+    labels = [textwrap.fill(f"{x} ({ seconds_to_timestring(next(totalvalue_it))})",40) for x in totalbooks]
     legend = plt.legend( handles, labels, loc=2, framealpha=False, frameon=True, markerscale=3.6, markerfirst=True, fontsize=12 )
     
     fig = Figure( figsize=[4, 40], dpi=100 )
@@ -230,8 +230,8 @@ def sortsubdata(data):
     X2.sort( key=takeSecond )
     return X2
 
-def SecToMin(listing):   
-    return [round(item/60,1) for item in listing]
+def SecToMin(list_):   
+    return [round(seconds/60,1) for seconds in list_]
 
 def CreateGraph(self):
     DATE_THRESHOLD = self.GraphNdays
