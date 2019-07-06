@@ -71,41 +71,75 @@ def textcard(TEXT,width,textpos):
     size = canvas.get_width_height()
     return PIL.Image.frombytes("RGB", size, raw_data, decoder_name='raw', )
 
-def drawcard(X,Y,legend2):
+def drawcard(x_values,y_values,legend_dict):
     from matplotlib.ticker import MaxNLocator
     
-    Y = Sec2Min(Y) #the Y-axis has a scale in Minutes
-    legend = [legend2[x] for x in X]
+    """ legend has a Color/Hatch tuple """
     
-    X_it,Y_it,legend_it = iter(X),iter(Y),iter(legend)
-    #sort small to large
-    X2 = [(next(X_it),next(Y_it),next(legend_it)) for _ in X]
-    # sort list with key
-    X2.sort(key=takeSecond)
-    X = [x[0] for x in X2]
-    Y = [x[1] for x in X2]
-    legend = [x[2] for x in X2]
+    y_values = SecToMin(y_values) # convert seconds to minutes
+    legend_list = [legend_dict[bookname] for bookname in x_values]
     
-    height_card = 2
-    width_card  = 3
-    fig = Figure(figsize=[width_card, height_card],dpi=100)
-    fig.patch.set_facecolor( (254/255, 240/255, 231/255, 1) ) #flashbook theme color rescaled to [0,1]
+    # sort tuples X-values/Y-values/Legend by Y-values
+    x_it, y_it, legend_it = iter(x_values),iter(y_values),iter(legend_list)
+    tuple_list = [(next(x_it), next(y_it), next(legend_it)) for _ in x_values]
+    tuple_list.sort(key=takeSecond)
+    x_values_sorted = [entry[0] for entry in tuple_list]
+    y_values_sorted = [entry[1] for entry in tuple_list]
+    legend_list_sorted = [entry[2] for entry in tuple_list]
+    
+    CARD_SIZE = (4,2)
+    
+    fig = Figure(figsize=CARD_SIZE, dpi=100)
+    fig.patch.set_facecolor((254/255, 240/255, 231/255, 1)) #flashbook theme color rescaled to [0,1]
     ax = fig.gca()
-    for i,x in enumerate(X):
-        ax.bar(X[i],Y[i],edgecolor = 'black', color=legend[i][0] ,width = 1,  align='center', fill=True,linestyle = '--', snap=False, hatch=legend2[x][1])    
+    
+    for i,bookname in enumerate(x_values_sorted):
+        legend_entry = legend_list_sorted[i]
+        Color = legend_entry[0]
+        Hatch = legend_entry[1]
+        ax.bar(bookname, y_values_sorted[i], edgecolor='black', color=Color ,width=1,align='center', 
+               fill=True, linestyle='--', snap=False, hatch=Hatch)    
     ax.axis('on')
     
-    #Set limit of Y axis: The maximum of the Y-axis should be 10 Minutes unless it has been surpassed
-    if Y !=[] and max(Y) < 10: 
-        ax.set_ylim(top=10)
-    elif Y !=[] and max(Y) > 10:
-        ax.yaxis.set_major_locator(MaxNLocator(integer=True,steps=[1,2,3,4,5,10],nbins=6))
-        
-    if Y == []:
-        ax.set_ylim(top=10)
     
+    no_values = not y_values_sorted
+    max_value = max(y_values_sorted, default=0)
+    
+    # set y axis
+    if no_values:
+        ax.get_yaxis().set_visible(False)
+    else:
+        #Set limit of Y axis: The max should be 10 Minutes unless it has been surpassed
+        if max_value < 10:
+            ax.set_ylim(top=10)
+        else:
+            ax.yaxis.set_major_locator(MaxNLocator(integer=True,steps=[1,1.5,2,5,10],nbins=7))
+    
+    yticks = ax.get_yticks().tolist()
+    new_yticks = []
+    double_digit_hour = len(str(int(max(yticks)/60))) > 1
+    for tick in yticks:
+        hours = int(tick/60)
+        minutes = int(tick-hours*60)        
+        if tick != 0:
+            if double_digit_hour:
+                # if you have 10 hrs, then the steps should not include 1h30m
+                new_yticks.append(f"{hours}h")
+            else:
+                # if you have less than 10 hrs, then you may include the minutes
+                if hours > 0 and minutes > 0:
+                    new_yticks.append(f"{hours}h{minutes}m")
+                elif hours > 0 and minutes == 0:
+                    new_yticks.append(f"{hours}h")
+                elif hours == 0:
+                    new_yticks.append(f"{minutes}m")    
+        else:
+            # exclude origin tick
+            new_yticks.append('')
+    
+    ax.set_yticklabels(new_yticks)
     ax.get_xaxis().set_visible(False)
-    
+    fig.subplots_adjust(left=0.3)
     canvas = FigureCanvas(fig)
     canvas.draw()
     renderer = canvas.get_renderer()
@@ -174,7 +208,8 @@ def drawlegend(totalbooks, totalvalues, legendbackup, hatchlist):
     img = PIL.Image.frombytes("RGB", size, raw_data, decoder_name='raw', )
     #cut down image
     color = ( 254, 240, 231 )
-    img = imop.cropimage_wh(img, backgroundcolor=color, border=5)
+    img = imop.cropimage(img, 0, backgroundcolor=color, border=5)
+    img = imop.cropimage(img, 1, backgroundcolor=color, border=15)
     
     return img
 
@@ -195,11 +230,13 @@ def sortsubdata(data):
     X2.sort( key=takeSecond )
     return X2
 
-def Sec2Min(listing):   
+def SecToMin(listing):   
     return [round(item/60,1) for item in listing]
 
 def CreateGraph(self):
-    datethreshold = self.GraphNdays
+    DATE_THRESHOLD = self.GraphNdays
+    
+    #load data
     try:
         with open(str(Path(self.dirsettings,"timecount_flashbook.json")), 'r') as file:
             timedict_fb = json.load(file)
@@ -214,8 +251,8 @@ def CreateGraph(self):
         timedict_fc = {}
     
     #% COLLECT ALL DATA
-    data_fb = GetValues(timedict_fb,datethreshold)
-    data_fc = GetValues(timedict_fc,datethreshold)    
+    data_fb = GetValues(timedict_fb, DATE_THRESHOLD)
+    data_fc = GetValues(timedict_fc, DATE_THRESHOLD)    
     totalbooks_fb = data_fb[0]
     totalbooks_fc = data_fc[0]
     
@@ -231,7 +268,7 @@ def CreateGraph(self):
             totalbooks.append(book)
             totalvalues.append(value)
             
-    if len(totalvalues) > 0:
+    if totalvalues:
         #Set Colormap
         lvlC = np.linspace(0.03, 0.97, len(totalbooks)) #to exclude colors like Black from appearing in the legend
         color = cm.nipy_spectral(lvlC)           
@@ -244,24 +281,19 @@ def CreateGraph(self):
             
         #Associate a book with: a color and a hatch pattern.
         legend = {}
-        for i,book in enumerate(totalbooks):   
-            legend[book] = tuple((color[i],hatchlist[i] ))
+        for i, book in enumerate(totalbooks):   
+            legend[book] = tuple((color[i], hatchlist[i]))
         legendbackup = legend    
         
-        center_column_1 = 0
-        center_column_2 = 0
-        center_row_1 = 0 
-        center_row_2 = 0
-        graphswidth = 0
-        legendwidth = 0
-        graphsheight = 0
-        row1_h = 0
-        row2_h = 0
+        
+        
+        
+        
         #CREATE TEXT IMAGES
         # create columnlabels
         txt1 = textcard("Today",3.5,2)
         txt1 = imop.cropimage_wh(txt1, backgroundcolor=(254,240,231), border=5)
-        txt2 = textcard(f"Last {datethreshold} days", 3,2)
+        txt2 = textcard(f"Last {DATE_THRESHOLD} days", 3,2)
         txt2 = imop.cropimage_wh(txt2, backgroundcolor=(254,240,231), border=5)
         # rowlabels
         txt3 = textcard("Flashbook",2,4).rotate(90, expand = 1)
@@ -269,77 +301,68 @@ def CreateGraph(self):
         txt4 = textcard("Flashcard",2,4).rotate(90, expand = 1)
         txt4 = imop.cropimage_wh(txt4, backgroundcolor=(254,240,231), border=5)
         
+        
         #CREATE IMAGES
-        if len(totalbooks_fb) > 0:
+        if totalbooks_fb:
             im1 = drawcard(data_fb[2],data_fb[3],legend)
             im1 = imop.cropimage_wh(im1, backgroundcolor=(254,240,231), border=10)
             im2 = drawcard(data_fb[0],data_fb[1],legend)
-            im2 = imop.cropimage_wh(im2, backgroundcolor=(254,240,231), border=10)
-            w1,h1 = im1.size
-            w2,h2 = im2.size
-            center_row_1 = int(h1/2)
-            center_column_1 = int(w1/2)
-            center_column_2 = w1 + int(w2/2)
-            graphswidth = w1 + w2
-            graphsheight += max(h1, h2)
-            row1_h = max(h1, h2)
+            im2 = imop.cropimage_wh(im2, backgroundcolor=(254,240,231), border=10)            
+            im1_w,im1_h = im1.size
+            im2_w,im2_h = im2.size
         else:
-            w1,h1,w2,h2 = 0,0,0,0
-        if len(totalbooks_fc) > 0 :
+            im1_w, im1_h, im2_w, im2_h = 0,0,0,0
+            
+        if totalbooks_fc:
             im3 = drawcard(data_fc[2],data_fc[3],legend)
             im3 = imop.cropimage_wh(im3, backgroundcolor=(254,240,231), border=10)
             im4 = drawcard(data_fc[0],data_fc[1],legend)
             im4 = imop.cropimage_wh(im4, backgroundcolor=(254,240,231), border=10)
-            w3,h3 = im3.size
-            w4,h4 = im4.size
-            center_row_2 = h1 + int(h3/2)
-            center_column_1 = int(w3/2)
-            center_column_2 = w3 + int(w4/2)
-            graphswidth = w3 + w4
-            graphsheight += max(h3, h4)
-            row2_h = max(h3, h4)
+            im3_w, im3_h = im3.size
+            im4_w, im4_h = im4.size
         else:
-            w3,h3,w4,h4 = 0,0,0,0
+            im3_w, im3_h, im4_w, im4_h = 0,0,0,0
+        
         im5 = drawlegend(totalbooks,totalvalues,legendbackup,hatchlist)
-        legendwidth = im5.width
-        legendheight = im5.height
+        im5_w, im5_h = im5.size
         
-        #combine images into header
-        # COMBINE ALL IMAGES TO A MOZAIC
         
-        rowlabelwidth = max(txt3.width, txt4.width)
-        columnlabelheight = max(txt1.height, txt2.height)
+        TOTAL_WIDTH = max(txt3.width, txt4.width) + max(im1_w, im3_w) + max(im2_w, im4_w) + im5_w
+        TOTAL_HEIGHT = max(txt1.height, txt2.height) + max(im1_h, im3_h) + max(im2_h, im4_h)
+        COLUMN1_RIGHT = max(txt3.width, txt4.width) + max(im1_w, im3_w)
+        COLUMN2_RIGHT = max(txt3.width, txt4.width) + max(im1_w, im3_w) + max(im2_w, im4_w)
+        # COMBINE ALL IMAGES TO A MOZAIC        
+        im_combined = PIL.Image.new('RGB', (TOTAL_WIDTH, TOTAL_HEIGHT), (254,240,231))
         
-        totalwidth = graphswidth + rowlabelwidth + legendwidth
-        totalheight = max(graphsheight + columnlabelheight, legendheight)
         
-        new_im = PIL.Image.new('RGB', (totalwidth, totalheight), (254,240,231))
-        
-        new_im.paste( txt1, (rowlabelwidth + center_column_1 - int(txt1.width/2), 0))
-        new_im.paste( txt2, (rowlabelwidth + center_column_2 - int(txt2.width/2), 0 ))
-        print(f"centers = {center_column_1,center_column_2}")
-        if center_row_1 > 0:
-            center_row_1 += columnlabelheight
-            new_im.paste( txt3, (0 , center_row_1 - int(txt3.height/2)))
-        
-        if center_row_2 > 0 :
-            center_row_2 += columnlabelheight
-            new_im.paste( txt4, (0 , center_row_2 - int(txt4.height/2)))
-        
-        try:
-            new_im.paste( im1,  (rowlabelwidth , columnlabelheight))
-            new_im.paste( im2,  (rowlabelwidth + im1.width , columnlabelheight))
+        try: #right align the images
+            im_combined.paste(im1,  (COLUMN1_RIGHT - im1.width, max(txt1.height, txt2.height)))
+            im_combined.paste(im2,  (COLUMN2_RIGHT - im2.width, max(txt1.height, txt2.height)))
         except: pass
         try:
-            new_im.paste( im3,  (rowlabelwidth + center_column_1 - int(im3.width/2), center_row_2 - int(im3.height/2))) #txt1.height+h1))
-            new_im.paste( im4,  (rowlabelwidth + center_column_2 - int(im4.width/2), txt2.height+h2))
+            im_combined.paste(im3,  (COLUMN1_RIGHT - im3.width, max(txt1.height, txt2.height) + max(im1_h, im2_h))) #txt1.height+h1))
+            im_combined.paste(im4,  (COLUMN2_RIGHT - im4.width, max(txt1.height, txt2.height) + max(im1_h, im2_h)))
         except: pass
         
-        new_im.paste( im5,  (txt3.width+graphswidth , int(txt2.height*1.5)))
-        #new_im.paste
+        im_combined.paste(im5,  (COLUMN2_RIGHT , int(txt2.height)))
+        # add headers
+        
+        im_combined.paste( txt1, (int(COLUMN1_RIGHT - max(im1_w, im3_w)/2 - txt1.width/2), 0))
+        im_combined.paste( txt2, (int(COLUMN2_RIGHT - max(im2_w, im4_w)/2 - txt2.width/2), 0 ))
+        
+        
+        if totalbooks_fb:
+            center_row_1 = max(txt1.height, txt2.height) + max(im1_h, im2_h)/2
+            im_combined.paste( txt3, (0 , int(center_row_1 - txt3.height/2)-5 ))
+        
+        if totalbooks_fc:
+            center_row_2 = max(txt1.height, txt2.height) + max(im1_h, im2_h) + max(im3_h, im4_h)/2
+            im_combined.paste( txt4, (0 , int(center_row_2 - txt4.height/2) - 5 ))
+            
+        
     else:
-        new_im = PIL.Image.new('RGB', (1, 1), (254, 240, 231))
-    print(f"image size = {new_im.size}")
+        im_combined = PIL.Image.new('RGB', (1, 1), (254, 240, 231))
+    
     #resize horizontally
     try:
         VirtualWidth, VirtualHeight = self.m_panelGraph.GetVirtualSize()
@@ -347,7 +370,7 @@ def CreateGraph(self):
         VirtualHeight = int(VirtualHeight * 0.95)
             
         #resize image if it is too large
-        ImageWidth, ImageHeight = new_im.size
+        ImageWidth, ImageHeight = im_combined.size
         if ImageWidth > VirtualWidth:
             ImageHeight = int(ImageHeight/ImageWidth*VirtualWidth)
             ImageWidth = VirtualWidth
@@ -355,25 +378,24 @@ def CreateGraph(self):
             ImageWidth = int(ImageWidth/ImageHeight*VirtualHeight)
             ImageHeight = VirtualHeight
 
-        new_im = new_im.resize((ImageWidth, ImageHeight), PIL.Image.ANTIALIAS)
+        im_combined = im_combined.resize((ImageWidth, ImageHeight), PIL.Image.ANTIALIAS)
     except:#if testgraph is used
         w,h = 1207,270
     #output
     
     #new_im = new_im.resize((w, h), PIL.Image.ANTIALIAS)
     BOOL = len(totalvalues) > 0
-    return BOOL, new_im
+    return BOOL, im_combined
 
 def DisplayGraph(self):
     if self.panel0.IsShown():
         if self.m_menuItemGraph.IsChecked(): 
-            SHOWIMAGE, imGraph = CreateGraph(self)
-            if SHOWIMAGE == True:
+            show_image, graph_image = CreateGraph(self)
+            if show_image:
                 self.m_panelGraph.Show()
-                image = imGraph
-                image2 = wx.Image( imGraph.size)
-                image2.SetData( image.tobytes() )
-                self.m_bitmapGraph.SetBitmap(wx.Bitmap(image2))
+                image_out = wx.Image( graph_image.size)
+                image_out.SetData( graph_image.tobytes() )
+                self.m_bitmapGraph.SetBitmap(wx.Bitmap(image_out))
             else:
                 self.m_panelGraph.Hide()
         else:
@@ -406,11 +428,12 @@ def testmodule():
     im.show()
     
 #testmodule()
-
+"""
 class testgraph():
     def __init__(self):
         self.dirsettings = r"C:\Users\Anton\AppData\Local\Flashbook\settings"
         self.GraphNdays = 30
         boolean, im = CreateGraph(self)
-        #im.show()
+        im.show()
 test = testgraph()
+"""
