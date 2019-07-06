@@ -428,12 +428,12 @@ def testmodule():
     im.show()
     
 #testmodule()
-"""
+
 class testgraph():
     def __init__(self):
         self.dirsettings = r"C:\Users\Anton\AppData\Local\Flashbook\settings"
         self.GraphNdays = 30
         boolean, im = CreateGraph(self)
         im.show()
-test = testgraph()
-"""
+#test = testgraph()
+
