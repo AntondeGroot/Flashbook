@@ -29,7 +29,7 @@ def buttonCorrect(self):
         log.DEBUGLOG("test1","test2",debugmode = self.debugmode, msg="hallo")
         runprogram = self.runprogram
         self.index += 1    
-        if runprogram == True:
+        if runprogram:
             self.score +=1
         self.mode = 'Question'
         self.m_modeDisplayFC.SetValue(self.mode)
@@ -55,7 +55,7 @@ def buttonCorrect(self):
         self.m_CurrentCard.SetValue(f"{self.index+1}")
         
         # update stats
-        if runprogram == True:
+        if runprogram:
             f2.set_stats(self)
             f2.save_stats(self)   
             # display cards
@@ -103,13 +103,13 @@ def buttonWrong(self):
         self.m_CurrentCard.SetValue(str(self.index+1))
         
         ## update stats
-        if runprogram == True:
+        if runprogram:
             f2.set_stats(self)
             f2.save_stats(self)    
             f2.displaycard(self)
             f2.switch_bitmap(self)
         f2.SetScrollbars_fc(self)
-        if runprogram == False:
+        if not runprogram:
             self.m_Score.SetValue("")     
             self.m_CurrentCard.SetValue("")
             self.m_TotalCards.SetValue("")
@@ -134,13 +134,13 @@ def buttonPreviousCard(self):
         self.m_CurrentCard.SetValue(str(self.index+1))
         
         ## update stats
-        if runprogram == True:
+        if runprogram:
             f2.set_stats(self)
             f2.save_stats(self)    
             f2.displaycard(self)
             f2.switch_bitmap(self)
         f2.SetScrollbars_fc(self)
-        if runprogram == False:
+        if not runprogram:
             self.m_Score.SetValue("")     
             self.m_CurrentCard.SetValue("")
             self.m_TotalCards.SetValue("")
@@ -155,7 +155,7 @@ def switchCard(self):
     #matplotlib.pyplot.close('all') # otherwise too many pyplot figures will be opened -> memory
     f2.clearbitmap(self)
     try:
-        if self.runprogram == True:
+        if self.runprogram:
             # change mode Q <-> A
             if self.mode == 'Question': 
                 self.mode = 'Answer'
@@ -243,7 +243,7 @@ def startprogram(self,filepath):
                 if self.chrono == False:
                     self.continueSession = False
                 
-            if self.continueSession == True:
+            if self.continueSession:
                 print("continue session")
                 f2.load_stats(self)
             else:
@@ -305,7 +305,7 @@ def DetermineCardorder(self,USERINPUT):
                         
             if self.continueSession == False:
                 if self.nr_questions < len(self.CardsDeck):   
-                    if self.chrono == True:
+                    if self.chrono:
                         self.cardorder = range(self.nr_questions)    
                     else:
                         self.cardorder = random.sample(range(len(self.CardsDeck)),self.nr_questions) 
@@ -313,7 +313,7 @@ def DetermineCardorder(self,USERINPUT):
                     ## If there are more questions than cards
                     # we would like to get every question about the same number of times, to do this we do sampling without
                     # replacement, then we remove a question if it is immediately repeated.
-                    if self.chrono == True:
+                    if self.chrono:
                         self.cardorder = list(range(len(self.CardsDeck)))*self.nr_questions
                         self.cardorder = self.cardorder[:self.nr_questions]
                     else:
@@ -324,7 +324,7 @@ def DetermineCardorder(self,USERINPUT):
                         SEARCH = True
                         index = 0
                         # remove duplicate numbers
-                        while SEARCH == True:
+                        while SEARCH:
                             if index == len(cardorder)-2:
                                 SEARCH = False
                             if cardorder[index] == cardorder[index+1]:
