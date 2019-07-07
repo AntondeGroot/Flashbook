@@ -221,19 +221,16 @@ class Latexfile(Commands,settings):
                 q,a,t,_ = self.line_to_components(line)     
                 newline = self.insert_line(question = q, answer = a, topic = t)
                 linefile[i] = newline
-            
-            if i ==0:
+            if i == 0:
                 self.bookname
                 q,a,t,_ = self.line_to_components(line)
                 t = self.bookname
                 newline = self.insert_line(question = q, answer = a, topic = t)
                 linefile[i] = newline
-            
-            
+                
         if count != 0:
             self.save_file(linefile)
-        ##  
-        
+            
         self.linefile = linefile
         self.linefile_plt = linefile
         return linefile
@@ -248,18 +245,13 @@ class Latexfile(Commands,settings):
             if type(item) == str:
                 if item.strip() != '':
                     lst = item.split("\n")
-                    #%%
                     for it in lst:
                         it = it.lstrip("\n")
-                        linefile2.append(it)
-        
-        #%%
-    
+                        linefile2.append(it)    
         with open(ipath, 'w') as output: 
             for item in linefile2:
                 output.write("%s" % item)
-    
-    
+                
     def save_file(self,linefile):
         #edit linefile to remove superfluos "\n"
         linefile2 = []
@@ -274,15 +266,13 @@ class Latexfile(Commands,settings):
                         string = string.rstrip("\n")
                         linefile2.append(string)
         self.linefile = linefile2
-        
-        try:
-            
+        try:     
             with open(self.filepath, 'w') as output: 
                 for item in linefile2:
                     output.write("%s\n" % item)
         except:
-            
             pass
+        
         self.resetlatexfile()
     def line_to_components(self,line):
         q = argument(self.question_command,line)
@@ -428,6 +418,7 @@ def ShowPopupCard(self,trueindex):
     # get the card
     rawcard = self.Latexfile.getline_i_card(trueindex)
     # get data from the cards
+    print(f"rawcard = {rawcard}")
     qtext = rawcard['qtext']
     qpic  = rawcard['qpic'] 
     atext = rawcard['atext']
