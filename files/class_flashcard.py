@@ -70,11 +70,11 @@ class flashcard(gui.MyFrame):
                 filepath = fileDialog.GetPaths()
                 m2.startprogram(self,filepath)
     # button events
-    def m_buttonCorrectOnButtonClick( self, event ): 
-        
+    def m_buttonCorrectOnButtonClick( self, event ):  
         m2.buttonCorrect(self)
         SaveTime(self)
         event.Skip()
+        
     def m_bitmapScrollFCOnLeftUp( self, event ):
         m2.buttonCorrect(self)
         event.Skip()
