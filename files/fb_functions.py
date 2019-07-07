@@ -352,35 +352,6 @@ def CreateTextCard(self):
     #    self.ERROR = True
     #    log.ERRORMESSAGE("Error: could not create textcard")
 
-
-
-
-
-def CombinePicText_fb(self,directory):
-    self.ERROR = False
-    try:
-        if self.debugmode:
-            print("fb=CombinePicText")
-        if Path(directory).exists():
-            imagepic = PIL.Image.open(directory)
-            images   = [self.imagetext, imagepic]
-            
-            widths, heights = zip(*(i.size for i in images))
-            total_height = sum(heights)
-            max_width    = max(widths)
-            NewImage     = PIL.Image.new('RGB', (max_width, total_height), "white")
-            #combine images to 1
-            y_offset = 0
-            for im in images:
-                NewImage.paste(im, (0,y_offset))
-                y_offset += im.size[1]
-            self.image = NewImage
-    except:
-        self.ERROR = True
-
-
-
-
 def ShowInPopup(self,event,mode):
     # a picture directory may not exist
     dir_ = self.Flashcard.getpiclist(mode)
