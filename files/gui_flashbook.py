@@ -2383,7 +2383,7 @@ class MyDialog9 ( wx.Dialog ):
 		
 		fgSizer5.Add( self.m_staticText55, 0, wx.ALL, 5 )
 		
-		self.m_textCtrlQtext = wx.TextCtrl( self.m_panel32, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.Size( -1,-1 ), 0 )
+		self.m_textCtrlQtext = wx.TextCtrl( self.m_panel32, wx.ID_ANY, data[2], wx.DefaultPosition, wx.Size( -1,-1 ), 0 )
 		self.m_textCtrlQtext.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
 		self.m_textCtrlQtext.SetMinSize( wx.Size( 200,-1 ) )
 		
