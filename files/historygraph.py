@@ -117,6 +117,8 @@ def drawcard(legend):
     if no_values:
         ax.get_yaxis().set_visible(False)
     else:
+        if len(y_values) == 1:
+            ax.margins(x=0.75)
         #Set limit of Y axis: The max should be 10 Minutes unless it has been surpassed
         if max_value < 10:
             ax.set_ylim(top=10)
@@ -234,7 +236,7 @@ def drawlegend(legend):
     color = ( 254, 240, 231 )
     img = imop.cropimage(img, 0, backgroundcolor=color, border=5)
     img = imop.cropimage(img, 1, backgroundcolor=color, border=15)
-    img.show()
+    #img.show()
     return img
 
 def sortsubdata(data):
@@ -256,7 +258,25 @@ def sortsubdata(data):
     X2 = [(next(books_it),next(values_it)) for _ in totalbooks] #[('book1',t1) , ... , ('bookN',tN)]
     # sort list with 'key', this way we can sort the list by the second element: the amount of time spend
     X2.sort( key=takeSecond )
-    return X2
+    
+    bookstoday = []
+    valuestoday = []
+    #first order FC entries, then FB then combine the two
+    for book,value in zip(data[2],data[3]):
+        if book not in bookstoday:
+            bookstoday.append(book)
+            valuestoday.append(value)
+    
+    
+    books_it  = iter(bookstoday)
+    values_it = iter(valuestoday)
+    
+    
+    X3 = [(next(books_it),next(values_it)) for _ in bookstoday] #[('book1',t1) , ... , ('bookN',tN)]
+    # sort list with 'key', this way we can sort the list by the second element: the amount of time spend
+    X3.sort( key=takeSecond )
+    
+    return X2,X3
 
 def SecToMin(input_):  
     if type(input_) == list:
@@ -287,9 +307,10 @@ def CreateGraph(self):
     totalbooks_fc = data_fc[0]
     
     # COMBINE DATA
-    fb_sorted = sortsubdata(data_fb) #(books,seconds) tuples ordered from small to large
-    fc_sorted = sortsubdata(data_fc) 
-    
+    fb_sorted_total, fb_sorted_today = sortsubdata(data_fb) #(books,seconds) tuples ordered from small to large
+    fc_sorted_total, fc_sorted_today = sortsubdata(data_fc) 
+    print()
+    print(f"sorted today = {fb_sorted_today}")
     unique_books = set(totalbooks_fb + totalbooks_fc)
     print(f"uniq = {unique_books}")
     
@@ -303,24 +324,27 @@ def CreateGraph(self):
             totalbooks.append(book)
             totalvalues.append(value)
     """     
-    values_exist = fb_sorted+fc_sorted
+    values_exist = fb_sorted_total + fc_sorted_total
     if values_exist:
         #Set Colormap
-        lvlC = np.linspace(0.03, 0.97, len(unique_books)) #to exclude colors like Black from appearing in the legend
+        lvlC = np.linspace(0.07, 0.97, len(unique_books)) #to exclude colors like Black from appearing in the legend
         colorlist = cm.nipy_spectral(lvlC)           
         
         #CREATE LEGEND: colors and hatches (pattern displayed on barplots)
         hatch_it = iter(["","/////","---","\\\\\\\\\\"]*len(unique_books)) # is superfluous but that is okay  
-        hatchlist = []
+        
         color_it = iter(colorlist)
         
-        fb_data = []
+        
         seen = {}
         legend = []
         legend_graph_fb = []
+        legend_graph_fb_today = []
         legend_graph_fc = []
+        legend_graph_fc_today = []
         edgecolor = 'black'
-        for entry in fb_sorted:
+        # first total
+        for entry in fb_sorted_total:
             
             book, seconds = entry
             print(f"fb book = {book}")
@@ -339,7 +363,7 @@ def CreateGraph(self):
         #separation between the two
         legend.append(['',None,None,(254/255, 240/255, 231/255, 1),None])
         
-        for entry in fc_sorted:
+        for entry in fc_sorted_total:
             book, seconds = entry
             print(f"fc book = {book}")
             #make sure the same booktitles have the same colors and hatches
@@ -354,6 +378,40 @@ def CreateGraph(self):
                 seen[book] = {'hatch':hatch,'color':color}
             legend.append([book,seconds,hatch,color,edgecolor])
             legend_graph_fc.append([book,seconds,hatch,color,edgecolor])
+        # then today 
+        for entry in fb_sorted_today:
+            
+            book, seconds = entry
+            print(f"fb book = {book}")
+            #make sure the same booktitles have the same colors and hatches
+            if book in seen:
+                dict_ = seen[book]
+                hatch = dict_['hatch']
+                color = dict_['color']
+            else:
+                print(f"error\n"*20)
+                #hatch = next(hatch_it)
+                #color = next(color_it)
+                #seen[book] = {'hatch':hatch,'color':color}
+            legend_graph_fb_today.append([book,seconds,hatch,color,edgecolor])
+        for entry in fc_sorted_today:
+            
+            book, seconds = entry
+            print(f"fb book = {book}")
+            #make sure the same booktitles have the same colors and hatches
+            if book in seen:
+                dict_ = seen[book]
+                hatch = dict_['hatch']
+                color = dict_['color']
+            else:
+                print(f"error\n"*20)
+                #hatch = next(hatch_it)
+                #color = next(color_it)
+                #seen[book] = {'hatch':hatch,'color':color}
+            legend_graph_fc_today.append([book,seconds,hatch,color,edgecolor])
+        print(f"seen keys = {seen.keys()}")
+        
+        
         print(f" seen = {seen}")    
         print("data = ")
         
@@ -379,7 +437,7 @@ def CreateGraph(self):
         
         #CREATE IMAGES
         if totalbooks_fb:
-            im1 = drawcard(legend_graph_fb)
+            im1 = drawcard(legend_graph_fb_today)
             im1 = imop.cropimage_wh(im1, backgroundcolor=(254,240,231), border=10)
             im2 = drawcard(legend_graph_fb)
             im2 = imop.cropimage_wh(im2, backgroundcolor=(254,240,231), border=10)            
@@ -389,7 +447,7 @@ def CreateGraph(self):
             im1_w, im1_h, im2_w, im2_h = 0,0,0,0
             
         if totalbooks_fc:
-            im3 = drawcard(legend_graph_fc)
+            im3 = drawcard(legend_graph_fc_today)
             im3 = imop.cropimage_wh(im3, backgroundcolor=(254,240,231), border=10)
             im4 = drawcard(legend_graph_fc)
             im4 = imop.cropimage_wh(im4, backgroundcolor=(254,240,231), border=10)
@@ -500,7 +558,7 @@ def testmodule():
     
     legendbackup = legend    
     im = drawlegend(totalbooks,totalvalues,legendbackup,hatchlist)
-    im.show()
+    #im.show()
     
 #testmodule()
 
@@ -509,6 +567,6 @@ class testgraph():
         self.dirsettings = r"C:\Users\Anton\AppData\Local\Flashbook\settings"
         self.GraphNdays = 30
         boolean, im = CreateGraph(self)
-        im.show()
+        #im.show()
 #test = testgraph()
 
