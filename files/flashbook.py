@@ -37,6 +37,16 @@ import math
 import pylab
 pylab.ioff() # make sure it is inactive, otherwise possible qwindows error    .... https://stackoverflow.com/questions/26970002/matplotlib-cant-suppress-figure-window
 
+from class_print import printer
+from class_flashbook import flashbook
+from class_flashcard import flashcard
+from class_filetransfer import filetransfer
+from class_menusettings import menusettings
+from class_helpmenu import helpmenu
+from class_menuopen import menuopen
+from class_menuflashcard import flashcardmenu
+from class_menubooks import booksmenu
+
 
 sys.setrecursionlimit(5000)
 PIL.Image.MAX_IMAGE_PIXELS = 1000000000  
@@ -81,16 +91,6 @@ def setup_sources(self):
     self.path_folder  = Path(rdir,"folder.png")
     self.path_repeat  = Path(rdir,"repeat.png")
     self.path_repeat_na = Path(rdir,"repeat_na.png") 
-
-from class_print import printer
-from class_flashbook import flashbook
-from class_flashcard import flashcard
-from class_filetransfer import filetransfer
-from class_menusettings import menusettings
-from class_helpmenu import helpmenu
-from class_menuopen import menuopen
-from class_menuflashcard import flashcardmenu
-from class_menubooks import booksmenu
 
 """
 ###############################################################################
