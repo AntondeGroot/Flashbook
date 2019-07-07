@@ -59,7 +59,7 @@ def findpicture_path(self,picname):
             if path.exists():
                 imagepic = PIL.Image.open(str(path))
                 FOUNDPIC = True
-    if FOUNDPIC == False:
+    if not FOUNDPIC:
         """Notify User and create a fake picture with the error message 
         as replacement for the missing picture."""
         
@@ -105,7 +105,7 @@ def findpicture(self,key):
                 if path.exists():
                     imagepic = PIL.Image.open(str(path))
                     FOUNDPIC = True
-        if FOUNDPIC == False:
+        if not FOUNDPIC:
             """Notify User and create a fake picture with the error message 
             as replacement for the missing picture."""
             
@@ -223,7 +223,7 @@ def find_hook(hookpos, string):
     hookcount = 0
     SEARCH = True
     for i in range(hookpos, len(string)):#make sure it starts with {
-        if (SEARCH == True):
+        if SEARCH:
             k += 1
             char = string[i]
             if char == '{':
@@ -267,7 +267,7 @@ def find_arguments(hookpos, sentence, defined_command, nr_arguments):
     cstr_start = [m.start() for m in re.finditer(r'\{}'.format(defined_command), sentence )][0]
     
     for i in range(cstr_start,len(sentence)):            # make sure it starts with {
-        if (SEARCH == True):
+        if SEARCH:
             k += 1
             char = sentence[i]
             
@@ -294,7 +294,7 @@ def replace_allcommands(defined_command, LaTeX_command, STRING, nr_arg):
     """replace all defined commands in a string"""
    
     SEARCH = (defined_command in STRING)
-    while SEARCH == True: 
+    while SEARCH: 
         # if a command has arguments: you need to find their positions
         if nr_arg != 0:
             cmd_start = [m.start() for m in re.finditer(r'\{}'.format(defined_command), STRING )][0]
@@ -426,7 +426,6 @@ def displaycard(self):
     if self.mode[0].lower() == 'q' :
         if self.NEWCARD == False and  not self.ANSWER_CARD:
             pass
-        #if self.NEWCARD == True:
         ShowPageBMP(self,BMP_q)
         self.NEWCARD = False
     else:
@@ -597,7 +596,7 @@ def Cards_ReplaceUserCommands(self):
         if "###" in commandline:
             index = i+1
     # remove the lines that precede the ### for user explanation on how to use newcommand        
-    if f"{index}".isdigit() == True:
+    if f"{index}".isdigit():
         newcommand_line_lst[:index]=[]
     # only look at lines containing "newcommand" removes all empty and irrelevant lines
     newcommand_line_lst = [x for x in newcommand_line_lst if ("newcommand"  in x)]
@@ -628,7 +627,7 @@ def Cards_ReplaceUserCommands(self):
         cond_a = contains(defined_command in x for x in self.answers)  
         
         #check questions: does the i-th command occur in the questions
-        if cond_q[0] == True: #first index gives T/F, 2nd index gives index where it is true
+        if cond_q[0]: #first index gives T/F, 2nd index gives index where it is true
             nr = len(cond_q[1])
             for j in range(nr):
                 index1 = cond_q[1]
@@ -638,7 +637,7 @@ def Cards_ReplaceUserCommands(self):
                 self.questions[index2] = replace_allcommands(defined_command,LaTeX_command,Q,nr_arg)
                                 
         #check answers: does the i-th command occur in the answers
-        if cond_a[0] == True: #first index gives T/F, 2nd index gives index where it is true
+        if cond_a[0]: #first index gives T/F, 2nd index gives index where it is true
             nr = len(cond_a[1])
             for k in range(nr):
                 index1 = cond_a[1]
