@@ -17,6 +17,7 @@ import log_module as log
 import json
 import ctypes
 import gui_flashbook as gui
+import program as p
 
 MB_ICONINFORMATION = 0x00000040
 MessageBox = ctypes.windll.user32.MessageBoxW
@@ -43,8 +44,10 @@ def buttonCorrect(self):
             #MessageBox(0, f"Your score is: {_score_}%", "Result", 1 )    
             message = f"Your score is: {_score_}%"
             with gui.MyDialogScore(self,message) as dlg:
-                if dlg.ShowModal() == wx.ID_OK:    
+                if dlg.ShowModal() == wx.ID_OK:  
+                    p.SwitchPanel(self,0)
                     print("finished")
+                    
             self.m_menubar1.EnableTop(2,False)
             runprogram = False
             if hasattr(self,'bookname'): # to stop from pop-up windows from appearing after the test is done
@@ -88,7 +91,8 @@ def buttonWrong(self):
             #MessageBox(0, f"Your score is: {_score_}%", "Result", 1) 
             message = f"Your score is: {_score_}%"
             with gui.MyDialogScore(self,message) as dlg:
-                if dlg.ShowModal() == wx.ID_OK:    
+                if dlg.ShowModal() == wx.ID_OK: 
+                    p.SwitchPanel(self,0)
                     print("finished")
             self.m_menubar1.EnableTop(2,False)
             runprogram = False
