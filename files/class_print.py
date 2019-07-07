@@ -83,8 +83,8 @@ class printer(gui.MyFrame):
         self.m_checkBox_col1.SetValue(self.pdfPageColsChecks[0])
         self.m_checkBox_col2.SetValue(self.pdfPageColsChecks[1])
         self.m_checkBox_col3.SetValue(self.pdfPageColsChecks[2])
-        with wx.FileDialog(self, "Choose which file to print", wildcard="*.tex",style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST) as fileDialog:
-            fileDialog.SetPath(str(self.notesdir)+'\.')
+        with wx.FileDialog(self, "Choose which file to print", defaultDir=str(self.notesdir), 
+                           wildcard="*.tex", style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST) as fileDialog:
             if fileDialog.ShowModal() == wx.ID_CANCEL:
                 p.SwitchPanel(self,0) 
                 return None    # the user changed their mind
@@ -161,7 +161,7 @@ class printer(gui.MyFrame):
         RGB = self.m_colorPDFline.GetColour()
         self.horiline_color  = (RGB.Red(),RGB.Green(),RGB.Blue())    
         
-        if self.m_checkBoxSameColor.GetValue() == True:
+        if self.m_checkBoxSameColor.GetValue():
             if self.vertline_color != original_color or self.horiline_color != original_color:
                 self.vertline_color  = self.horiline_color 
                 self.m_colorVERTline.SetColour(self.horiline_color)
@@ -175,7 +175,7 @@ class printer(gui.MyFrame):
     def m_colorVERTlineOnColourChanged( self, event):
         original_color = self.vertline_color
         RGB = self.m_colorVERTline.GetColour()
-        if self.m_checkBoxSameColor.GetValue() == True:
+        if self.m_checkBoxSameColor.GetValue():
             #self.vertline_color  = self.horiline_color
             self.vertline_color = (RGB.Red(),RGB.Green(),RGB.Blue()) 
             self.horiline_color  = self.vertline_color
@@ -202,11 +202,11 @@ class printer(gui.MyFrame):
         self.printpreview    = False
         self.FilePickEvent   = False
         m3.print_preview(self)
-        if self.printsuccessful == True:
+        if self.printsuccessful:
             self.printpreview = True
             p.SwitchPanel(self,0)
             # remove all temporary files of the form "temporary(...).png"    
-            if self.debugmode == False:
+            if not self.debugmode:
                 folder = self.tempdir
                 [file.unlink() for file in folder.iterdir() if ("temporary" in file.name and file.suffix =='.png' )]
             MessageBox(0, " Your PDF has been created!\n Select in the menubar: `Open/Open PDF-notes Folder` to\n open the folder in Windows explorer. ", "Message", MB_ICONINFORMATION)
@@ -261,7 +261,7 @@ class printer(gui.MyFrame):
     def m_checkBoxSameColorOnCheckBox(self,event):
         self.samecolor_bool = self.m_checkBoxSameColor.IsChecked()
         #check if it has been checked
-        if self.samecolor_bool == True:
+        if self.samecolor_bool:
             if self.vertline_color != self.horiline_color:
                 self.FilePickEvent = False
                 self.vertline_color = self.horiline_color     
