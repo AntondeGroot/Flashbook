@@ -31,7 +31,7 @@ def clientprocedure_sendlastfiles(HOST,PORT,self):
     f4.SendGroupOfFiles(self,sendtoClient_abs,N,HOST,PORT)
     print("otherway finished also")
     message = json.dumps({'finished': 'clientprocedure_sendlastfiles'}).encode('utf-8')
-    ___ = f4.Socket_send(HOST,PORT,message)
+    _ = f4.Socket_send(HOST,PORT,message)
     print("Client -> Server is done")
     print("really stopped")        
 
@@ -89,7 +89,7 @@ def serverprocedure(HOST, PORT, self):
     self.RUNSERVER = True
     self.m_txtStatus.SetValue("server is now listening")
     try:
-        while self.RUNSERVER == True:
+        while self.RUNSERVER:
             #setup socket
             with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
                 s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -106,7 +106,7 @@ def serverprocedure(HOST, PORT, self):
                 #if connection established
                 with conn:
                     #print(colored(f"connected by: {addr}",'red'))
-                    while self.RUNCON == True:
+                    while self.RUNCON:
                         # listen for data from the client:
                         data_in = f4.recv_msg(conn)                            
                         # termination
@@ -132,7 +132,7 @@ def serverprocedure(HOST, PORT, self):
                             
                             #send message back
                             f4.send_msg(conn, self.data_out)
-                            if self.RUNSERVER == False:
+                            if not self.RUNSERVER:
                                 return self.SWITCH_BOOL
         Display("Sync complete",self) 
     except socket.timeout:
@@ -152,7 +152,7 @@ def SyncDevices(self, mode, HOST):
         Display("starting server",self)        
         #check if server is online:
         serverprocedure(HOST,PORT,self) #returns switch_bool
-        if self.SWITCH_BOOL == True: #switch Server -> Client
+        if self.SWITCH_BOOL: #switch Server -> Client
             print(colored("server is now client","red"))
             Display("finished server, starting client",self)
             time.sleep(2)
@@ -169,7 +169,7 @@ def SyncDevices(self, mode, HOST):
         
         clientprocedure(HOST,PORT,self) #DETERMINES SELF.SWITCH_BOOL
         
-        if self.SWITCH_BOOL == True:
+        if self.SWITCH_BOOL:
             print("client is now server")
             Display("finished client",self)
             time.sleep(0.1)
