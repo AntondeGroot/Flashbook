@@ -62,10 +62,10 @@ def dirchanged(self,path):
         SEARCH    = True
         name_len  = len(picname)
         indexlist = []
-        while SEARCH == True:
+        while SEARCH:
             for j in range(name_len):
                 k = name_len - j - 1                
-                if (f.is_number(picname[k]) == True) and SEARCH == True:
+                if (f.is_number(picname[k]) == True) and SEARCH:
                     indexlist.append(k)  
                 elif (f.is_number(picname[k]) == False):
                     if j > 0:
@@ -132,7 +132,7 @@ def dirchanged(self,path):
         
     #Draw borders if they exist
     try:
-        if self.drawborders == True:                    
+        if self.drawborders:                    
             pageimage = self.pageimage
             self.pageimage = f.drawCoordinates(self,pageimage)
     except:
@@ -148,7 +148,7 @@ def dirchanged(self,path):
     self.Layout()
     
 def bitmapleftup(self,event):
-    if self.cursor == False:
+    if not self.cursor:
         self.SetCursor(wx.Cursor(wx.CURSOR_ARROW))
     self.panel_pos2 = self.m_bitmapScroll.ScreenToClient(wx.GetMousePosition())
     
@@ -174,7 +174,7 @@ def bitmapleftup(self,event):
             self.tempdictionary.update({f'page {self.currentpage}' : [self.BorderCoords]})
             
         #crop image
-        if self.stayonpage == False:
+        if not self.stayonpage:
             img = PIL.Image.open(self.jpgdir)
         else:
             img = self.pageimage
@@ -182,9 +182,9 @@ def bitmapleftup(self,event):
         img = img[y0:y1,x0:x1]
         img = PIL.Image.fromarray(img)
         FIND = True
-        while FIND == True:
+        while FIND:
             rand_nr = str(randint(0, 9999)).rjust(4, "0") #The number must be of length 4: '0006' must be a possible result.
-            if self.stayonpage == False:
+            if not self.stayonpage:
                 picname =  f"{self.bookname}_{self.currentpage}_{rand_nr}.jpg" 
             else:
                 picname =  f"{self.bookname}_prtscr_{rand_nr}.jpg"
@@ -200,21 +200,17 @@ def bitmapleftup(self,event):
         
         dir_ = str(Path(self.picsdir,self.bookname,picname))
         if self.Flashcard.getmode() == 'Question':
-            if self.stitchmode_v == True:
-                print(f"anton {dir_}")
+            if self.stitchmode_v:
                 self.Flashcard.addpic('Question','vertical',picname,dir_)
             else:
-                print(f"anton {dir_}")
                 self.Flashcard.addpic('Question','horizontal',picname,dir_)
                 #restore stitchmode to default
                 self.stitchmode_v =  True   
                 f.SetToolStitchArrow(self,orientation="vertical")
         else:
-            if self.stitchmode_v == True:
-                print(f"anton {dir_}")
+            if self.stitchmode_v:
                 self.Flashcard.addpic('Answer','vertical',picname,dir_)
             else:
-                print(f"anton {dir_}")
                 self.Flashcard.addpic('Answer','horizontal',picname,dir_)
                 #restore stitchmode to default
                 self.stitchmode_v =  True     
@@ -310,7 +306,7 @@ def selectionentered(self,event):
                 # remove temporary borders
                 self.pageimage = self.pageimagecopy
                 f.ShowPage_fb(self)
-                if self.stayonpage == False: # if screenshot mode
+                if not self.stayonpage: # if screenshot mode
                     with open(self.PathBorders, 'w') as file:
                         file.write(json.dumps(self.dictionary))
                         
@@ -350,7 +346,7 @@ def selectionentered(self,event):
                 self.m_userInput.SetValue("")
                 
                 
-        elif QUESTION_MODE == False:
+        elif not QUESTION_MODE:
             print("selection Answer without any input")
             # if in question mode the user only typed in some text and want to save that 
             self.Flashcard.setT(self.m_TopicInput.GetValue())
@@ -359,7 +355,7 @@ def selectionentered(self,event):
             self.pageimage = self.pageimagecopy
             f.ShowPage_fb(self)
             list_A = self.Flashcard.getpiclist("Answer")
-            if self.stayonpage == False: # if screenshot mode
+            if not self.stayonpage: # if screenshot mode
                 with open(self.PathBorders, 'w') as file:
                         file.write(json.dumps(self.dictionary)) 
             if len(list_A) > 1:
@@ -531,16 +527,10 @@ def previouspage(self,event):
     except:
         log.ERRORMESSAGE("Error: can't click on back")
     self.Layout()
-    
+
 def setcursor(self):
-    #lf = event.GetEventObject()
-    cursor = self.m_checkBoxCursor.IsChecked()
-    self.cursor = cursor
-    if cursor == True:
-        self.SetCursor(wx.Cursor(wx.CURSOR_CROSS))
-    else:
-        self.SetCursor(wx.Cursor(wx.CURSOR_ARROW))
-        
+    self.SetCursor(wx.Cursor(wx.CURSOR_ARROW))
+
 def zoomin(self,event):
     try:
         self.zoom += 0.1
