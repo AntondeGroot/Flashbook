@@ -93,7 +93,7 @@ class flashbook(gui.MyFrame):
     def m_btnImportScreenshotOnButtonClick( self, event ):
         self.stayonpage = True
         #load screenshot
-        if self.BoolCropped == False: #load original screenshot
+        if not self.BoolCropped: #load original screenshot
             img = PIL.Image.open(str(Path(self.tempdir,"screenshot.png")))
             self.pageimagecopy = img
             self.pageimage = img        
@@ -114,14 +114,14 @@ class flashbook(gui.MyFrame):
         self.Update()
         self.Refresh()       
     
-	# zoom in #================================================================
+	# zoom in 
     def m_toolPlusFBOnToolClicked( self, event ):
         m.zoomin(self,event)
 	
     def m_toolMinFBOnToolClicked( self, event ):
         m.zoomout(self,event)
 	
-    # change page #============================================================
+    # change page 
     def m_pageBackFBOnToolClicked( self, event ):
         self.stayonpage = False
         m.previouspage(self,event)
@@ -151,7 +151,7 @@ class flashbook(gui.MyFrame):
         m.mousewheel(self,event)
         event.Skip()
         
-	# draw borders #===========================================================
+	# draw borders 
     def m_bitmapScrollOnLeftDown( self, event ):
         self.panel_pos = self.m_bitmapScroll.ScreenToClient(wx.GetMousePosition())
         self.mousepos = wx.GetMousePosition() # absolute position
@@ -164,7 +164,7 @@ class flashbook(gui.MyFrame):
         
     def m_toolStitchOnButtonClick( self, event ):
         self.stitchmode_v =  not self.stitchmode_v
-        if self.stitchmode_v == True:
+        if self.stitchmode_v:
             f.SetToolStitchArrow(self,orientation="vertical")
         else:
             f.SetToolStitchArrow(self,orientation="horizontal")
