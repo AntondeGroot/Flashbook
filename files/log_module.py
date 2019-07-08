@@ -33,7 +33,7 @@ def DEBUGLOG(*args, debugmode = False,msg = ''):
         logging.debug('New session has started')
         logging.info("DEBUGLOG")
         logging.debug("error anton")
-        if debugmode == True:
+        if debugmode:
             print("is debugged"*10)
             
             #path = os.path.join(os.getenv("LOCALAPPDATA"),'Flashbook','temporary')
