@@ -64,7 +64,7 @@ def dirchanged(self,path):
         indexlist = []
         while SEARCH:
             for j in range(name_len):
-                k = name_len - j - 1                
+                k = name_len - j - 1      
                 if (f.is_number(picname[k]) == True) and SEARCH:
                     indexlist.append(k)  
                 elif (f.is_number(picname[k]) == False):
