@@ -141,7 +141,6 @@ class MainFrame(settings,flashbook,flashcard,printer,filetransfer,menusettings,h
         self.printpreview = True
         
         self.m_checkBoxSelections.Check(self.drawborders)
-        self.m_checkBoxCursor.Check(self.cursor)
         self.m_checkBoxDebug.Check(self.debugmode)
         
         m.setcursor(self)
@@ -383,23 +382,23 @@ class Flashcard():
             raise ValueError('Flashcard has been given a wrong mode')
             
     def StitchCards(self,vertical_stitch):
-        if vertical_stitch == True:
+        if vertical_stitch:
             #question mode
-            if (self.questionmode == True) and (len(self.pic_question) > 0) and (type(self.pic_question[-1]) is list) and (len(self.pic_question[-1])==1):
+            if self.questionmode and (len(self.pic_question) > 0) and (type(self.pic_question[-1]) is list) and (len(self.pic_question[-1])==1):
                 self.pic_question[-1] = self.pic_question[-1][0]
                 self.pic_question_dir[-1] = self.pic_question_dir[-1][0]
             #answer mode
-            if (self.questionmode == False) and (len(self.pic_answer) > 0) and (type(self.pic_answer[-1]) is list) and (len(self.pic_answer[-1])==1):
+            if (not self.questionmode) and (len(self.pic_answer) > 0) and (type(self.pic_answer[-1]) is list) and (len(self.pic_answer[-1])==1):
                 self.pic_answer[-1] = self.pic_answer[-1][0]
                 self.pic_answer_dir[-1] = self.pic_answer_dir[-1][0]    
         #stitch it horizontally
         else:
             #question mode
-            if (self.questionmode == True) and (len(self.pic_question) > 0) and (type(self.pic_question[-1]) is not list):
+            if self.questionmode and (len(self.pic_question) > 0) and (type(self.pic_question[-1]) is not list):
                 self.pic_question[-1] = [self.pic_question[-1]]
                 self.pic_question_dir[-1] = [self.pic_question_dir[-1]]
             #answer mode
-            if (self.questionmode == False) and (len(self.pic_answer) > 0) and (type(self.pic_answer[-1]) is not list):
+            if (not self.questionmode) and (len(self.pic_answer) > 0) and (type(self.pic_answer[-1]) is not list):
                 self.pic_answer[-1] = [self.pic_answer[-1]]
                 self.pic_answer_dir[-1] = [self.pic_answer_dir[-1]]
     def QuestionExists(self):
