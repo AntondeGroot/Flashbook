@@ -28,7 +28,7 @@ def find_hook(hookpos, string):
     hookcount = 0
     SEARCH = True
     for i in range(hookpos, len(string)):#make sure it starts with {
-        if (SEARCH == True):
+        if SEARCH:
             k += 1
             char = string[i]
             if char == '{':
@@ -71,7 +71,7 @@ def find_arguments(hookpos, sentence, defined_command, nr_arguments):
     
     k = 0
     hookcount = 0      
-    SEARCH = True
+    search = True
     argcount = 0
     argclose_index = [] 
     argopen_index  = []
@@ -79,7 +79,7 @@ def find_arguments(hookpos, sentence, defined_command, nr_arguments):
     cstr_start = [m.start() for m in re.finditer(r'\{}'.format(defined_command), sentence )][0]
     
     for i in range(cstr_start,len(sentence)):            # make sure it starts with {
-        if (SEARCH == True):
+        if search:
             k += 1
             char = sentence[i]
             
@@ -93,7 +93,7 @@ def find_arguments(hookpos, sentence, defined_command, nr_arguments):
                 if hookcount == 0:
                     argcount += 1
                     if argcount == nr_arguments:
-                        SEARCH = False
+                        search = False
                     argclose_index.append(k+cstr_start-1) #save closing indices
     arguments = []
     for i in range(nr_arguments):
@@ -104,8 +104,8 @@ def find_arguments(hookpos, sentence, defined_command, nr_arguments):
 def replace_allcommands(defined_command, LaTeX_command, STRING, nr_arg):    
     """replace all defined commands in a string"""
    
-    SEARCH = (defined_command in STRING)
-    while SEARCH == True: 
+    search = (defined_command in STRING)
+    while search: 
         # if a command has arguments: you need to find their positions
         if nr_arg != 0:
             cmd_start = [m.start() for m in re.finditer(r'\{}'.format(defined_command), STRING )][0]
@@ -114,7 +114,7 @@ def replace_allcommands(defined_command, LaTeX_command, STRING, nr_arg):
             ARG, _, _ = find_arguments(cmd_start, STRING, defined_command, nr_arg)
     
             if ARG == []: # quits if no arguments have been found
-                SEARCH = False
+                search = False
                 break
             else:
                 index1 = find_arguments(cmd_start, STRING ,defined_command, nr_arg)[1][0] - len(defined_command) 
@@ -126,12 +126,12 @@ def replace_allcommands(defined_command, LaTeX_command, STRING, nr_arg):
                 for i in range(nr_arg):
                     STRING = STRING.replace(f"#{i+1}", arguments[i])
                 # check if another command is in the Q&A
-                SEARCH = (defined_command in STRING)
+                search = (defined_command in STRING)
         else:
             """ if there are no arguments you can directly replace the defined_cmd for the latex_cmd
                 only needs to do this once for the entire string"""
             STRING = STRING.replace(defined_command,LaTeX_command)
-            SEARCH = False
+            search = False
             break
     
     return STRING
@@ -459,7 +459,7 @@ def ShowPopupCard(self,trueindex):
             print(f"DelCard = {DelCard}")
             
             #make changes
-            if DelCard == True or (qtext.strip() == '' and qpic.strip() ==''):
+            if DelCard or (qtext.strip() == '' and qpic.strip() ==''):
                 """the entire card will be deleted"""
                 print("CArd is deleted\n"*10)
                 self.Latexfile.popline(trueindex)
