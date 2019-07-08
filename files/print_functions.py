@@ -58,21 +58,21 @@ def CreateTextCardPrint(self,key):
     
     # crop the LaTeX image further
     border = 30
-    SEARCH = True
+    search = True
     img = imagetext
     imginv = ImageOps.invert(img)
     
     img_array = np.sum(np.sum(np.array(imginv),2),0) # look where something is not "white" in the x-axis
-    while SEARCH == True:
+    while search:
         for i in range(len(img_array)):
             j = len(img_array) - i-1            
-            if SEARCH == True:
+            if search:
                 if img_array[j]!= 0:
-                    SEARCH = False
+                    search = False
                     var = j
                     break
                 if j == 0:
-                    SEARCH = False
+                    search = False
                     var = j
                     break
     if var + border >  img.size[0]:
