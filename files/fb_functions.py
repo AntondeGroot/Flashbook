@@ -177,7 +177,7 @@ def LoadPage(self):
     try:
         self.jpgdir = str(Path(self.booksdir, self.booknamepath, self.picnames[self.currentpage-1]))
         
-        if self.stayonpage == False:
+        if not self.stayonpage:
             self.pageimage = PIL.Image.open(self.jpgdir)
             self.pageimagecopy = self.pageimage
         width, height = self.pageimage.size
@@ -250,7 +250,7 @@ def ShowPage_fb(self):
         width, height = int(width*self.zoom) , int(height*self.zoom)
         self.pageimage = self.pageimage.resize((width, height), PIL.Image.ANTIALIAS)
         try:   #draw borders if they exist
-            if self.drawborders == True:
+            if self.drawborders:
                 pageimage = self.pageimage
                 self.pageimage = drawCoordinates(self,pageimage)
         except:
@@ -333,7 +333,7 @@ def CreateTextCard(self):
     imginv = ImageOps.invert(img)
     
     img_array = np.sum(np.sum(np.array(imginv),2),0) # look where something is not "white" in the x-axis
-    while SEARCH == True:
+    while SEARCH:
         for i in range(len(img_array)):
             j = len(img_array) - i-1            
             if SEARCH == True:
@@ -425,7 +425,7 @@ def find_arguments(hookpos, sentence, defined_command, nr_arguments):
     cstr_start = [m.start() for m in re.finditer(r'\{}'.format(defined_command), sentence )][0]
     
     for i in range(cstr_start,len(sentence)):            # make sure it starts with {
-        if (SEARCH == True):
+        if SEARCH:
             k += 1
             char = sentence[i]
             
