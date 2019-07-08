@@ -63,7 +63,7 @@ class menusettings(gui.MyFrame):
         m.selectionentered(self,event)
     
     # show drawn borders 
-    def m_checkBoxSelectionsOnCheckBox( self, event ):
+    def m_checkBoxSelectionsOnMenuSelection( self, event ):
         self.drawborders = self.m_checkBoxSelections.IsChecked()   
         self.settings_set()
         try:
