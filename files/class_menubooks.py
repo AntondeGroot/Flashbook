@@ -79,11 +79,11 @@ class booksmenu(gui.MyFrame):
                     with gui.MyDialog5(self,[filenames_str,title]) as dlg:
                         if dlg.ShowModal() == wx.ID_OK:     
                             print("success!!")
-                            btn1 = dlg.m_radioDLG5_1.GetValue()
-                            btn2 = dlg.m_radioDLG5_2.GetValue()
-                            btn3 = dlg.m_radioDLG5_3.GetValue()
-                            btn4 = dlg.m_radioDLG5_4.GetValue()
-                            print(btn1,btn2,btn3,btn4)
+                            button1 = dlg.m_radioDLG5_1.GetValue()
+                            button2 = dlg.m_radioDLG5_2.GetValue()
+                            button3 = dlg.m_radioDLG5_3.GetValue()
+                            button4 = dlg.m_radioDLG5_4.GetValue()
+                            
                             title = dlg.m_textCtrlCombinedFileName.GetValue()
                             if title == '':#in case the user tries to sabotage the program
                                 title = title_backup
@@ -101,25 +101,25 @@ class booksmenu(gui.MyFrame):
                             print(nr_lines)
                             print(files)
                             
-                            if btn1 == True: #alphabetically, it's standard alphabetically sorted
+                            if button1: #alphabetically, it's standard alphabetically sorted
                                 save2latexfile(self,files,title)
-                            if btn2 == True:#sort small to largest
+                            elif button2:#sort small to largest
                                 nr_lines, files = (list(t) for t in zip(*sorted(zip(nr_lines, files))))#sort based on first list numbers, small to large
                                 save2latexfile(self,files,title)
-                            if btn3 == True:#sort largest to smallest
+                            elif button3:#sort largest to smallest
                                 nr_lines, files = (list(t) for t in zip(*sorted(zip(nr_lines, files))))#sort based on first list numbers, small to garge
                                 nr_lines.reverse()
                                 files.reverse()
                                 save2latexfile(self,files,title)
-                            if btn4 == True:#sort randomly
+                            elif button4:#sort randomly
                                 temp = list(itertools.chain.from_iterable(files))
                                 random.shuffle(temp)
                                 random.shuffle(temp)
                                 files = temp
                                 save2latexfile(self,files,title)
-                            print()
+                            
                             print(os.listdir(self.notesdir))
-                            print()
+                            
                             print(title)
                             if title+'.tex' in os.listdir(self.notesdir):
                                 statinfo = os.stat(Path(self.notesdir,title+'.tex'))
@@ -225,7 +225,7 @@ class booksmenu(gui.MyFrame):
                     N = 1.3
                     a4page_w  = round(1240*N) # in pixels
                     a4page_h  = round(1754*N)
-                    if path.parent.exists() == False:
+                    if not path.parent.exists():
                         path.parent.mkdir()                        
                     IMG = PIL.Image.new('RGB', (a4page_w, a4page_h),"white")
                     IMG.paste(imagetext,(int(a4page_w/2-imagetext.width/2),100))
