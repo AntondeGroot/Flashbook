@@ -112,9 +112,6 @@ class MyFrame ( wx.Frame ):
 		self.m_menuSettings.Append( self.m_checkBoxSelections )
 		self.m_checkBoxSelections.Check( True )
 		
-		self.m_checkBoxCursor = wx.MenuItem( self.m_menuSettings, wx.ID_ANY, u"Crosshair cursor", wx.EmptyString, wx.ITEM_CHECK )
-		self.m_menuSettings.Append( self.m_checkBoxCursor )
-		
 		self.m_checkBoxDebug = wx.MenuItem( self.m_menuSettings, wx.ID_ANY, u"Debug mode", wx.EmptyString, wx.ITEM_CHECK )
 		self.m_menuSettings.Append( self.m_checkBoxDebug )
 		
@@ -1172,7 +1169,6 @@ class MyFrame ( wx.Frame ):
 		self.Bind( wx.EVT_MENU, self.m_menuHelpOnMenuSelection, id = self.m_menuHelp.GetId() )
 		self.Bind( wx.EVT_MENU, self.m_menuItemAboutOnMenuSelection, id = self.m_menuItemAbout.GetId() )
 		self.Bind( wx.EVT_MENU, self.m_checkBoxSelectionsOnMenuSelection, id = self.m_checkBoxSelections.GetId() )
-		self.Bind( wx.EVT_MENU, self.m_checkBoxCursorOnMenuSelection, id = self.m_checkBoxCursor.GetId() )
 		self.Bind( wx.EVT_MENU, self.m_checkBoxDebugOnMenuSelection, id = self.m_checkBoxDebug.GetId() )
 		self.Bind( wx.EVT_MENU, self.m_menuItemGraphOnMenuSelection, id = self.m_menuItemGraph.GetId() )
 		self.Bind( wx.EVT_MENU, self.m_menuResetSettingsOnMenuSelection, id = self.m_menuResetSettings.GetId() )
@@ -1365,9 +1361,6 @@ class MyFrame ( wx.Frame ):
 		event.Skip()
 	
 	def m_checkBoxSelectionsOnMenuSelection( self, event ):
-		event.Skip()
-	
-	def m_checkBoxCursorOnMenuSelection( self, event ):
 		event.Skip()
 	
 	def m_checkBoxDebugOnMenuSelection( self, event ):
