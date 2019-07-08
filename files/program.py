@@ -254,8 +254,8 @@ def SwitchPanel(self,n):
     if n == 0:
         self.panel0.Show() 
         if self.m_menuItemGraph.IsChecked(): 
-            SHOWIMAGE, imGraph = historygraph.CreateGraph(self)
-            if SHOWIMAGE == True:
+            show_image, imGraph = historygraph.CreateGraph(self)
+            if show_image:
                 self.m_panelGraph.Show()
                 image = imGraph
                 image2 = wx.Image( imGraph.size)
