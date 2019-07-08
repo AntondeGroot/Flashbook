@@ -15,8 +15,7 @@ import historygraph
 def settings_reset(self):
     settingsfile = Path(self.dirsettings,"settings.txt")
     if settingsfile.exists():
-        settingsfile.unlink()
-        
+        settingsfile.unlink()       
     self.settings_create()
     self.settings_get()
     self.m_checkBoxSelections.Check(self.drawborders)
@@ -62,11 +61,6 @@ class menusettings(gui.MyFrame):
     
     def m_enterselectionOnButtonClick( self, event ):
         m.selectionentered(self,event)
-        
-    def m_checkBoxCursorOnCheckBox( self, event ):
-        self.cursor = not self.cursor
-        m.setcursor(self)
-        self.settings_set()
     
     # show drawn borders 
     def m_checkBoxSelectionsOnCheckBox( self, event ):
@@ -82,7 +76,6 @@ class menusettings(gui.MyFrame):
     def m_menuResetSettingsOnMenuSelection( self, event ):
         settings_reset(self)   
         self.m_checkBoxSelections.Check(self.drawborders)
-        self.m_checkBoxCursor.Check(self.cursor)
         self.m_checkBoxDebug.Check(self.debugmode)
         m.setcursor(self)   
         try:
