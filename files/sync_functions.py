@@ -131,7 +131,7 @@ def SEND(key,dict_data,HOST,PORT):
     #%%
     TRYSEND = True
     i = 0
-    while TRYSEND == True:
+    while TRYSEND:
         
         print("loop1")
         # send file name, mode , creation time
