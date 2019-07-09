@@ -69,7 +69,7 @@ Then you can either use your mouse or your arrow keys to: flip the card or to in
 The program will also keep track of your progress and indicate how many minutes you've spend learning and reading the past N days. 
 
 
-<img src="https://github.com/AntondeGroot/Flashbook/blob/master/readme%20images/statsgraph2.png" alt="alt text" width="500" height="">
+<img src="https://github.com/AntondeGroot/Flashbook/blob/master/readme%20images/statsgraph3.png" alt="alt text" width="700" height="">
 
 # Print
 
