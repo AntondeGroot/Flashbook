@@ -22,6 +22,7 @@ import threading
 from timingmodule import Timing
 import latexoperations as ltx
 import imageoperations as imop
+from class_progressdialog import ProgressDialog
 
 def findfullpicpath(self,picname):
     """Instead of just opening the path of a picture
@@ -560,6 +561,7 @@ class pdfpage(settings):
             im.save(path)
             pdflist[i] = path
             
+            
         self.backuppage = self.page_nr
         pdflist = [] #contains all images
         if self.tempdir != None:
@@ -842,8 +844,9 @@ def notes2paper(self):
     self.SetCursor(wx.Cursor(wx.CURSOR_ARROW))
     if not self.printpreview:
         TT.update("writing files to pdf")
+        dlg = ProgressDialog(title='Writing files to pdf',msg='This may take a minute')
         filename = os.path.join(self.dirpdf,f"{os.path.splitext(os.path.basename(self.booknamepath))[0]}.pdf")
-        
+        dlg.Pulse()
         try:
             imagelist = self.pdfpage.createpdf()
             with open(filename, "wb") as file:
@@ -851,10 +854,12 @@ def notes2paper(self):
                 file.write(img2pdf.convert([im for im in imagelist]))
             file.close()
             self.printsuccessful = True
+            dlg.Destroy()
         except:
             log.ERRORMESSAGE("Error: Couldn't create pdf")
             self.printsuccessful = False
             MessageBox(0, "If you have the PDF opened in another file, close it and try it again.", "Warning", ICON_EXCLAIM)
+            dlg.Destroy()
         TT.stop()
     #page info
     currentpage, maxpage = self.pdfpage.getpageinfo()
