@@ -66,7 +66,7 @@ Then you can either use your mouse or your arrow keys to: flip the card or to in
 
 # User data
 
-The program will also keep track of your progress and indicate how many minutes you've spend learning and reading the past N days. 
+The program will also keep track of your progress and indicate how many hours and minutes you've spend learning and reading the past N days. 
 
 
 <img src="https://github.com/AntondeGroot/Flashbook/blob/master/readme%20images/statsgraph3.png" alt="alt text" width="700" height="">
@@ -81,7 +81,7 @@ When you click on the 'print' button you get to the following preview window, wh
  
 
 #### Edit the cards
-You can edit a card by clicking on it and entering the Question and/or Answer. You also have the option to add a topic to a card. Topics will be the page wide black bar with text as you can see in the above image. When the very first card does not contain a topic it will automatically create the title of the book.
+You can edit a card by clicking on it and entering the Question / Answer / Topic or delete the card altogether. Topics will be the page wide black bar with text as you can see in the above image. When the very first card does not contain a topic it will automatically create the title of the book.
 
 # Synchronizing Devices
 
