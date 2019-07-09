@@ -24,7 +24,7 @@ The program will open with the following menu.
 
 You can create your own Q&A cards by selecting areas with you mouse. It will draw a box around your selection. Which can easily be undone by clicking your right mouse button. In addition to this you can type an additional question or answer in a textbox that will be combined with the selected areas. .
 
-<img src="https://github.com/AntondeGroot/Flashbook/blob/master/readme%20images/fb_selection2.png" alt="alt text" width="600" height="">
+<img src="https://github.com/AntondeGroot/Flashbook/blob/master/readme%20images/fb_selection3.png" alt="alt text" width="600" height="">
 
 You can choose how the selections are stitched together, for example:
 
