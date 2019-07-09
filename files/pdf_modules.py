@@ -107,7 +107,7 @@ def ConvertPDF_to_JPG(self, PDFdir, tempdir, JPGdir):
                     DirList = os.listdir(tempdir_ppm)
                     
                     
-                    dlg.SetRange(len(DirList)+2)
+                    dlg.SetURange(len(DirList))
                     for filename in DirList:
                         pagepath = Path(tempdir_ppm, filename)
                         page_i = PIL.Image.open(str(pagepath))
