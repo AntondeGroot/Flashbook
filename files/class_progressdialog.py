@@ -6,10 +6,10 @@ Created on Tue Jul  9 11:47:03 2019
 """
 import wx
 class ProgressDialog():
-    def __init__(self,max=100,title='',message=''):
+    def __init__(self,max_=100,title='',msg=''):
         self.dialog = wx.ProgressDialog(title,
-                                        message,
-                                        maximum=100,
+                                        msg,
+                                        maximum=max_,
                                         parent=None,
                                         style = wx.PD_CAN_ABORT
                                         #| wx.PD_APP_MODAL
