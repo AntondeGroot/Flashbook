@@ -296,7 +296,7 @@ def CreateGraph(self):
             legend_graph_fb_past.append([book,seconds,hatch,color,edgecolor])
             
         #separation between the two
-        if fc_sorted_total:
+        if fb_sorted_total and fc_sorted_total:
             legend_all.append(['',None,None,(254/255, 240/255, 231/255, 1),None])
         
         for entry in fc_sorted_total:
