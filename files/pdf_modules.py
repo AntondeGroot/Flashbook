@@ -10,6 +10,7 @@ from pathlib import Path
 import PIL
 from pdf2image import convert_from_path
 from pdf2image import convert_from_bytes
+from class_progressdialog import ProgressDialog
 import shutil
 import threading
 import ctypes
@@ -40,6 +41,7 @@ def AddPathvar():
 
 
 
+
 def ConvertPDF_to_JPG(self, PDFdir, tempdir, JPGdir):
     
     """Convert a PDF to JPG files.
@@ -57,12 +59,17 @@ def ConvertPDF_to_JPG(self, PDFdir, tempdir, JPGdir):
          
     t_MBox = lambda a,b,c,d :threading.Thread(target=MessageBox,args=(a,b,c,d)).start()
     
-    t_MBox(0, f'The PDF -> JPG conversion has started.\nIt may take a few minutes per book.', "Message", MB_ICONINFORMATION)   
+    dlg = ProgressDialog(title="Convertion Progress" ,msg="The PDFs are being converted, this may take a few minutes.")
+    
+    
+    #t_MBox(0, f'The PDF -> JPG conversion has started.\nIt may take a few minutes per book.', "Message", MB_ICONINFORMATION)   
     
     pdfs2send, _, _, _ = p.checkBooks(self,0)
     
     i = 1
-    for _, item in enumerate(pdfs2send):
+    for booknr, item in enumerate(pdfs2send):
+        dlg.Pulse(msg=f"The PDFs are being converted, this may take a few minutes.\n(Book {booknr+1} of {len(pdfs2send)})")
+        
         #Get file name and dir names
         pdfname = Path(item).stem #exclude file extension
         tempdir_ppm = Path(tempdir, pdfname)
@@ -94,17 +101,22 @@ def ConvertPDF_to_JPG(self, PDFdir, tempdir, JPGdir):
                 if os.listdir(tempdir_ppm) == []:
                     t_MBox(0, 0, f'The file "{pdfname}.pdf" could not be converted to JPG.\nPlease use an online PDF converter instead.\nThen place the JPG files in a map folder named after the book in {JPGdir}', "Error", ICON_STOP)                    
                 if os.listdir(tempdir_ppm) != []:
-                    t_MBox(0, f'{item} has been converted and is being saved', "Message",  MB_ICONINFORMATION)
+                    #t_MBox(0, f'{item} has been converted and is being saved', "Message",  MB_ICONINFORMATION)
                     i = 1
                     #Save the JPG files
                     DirList = os.listdir(tempdir_ppm)
+                    
+                    
+                    dlg.SetRange(len(DirList)+2)
                     for filename in DirList:
                         pagepath = Path(tempdir_ppm, filename)
                         page_i = PIL.Image.open(str(pagepath))
                         filename = os.path.join(target_dir, pdfname)
                         nr = "0"*(4-len(f"{i}"))+f"{i}"
                         page_i.save(f'{filename}-{nr}.jpg', 'JPEG')
+                        (keepGoing, skip) = dlg.Update(i+1, f"{item} has been converted and is being saved\n(Book {booknr+1} of {len(pdfs2send)})")
                         i += 1
+                    
         except:
             pass
         #delete temp directory with contents
@@ -113,3 +125,5 @@ def ConvertPDF_to_JPG(self, PDFdir, tempdir, JPGdir):
         t_MBox(0, f'Finished converting all books.', "Message", MB_ICONINFORMATION)
     else:
         t_MBox(0, f'Finished, no books needed to be converted.', "Message", MB_ICONINFORMATION)
+    dlg.Destroy()
+    self.Refresh()
