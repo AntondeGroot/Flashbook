@@ -20,6 +20,11 @@ class ProgressDialog():
                                         )
     def SetRange(self,integer):
         self.dialog.SetRange(integer)
+                                    
+    def SetURange(self,integer):
+        """A range that will not reach its maximum and thus not disappear.
+        For reusing it if you want to display nested loop progressions"""
+        self.dialog.SetRange(integer+2)
         
     def Pulse(self, msg=''):
         self.dialog.Pulse(newmsg=msg)
