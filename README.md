@@ -58,7 +58,7 @@ You can also add a printscreen you took. For example to add extra info or graphi
 
 Your progress will be saved after each answer given. So you can continue exactly where you left off.
 
-<img src="https://github.com/AntondeGroot/Flashbook/blob/master/readme%20images/fc3.png" alt="alt text" width="500" height="">
+<img src="https://github.com/AntondeGroot/Flashbook/blob/master/readme%20images/fc3_2.png" alt="alt text" width="500" height="">
 
 Then you can either use your mouse or your arrow keys to: flip the card or to indicate your answer is correct / wrong.
 
