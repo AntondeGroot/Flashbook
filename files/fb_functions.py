@@ -25,18 +25,11 @@ from matplotlib.figure import Figure
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 
 class Window2(wx.PopupWindow):
-    """"""
-    
-    #----------------------------------------------------------------------
     def __init__(self, parent, style,image):
-                
-        """Constructor"""
         wx.PopupWindow.__init__(self, parent, style)
         border = 10
-        print("FB popupwindow")
         panel = wx.Panel(self)
         
-        #panel.SetBackgroundColour("CADET BLUE")        
         panel.SetBackgroundColour(wx.Colour(179, 236, 255) )        
         
         self.m_bitmap123 = wx.StaticBitmap( panel, wx.ID_ANY, wx.NullBitmap,[border,border], wx.DefaultSize, 0 ) #displace image by width of border
@@ -56,10 +49,8 @@ class Window2(wx.PopupWindow):
         st.Bind(wx.EVT_LEFT_DOWN, self.OnMouseLeftDown)
         st.Bind(wx.EVT_MOTION, self.OnMouseMotion)
         st.Bind(wx.EVT_LEFT_UP, self.OnMouseLeftUp)
-        st.Bind(wx.EVT_RIGHT_UP, self.OnRightUp)
-        
-        wx.CallAfter(self.Refresh)
-        
+        st.Bind(wx.EVT_RIGHT_UP, self.OnRightUp)       
+        wx.CallAfter(self.Refresh)       
     
     def OnMouseLeftDown(self, evt):
         self.Refresh()
@@ -73,27 +64,25 @@ class Window2(wx.PopupWindow):
             nPos = (self.wPos.x + (dPos.x - self.ldPos.x),
                     self.wPos.y + (dPos.y - self.ldPos.y))
             self.Move(nPos)
-        #added myself dont move just destroy
+        #dont move just destroy
         self.Show(False)
         self.Destroy()
     def OnMouseLeftUp(self, evt):
         if self.panel.HasCapture():
             self.panel.ReleaseMouse()
-        #added myself dont move just destroy
+        #dont move just destroy
         self.Show(False)
         self.Destroy()
     def OnRightUp(self, evt):#orininal
         self.Show(False)
         self.Destroy()
     
-
 def is_number(s):
     try:
         int(s)
         return True
     except ValueError:
         return False
-
 
 def SetToolStitchArrow(self,orientation="vertical"):
     if orientation == "vertical":
@@ -111,9 +100,7 @@ def SetToolStitchArrow(self,orientation="vertical"):
         print(colored("use os.path.join()","red"))
     self.m_toolStitch.SetBitmap(wx.Bitmap(BMP))
 
-def drawrect(self,layer,linecolor): # no errors
-    if self.debugmode:
-        print("fb=drawRec")
+def drawrect(self,layer,linecolor): 
     x0 , y0 = self.cord1
     x1 , y1 = self.cord2
     #rename coordinates if square isn't drawn from top left to bottom right.
@@ -139,9 +126,6 @@ def drawrect(self,layer,linecolor): # no errors
     layer = np.array(layer)
     layer = np.uint8(layer)
     return layer        
-
-
-
 
 def drawCoordinates(self,pageimage): 
     if self.debugmode:
@@ -199,8 +183,7 @@ def ShowPrintScreen(self): # no error
         
         image2 = wx.Image( width, height )
         image2.SetData( self.pageimage.tobytes() )
-        
-        ##
+        #display
         self.m_bitmapScroll.SetBitmap(wx.Bitmap(image2))
         self.m_bitmap4.SetBitmap(wx.Bitmap(image2))
         self.Layout()
@@ -237,9 +220,6 @@ def SavePageNr(self):
     with open(path_file,'w') as file:
         file.write(json.dumps(dictionary))
         file.close()
-        
-        
-    
 
 def ShowPage_fb(self): 
     try:
@@ -254,11 +234,9 @@ def ShowPage_fb(self):
                 pageimage = self.pageimage
                 self.pageimage = drawCoordinates(self,pageimage)
         except:
-            pass
-        
+            pass        
         image2 = wx.Image( width, height )
         image2.SetData( self.pageimage.tobytes() )
-        
         self.m_bitmapScroll.SetBitmap(wx.Bitmap(image2))
         SavePageNr(self)
     except:
@@ -266,8 +244,6 @@ def ShowPage_fb(self):
         
 
 def CombinePics(self,directorylist):
-    if self.debugmode:
-        print("fb=Combine pics")
     i = 0
     # combine horizontal pictures horizontally. They can be recognized as [] within a [] such that [vert,[hor,hor],vert,[hor,hor,hor]]
     for imagelist in directorylist:
@@ -286,8 +262,7 @@ def CombinePics(self,directorylist):
             for j, image in enumerate(imagelist):
                 if j!= 0 and Path(image).exists():#remove superfluous images                    
                     Path(image).unlink()
-            directorylist[i] = imagelist[0]
-            
+            directorylist[i] = imagelist[0]  
         i += 1
     
     #combine pictures vertically    
@@ -306,10 +281,8 @@ def CombinePics(self,directorylist):
     for k, image in enumerate(directorylist):
         if k != 0 and Path(image).exists():
             Path(image).unlink()
-
-            
+           
 def CreateTextCard(self):
-    self.ERROR = False
     #try:
     self.TextCard = True    
     LaTeXcode = self.usertext
@@ -318,8 +291,8 @@ def CreateTextCard(self):
     ax = fig.gca()
     ax.plot([0, 0,0, height_card],color = (1,1,1,1))
     ax.axis('off')
-    ax.text(-0.5, height_card/2, LaTeXcode, fontsize = self.LaTeXfontsize, horizontalalignment = 'left', verticalalignment = 'center', wrap = True)
-    
+    ax.text(-0.5, height_card/2, LaTeXcode, fontsize=self.LaTeXfontsize, 
+            horizontalalignment='left', verticalalignment='center', wrap=True)    
     canvas = FigureCanvas(fig)
     canvas.draw()
     renderer = canvas.get_renderer()
@@ -348,9 +321,6 @@ def CreateTextCard(self):
     else:
         var = var + border
     self.imagetext = img.crop((0, 0, var, img.size[1]))
-    #except:
-    #    self.ERROR = True
-    #    log.ERRORMESSAGE("Error: could not create textcard")
 
 def ShowInPopup(self,event,mode):
     # a picture directory may not exist
@@ -370,8 +340,6 @@ def ShowInPopup(self,event,mode):
         self.image  = imop.CombinePics(img_text,img_pic)
     except:
         self.image = img_text
-    
-    
     try:
         image = self.image
         """Try to access mousepos, if there wasn't any mouseclick: then just place the popupwindow in the middle of your screen. 
@@ -390,8 +358,6 @@ def ShowInPopup(self,event,mode):
     except:
         # this is a normal occurance when you switch between Q and A
         pass
-        
-
 
 #%% turn user LaTeX macro into useable LaTeX code
 
@@ -446,8 +412,6 @@ def find_arguments(hookpos, sentence, defined_command, nr_arguments):
         arguments.append(sentence[argopen_index[i]+1:argclose_index[i]])
     return arguments, argopen_index, argclose_index
 
-    
-    
 def text_to_latex(self,usertext):
     """EXAMPLE:
     defined command = " \secpar{x}{t}}   " for the second partial derivative of a wrt b
