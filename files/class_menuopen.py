@@ -40,7 +40,7 @@ class menuopen(gui.MyFrame):
             value = MessageBox(0, "Are you sure you want to exit?", "Exit",  MB_OKCANCEL | MB_DEFBUTTON2 | MB_ICONINFORMATION)
             # Answer was yes, user wants to exit the app
             if value == IDOK: 
-                self.Close()
+                self.Destroy()
         else:
             p.SwitchPanel(self,0)  
         
