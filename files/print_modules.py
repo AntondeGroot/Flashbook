@@ -556,7 +556,8 @@ class pdfpage(settings):
             self.page_nr = i
             im = self.loadpage()
             w,h = im.size
-            scale = 0.5
+            #scale = 0.5 #this determines the resolution / dpi of the final pdf page
+            scale = 1
             im = im.resize((int(w*scale),int(h*scale)), PIL.Image.ANTIALIAS)
             im.save(path)
             pdflist[i] = path
