@@ -261,7 +261,6 @@ class SortImages():
                 # does it fit on the page?
                 if self.page_y + h_resized > self.a4page_h: 
                     self.newpage()
-                #
                 
                 self.savedata(w_resized,h_resized)
                 #print(f"saved pagexy = {self.page_x,self.page_y}")
@@ -296,23 +295,19 @@ class SortImages():
                 CUMSUMLEN = np.cumsum(self.images_w)  
             self.page_x = 0
             
-            
         # finished
         return self.datadict, self.datadict2,self.datadict3
 
 class pdfrow():
     def __init__(self):
         pass
-    
-
 
 class RectangleDetection():
     def __init__(self,dictionary):
         assert type(dictionary) == dict
         """INPUT: a dict {'name of rect1': coords1 , ... , 'name of rectN': coords N} WHERE coord = (x0,x1,y0,y1)
             then use method 'findRect' on a 2D point (x,y)
-        """
-        
+        """  
         self.keydictionary = dictionary
         self.list = [x for x in dictionary.values()]
     def KeyFromValue(self,value):
@@ -358,18 +353,12 @@ class RectangleDetection():
         return self.KeyFromValue(NearestCoord), NearestCoord
 
 
-
-
-
 #ctypes:
 ICON_EXCLAIM=0x30
 ICON_STOP = 0x10
 MessageBox = ctypes.windll.user32.MessageBoxW
-#win32api: total width of all monitors
-SM_CXVIRTUALSCREEN = 78 
 
-def getcardmode(path):
-    
+def getcardmode(path):    
     if 'card_' in path:
         index = path.find('card_')
         index += len('card_')
@@ -383,11 +372,6 @@ def getcardmode(path):
         return path
     else:
         print(f"error: path")
-
-
-
-
-
 
 def ColumnSliders(self):
     LIST = []
@@ -439,6 +423,8 @@ def import_screenshot(self,event):
     """Import a screenshot, it takes multiple monitors into account. 
     The bytestream from win32 is from a Device Independent Bitmap, i.e.'RGBquad', meaning that it is not RGBA but BGRA coded.
     The image is also flipped and rotated."""
+    #win32api: total width of all monitors
+    SM_CXVIRTUALSCREEN = 78
     
     ScrWidth, ScrHeight = GetSystemMetrics(SM_CXVIRTUALSCREEN),GetSystemMetrics(1)
     win32clipboard.OpenClipboard()
@@ -477,9 +463,7 @@ def import_screenshot(self,event):
         win32clipboard.CloseClipboard()
     except:
         pass
-
-
-
+    
 
 def print_preview(self): 
     print("preview refresh")
@@ -498,7 +482,7 @@ class pdfpage(settings):
         self.DICT_page_card_rect = DICT_page_card_rect #{pdfpage_nr: {cardname : Rect}}
         self.DICT_page_line_card = DICT_page_line_card #{pdfpage_nr: {self.line_nr:cardname}} 
         self.dict3 = dict3 #{pdfpage_nr: {cardname: ]}}
-        #self.dict4 = dict4 #{pdfpage_nr: {self.line_nr: [posQAline,width]}}
+        
         self.a4page_w = a4page_w
         self.a4page_h = a4page_h
         self.page_nr  = pagenr
@@ -582,8 +566,6 @@ class pdfpage(settings):
         key = f"pdfpage{self.page_nr}"
         linenumbers = self.DICT_page_line_card[key].keys()
         imcanvas = im = PIL.Image.new("RGB", (self.a4page_w ,self.a4page_h), 'white')        
-        
-        
         
         threads = [None]*len(linenumbers)
         
@@ -730,7 +712,6 @@ def notes2paper(self):
     except:
         log.ERRORMESSAGE("Error: finding questions/answers")
     
-    
     ## dialog display              
     self.chrono = True
     self.multiplier = 1   
@@ -789,8 +770,7 @@ def notes2paper(self):
                                     #border_h += self.horiline_thickness                                
                                 card_i["border"] = (w0,h0)
                                 card_i["size"] = (w+2*w0,h+2*h0)
-                cards[_idx_] = card_i
-    
+                cards[_idx_] = card_i   
 
     #%% sort images horizontally AND vertically
     TT.update("sort images over all pdf pages") 
@@ -869,7 +849,6 @@ def notes2paper(self):
     self.Update()
     self.Refresh()
     TT.stop()
-
 
     
 def add_margins(self,img):
