@@ -209,15 +209,16 @@ class Latexfile(Commands,settings):
         if Path(self.filepath).exists():
             file = open(self.filepath, 'r',newline='\r')
             linefile = file.readlines()
+            file.close()
 
         linefile = [x for x in linefile if x.strip() != ''] #exclude empty lines
         ## check if file is up-to-date and has \sizes{[0,0,0,0,0]}
-        count = 0
+        uptodate = True
         for i, line in enumerate(linefile):
             if '\size{' not in line and line.strip() != '':
                 print(self.size_command, line)
                 print("size not in line")
-                count += 1
+                uptodate = False
                 q,a,t,_ = self.line_to_components(line)     
                 newline = self.insert_line(question = q, answer = a, topic = t)
                 linefile[i] = newline
@@ -228,7 +229,10 @@ class Latexfile(Commands,settings):
                 newline = self.insert_line(question = q, answer = a, topic = t)
                 linefile[i] = newline
                 
-        if count != 0:
+        if not uptodate:
+            print('\n'*20)
+            print('LILNEFILE')
+            print(linefile)
             self.save_file(linefile)
             
         self.linefile = linefile
@@ -240,6 +244,7 @@ class Latexfile(Commands,settings):
         I tried to implement it in save_file but for some reason it doesn't work"""
         file = open(ipath, 'r',newline='\r\n')
         linefile = file.readlines()
+        file.close()
         linefile2 = []
         for i, item in enumerate(linefile):
             if type(item) == str:
@@ -251,11 +256,13 @@ class Latexfile(Commands,settings):
         with open(ipath, 'w') as output: 
             for item in linefile2:
                 output.write("%s" % item)
+        output.close()
                 
     def save_file(self,linefile):
+        print(f"latex save file")
         #edit linefile to remove superfluos "\n"
         linefile2 = []
-        for i, line in enumerate(self.linefile):
+        for i, line in enumerate(linefile):
             if type(line) == str:
                 if line.strip() != '':
                     splitline = line.split("\n")
@@ -270,6 +277,7 @@ class Latexfile(Commands,settings):
             with open(self.filepath, 'w') as output: 
                 for item in linefile2:
                     output.write("%s\n" % item)
+            output.close()
         except:
             pass
         
@@ -292,6 +300,7 @@ class Latexfile(Commands,settings):
             h0 += h
         return w0,h0
     def file_to_rawcards(self):
+        print(f"file to rawcards")
         assert self.linefile != []
         cards = []
         
@@ -317,6 +326,7 @@ class Latexfile(Commands,settings):
         #remove user defined macro's
         file = open(str(Path(self.notesdir, "usercommands.txt")), 'r')
         commandsfile = file.readlines()
+        file.close()
         #print(f"text is of type {type(text)}: {text}")
         if text.strip() != '':
             text = f2.ReplaceUserCommands(commandsfile,text)
@@ -329,12 +339,14 @@ class Latexfile(Commands,settings):
         else:
             return (0,0)
     def picsize(self,picname):
+        print(f"picsize {picname}")
         try:
             w,h = PIL.Image.open(os.path.join(self.pics(), self.bookname, picname)).size
             return (w,h)
         except:
             return (0,0)
     def topicsize(self,text):
+        print(f"topicsize {text}")
         self.a4page_w = 1240 
         width_card = self.a4page_w
         height_card = int(math.ceil(len(text)/40))*0.75*100
@@ -345,6 +357,7 @@ class Latexfile(Commands,settings):
             return (0,0)
     
     def getline_i_card(self,index):
+        print(f"get line card {index}")
         line = self.linefile[index]
         q,a,t,_ = self.line_to_components(line)
         qtext = argument(r"\\text{",q)
@@ -369,12 +382,13 @@ class Latexfile(Commands,settings):
         return {'qtext':qtext,'qpic':qpic,'atext':atext,'apic':apic,'t':t,'q':q,'a':a}
     
     def popline(self,index):
+        print(f"popline {index}")
         index = int(index)
         self.linefile.pop(index)
         self.save_file(self.linefile)
         
     def replace_line(self,index, qtext= '', qpic = '', atext = '',apic = '', topic = '', size = [(0,0),(0,0),(0,0),(0,0),(0,0)]):
-        
+        print(f"replace line {index}")
         size = str([self.textsize(qtext),self.picsize(qpic), self.textsize(atext),self.picsize(apic),self.topicsize(topic)])
         
         question = ''
@@ -392,6 +406,7 @@ class Latexfile(Commands,settings):
         self.linefile[index] = line
         self.save_file(self.linefile)
     def addline(self,index = 0,question = '', answer = '', topic = '', size = [(0,0),(0,0),(0,0),(0,0),(0,0)]):
+        print(f"add line {index}")
         #when the user adds a question and answer, which by definition does not include a picture
         qpic  = ''
         qtext = question
@@ -401,8 +416,10 @@ class Latexfile(Commands,settings):
         size = str([self.textsize(qtext),self.picsize(qpic), self.textsize(atext),self.picsize(apic),self.topicsize(topic)])
         line = r"\quiz{" + r"\text{"+question+ "}" + "}" + r"\ans{" +r"\text{"+ answer+ "}" + "}" + r"\topic{" + topic + "}" + r"\size{" + size + "}"
         self.linefile.insert(index,line)
+        
         self.save_file(self.linefile)
     def insert_line(self, question = '', answer = '', topic = '', size = [(0,0),(0,0),(0,0),(0,0),(0,0)]):
+        print(f"insert line")
         cmd   = self.pic_command
         qpic  = argument(cmd,question)
         qtext = argument(r"\\text{",question)
