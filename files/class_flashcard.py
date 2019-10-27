@@ -60,7 +60,20 @@ class flashcard(gui.MyFrame):
         self.NEWCARD = True
         m7.AcceleratorTableSetup(self,"flashcard","set")
         p.SwitchPanel(self,2)
-        with wx.FileDialog(self, "Choose a subject to study",defaultDir=str(self.notesdir), wildcard="*.tex",style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST) as fileDialog:
+        
+        #%%
+        # When Flashbook is run in the Spyder IDE it may not open the correct folder, this however is no problem when it is run
+        #       as an executable. In that case the whole 'defaultFile' isn't even necessary.
+        #       when the defaultdir and the defaultfile match: it will open the dir one above the one you actually want to open
+        #       if the defaultfile is a file within the defaultdir it works as it should be. In this case it is not a problem
+        #       because there's always 1 file present.
+        if os.listdir(self.notesdir) != []:
+            defaultfile = os.path.join(self.notesdir,os.listdir(self.notesdir)[0])
+        else:
+            defaultfile = self.notesdir
+        #%%
+        
+        with wx.FileDialog(self, "Choose a subject to study",defaultDir=str(self.notesdir),defaultFile = defaultfile, wildcard="*.tex",style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST) as fileDialog:
             if fileDialog.ShowModal() == wx.ID_CANCEL:
                 #the user changed their mind
                 p.SwitchPanel(self,0) 
