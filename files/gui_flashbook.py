@@ -2572,7 +2572,7 @@ class MyDialogAbout ( wx.Dialog ):
 		
 		bSizer91.Add( self.m_staticText58, 0, wx.ALL, 0 )
 		
-		self.m_staticText59 = wx.StaticText( self.m_panel33, wx.ID_ANY, 'Version 1.5.0', wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_staticText59 = wx.StaticText( self.m_panel33, wx.ID_ANY, 'Version 1.5.1', wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.m_staticText59.Wrap( -1 )
 		self.m_staticText59.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
 		
