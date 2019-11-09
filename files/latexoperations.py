@@ -16,6 +16,7 @@ import math
 import wx
 import gui_flashbook as gui
 import imageoperations as imop
+import log_module as log
 #%% functions
 
 def find_hook(hookpos, string):    
@@ -222,6 +223,11 @@ class Latexfile(Commands,settings):
                 q,a,t,_ = self.line_to_components(line)     
                 newline = self.insert_line(question = q, answer = a, topic = t)
                 linefile[i] = newline
+            if '\sizes{[(0,0), (0,0), (0,0), (0,0), (0,0)]}' in line:
+                uptodate = False
+                q,a,t,_ = self.line_to_components(line)     
+                newline = self.insert_line(question = q, answer = a, topic = t)
+                linefile[i] = newline
             if i == 0:
                 self.bookname
                 q,a,t,_ = self.line_to_components(line)
@@ -357,14 +363,14 @@ class Latexfile(Commands,settings):
             return (0,0)
     
     def getline_i_card(self,index):
-        print(f"get line card {index}")
+        print(f"\n get line card {index}")
         line = self.linefile[index]
         q,a,t,_ = self.line_to_components(line)
         qtext = argument(r"\\text{",q)
         qpic  = argument(r"\\pic{",q)
         atext = argument(r"\\text{",a)
         apic  = argument(r"\\pic{",a)
-        
+        print(f"qpic = {qpic}, apic = {apic}")
         if qpic.strip() != '' and qtext.strip() != '':
             q = qtext+r"\pic{"+qpic+"}"
         if qpic.strip() != '' and qtext.strip() == '':
@@ -382,13 +388,13 @@ class Latexfile(Commands,settings):
         return {'qtext':qtext,'qpic':qpic,'atext':atext,'apic':apic,'t':t,'q':q,'a':a}
     
     def popline(self,index):
-        print(f"popline {index}")
+        print(f"\n popline {index}")
         index = int(index)
         self.linefile.pop(index)
         self.save_file(self.linefile)
         
     def replace_line(self,index, qtext= '', qpic = '', atext = '',apic = '', topic = '', size = [(0,0),(0,0),(0,0),(0,0),(0,0)]):
-        print(f"replace line {index}")
+        print(f"\n replace line {index}")
         size = str([self.textsize(qtext),self.picsize(qpic), self.textsize(atext),self.picsize(apic),self.topicsize(topic)])
         
         question = ''
@@ -406,7 +412,7 @@ class Latexfile(Commands,settings):
         self.linefile[index] = line
         self.save_file(self.linefile)
     def addline(self,index = 0,question = '', answer = '', topic = '', size = [(0,0),(0,0),(0,0),(0,0),(0,0)]):
-        print(f"add line {index}")
+        print(f"\n add line {index}")
         #when the user adds a question and answer, which by definition does not include a picture
         qpic  = ''
         qtext = question
@@ -419,7 +425,7 @@ class Latexfile(Commands,settings):
         
         self.save_file(self.linefile)
     def insert_line(self, question = '', answer = '', topic = '', size = [(0,0),(0,0),(0,0),(0,0),(0,0)]):
-        print(f"insert line")
+        print(f"\n insert line")
         cmd   = self.pic_command
         qpic  = argument(cmd,question)
         qtext = argument(r"\\text{",question)
