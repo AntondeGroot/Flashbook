@@ -326,7 +326,7 @@ def selectionentered(self,event):
                         self.Flashcard.setApic(os.path.basename(list_A[0]))
                     else:
                         self.Flashcard.setA(usertext)
-                        self.Flashcard.setApic(r" \pic{" + os.path.basename(list_A[0])+r"}")
+                        self.Flashcard.setApic(os.path.basename(list_A[0]))
                         print("is not a list")                
                 else:
                     self.Flashcard.setA(usertext)
