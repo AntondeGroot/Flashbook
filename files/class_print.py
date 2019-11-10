@@ -84,10 +84,8 @@ class printer(gui.MyFrame):
         self.m_checkBox_col2.SetValue(self.pdfPageColsChecks[1])
         self.m_checkBox_col3.SetValue(self.pdfPageColsChecks[2])
         import os
-        print(f"notesdir is {self.notesdir}")
-        print(f"{os.path.exists(self.notesdir)}")
         notesdir = self.notesdir
-        print(os.listdir(notesdir)[0])
+        
         #%%
         # When Flashbook is run in the Spyder IDE it may not open the correct folder, this however is no problem when it is run
         #       as an executable. In that case the whole 'defaultFile' isn't even necessary.
@@ -101,7 +99,7 @@ class printer(gui.MyFrame):
         #%%
         with wx.FileDialog(self, "Choose which file to print", defaultDir = str(notesdir), defaultFile = defaultfile, 
                            wildcard="*.tex", style=wx.FD_DEFAULT_STYLE ) as fileDialog:
-            print(f"notesdir is {self.notesdir}")
+            
             if fileDialog.ShowModal() == wx.ID_CANCEL:
                 p.SwitchPanel(self,0) 
                 return None    # the user changed their mind
