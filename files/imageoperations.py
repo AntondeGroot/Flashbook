@@ -46,7 +46,6 @@ def cropimage(img, x, backgroundcolor=(255,255,255), border=20):
     var4 = 0
     array = np.array(img)- backgroundcolor
     img_array = np.sum(np.sum(array,2),x) #summed over x-axis
-    #print(f"length is {len(img_array)}")
     while (SEARCH1 or SEARCH2):
         for i,pixel in enumerate(img_array):
             j = len(img_array) - i - 1
@@ -92,7 +91,6 @@ def cropimage(img, x, backgroundcolor=(255,255,255), border=20):
     if x == 0:
         img = img.crop((var1, 0, var2, img.size[1]))
         
-    #print(var1,var2,var3,var4)
     return img    
 
 
