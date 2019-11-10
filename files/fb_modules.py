@@ -25,16 +25,13 @@ def list2path(templist):
     if type(templist) == list:
         if len(templist) > 1:
             if type(templist[0]) == str:
-                print(f"mode1 {templist}")
                 output = templist[0]
             elif type(templist[0]) == list:
                 output = templist[0][0]
         elif len(templist) == 1:
             if type(templist[0]) == str:
-                print(f"mode2 {templist}")
                 output = templist[0]
             elif type(templist[0]) == list:
-                print(f"mode2 {templist}")
                 output = templist[0][0]
     return output
 
@@ -84,7 +81,7 @@ def dirchanged(self,path):
         if len_nr == 1:
             nrlist.append("000{}".format(picname[indexlist[0]]))
         elif len_nr == 0:
-            print(f"found no number for {picname}")
+            log.DEBUGLOG(debugmode=self.debugmode,msg=f"FB MODULE: found no number for {picname}")
         else:
             I = indexlist[0]
             F = indexlist[-1] + 1
@@ -120,10 +117,10 @@ def dirchanged(self,path):
             self.dictionary = json.load(file)
     except:
         self.dictionary = {}
-        print("No drawn rects found for this file, continue")
+        log.DEBUGLOG(debugmode=self.debugmode,msg=f"FB MODULE: no drawn rects found for this file {self.bookname}, continue")
     try: 
         self.jpgdir    = str(Path(self.booksdir, self.booknamepath, self.picnames[self.currentpage-1]))
-        print(self.booknamepath,self.booksdir)
+        log.DEBUGLOG(debugmode=self.debugmode,msg=f"FB MODULE:\n\t booknamepath {self.booknamepath},\n\t booksdir {self.booksdir}")
         self.pageimage = PIL.Image.open(self.jpgdir)
         self.pageimagecopy = self.pageimage
         self.width, self.height = self.pageimage.size
@@ -246,10 +243,10 @@ def selectionentered(self,event):
         PICS_DRAWN = self.Flashcard.nrpics("Question")
         QUESTION_MODE = self.Flashcard.getquestionmode()
         if  USER_textinput != '' or PICS_DRAWN > 0:
-            print("selection")
+            log.DEBUGLOG(debugmode=self.debugmode,msg=f"FB MODULE: a selection was entered")
             usertext = USER_textinput
             if QUESTION_MODE:
-                print("selection + questionmode") 
+                log.DEBUGLOG(debugmode=self.debugmode,msg=f"FB MODULE: question mode")
                 # change mode to answer
                 self.usertext = f.text_to_latex(self,usertext)
                 self.Flashcard.switchmode()
@@ -259,7 +256,7 @@ def selectionentered(self,event):
                 self.Refresh()
                 # check for [[1,2,3]]
                 if PICS_DRAWN > 1:
-                    print("PICS DRAWN > 1")                    
+                    log.DEBUGLOG(debugmode=self.debugmode,msg=f"FB MODULE: multiple pics are drawn")
                     list_ = self.Flashcard.getpiclist("Question")
                     f.CombinePics(self,list_)
                     list_ = list2path(list_)
@@ -268,10 +265,9 @@ def selectionentered(self,event):
                     self.Flashcard.setQ(usertext)                
                     self.Flashcard.setQpic(os.path.basename(list_))
                 elif PICS_DRAWN == 1:
-                    
+                                        
                     list_ = self.Flashcard.getpiclist("Question")
-                    print(f"PICS DRAWN = 1 {list_}")    
-                    print(f"mode is {self.Flashcard.getmode()}")
+                    log.DEBUGLOG(debugmode=self.debugmode,msg=f"FB MODULE: 1 pic is drawn,\n\t pic drawn is {list_},\n\t mode is {self.Flashcard.getmode()}")
                     if len(list_)>1 and type(list_[0]) is list:#list in list    
                         f.CombinePics(self,list_)
                         list_ = list2path(list_)
@@ -279,16 +275,15 @@ def selectionentered(self,event):
                     else:
                         list_ = list2path(list_)
                         
-                        print("is not a list")
                     self.Flashcard.setQ(usertext)
                     self.Flashcard.setQpic(os.path.basename(list_))
                 elif PICS_DRAWN == 0:
-                    print("PICS DRAWN = 0")                    
+                    log.DEBUGLOG(debugmode=self.debugmode,msg=f"FB MODULE: only user text input, 0 pics were drawn")
                     self.Flashcard.setQ(usertext)
                 f.ShowInPopup(self,event,"Question")
                 
             else:#ANSWER mode
-                print("selection + answer")
+                log.DEBUGLOG(debugmode=self.debugmode,msg=f"FB MODULE: answer mode")
                 self.usertext = f.text_to_latex(self,usertext)
                 self.questionmode = True
                 # save everything
@@ -326,8 +321,7 @@ def selectionentered(self,event):
                         self.Flashcard.setApic(os.path.basename(list_A[0]))
                     else:
                         self.Flashcard.setA(usertext)
-                        self.Flashcard.setApic(os.path.basename(list_A[0]))
-                        print("is not a list")                
+                        self.Flashcard.setApic(os.path.basename(list_A[0]))            
                 else:
                     self.Flashcard.setA(usertext)
                 
@@ -347,7 +341,8 @@ def selectionentered(self,event):
                 
                 
         elif not QUESTION_MODE:
-            print("selection Answer without any input")
+            log.DEBUGLOG(debugmode=self.debugmode,msg=f"FB MODULE: answer mode without any input")
+            
             # if in question mode the user only typed in some text and want to save that 
             self.Flashcard.setT(self.m_TopicInput.GetValue())
             self.tempdictionary = {}
@@ -368,7 +363,7 @@ def selectionentered(self,event):
                 if type(list_A[0]) is list:        
                     f.CombinePics(self,list_A)
                 else:
-                    print("is not a list")
+                    log.DEBUGLOG(debugmode=self.debugmode,msg=f"FB MODULE: is not a list")
                 self.Flashcard.setA(usertext)
                 self.Flashcard.setApic(str(list_A[0]))               
             
@@ -503,7 +498,7 @@ def nextpage(self,event):
     try:
         if self.currentpage == 'prtscr':
             self.currentpage = self.currentpage_backup
-            print(f" page is now{self.currentpage}")
+            log.DEBUGLOG(debugmode=self.debugmode,msg=f"FB MODULE: page is now {self.currentpage}")
         else:
             if self.currentpage < self.totalpages:
                 self.currentpage += 1
