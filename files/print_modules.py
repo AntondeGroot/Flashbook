@@ -144,7 +144,7 @@ def createimage(self,card_i):
 class SortImages():
     import numpy as np
     import bisect
-    def __init__(self, library = None, page_width = 1240, page_height = 1754):
+    def __init__(self, library = None, page_width = 1240, page_height = 1754,debug = False):
         sizelist = []
         
         for i,card_i in enumerate(library):
@@ -165,6 +165,7 @@ class SortImages():
         self.datadict3 = {}
         self.datadict_path = {} # {"q1" : c://.../name}
         self.rowindex = 0
+        self.debugmode = debug
     def newpage(self):
         self.page_x = 0
         self.page_y = 0
@@ -465,7 +466,7 @@ def print_preview(self):
     
     
 class pdfpage(settings):
-    def __init__(self,pagenr,DICT_page_card_rect, DICT_page_line_card,dict3,a4page_w,a4page_h,tempdir = None,bookname = '', TT = ''):
+    def __init__(self,pagenr,DICT_page_card_rect, DICT_page_line_card,dict3,a4page_w,a4page_h,tempdir = None,bookname = '', TT = '',debug = False):
         settings.__init__(self)
         self.LaTeXfontsize = 20
         self.bookname = bookname
@@ -486,6 +487,7 @@ class pdfpage(settings):
         self.horiline_color = (0,0,0)
         self.tempdir = tempdir
         self.TT = TT
+        self.debugmode = debug
         
     def get_cardrect(self):
         key = self.pagekey()
@@ -583,7 +585,7 @@ class pdfpage(settings):
                     ##try:
                     ##    imcanvas.paste(im,(x,y))
                     ##except:
-                    ##    print(f"error for {im,x}")
+                    ##   error message
                     """
                     if self.QAline_bool:
                         #both the program should have the QAline enabled AND the card should contain both Question and Answer
@@ -763,7 +765,7 @@ def notes2paper(self):
     if hasattr(self,'SortImages'):
         delattr(self,'SortImages')
     
-    self.SortImages = SortImages(library = cards, page_width = self.a4page_w, page_height = self.a4page_h)
+    self.SortImages = SortImages(library = cards, page_width = self.a4page_w, page_height = self.a4page_h,debug = self.debugmode)
     DICT_page_card_rect, DICT_page_line_card, dct3 = self.SortImages.sortpages()
     
     
@@ -775,7 +777,7 @@ def notes2paper(self):
     else:
         pagenr = 0
     self.pdfpage = pdfpage(pagenr, DICT_page_card_rect, DICT_page_line_card, 
-                           dct3,self.a4page_w,self.a4page_h,tempdir = self.tempdir,bookname = self.bookname, TT = TT)
+                           dct3,self.a4page_w,self.a4page_h,tempdir = self.tempdir,bookname = self.bookname, TT = TT,debug = self.debugmode)
     self.pdfpage.setqaline(  color = self.QAline_color   , thickness = self.QAline_thickness   , visible = self.QAline_bool  )
     self.pdfpage.setvertline(color = self.vertline_color , thickness = self.vertline_thickness , visible = self.vertline_bool)
     self.pdfpage.sethoriline(color = self.horiline_color , thickness = self.horiline_thickness , visible = self.horiline_bool)
