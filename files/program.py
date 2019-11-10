@@ -20,6 +20,7 @@ import wx._html
 #------------------------------------------------------------------- modules
 import fb_modules    as m
 import fb_functions    as f
+import log_module as log
 #for colored error messages
 
 #ctypes:
@@ -68,18 +69,11 @@ def checkBooks(self,sleeptime):
     library.sort()
     categories.sort()
     pathlib.sort()
-    
     self.nr_books = len(library)
-    
     if len(library) == 0 and len(library_pdf)!= 0:
         MessageBox(0, f"Welcome new user! \n\nNo converted books were found in directory {self.booksdir} \n\nGo to the menubar of the app:  `Open/Book PDF folder`\nPlace a PDF file there and click on Convert\n\nIf the conversion fails: you need to use an online PDF converter since all image manipulations are done to jpg files.", "Welcome to Flashbook", MB_ICONINFORMATION )
     else:
-        print("the following books were found:")
-        for name in categories:
-            print(f"- {name}")
-    print("="*90)
-    
-    
+        log.DEBUGLOG(debugmode=self.debugmode, msg=f'PROGRAM: the following books were found: {categories}')
     return pdfs2send, library, pathlib, categories 
     
       
