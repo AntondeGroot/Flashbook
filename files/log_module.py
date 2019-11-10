@@ -11,38 +11,45 @@ import traceback
 import os
 from termcolor import colored
 
+def INITIALIZE(debugmode=False):
+    try:
+        if debugmode:               
+            basepath = Path(os.getenv("LOCALAPPDATA"),'FlashBook','temporary')
+            LOG_FILENAME = Path(basepath,'logging_traceback.out')
+            logging.basicConfig(filename=str(LOG_FILENAME), level=logging.DEBUG)
+            logging.debug('NEW SESSION HAS STARTED')
+            logging.shutdown()
+    except:
+        pass        
+
 def ERRORMESSAGE(msg):
     try:
         basepath = Path(os.getenv("LOCALAPPDATA"),'FlashBook','temporary')
         LOG_FILENAME = Path(basepath,'logging_traceback.out')
         logging.basicConfig(filename=str(LOG_FILENAME), level=logging.DEBUG)
-        logging.debug('New session has started')
-        print(colored(f"{msg}\n",'red',attrs=['underline']))
         ErrorMessage = traceback.format_exc()
+        # critical errors are still shown in the IDE's console
+        print(colored(f"{msg}\n",'red',attrs=['underline']))
         print(ErrorMessage)
-        logging.warning(ErrorMessage)
+        # log the error
+        logging.warning(msg)          #log message: what part of the program
+        logging.warning(ErrorMessage) #log traceback explicitly
         logging.shutdown()
     except:
         pass
+
     
-def DEBUGLOG(*args, debugmode = False,msg = ''):
+def DEBUGLOG(*args, debugmode=False, msg='', info=''):
     try:
         basepath = Path(os.getenv("LOCALAPPDATA"),'FlashBook','temporary')
         LOG_FILENAME = Path(basepath,'logging_traceback.out')
         logging.basicConfig(filename=str(LOG_FILENAME), level=logging.DEBUG)
-        logging.debug('New session has started')
-        logging.info("DEBUGLOG")
-        logging.debug("error anton")
-        if debugmode:
-            print("is debugged"*10)
+        if debugmode:               
+            logging.debug(msg)
+            if info != '':
+                logging.info(info)
             
-            #path = os.path.join(os.getenv("LOCALAPPDATA"),'Flashbook','temporary')
-            #LOG_FILENAME = os.path.join(path,'logging_traceback.out')
-            #logging.basicConfig(filename=LOG_FILENAME, level=logging.INFO)    
-            logging.info(msg)
-            logging.debug("test")
             for arg in args:
-                print("argument"*90)
                 logging.info('%s before you', arg)
         logging.shutdown()
     except:
