@@ -91,13 +91,12 @@ def SetToolStitchArrow(self,orientation="vertical"):
         BMP = self.path_arrow
     else:
         BMP = self.path_arrow
-        print(colored("Wrong mode entered in SetToolStitchArrow","red"))
+        log.ERRORMESSAGE(f'FB FUNC: Wrong mode entered in SetToolStitchArrow')
     try:
         assert type(self.path_arrow) == str
         assert type(self.path_arrow2) == str
     except AssertionError:
-        print(colored("ERROR: self.path_arrow and self.path_arrow2 should be of the type STR","red"))
-        print(colored("use os.path.join()","red"))
+        log.ERRORMESSAGE(f'FB FUNC: self.path_arrow and self.path_arrow2 should be of type STR')
     self.m_toolStitch.SetBitmap(wx.Bitmap(BMP))
 
 def drawrect(self,layer,linecolor): 
@@ -127,9 +126,8 @@ def drawrect(self,layer,linecolor):
     layer = np.uint8(layer)
     return layer        
 
-def drawCoordinates(self,pageimage): 
-    if self.debugmode:
-        print("fb=drawCoordinates")
+def drawCoordinates(self,pageimage):
+    log.DEBUGLOG(debugmode=self.debugmode, msg=f'FB FUNC: draw coordinates')
     img = np.array(pageimage)
     img = np.uint8(img)
     key = f'page {self.currentpage}'
@@ -216,7 +214,7 @@ def SavePageNr(self):
             file.close()
     else:
         dictionary = {self.bookname:self.currentpage}
-    print(f"dictionary = {dictionary}")
+    log.DEBUGLOG(debugmode=self.debugmode, msg=f'FB FUNC: save page number, dictionary = {dictionary}')
     with open(path_file,'w') as file:
         file.write(json.dumps(dictionary))
         file.close()
