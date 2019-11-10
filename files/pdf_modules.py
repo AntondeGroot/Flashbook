@@ -30,11 +30,9 @@ def AddPathvar():
     PathSTR = os.environ["PATH"]
     if "poppler" not in PathSTR:
         dir_ = os.path.dirname(__file__)
-        print(os.listdir(dir_))
         FileName = [x for x in os.listdir(dir_) if 'poppler' in x]
         if len(FileName) != 0:
             FileName = FileName[0]
-        print(FileName)
         if FileName != []:
             DirPath = os.path.join(dir_ , FileName, "bin")        
             os.environ["PATH"] += os.pathsep + DirPath
