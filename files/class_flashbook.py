@@ -14,6 +14,7 @@ import print_modules as m3
 from pathlib import Path
 ICON_EXCLAIM=0x30
 import accelerators_module as m7
+import log_module as log
 import ctypes
 ICON_STOP = 0x10
 MB_ICONINFORMATION = 0x00000040
@@ -27,7 +28,7 @@ class flashbook(gui.MyFrame):
     
     def m_OpenFlashbookOnButtonClick( self, event ):
         """START MAIN PROGRAM : FLASHBOOK"""
-        print("Welcome to Flashbook , one moment ...")     
+        log.DEBUGLOG(debugmode=self.debugmode,msg=f'STARTUP FLASHBOOK')
         ## initialize
         self.zoom = 1.0
         self.m_bitmapScroll.SetBitmap(wx.Bitmap(wx.Image( 1,1 ))) # always empty bitmap, in case someone reruns the program
@@ -69,7 +70,7 @@ class flashbook(gui.MyFrame):
                 return None    # the user changed their mind
             else:
                 dirpath = DirDialog.GetPath()
-                print(f"opened dirdialog {dirpath}")
+                log.DEBUGLOG(debugmode=self.debugmode,msg=f'CLASS FLASHBOOK: opened dirdialog {dirpath}')
                 m.dirchanged(self,dirpath)
     def m_btnScreenshotOnButtonClick( self, event ):
         self.BoolCropped = False # is image cropped
@@ -78,7 +79,7 @@ class flashbook(gui.MyFrame):
         m3.import_screenshot(self,event)
         
     def m_userInputOnEnterWindow( self, event ):
-        print("entered window")
+        log.DEBUGLOG(debugmode=self.debugmode,msg=f'CLASS FLASHBOOK: user entered window')
         m7.AcceleratorTableSetup(self,"flashbook","textwindow")
 	
     def m_userInputOnLeaveWindow( self, event ):
