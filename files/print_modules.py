@@ -49,8 +49,7 @@ def findfullpicpath(self,picname):
             
 
 def createimage(self,card_i):
-        
-    #print(f"card_i = {card_i} ,has t {'t' in card_i}")
+    
     w,h = card_i['size']
     w,h = int(w),int(h)
     
@@ -70,13 +69,14 @@ def createimage(self,card_i):
         atext = ''
         apic = ''
     if 't' in card_i:
-        print("topic card created\n"*10)
+        
         topic = card_i['t']
         #im = PIL.Image.new("RGB", (card_i['size']), 'white')
         #im = PIL.Image.new("RGB", (int(self.total_width*self.scale)+self.bordersize[0]*2 ,int(self.total_height*self.scale)+self.bordersize[1]*2+self.QAline_thickness), 'white')
         if topic != '':
             _, imagetext = imop.CreateTopicCard(self,topic)
             im = imagetext
+            log.DEBUGLOG(debugmode=self.debugmode, msg=f'PRINTMODULE: createimage: topic card is created')
         return im
     else:
         d0 = card_i['pos'][0]+card_i['border'][0]
@@ -102,14 +102,12 @@ def createimage(self,card_i):
             height += h
             width  += w
             d1  += h
-        
+            
         if (atext or apic) and self.QAline_bool:
             pos_QAline = d1
             d1 += self.QAline_thickness
             height += self.QAline_thickness
             
-        
-        #print(f"texta = {self.pica}")
         if atext != '':
             #self.usertext = text
             #w,h = self.sizelist[2]
@@ -155,7 +153,6 @@ class SortImages():
         self.library = library    
         self.images_w = [x[0] for x in sizelist]
         self.images_s = sizelist
-        #print(colored(f"sizelist = {sizelist}","red"))
         
         self.a4page_w = page_width
         self.a4page_h = page_height
@@ -184,7 +181,8 @@ class SortImages():
             answer = path[:_idx]
             return answer
         else:
-            print(f"error: path")        
+            log.DEBUGLOG(debugmode=self.debugmode, msg=f'PRINTMODULE: sortimages: error in path = {path}')
+            
     def pdfpagename(self):
         return f'pdfpage{self.page_nr}'
     
@@ -215,8 +213,6 @@ class SortImages():
         dict_3 = {cardname: self.library[0]}
         pagekey = self.pdfpagename()
         
-        #print(f"DATA DATA = {pagekey,dict_,cardname,cardpath}")
-        
         if pagekey not in  self.datadict.keys():
             self.datadict[pagekey] = dict_
         else:
@@ -224,7 +220,6 @@ class SortImages():
             
         dictdictlist(self,pagekey,self.line_nr,cardname)    
         
-        #print(f"dict 2 = {self.datadict2}")
         if pagekey not in  self.datadict3.keys():
             self.datadict3[pagekey] = dict_3
         else:
@@ -249,12 +244,11 @@ class SortImages():
             #combine horizontally until it doesn't fit on the page
             self.rowindex = bisect.bisect_left(CUMSUMLEN, self.a4page_w) 
             
-            #print(f"card{k}")
             k += 1
             self.page_x = 0
             self.picindex = 0
             if self.rowindex == 0: # image is too wide
-                print(colored(f"too wide {CUMSUMLEN[0]}","red"))
+                log.DEBUGLOG(debugmode=self.debugmode, msg=f'PRINTMODULE: sortpages: too wide {CUMSUMLEN[0]}')
                 # rescale
                 w,h = self.images_s[0]    
                 w_resized,h_resized = (int(self.a4page_w),int(self.a4page_w/w*h))
@@ -263,7 +257,6 @@ class SortImages():
                     self.newpage()
                 
                 self.savedata(w_resized,h_resized)
-                #print(f"saved pagexy = {self.page_x,self.page_y}")
                 self.removedata()                   # remove data from searchlist 
                 self.page_x = 0
                 self.page_y += h_resized
@@ -271,10 +264,8 @@ class SortImages():
                 
                 CUMSUMLEN = np.cumsum(self.images_w)  
             else:   # image(s) are combined not too wide
-                #print(colored("not too wide","green"))
-                #print(f"size = {self.images_s[:self.rowindex]}\n")
+                log.DEBUGLOG(debugmode=self.debugmode, msg=f'PRINTMODULE: sortpages: images are not too wide')
                 h_max = max([x[1] for x in self.images_s[:self.rowindex]])
-                #print(f"hmax = {h_max}")                
                 if self.page_y + h_max > self.a4page_h:
                     
                     self.newpage()
@@ -296,6 +287,7 @@ class SortImages():
             self.page_x = 0
             
         # finished
+        log.DEBUGLOG(debugmode=self.debugmode, msg=f'PRINTMODULE: sortpages: finished sorting')
         return self.datadict, self.datadict2,self.datadict3
 
 class pdfrow():
@@ -367,11 +359,10 @@ def getcardmode(path):
             index = path.find('_')
         else:
             index = path.find('.png')
-        #print(f"index = {index}")
         path = path[:index]
         return path
     else:
-        print(f"error: path")
+        log.ERRORMESSAGE(f'PRINTMODULE: error in path {path}')
 
 def ColumnSliders(self):
     LIST = []
@@ -466,7 +457,7 @@ def import_screenshot(self,event):
     
 
 def print_preview(self): 
-    print("preview refresh")
+    log.DEBUGLOG(debugmode=self.debugmode, msg=f'PRINTMODULE: preview refreshed')
     self.SetCursor(wx.Cursor(wx.CURSOR_ARROWWAIT))
     notes2paper(self)
     self.Layout()
@@ -478,7 +469,6 @@ class pdfpage(settings):
         settings.__init__(self)
         self.LaTeXfontsize = 20
         self.bookname = bookname
-        #print(self.LaTeXfontsize)
         self.DICT_page_card_rect = DICT_page_card_rect #{pdfpage_nr: {cardname : Rect}}
         self.DICT_page_line_card = DICT_page_line_card #{pdfpage_nr: {self.line_nr:cardname}} 
         self.dict3 = dict3 #{pdfpage_nr: {cardname: ]}}
@@ -579,9 +569,7 @@ class pdfpage(settings):
                 #self.TT.update("single image created") 
                 cards = self.DICT_page_line_card[key][line]
                 for cardname in cards:
-                    #print(f"cardinfo : key {key}, cardname {cardname} line {line} , cards {cards}")
                     card_i = self.dict3[key][cardname]
-                    print(f"!test {line}, {cards}")
                     im = createimage(self,card_i)
                     
                     x,y,w,h = self.DICT_page_card_rect[key][cardname]
@@ -634,7 +622,6 @@ class pdfpage(settings):
             
         for i,thread in enumerate(threads):
             thread.join()
-        #print(im_pos   )
         self.TT.update("pasting the images together")
         for i,item in enumerate(im_pos):
             im = item['im']
@@ -665,7 +652,6 @@ class pdfpage(settings):
 def getmode(key):
     assert "card_" in key
     letter = key[5].lower()
-    #print(f"letter = {letter}")
     if letter == 'q':
         return 'Question'
     elif letter == 'a':
@@ -675,7 +661,7 @@ def getmode(key):
     
     
 def notes2paper(self):
-    print(f"PANEL SIZE = {self.m_panel32.GetSize()}\n"*10)
+    log.DEBUGLOG(debugmode=self.debugmode, msg=f'PRINTMODULE: notes2paper: panel size = {self.m_panel32.GetSize()}')
     #%% initialize
     """ initialize the cards """
     TT = Timing("Initialize the cards")
@@ -725,9 +711,9 @@ def notes2paper(self):
         #initialize
         self.cardorder = [x for x in range(self.nr_questions)]
         if len(self.cardorder) > 10:
-            print(f"carorder = {self.cardorder[:10]}")
+            log.DEBUGLOG(debugmode=self.debugmode, msg=f'PRINTMODULE: notes2paper: cardorder first 10 cards = {self.cardorder[:10]}')
         else:
-            print(f"carorder = {self.cardorder}")    
+            log.DEBUGLOG(debugmode=self.debugmode, msg=f'PRINTMODULE: notes2paper: cardorder = {self.cardorder}')
     
     #%%    
     """ create all the individual images """
@@ -752,7 +738,6 @@ def notes2paper(self):
                         NearestCol = min(ColumnWidths, key=lambda x:abs(x-w))
                         newsize = (int(NearestCol),int(NearestCol/w*h))
                         if newsize != (w,h):
-                            #print(f"newsize = {newsize}")
                             scale = round(NearestCol/w,4)
                             card_i['scale'] = scale
                             card_i['size'] = (int(w*scale),int(h*scale))
