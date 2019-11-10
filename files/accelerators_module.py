@@ -5,6 +5,7 @@ Created on Wed Mar 13 16:32:13 2019
 @author: Anton
 """
 import wx
+import log_module as log
 
 class AccIDs:
     """
@@ -105,8 +106,7 @@ def AcceleratorTableSetup(self,mode,submode):
         self.SetAcceleratorTable(entries)
         
     if mode == "flashbook" and submode == "pagewindow":
-        print("ENTERED PAGEWINDOW")
-        
+        log.DEBUGLOG(debugmode=self.debugmode, msg=f'ACCELERATOR: user has entered window')
         entries = [wx.AcceleratorEntry() for i in range(40)]
         accel = wx.AcceleratorTable(entries)
         #self.SetAcceleratorTable(wx.AcceleratorTable()) 
