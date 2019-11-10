@@ -17,7 +17,7 @@ def INITIALIZE(debugmode=False):
             basepath = Path(os.getenv("LOCALAPPDATA"),'FlashBook','temporary')
             LOG_FILENAME = Path(basepath,'logging_traceback.out')
             logging.basicConfig(filename=str(LOG_FILENAME), level=logging.DEBUG)
-            logging.debug('NEW SESSION HAS STARTED')
+            logging.debug('\n\nNEW SESSION HAS STARTED')
             logging.shutdown()
     except:
         pass        
