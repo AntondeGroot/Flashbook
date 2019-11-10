@@ -13,6 +13,8 @@ ICON_EXCLAIM=0x30
 import accelerators_module as m7
 import os
 import ctypes
+import log_module as log
+
 ICON_STOP = 0x10
 MB_ICONINFORMATION = 0x00000040
 MessageBox = ctypes.windll.user32.MessageBoxW
@@ -31,8 +33,7 @@ class flashcard(gui.MyFrame):
         # set all directories
         os.chdir(self.notesdir)                
         dirs = [self.appdir,self.notesdir,self.picsdir,self.booksdir,self.tempdir,self.bordersdir,self.resourcedir]        
-        print("="*90)
-        print(f"\nThe files will be saved to the following directory: {self.appdir}\n")     
+        log.DEBUGLOG(debugmode=self.debugmode,msg=f"STARTUP FLASHCARD")
         for dir_ in dirs:
             if not dir_.exists():
                 dir_.mkdir()
