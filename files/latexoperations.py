@@ -203,22 +203,26 @@ class Latexfile(Commands,settings):
         self.cards = {}
         self.filename = ''
     def loadfile(self,path):
-        print("file loaded\n"*10)
+        
+        
         if path != None:
             self.filepath = path
+            log.DEBUGLOG(debugmode=self.debugmode, msg=f'CLASS LATEXFILE: selected file {path}')
             self.bookname = Path(path).stem
         if Path(self.filepath).exists():
             file = open(self.filepath, 'r',newline='\r')
             linefile = file.readlines()
             file.close()
+            log.DEBUGLOG(debugmode=self.debugmode, msg=f'CLASS LATEXFILE: loaded file {path}')
+        else:
+            log.DEBUGLOG(debugmode=self.debugmode, msg=f'CLASS LATEXFILE: file does not exist {path}')
 
         linefile = [x for x in linefile if x.strip() != ''] #exclude empty lines
         ## check if file is up-to-date and has \sizes{[0,0,0,0,0]}
         uptodate = True
         for i, line in enumerate(linefile):
             if '\size{' not in line and line.strip() != '':
-                print(self.size_command, line)
-                print("size not in line")
+                log.DEBUGLOG(debugmode=self.debugmode, msg=f'CLASS LATEXFILE: \size not in line: {line}')
                 uptodate = False
                 q,a,t,_ = self.line_to_components(line)     
                 newline = self.insert_line(question = q, answer = a, topic = t)
@@ -236,9 +240,7 @@ class Latexfile(Commands,settings):
                 linefile[i] = newline
                 
         if not uptodate:
-            print('\n'*20)
-            print('LILNEFILE')
-            print(linefile)
+            log.DEBUGLOG(debugmode=self.debugmode, msg=f'CLASS LATEXFILE: linefile was not uptodate')
             self.save_file(linefile)
             
         self.linefile = linefile
@@ -265,7 +267,7 @@ class Latexfile(Commands,settings):
         output.close()
                 
     def save_file(self,linefile):
-        print(f"latex save file")
+        log.DEBUGLOG(debugmode=self.debugmode, msg=f'CLASS LATEXFILE: saving latex file')
         #edit linefile to remove superfluos "\n"
         linefile2 = []
         for i, line in enumerate(linefile):
@@ -299,14 +301,13 @@ class Latexfile(Commands,settings):
         if type(tuples_list) == tuple:
             tuples_list = [tuples_list]
         w0,h0 = 0, 0 
-        #print(tuples_list)
         for size in tuples_list:
             w,h = size
             w0 = max(w0,w)
             h0 += h
         return w0,h0
     def file_to_rawcards(self):
-        print(f"file to rawcards")
+        log.DEBUGLOG(debugmode=self.debugmode, msg=f'CLASS LATEXFILE: file converted to raw cards')
         assert self.linefile != []
         cards = []
         
@@ -333,7 +334,6 @@ class Latexfile(Commands,settings):
         file = open(str(Path(self.notesdir, "usercommands.txt")), 'r')
         commandsfile = file.readlines()
         file.close()
-        #print(f"text is of type {type(text)}: {text}")
         if text.strip() != '':
             text = f2.ReplaceUserCommands(commandsfile,text)
             # get image size
@@ -345,32 +345,32 @@ class Latexfile(Commands,settings):
         else:
             return (0,0)
     def picsize(self,picname):
-        print(f"picsize {picname}")
         try:
             w,h = PIL.Image.open(os.path.join(self.pics(), self.bookname, picname)).size
+            log.DEBUGLOG(debugmode=self.debugmode, msg=f'CLASS LATEXFILE: pics {picname} has size: {w,h}')
             return (w,h)
         except:
+            log.DEBUGLOG(debugmode=self.debugmode, msg=f'CLASS LATEXFILE: Error: pics {picname} has no size: {w,h}')
             return (0,0)
     def topicsize(self,text):
-        print(f"topicsize {text}")
         self.a4page_w = 1240 
         width_card = self.a4page_w
         height_card = int(math.ceil(len(text)/40))*0.75*100
-        print(f"! topic = {text}, size = {width_card},{height_card}")
-        if height_card != 0:
+        log.DEBUGLOG(debugmode=self.debugmode, msg=f'CLASS LATEXFILE: topic = {text} has size: {width_card,height_card}')
+        if height_card != 0:            
             return (width_card,height_card)
         else:
             return (0,0)
     
     def getline_i_card(self,index):
-        print(f"\n get line card {index}")
+        
         line = self.linefile[index]
         q,a,t,_ = self.line_to_components(line)
         qtext = argument(r"\\text{",q)
         qpic  = argument(r"\\pic{",q)
         atext = argument(r"\\text{",a)
         apic  = argument(r"\\pic{",a)
-        print(f"qpic = {qpic}, apic = {apic}")
+        log.DEBUGLOG(debugmode=self.debugmode, msg=f'CLASS LATEXFILE: getline card of index: {index}\n\t qpic = {qpic},\n\t apic = {apic}')
         if qpic.strip() != '' and qtext.strip() != '':
             q = qtext+r"\pic{"+qpic+"}"
         if qpic.strip() != '' and qtext.strip() == '':
@@ -388,13 +388,13 @@ class Latexfile(Commands,settings):
         return {'qtext':qtext,'qpic':qpic,'atext':atext,'apic':apic,'t':t,'q':q,'a':a}
     
     def popline(self,index):
-        print(f"\n popline {index}")
+        log.DEBUGLOG(debugmode=self.debugmode, msg=f'CLASS LATEXFILE: popline with index {index}')
         index = int(index)
         self.linefile.pop(index)
         self.save_file(self.linefile)
         
     def replace_line(self,index, qtext= '', qpic = '', atext = '',apic = '', topic = '', size = [(0,0),(0,0),(0,0),(0,0),(0,0)]):
-        print(f"\n replace line {index}")
+        log.DEBUGLOG(debugmode=self.debugmode, msg=f'CLASS LATEXFILE: replace line with index {index}')
         size = str([self.textsize(qtext),self.picsize(qpic), self.textsize(atext),self.picsize(apic),self.topicsize(topic)])
         
         question = ''
@@ -412,7 +412,7 @@ class Latexfile(Commands,settings):
         self.linefile[index] = line
         self.save_file(self.linefile)
     def addline(self,index = 0,question = '', answer = '', topic = '', size = [(0,0),(0,0),(0,0),(0,0),(0,0)]):
-        print(f"\n add line {index}")
+        log.DEBUGLOG(debugmode=self.debugmode, msg=f'CLASS LATEXFILE: addline with index {index}')
         #when the user adds a question and answer, which by definition does not include a picture
         qpic  = ''
         qtext = question
@@ -425,15 +425,14 @@ class Latexfile(Commands,settings):
         
         self.save_file(self.linefile)
     def insert_line(self, question = '', answer = '', topic = '', size = [(0,0),(0,0),(0,0),(0,0),(0,0)]):
-        print(f"\n insert line")
         cmd   = self.pic_command
         qpic  = argument(cmd,question)
         qtext = argument(r"\\text{",question)
         apic  = argument(self.pic_command,answer)
         atext = argument(r"\\text{",answer)
         # convert qtext/atext to text without user defined LaTeX : is done in textsize
-        
         size = str([self.textsize(qtext),self.picsize(qpic), self.textsize(atext),self.picsize(apic),self.topicsize(topic)])
+        log.DEBUGLOG(debugmode=self.debugmode, msg=f'CLASS LATEXFILE: insertline\n\t question: {question}\n\t answer: {answer}\n\t topic: {topic}\n\t size: {size}')
         return r"\quiz{" + question + "}" + r"\ans{" + answer + "}" + r"\topic{" + topic + "}" + r"\size{" + size + "}"
 
 
@@ -441,7 +440,7 @@ def ShowPopupCard(self,trueindex):
     # get the card
     rawcard = self.Latexfile.getline_i_card(trueindex)
     # get data from the cards
-    print(f"rawcard = {rawcard}")
+    log.DEBUGLOG(debugmode=self.debugmode, msg=f'LATEXOPERATIONS: show popupcard: rawcard = {rawcard}')
     qtext = rawcard['qtext']
     qpic  = rawcard['qpic'] 
     atext = rawcard['atext']
@@ -471,7 +470,6 @@ def ShowPopupCard(self,trueindex):
     
     with gui.MyDialog9(self,data) as dlg:
         if dlg.ShowModal() == wx.ID_OK:
-            print(f"pressed ok\n"*10)
             #Get user data
             qtext = dlg.m_textCtrlQtext.GetValue()
             qpic  = dlg.m_textCtrlQpic.GetValue()
@@ -479,12 +477,10 @@ def ShowPopupCard(self,trueindex):
             apic  = dlg.m_textCtrlApic.GetValue()
             topic = dlg.m_textCtrlTopic.GetValue()                  
             DelCard = dlg.m_checkBoxDel.GetValue()
-            print(f"DelCard = {DelCard}")
-            
+            log.DEBUGLOG(debugmode=self.debugmode, msg=f'LATEXOPERATIONS: show popupcard: pressed OK\n\t Delete card = {DelCard}')            
             #make changes
             if DelCard or (qtext.strip() == '' and qpic.strip() ==''):
                 """the entire card will be deleted"""
-                print("CArd is deleted\n"*10)
                 self.Latexfile.popline(trueindex)
                 try:
                     self.nr_questions -= 1
@@ -494,7 +490,7 @@ def ShowPopupCard(self,trueindex):
                 self.Latexfile.replace_line(trueindex, qtext= qtext, qpic = qpic, atext = atext,apic = apic, topic = topic)
             
             self.Refresh()                                    
-            print("success!!")
+            
         else: #dialog closed by user
-            print(f"bookname = {self.booknamepath}\n"*10)
+            log.DEBUGLOG(debugmode=self.debugmode, msg=f'LATEXOPERATIONS: show popupcard: dialog closed by user: bookname = {self.booknamepath}')
 
