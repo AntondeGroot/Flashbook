@@ -350,7 +350,7 @@ class Latexfile(Commands,settings):
             log.DEBUGLOG(debugmode=self.debugmode, msg=f'CLASS LATEXFILE: pics {picname} has size: {w,h}')
             return (w,h)
         except:
-            log.DEBUGLOG(debugmode=self.debugmode, msg=f'CLASS LATEXFILE: Error: pics {picname} has no size: {w,h}')
+            log.DEBUGLOG(debugmode=self.debugmode, msg=f'CLASS LATEXFILE: Error: pics with name "{picname}" could not be found and thus has no size')
             return (0,0)
     def topicsize(self,text):
         self.a4page_w = 1240 
