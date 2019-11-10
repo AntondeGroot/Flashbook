@@ -67,7 +67,6 @@ class menusettings(gui.MyFrame):
         self.drawborders = self.m_checkBoxSelections.IsChecked()   
         self.settings_set()
         try:
-            print(f"checkbox is {self.drawborders}")
             self.pageimage = self.pageimagecopy # reset image
             f.ShowPage_fb(self)
             self.Layout()
