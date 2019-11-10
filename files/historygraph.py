@@ -21,6 +21,7 @@ import json
 import time
 from datetime import datetime
 import imageoperations as imop
+import log_module as log
 
 #% FUNCTIONS
 def GetValues(timedict,datethreshold):
@@ -321,7 +322,7 @@ def CreateGraph(self):
                 hatch = dict_['hatch']
                 color = dict_['color']
             else:
-                print(f"error this book entry: {book} should have been seen \n"*3)
+                log.DEBUGLOG(debugmode=self.debugmode, msg=f'HISTORYGRAPH: this book entry: {book} should have been seen')
             legend_graph_fb_today.append([book,seconds,hatch,color,edgecolor])
         for entry in fc_sorted_today:
             book, seconds = entry
@@ -331,7 +332,7 @@ def CreateGraph(self):
                 hatch = dict_['hatch']
                 color = dict_['color']
             else:
-                print(f"error this book entry: {book} should have been seen \n"*3)
+                log.DEBUGLOG(debugmode=self.debugmode, msg=f'HISTORYGRAPH: this book entry: {book} should have been seen')
             legend_graph_fc_today.append([book,seconds,hatch,color,edgecolor])
         
         # CREATE TEXT IMAGES
