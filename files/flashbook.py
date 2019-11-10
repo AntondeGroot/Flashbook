@@ -47,6 +47,7 @@ from class_menuopen import menuopen
 from class_menuflashcard import flashcardmenu
 from class_menubooks import booksmenu
 
+import log_module as log
 
 sys.setrecursionlimit(5000)
 PIL.Image.MAX_IMAGE_PIXELS = 1000000000  
@@ -103,7 +104,6 @@ class MainFrame(settings,flashbook,flashcard,printer,filetransfer,menusettings,h
     """ INITIALIZE """
     def __init__(self,parent): 
         setup_sources(self)
-        
         #initialize parent class
         icons = [wx.Bitmap(str(self.path_folder)) , wx.Bitmap(str(self.path_convert)) ]
         gui.MyFrame.__init__(self,parent,icons) #added extra argument, so that WXpython.py can easily add the Dialog Windows (which require an extra argument), which is now used to add extra icons to the menubar             
@@ -119,6 +119,7 @@ class MainFrame(settings,flashbook,flashcard,printer,filetransfer,menusettings,h
         self.settings_get()
         self.settings_set()
         
+        log.INITIALIZE(debugmode=self.debugmode)
         self.Latexfile = Latexfile()
         self.Flashcard = Flashcard(self.LaTeXfontsize)
         self.CardsDeck = CardsDeck()
@@ -178,8 +179,10 @@ class MainFrame(settings,flashbook,flashcard,printer,filetransfer,menusettings,h
 #####              FLASHCARD                                              #####
 ###############################################################################
 """
-class CardsDeck():
+class CardsDeck(settings):
     def __init__(self):#,flashcard):
+        
+        
         """ - cards are dicts because then you can easily delete a card from the deck
             - you can then use cardorder to switch cards and just omit a cardnumber from that list"""
         self.cards = {}
@@ -193,6 +196,10 @@ class CardsDeck():
         self.rawkey = "card"
         self.key = "card_"
         self.bookname = ''
+        
+        settings.__init__(self)
+        self.settings_get()
+        
         #self.flashcard = flashcard
         #self.zoom = 1.0
     
@@ -241,7 +248,7 @@ class CardsDeck():
         
         if notesdir != None and cards != None:
             self.nrcards = len(cards)
-            print(f"NR CARDS = {self.nrcards}\n"*10)
+            log.DEBUGLOG(debugmode=self.debugmode, msg=f'CLASS CARDSDECK: nr cards = {self.nrcards}')
             cardindex = 0
             for _,item in enumerate(cards):
                 i = cardindex
@@ -279,8 +286,6 @@ class CardsDeck():
     def get_card_i(self,i):
         return self.cards[i]
     def get_rawcard_i(self,index):
-        print(f"CARDS\n"*10)
-        print(self.cards)
         return self.cards[self.key + str(index)]
 
 
