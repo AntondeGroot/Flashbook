@@ -27,7 +27,6 @@ def buttonCorrect(self):
     f2.clearbitmap(self)
     if hasattr(self,'nr_questions') and self.nr_questions != 0 and hasattr(self,'bookname') and self.bookname != '':
         #import
-        log.DEBUGLOG("test1","test2",debugmode = self.debugmode, msg="hallo")
         runprogram = self.runprogram
         self.index += 1    
         if runprogram:
@@ -46,7 +45,7 @@ def buttonCorrect(self):
             with gui.MyDialogScore(self,message) as dlg:
                 if dlg.ShowModal() == wx.ID_OK:  
                     p.SwitchPanel(self,0)
-                    print("finished")
+                    log.DEBUGLOG(debugmode=self.debugmode,msg=f"FC MODULE: flashcard program finished")
                     
             self.m_menubar1.EnableTop(2,False)
             runprogram = False
@@ -93,7 +92,7 @@ def buttonWrong(self):
             with gui.MyDialogScore(self,message) as dlg:
                 if dlg.ShowModal() == wx.ID_OK: 
                     p.SwitchPanel(self,0)
-                    print("finished")
+                    log.DEBUGLOG(debugmode=self.debugmode,msg=f"FC MODULE: flashcard program finished")
             self.m_menubar1.EnableTop(2,False)
             runprogram = False
             if hasattr(self,'bookname'): # to stop from pop-up windows from appearing after the test is done
@@ -194,39 +193,32 @@ def startprogram(self,filepath):
     
     # open file
     try:
+        
         if type(filepath) == list:
             filepath = filepath[0]
         eventpath = filepath
-        print(f"path = {eventpath}")
         self.filename = Path(eventpath).name
-        print(f"test test = {Path(eventpath).name}")
         self.bookname = Path(eventpath).stem
         self.booknamepath = eventpath
-        print(f"book = {self.bookname} ")
+        
+        log.DEBUGLOG(debugmode=self.debugmode,msg=f"FC MODULE: open file:\n\t path = {eventpath}\n\t book = {self.bookname}")
+        
         if hasattr(self,'TC'):
             delattr(self,'TC')
         self.TC = m6.TimeCount(self.bookname,"flashcard")
     except:
-        log.ERRORMESSAGE("Error: Couldn't open path")
+        log.ERRORMESSAGE("Error: Couldn't open path {filepath}")
     self.resumedata = {self.bookname : {'score': self.score, 'index': self.index, 'nr_questions':self.nr_questions}}
-    #try:
     self.Latexfile.loadfile(eventpath)
-    cards = self.Latexfile.file_to_rawcards()
-    print(colored("cards from latex\n"*10,"red"))
-    print(cards) #contains the keys #index:  ,.... 'q' and if applicable also 'a'
-    
+    cards = self.Latexfile.file_to_rawcards() #cards contains the keys #index:  ,.... 'q' and if applicable also 'a'
     self.CardsDeck.set_cards(cards=cards,notesdir=self.notesdir)  # set_cards converts the text to somthing Matplotlib can understand
     
-
-
     #open dialog window
     """open My dialog, don't forget to add two parameters to "def __init__( self, parent,MaxValue,Value )" within MyDialog 
     and use these values to set the slider as you wish. Don't forget to add "self.Destroy" when you press the button"""
     
     data = len(self.CardsDeck)
-    print(f"data is {data}")
-    
-    print(self.CardsDeck.getcards())
+    #self.CardsDeck.getcards()
     if data == 1:
         data = 2
     try:
@@ -248,10 +240,10 @@ def startprogram(self,filepath):
                     self.continueSession = False
                 
             if self.continueSession:
-                print("continue session")
+                log.DEBUGLOG(debugmode=self.debugmode,msg=f"FC MODULE: continue last flashcard session")
                 f2.load_stats(self)
             else:
-                print("don't continue session")
+                log.DEBUGLOG(debugmode=self.debugmode,msg=f"FC MODULE: do not continue last flashcard session")
                 f2.remove_stats(self)
             
         except:
@@ -267,7 +259,7 @@ def startprogram(self,filepath):
         except:
             log.ERRORMESSAGE("Error: Couldn't open Dialog window nr 2")
     
-    print("END END END")
+    
     # if you want to use all cards twice or 1.5 times for the quiz: then exclude invalid selections of this multiplier
     try:
         self.multiplier = float(self.multiplier)
@@ -295,7 +287,7 @@ def DetermineCardorder(self,USERINPUT):
            the order in which the cards should be displayed.
     - FALSE, it will display them chronologically without userinput.
     """
-    print(f"nrcards = {len(self.CardsDeck)}")
+    log.DEBUGLOG(debugmode=self.debugmode,msg=f"FC MODULE: nrcards = {len(self.CardsDeck)}")
     
     try:        
         """CARD ORDER"""
