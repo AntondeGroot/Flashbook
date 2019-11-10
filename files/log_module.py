@@ -44,11 +44,11 @@ def DEBUGLOG(*args, debugmode=False, msg='', info=''):
         basepath = Path(os.getenv("LOCALAPPDATA"),'FlashBook','temporary')
         LOG_FILENAME = Path(basepath,'logging_traceback.out')
         logging.basicConfig(filename=str(LOG_FILENAME), level=logging.DEBUG)
-        if debugmode:               
-            logging.debug(msg)
+        if debugmode:  
+            if msg != '':             
+                logging.debug(msg)
             if info != '':
                 logging.info(info)
-            
             for arg in args:
                 logging.info('%s before you', arg)
         logging.shutdown()
