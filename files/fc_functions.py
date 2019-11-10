@@ -196,7 +196,7 @@ def load_stats(self):
             score = round(float(self.score)/self.nr_questions*100,1)
             self.m_Score.SetValue(f"{score} %")    
     except:
-        print("no stats found for this book, continue")
+        log.DEBUGLOG(debugmode=self.debugmode,msg=f"FC FUNCTIONS: no stats were found for the book")
         
 def remove_stats(self):
     try:
@@ -336,13 +336,12 @@ def switch_bitmap(self):
     try:
         # you always start with a question, check if there is an answer:
         _key_ = f'card_a{self.cardorder[self.index]}' # do not use self.key: only check if there is an answer, don't change the key
-        print(f"switch key is {_key_}")
-        print(f"keys = {self.CardsDeck.getcards().keys()}")
+        log.DEBUGLOG(debugmode=self.debugmode,msg=f"FC FUNCTIONS:\n\t switch key = {_key_}, \n\t all card keys = {self.CardsDeck.getcards().keys()}")
         try:
             
             #if _key_ not in self.CardsDeck.getcards().keys(): # there is no answer card!
             if not self.ANSWER_CARD: # there is no answer card!
-                print("there is no answer card")
+                log.DEBUGLOG(debugmode=self.debugmode,msg=f"FC FUNCTIONS: there is no answer card")
                 self.mode = 'Question'
                 self.SwitchCard = False        
                 id_ = self.m_toolSwitchFC.GetId()
@@ -396,8 +395,8 @@ def clearbitmap(self):
         
 def displaycard(self):
     #try:
+    log.DEBUGLOG(debugmode=self.debugmode,msg=f"FC FUNCTIONS: display card")
     trueindex = self.cardorder[self.index]
-    print("displaycard\n"*10)
     rawcard = self.Latexfile.getline_i_card(trueindex)
     
     qtext = rawcard['qtext']
@@ -449,13 +448,11 @@ def CreateSingularCard(self,mode):
             return image, False
         else:
             return image, True
+        
     except IndexError:
-        log.ERRORMESSAGE("Error: index error")
-        print(f"index = {self.index}")
-        print(f"cardorder = {self.cardorder}")
-        print(f"len cardorder = {len(self.cardorder)}")
+        log.ERRORMESSAGE(f"FC FUNCTIONS: Error: index error {self.index},\n cardorder = {self.cardorder},\n len cardorder = {len(self.cardorder)}")
     except:
-        log.ERRORMESSAGE("Error: could not display card")
+        log.ERRORMESSAGE("FC FUNCTIONS: Error: could not display card")
 
 def CreateTextCard(self,mode,arg1):
     """This function is used for 3 different purposes
@@ -520,7 +517,6 @@ def CreateTextCard(self,mode,arg1):
         imagetext = imop.cropimage(imagetext,0)
         imagetext = imop.cropimage(imagetext,1)
         
-        #print(colored(imagetext.size,"red"))
     else: 
         #if mode == 'flashcard' but the key is not in dict
         bool_textcard = False
@@ -541,7 +537,8 @@ def DeleteCurrentCard(self):
             output.write(line)    
     set_stats(self)
     save_stats(self)
-    print("success!!")
+    log.DEBUGLOG(debugmode=self.debugmode,msg=f"FC FUNCTIONS: card succesfully deleted")
+    
 
 
 def stringcontains(string,substring):
