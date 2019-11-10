@@ -18,6 +18,7 @@ pylab.ioff() # make sure it is inactive, otherwise possible qwindows error    ..
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 import ctypes
+import log_module as log
 ICON_EXCLAIM=0x30
 ICON_STOP = 0x10
 MB_ICONINFORMATION = 0x00000040
@@ -52,11 +53,10 @@ def save2latexfile(self,files,title):
                 f.close()  
     else:
         data = files
-        print(f"data = {data[0:20]}")
         with open(filepath,'a') as f:
             if type(data) == list:
                 for line in data:
-                    print(f"line = {line}")
+                    log.DEBUGLOG(debugmode=self.debugmode, info=f'CLASS MENUBOOKS line = {line}')
                     f.write(line)
             f.close()  
             
@@ -71,14 +71,13 @@ class booksmenu(gui.MyFrame):
                 if len(filepath) == 1:
                     MessageBox(0, "You only selected 1 file, try again and select multiple files instead.", "Message", MB_ICONINFORMATION)
                 else:
-                    print(filepath)
+                    log.DEBUGLOG(debugmode=self.debugmode, msg=f'CLASS MENUBOOKS: filepath = {filepath}')
                     filenames_str = '\n'.join([Path(x).stem for x in filepath])
                     filenames_stem = [Path(x).stem for x in filepath]
                     title = CombineBookTitles(filenames_stem)
                     title_backup = title
                     with gui.MyDialog5(self,[filenames_str,title]) as dlg:
                         if dlg.ShowModal() == wx.ID_OK:     
-                            print("success!!")
                             button1 = dlg.m_radioDLG5_1.GetValue()
                             button2 = dlg.m_radioDLG5_2.GetValue()
                             button3 = dlg.m_radioDLG5_3.GetValue()
@@ -97,10 +96,6 @@ class booksmenu(gui.MyFrame):
                                 nr_lines.append(len(file.readlines()))
                                 file.close()
                             
-                            
-                            print(nr_lines)
-                            print(files)
-                            
                             if button1: #alphabetically, it's standard alphabetically sorted
                                 save2latexfile(self,files,title)
                             elif button2:#sort small to largest
@@ -118,17 +113,16 @@ class booksmenu(gui.MyFrame):
                                 files = temp
                                 save2latexfile(self,files,title)
                             
-                            print(os.listdir(self.notesdir))
-                            
-                            print(title)
+                            log.DEBUGLOG(debugmode=self.debugmode, msg=f'CLASS MENUBOOKS:\n\t nr lines = {nr_lines},\n\t files = {files},\n\t title = {title}')
                             if title+'.tex' in os.listdir(self.notesdir):
                                 statinfo = os.stat(Path(self.notesdir,title+'.tex'))
                                 if statinfo.st_size > 0 :
                                     MessageBox(0, f"The books have been succesfully combined!\nAnd it has the filename: {title}", "Info", MB_ICONINFORMATION)
                                 else:
-                                    print("Error: booknotes could not be merged and resulted in an empty file")
+                                    log.DEBUGLOG(debugmode=self.debugmode, msg=f'CLASS MENUBOOKS: Error: booknotes could not be merged and resulted in an empty file')
                             else:
-                                print("Error: merged booknotes could not be created or saved!")
+                                log.DEBUGLOG(debugmode=self.debugmode, msg=f'CLASS MENUBOOKS: Error: merged booknotes could not be created or saved!')
+                                
                                 
     
 
@@ -138,7 +132,7 @@ class booksmenu(gui.MyFrame):
         with wx.FileDialog(self, "Choose which file to delete", wildcard="*.tex",style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST) as fileDialog:
             fileDialog.SetPath(str(self.notesdir)+'\.')    
             if fileDialog.ShowModal() == wx.ID_OK:
-                print("clicked on OK, filedialog")
+                log.DEBUGLOG(debugmode=self.debugmode, msg=f'CLASS MENUBOOKS: delete book, clicked on OK ')
                 filepath = fileDialog.GetPath()
                 #filename = fileDialog.GetFilename()
                 filename = Path(filepath).stem
@@ -151,9 +145,8 @@ class booksmenu(gui.MyFrame):
                                 if name.lower() in filename.lower():
                                     library.append(name)
                                     if os.path.basename(root) != self.booksdir.name: #If it is not the dir you start in
-                                        pathlib.append(os.path.join(os.path.basename(root),name))    
-                        print(pathlib)
-                        print(library)
+                                        pathlib.append(os.path.join(os.path.basename(root),name))  
+                        log.DEBUGLOG(debugmode=self.debugmode, msg=f'CLASS MENUBOOKS:\n\t pathlib = {pathlib},\n\t library = {library}')
                         EXISTS = False
                         if pathlib == [] and library != []:
                             #if it is not in a subfolder:
@@ -195,13 +188,12 @@ class booksmenu(gui.MyFrame):
                         if not any(filename in listdir for listdir in directories):
                             MessageBox(0, f"The book has been succesfully deleted!", "Info", MB_ICONINFORMATION)
             else: 
-                print("operation aborted")
+                log.DEBUGLOG(debugmode=self.debugmode, msg=f'CLASS MENUBOOKS: operation aborted')
                 return None    
         
     def m_menuNewBookOnMenuSelection( self, event ):   
         with gui.MyDialog3(self,None) as dlg: #use this to set the max range of the slider
             if dlg.ShowModal() == wx.ID_OK:
-                print("closed dlg3, pressed: OK")
                 bookname = dlg.m_textCtrl23.GetValue()
                 if bookname != '':
                     
@@ -234,4 +226,6 @@ class booksmenu(gui.MyFrame):
                     path = Path(self.notesdir,bookname+".tex") 
                     open(path, 'a').close()
             else:
-                print("closed dlg3, pressed: Cancel")
+                log.DEBUGLOG(debugmode=self.debugmode, msg=f"CLASS MENUBOOKS: closed dialog NewBook, pressed 'cancel'")
+                
+                
