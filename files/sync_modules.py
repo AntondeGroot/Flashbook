@@ -20,6 +20,7 @@ import time
 import sync_functions  as f4
 import ctypes
 import json
+import log_module as log
 
 def Display(text,self):
     self.m_txtStatus.SetValue(text)
@@ -29,11 +30,9 @@ def clientprocedure_sendlastfiles(HOST,PORT,self):
     N = 1
     sendtoClient_abs = [os.path.join(self.basedir,x) for x in self.sendtoClient]
     f4.SendGroupOfFiles(self,sendtoClient_abs,N,HOST,PORT)
-    print("otherway finished also")
     message = json.dumps({'finished': 'clientprocedure_sendlastfiles'}).encode('utf-8')
     _ = f4.Socket_send(HOST,PORT,message)
-    print("Client -> Server is done")
-    print("really stopped")        
+    log.DEBUGLOG(debugmode=self.debugmode, msg=f'SYNCMODULE: sendlastfiles: Client -> Server is done')
 
 def clientprocedure(HOST,PORT,self):  
     #send all filenames from Client to server
@@ -43,7 +42,7 @@ def clientprocedure(HOST,PORT,self):
     if data_in != None and data_in != b'':
         datadict = json.loads(data_in.decode('utf-8'))
         if 'sendtoServer' in datadict.keys():
-            print("CLIENT: received sendtoserver")
+            log.DEBUGLOG(debugmode=self.debugmode, msg=f'SYNCMODULE: clientprocedure: client received sendtoserver')
             paths_rel = datadict['data']
             paths_abs = [os.path.join(self.basedir,x) for x in paths_rel]
             N = 1
@@ -51,12 +50,11 @@ def clientprocedure(HOST,PORT,self):
             data_in = f4.SEND('finished','',HOST,PORT)
             
         elif 'finished' in datadict.keys():
-            print("CLIENT: received server is finished")
-            print("Client -> Server is done")
+            log.DEBUGLOG(debugmode=self.debugmode, msg=f'SYNCMODULE: clientprocedure: Client -> Server is done')            
             self.SWITCH_BOOL = False
         
         elif 'switch mode' in datadict.keys():
-            print("CLIENT: received switchmode to SERVER")
+            log.DEBUGLOG(debugmode=self.debugmode, msg=f'SYNCMODULE: clientprocedure: now switching from client to server')
             self.SWITCH_BOOL = True
     
     for i in range(2):
@@ -64,22 +62,18 @@ def clientprocedure(HOST,PORT,self):
         if data_in != None and data_in != b'':
             datadict = json.loads(data_in.decode('utf-8'))
             if 'sendtoServer' in datadict.keys():
-                print("CLIENT: received sendtoserver")
-                paths_rel = datadict['data']
-                
+                log.DEBUGLOG(debugmode=self.debugmode, msg=f'SYNCMODULE: clientprocedure: CLIENT: received SendtoServer command')
+                paths_rel = datadict['data']                
                 paths_abs = [os.path.join(self.basedir,x) for x in paths_rel]
                 N = 1
                 f4.SendGroupOfFiles(self,paths_abs,N,HOST,PORT)
                 data_in = f4.SEND('finished','',HOST,PORT)
                 
             elif 'finished' in datadict.keys():
-                print("CLIENT: received server is finished")
-                print("Client -> Server is done")
-                
-                self.SWITCH_BOOL = False
-            
+                log.DEBUGLOG(debugmode=self.debugmode, msg=f'SYNCMODULE: clientprocedure: Client -> Server is done')                
+                self.SWITCH_BOOL = False            
             elif 'switch mode' in datadict.keys():
-                print("CLIENT: received switchmode to SERVER")
+                log.DEBUGLOG(debugmode=self.debugmode, msg=f'SYNCMODULE: clientprocedure: received switchmode to SERVER')
                 self.SWITCH_BOOL = True
     
     
@@ -88,6 +82,7 @@ def clientprocedure(HOST,PORT,self):
 def serverprocedure(HOST, PORT, self):
     self.RUNSERVER = True
     self.m_txtStatus.SetValue("server is now listening")
+    
     try:
         while self.RUNSERVER:
             #setup socket
@@ -95,17 +90,16 @@ def serverprocedure(HOST, PORT, self):
                 s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
                 s.setblocking(0)
                 s.bind((HOST, PORT))
-                print(f"is now listening")            
+                log.DEBUGLOG(debugmode=self.debugmode, msg=f'SYNCMODULE: serverprocedure: server is now listening')
                 s.listen()
                 s.settimeout(60)
                 conn, addr = s.accept()                
                 
                 self.m_txtStatus.SetValue("server is now receiving data ...")
-                print("is now connected")
+                log.DEBUGLOG(debugmode=self.debugmode, msg=f'SYNCMODULE: serverprocedure: server is now connected and receiving data')
                 self.RUNCON = True
                 #if connection established
                 with conn:
-                    #print(colored(f"connected by: {addr}",'red'))
                     while self.RUNCON:
                         # listen for data from the client:
                         data_in = f4.recv_msg(conn)                            
@@ -120,7 +114,7 @@ def serverprocedure(HOST, PORT, self):
                             datadict = json.loads(data_in.decode('utf-8'))
                             self.data_out = json.dumps({'Error': ''}).encode('utf-8')
                             #all 'commands' are found in the keys of the dict that has been send
-                            print(f"datadict = {datadict.keys()}")
+                            log.DEBUGLOG(debugmode=self.debugmode, msg=f'SYNCMODULE: serverprocedure: datadict = {datadict.keys()}')
                             
                             ### if applicable: based on what server receives -- what the keydict is
                             #only one of the following will be applicable at a time
@@ -153,7 +147,7 @@ def SyncDevices(self, mode, HOST):
         #check if server is online:
         serverprocedure(HOST,PORT,self) #returns switch_bool
         if self.SWITCH_BOOL: #switch Server -> Client
-            print(colored("server is now client","red"))
+            log.DEBUGLOG(debugmode=self.debugmode, msg=f'SYNCMODULE: syncdevices: server is now client')
             Display("finished server, starting client",self)
             time.sleep(2)
             Display("starting client",self)
@@ -170,14 +164,14 @@ def SyncDevices(self, mode, HOST):
         clientprocedure(HOST,PORT,self) #DETERMINES SELF.SWITCH_BOOL
         
         if self.SWITCH_BOOL:
-            print("client is now server")
+            log.DEBUGLOG(debugmode=self.debugmode, msg=f'SYNCMODULE: syncdevices: client is now server')
             Display("finished client",self)
             time.sleep(0.1)
             Display("starting server",self)
             HOST = self.IP1            
             serverprocedure(HOST,PORT,self)
         else:
-            print("CLIENT: has stopped")        
+            log.DEBUGLOG(debugmode=self.debugmode, msg=f'SYNCMODULE: syncdevices: client has stopped')
     Display("Sync completed",self)
     #except:
     #    ctypes.windll.user32.MessageBoxW(0, "Cannot start server: no internet connection detected", "Warning", 1)   
@@ -198,8 +192,6 @@ def initialize(self):
         myIP = wmi_out.IPAddress[0]
         
         if not os.path.exists(os.path.join(self.dirIP,'IPadresses.txt')):
-            
-            print(f"my ip is {myIP}")
             with open(os.path.join(self.dirIP,'IPadresses.txt'),'w') as f:
                 f.write(json.dumps({'IP1' : myIP,'IP2': "",'client': True})) 
                 f.close()      
@@ -208,12 +200,10 @@ def initialize(self):
         
     with open(os.path.join(self.dirIP,'IPadresses.txt'),'r') as file:
         data = json.load(file)
-        print(data)
         self.IP1 = data['IP1']
         self.IP2 = data['IP2']
         self.client = data['client']
-    print(f"IP1 = {self.IP1}")
-    print(f"IP2 = {self.IP2}")
+        
     if self.IP1 != myIP:
         ctypes.windll.user32.MessageBoxW(0, "Your IP address has changed!\nThis device has updated the IP in the settings.\nMake sure the device connecting to your device changes the IP address accordingly!", "Warning", 1)
         with open(os.path.join(self.dirIP,'IPadresses.txt'),'w') as f:
