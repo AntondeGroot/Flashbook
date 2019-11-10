@@ -15,6 +15,7 @@ import time
 import threading
 import json
 import base64
+import log_module as log
 
 def CheckServerStatus(HOST,PORT):
     BOOL = False
@@ -75,7 +76,6 @@ def Socket_send(HOST, PORT, message):
         s.connect((HOST,PORT))
         send_msg(s, message)
         data = recv_msg(s)
-        #print(' received' ,repr(data))
         return data
 
 def GetDataList(basedir,appendDir,excludeDir,mode,PICKLE):
@@ -123,7 +123,7 @@ def GetDataList(basedir,appendDir,excludeDir,mode,PICKLE):
     return msg
 
 
-def SEND(key,dict_data,HOST,PORT):
+def SEND(self,key,dict_data,HOST,PORT):
     
     # send mode:
     # it keeps sending information that includes the name of the file, the server processes this
@@ -132,19 +132,16 @@ def SEND(key,dict_data,HOST,PORT):
     TRYSEND = True
     i = 0
     while TRYSEND:
-        
-        print("loop1")
         # send file name, mode , creation time
         message = json.dumps({key: dict_data}).encode('utf-8')
         data = Socket_send(HOST,PORT,message)
-        #print(f"data = {data}")
         if data != None and data != []:
             if data.decode('utf-8')!= None and data.decode('utf-8')!= '':
                 TRYSEND = False
                 return data
         i += 1
         if i >= 20:
-            print("error could not connect")
+            log.DEBUGLOG(debugmode=self.debugmode, msg=f'SYNC FUNC: error could not connect and send data')
             TRYSEND = False
             return None
 def SendGroupOfFiles(self,filelist,N,HOST,PORT):
@@ -166,13 +163,13 @@ def SendGroupOfFiles(self,filelist,N,HOST,PORT):
         
         if len(sublist) == N:
             #send    
-            print('dict =',len(sublist))
-            SEND(key,dict_data,HOST,PORT)#send because you have N items
+            log.DEBUGLOG(debugmode=self.debugmode, msg=f'SYNC FUNC: client sends {len(sublist)} files')
+            SEND(self,key,dict_data,HOST,PORT)#send because you have N items
             sublist = {}
         elif i == len(filelist)-1:
             #send
-            print("last file")
-            SEND(key,dict_data,HOST,PORT)#send because you have last items
+            SEND(self,key,dict_data,HOST,PORT)#send because you have last items
+    log.DEBUGLOG(debugmode=self.debugmode, msg=f'SYNC FUNC: client has send last file')
     
 def compare_server_with_client(self,datadict,key):
     if 'compare' in datadict.keys(): 
@@ -180,22 +177,17 @@ def compare_server_with_client(self,datadict,key):
         RUNSERVER = True
         SWITCH_BOOL = True
         
-        print("\n"*2)
         sendtoServer = []
         self.sendtoClient = []
         overwrite_list_rel = datadict['compare']['overwritefiles']
-        print("list to overwrite: ",colored(overwrite_list_rel,"green"))
         append_list_rel = datadict['compare']['appendfiles']
-        print("list to append: ",colored(append_list_rel,"red"))
         
         append_list_abs = [os.path.join(self.basedir,x) for x in append_list_rel]
         overwrite_list_abs = [tuple((os.path.join(self.basedir,x[0]),x[1])) for x in overwrite_list_rel]
         overwrite_list_pathonly = [x[0] for x in overwrite_list_abs]
-        
-                
+               
         #get the list of data from the Server side:
-        serverfiles_abs = GetDataList(self.basedir,self.appendDir,self.excludeDir,'absolute',False)
-        
+        serverfiles_abs = GetDataList(self.basedir,self.appendDir,self.excludeDir,'absolute',False)        
         #check if Server Side needs to be overwritten
         for item in overwrite_list_abs:
             path  = item[0]
@@ -217,7 +209,6 @@ def compare_server_with_client(self,datadict,key):
         
         #check if items that need to be appended are not present in server side:
         for x in append_list_abs:
-            print(f"error {x}")
             if x not in serverfiles_abs['appendfiles']:
                 sendtoServer.append(os.path.relpath(x, self.basedir))
                 
@@ -227,12 +218,11 @@ def compare_server_with_client(self,datadict,key):
                 self.sendtoClient.append(os.path.relpath(x, self.basedir))
                 
         self.sendtoClient
-        if len(sendtoServer) > 0:
-            print("Client -> Server is not yet done")
+        if len(sendtoServer) > 0: # client -> server is not yet done
             data_out = json.dumps({'sendtoServer':True,'data' : sendtoServer }).encode('utf-8')
         else:
             #because there is nothing to do
-            print("Client -> Server is done")
+            log.DEBUGLOG(debugmode=self.debugmode, msg=f'SYNC FUNC: Client -> Server is done')
             data_out = json.dumps({'finished':''}).encode('utf-8')
             if len(self.sendtoClient) != 0:
                 data_out = json.dumps({'switch mode':''}).encode('utf-8')
@@ -246,34 +236,31 @@ def compare_server_with_client(self,datadict,key):
 
 def request_files_from_client(self,datadict,key):
     if 'sendtoServer' in datadict.keys():
-        print("\nServer received file-data from client\n")
+        
         data = datadict['sendtoServer']
         filenames = data.keys()
-        print(f"{len(data.keys())} files received")
+        log.DEBUGLOG(debugmode=self.debugmode, msg=f'SYNC FUNC: Server received file-data from client\n\t {len(data.keys())} files received')
         for filename_key in filenames:
             filename_abs = os.path.join(self.basedir,filename_key)
-            os.makedirs(os.path.dirname(filename_abs),exist_ok=True)
-            
-            
+            os.makedirs(os.path.dirname(filename_abs),exist_ok=True)            
             with open(filename_abs,'wb') as f:
                 filedata = data[filename_key]
                 filedata = string2bytes(filedata)
                 f.write(filedata)
-                print(f"filename \t{filename_key} \t is saved")
                 f.close()
             
         self.data_out = json.dumps({'continue':''}).encode('utf-8')
 
 def establish_connection_server_client(self,datadict,key):
     if 'establish connection' in datadict.keys(): 
-        print("connection established")
+        log.DEBUGLOG(debugmode=self.debugmode, msg=f'SYNC FUNC: connection established')
         self.data_out = json.dumps({'establish connection': True}).encode('utf-8')
         
 def finish_server(self,datadict,key):
     if 'reallyfinished' in datadict.keys():
         pass
     if 'finished' in datadict.keys():
-        print("client -> server has finished")
+        log.DEBUGLOG(debugmode=self.debugmode, msg=f'SYNC FUNC: client -> server has finished')
         if datadict['finished'] == '':
             #check if server -> Client has also finished
             if hasattr(self,'sendtoClient'): 
