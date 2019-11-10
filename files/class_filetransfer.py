@@ -34,7 +34,7 @@ def initialize(self):
                 f.write(json.dumps({'IP1' : myIP,'IP2': "",'client':True})) 
                 f.close()
     except:
-        log.ERRORMESSAGE("Error: could not access internet")
+        log.ERRORMESSAGE("CLASS FILETRANSFER: Error: could not access internet")
 
 
 class filetransfer(gui.MyFrame):
@@ -44,6 +44,7 @@ class filetransfer(gui.MyFrame):
     def m_OpenTransferOnButtonClick(self,event):
         initialize(self)
         """START MAIN PROGRAM : WIFI SYNC"""
+        
         p.SwitchPanel(self,5)
         p.get_IP(self,event)
         m4.initialize(self)
@@ -72,12 +73,11 @@ class filetransfer(gui.MyFrame):
         Client = self.m_radioClient.GetValue()
         if Client:
             HOST = self.IP2
-            print(f"HOST IS {HOST}")
-            print("start client")
+            
             self.SetCursor(wx.Cursor(wx.CURSOR_ARROWWAIT))
             SERVERONLINE = f4.CheckServerStatus(HOST,65432)
             self.SetCursor(wx.Cursor(wx.CURSOR_ARROW))
-            print(f"server is online: {SERVERONLINE}")
+            log.DEBUGLOG(debugmode=self.debugmode,msg=f'CLASS FILETRANSFER: Host is {HOST}\n\t Starting Client\n\t server is online: {SERVERONLINE}')
             if SERVERONLINE:
                 self.m_txtStatus.SetValue("starting client")
                 t_sync = lambda self,mode,HOST :threading.Thread(target=m4.SyncDevices,args=(self,mode,HOST)).start()
@@ -86,8 +86,7 @@ class filetransfer(gui.MyFrame):
                 ctypes.windll.user32.MessageBoxW(0, "Server is not online. \nMake sure you start the server before you start the client.\nTry to connect again.", "Warning", ICON_STOP)               
         else:
             HOST = self.IP1
-            print(f"HOST IS {HOST}")
-            print("start server")
+            log.DEBUGLOG(debugmode=self.debugmode,msg=f'CLASS FILETRANSFER: Host is {HOST}\n\t Starting Server')
             self.m_txtStatus.SetValue("starting server")
             t_sync = lambda self,mode,HOST :threading.Thread(target=m4.SyncDevices,args=(self,mode,HOST)).start()
             t_sync(self,"SERVER",HOST)
