@@ -37,7 +37,7 @@ def clientprocedure_sendlastfiles(HOST,PORT,self):
 def clientprocedure(HOST,PORT,self):  
     #send all filenames from Client to server
     msg = f4.GetDataList(self.basedir, self.appendDir, self.excludeDir, mode='relative', PICKLE=True)
-    data_in = f4.SEND('compare',msg,HOST,PORT)
+    data_in = f4.SEND('compare',msg,HOST,PORT,self.debugmode)
     Display("client is receiving data ...",self)
     if data_in != None and data_in != b'':
         datadict = json.loads(data_in.decode('utf-8'))
@@ -47,7 +47,7 @@ def clientprocedure(HOST,PORT,self):
             paths_abs = [os.path.join(self.basedir,x) for x in paths_rel]
             N = 1
             f4.SendGroupOfFiles(self,paths_abs,N,HOST,PORT)
-            data_in = f4.SEND('finished','',HOST,PORT)
+            data_in = f4.SEND('finished','',HOST,PORT,self.debugmode)
             
         elif 'finished' in datadict.keys():
             log.DEBUGLOG(debugmode=self.debugmode, msg=f'SYNCMODULE: clientprocedure: Client -> Server is done')            
@@ -67,7 +67,7 @@ def clientprocedure(HOST,PORT,self):
                 paths_abs = [os.path.join(self.basedir,x) for x in paths_rel]
                 N = 1
                 f4.SendGroupOfFiles(self,paths_abs,N,HOST,PORT)
-                data_in = f4.SEND('finished','',HOST,PORT)
+                data_in = f4.SEND('finished','',HOST,PORT,self.debugmode)
                 
             elif 'finished' in datadict.keys():
                 log.DEBUGLOG(debugmode=self.debugmode, msg=f'SYNCMODULE: clientprocedure: Client -> Server is done')                
