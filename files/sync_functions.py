@@ -123,7 +123,7 @@ def GetDataList(basedir,appendDir,excludeDir,mode,PICKLE):
     return msg
 
 
-def SEND(self,key,dict_data,HOST,PORT):
+def SEND(key,dict_data,HOST,PORT,_debugmode):
     
     # send mode:
     # it keeps sending information that includes the name of the file, the server processes this
@@ -141,7 +141,7 @@ def SEND(self,key,dict_data,HOST,PORT):
                 return data
         i += 1
         if i >= 20:
-            log.DEBUGLOG(debugmode=self.debugmode, msg=f'SYNC FUNC: error could not connect and send data')
+            log.DEBUGLOG(debugmode=_debugmode, msg=f'SYNC FUNC: error could not connect and send data')
             TRYSEND = False
             return None
 def SendGroupOfFiles(self,filelist,N,HOST,PORT):
