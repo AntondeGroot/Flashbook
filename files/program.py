@@ -82,51 +82,11 @@ def get_IP(self,event):
         data = json.load(file)
         self.IP1 = data['IP1']
         self.IP2 = data['IP2']
-        self.client = data['client']
     self.m_txtMyIP.SetValue(self.IP1)
     self.m_txtTargetIP.SetValue(self.IP2)
-    self.m_radioClient.SetValue(self.client)
-    self.m_radioServer.SetValue(not self.client)
     
 
 def set_richtext(self):
-    #richtext for General tab
-    self.txt2 = self.m_richText1
-    self.txt2.BeginBold()
-    self.txt2.EndBold()
-    self.txt2.EndFontSize()
-    self.txt2.BeginBold()
-    self.txt2.BeginFontSize(16)
-    self.txt2.WriteText("  How to use this program:")
-    self.txt2.EndFontSize()
-    self.txt2.EndBold()
-    self.txt2.WriteText("\t"*32+"(left click to close window)\n")
-    self.txt2.BeginBold()
-    self.txt2.BeginFontSize(12)
-    self.txt2.WriteText("\n\tFlashbook:")
-    self.txt2.EndFontSize()
-    self.txt2.EndBold()
-    self.txt2.WriteText("\tYou can convert a PDF to JPG and use it to take notes while you read. \n")
-    self.txt2.BeginBold()
-    self.txt2.BeginFontSize(12)
-    self.txt2.WriteText("\tFlashcard:")
-    self.txt2.EndFontSize()
-    self.txt2.EndBold()
-    self.txt2.WriteText("\tStudy the notes you took, you can stop anytime and continue later on.\n")
-    self.txt2.BeginBold()
-    self.txt2.BeginFontSize(12)
-    self.txt2.WriteText("\tPrint:")
-    self.txt2.EndFontSize()
-    self.txt2.EndBold()
-    self.txt2.WriteText("\t\tAll the notes you took are converted to a PDF. Multiple cards are placed side by side, you can then adjust a parameter while looking at the number of pages so you can fine tune the file.\n")
-    self.txt2.BeginBold()
-    self.txt2.BeginFontSize(12)
-    self.txt2.WriteText("\tSync:")
-    self.txt2.EndFontSize()
-    self.txt2.EndBold()
-    self.txt2.WriteText("\t\tYou can synchronize two devices as long as they are on the same network e.g. your laptop and desktop using your local wifi network.\n")
-    self.txt2.EndFontSize()
-    self.Layout()   
     
     # richtext for Flashbook
     self.txt = self.m_richText2
@@ -139,12 +99,10 @@ def set_richtext(self):
     self.txt.BeginFontSize(12)
     self.txt.WriteText("\tThis will allow you to make flashcards while reading a book.\n")
     self.txt.WriteText(
-                      "\t1) Click in the menubar 'open/Book PDF folder' to open the correct Windows folders.\n"
+                      "\t1) Click in the menubar 'Folders/Book PDF folder' to open the correct Windows folder.\n"
                         "\t2) Place the PDFs you would like to read there.\n"
-                        '\t3) Convert the PDFs to JPG files using the in-program PDF converter by clicking on "Convert Books" in the menubar.\n'
-                      "\t4) All image operations are performed on JPG files, if the conversion fails:\n"
-            "\t\t- Place all the pictures in a map named after the book in the folder you get from 'open/Book JPG folder'\n"
-                      '\t5) Then click on "Browse" in the menubar and open the book that you would like to read\n\n' )
+                        '\t3) Convert the PDFs to JPG files using the in-program PDF converter by clicking on "Books/Convert Books" in the menubar.\n\n'
+                      '\tYou can now use Flashbook!\n\n\n\n' )
     self.txt.EndFontSize()
     self.txt.BeginBold()
     self.txt.BeginFontSize(16)
@@ -158,11 +116,13 @@ def set_richtext(self):
     self.txt.WriteImage(wx.Bitmap(image2))
     self.txt.Newline()    
     self.txt.BeginFontSize(12)   
-    self.txt.WriteText( "        1) You can type a Question and an Answer in the textbox at the bottom, this is LaTeX compatible if you include $$\n"
-                        "        2) you can take multiple selections across pages, all the rectangles you draw will be combined into 1 Question and 1 Answer card\n"
-                        "        3) Only when you confirm your selection during the Answer mode will everything be saved\n"
-                        "        4) You switch modes when you confirm your selection\n"
-                        "        5) 'Reset selection' resets both Question and Answer cards\n")
+    self.txt.WriteText( "        1) You can type a Question and an Answer in the textbox at the bottom, this is LaTeX compatible if you include '$$'.\n"
+                        "        2) You can take multiple selections across pages by drawing rectangles with the mouse, all the rectangles you draw will be combined into 1 Question and 1 Answer card\n"
+                        "        3) You switch modes when you confirm your selection.\n"
+                        "        4) Only when you confirm your selection during the Answer mode will everything be saved. The Answer card can be left blank if you want.\n"
+                        "        5) 'Reset selection' resets both Question and Answer cards.\n"
+                        "        6) 'Topic' : you can add a topic that will be displayed in a horizontal black bar. E.g. the title of the chapter.\n"
+                        "        7) 'Import Screenshot' : you can add extra images. After having imported a screenshot you can draw a rectangle to make a selection.\n")
     
     imagepath = str(Path(self.resourcedir,"arrowhelp.png"))
     image = PIL.Image.open(imagepath, mode='r').convert('RGB')
@@ -207,11 +167,10 @@ def set_richtext(self):
     image2.SetData( image.tobytes() )
     self.txt2.WriteImage(wx.Bitmap(image2))        
     self.txt2.BeginFontSize(12)
-    self.txt2.WriteText('\n\t1) Open a subject you want to study by pressing on "browse".\n' 
-                       "\t2) A pop-up window will appear with settings, the settings will be implemented if you close the window and the Flashcard program will start.\n"
-                        "\t3) If you want to continue a previous session it will supersede all other settings and only use the settings you used last time.\n"
-                       "\t4) The total number of questions = 'multiplier' x 'nr questions', in case you want test a subject multiple times.\n"
-                       "\t5) Your progress is saved so that you can stop at any time and continue later.\n")
+    self.txt2.WriteText("\n\t1) A pop-up window will appear with settings, the settings will be implemented if you close the window and the Flashcard program will start.\n"
+                        "\t2) If you want to continue a previous session it will supersede all other settings and only use the settings you used last time.\n"
+                       "\t3) The total number of questions = 'multiplier' x 'nr questions', in case you want to test a subject multiple times.\n"
+                       "\t4) Your progress is saved so that you can stop at any time and continue later.\n")
     self.txt2.EndFontSize()
     self.Layout()   
     
@@ -223,15 +182,15 @@ def set_richtext(self):
     
     self.txt.EndBold()
     self.txt.EndFontSize()
-    self.txt2.BeginFontSize(12)
+    self.txt.BeginFontSize(12)
     self.txt.WriteText("\t"*29+"(left click to close window)\n")
-    self.txt.WriteText("\t 1) First assign one device the role as 'server' and click on 'transfer'\n"
-                       "\t 2) Then select on the other device 'client' and click 'transfer'.\n" 
-                       "\t 3) It is important that you start the server before the client.\n"
-                       "\t 4) This will start the process where the 'client' starts sending data to the 'server'.\n"
-                       "\t 5) After the transfer is complete the roles are reversed automatically.\n"
-                       "\t 6) This makes sure both devices contain all the data.\n"    
-                       "\t 7) When all data has been transferred you can safely continue using Flashbook.")
+    self.txt.WriteText("\t 1) The IP address of your device will be displayed as 'My IP', this will be automatically filled in.\n"
+                      "\t 2) You will need to manually fill in the IP address of the other device, you must do this on both devices.\n"
+                      "\t 3) First click on 'synchronize' on one device.\n"
+                       "\t 4) Then do the same on the other device within 60 seconds.\n" 
+                       "\t 3) It will only synchronize the PDF versions of the books, not the JPG version.\n"
+                       "\t    So After synching you will need to convert newly added books.\n"
+                       "\t 4) After completion you can safely continue using Flashbook.")
     self.txt.EndFontSize()
     self.Layout()
 import historygraph
