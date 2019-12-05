@@ -10,6 +10,8 @@ import wx
 import PIL
 from pathlib import Path
 import imageoperations as imop
+import threading
+import pdf_modules as m5
 import os
 import random
 import itertools
@@ -30,13 +32,13 @@ def CombineBookTitles(booknames):
     """To combine multiple book titles, since this would otherwise end up in a very long
     name, it will instead only take the first full name and then abbreviate the following
     books to only the first letters of the books."""
-    C = 'MULTI_'
+    Name = 'MULTI_'
     for i,string in enumerate(booknames):
         if i==0:
-            C += string
+            Name += string
         else:
-            C += '_'+ ''.join([c for c in string.title() if c.isupper()])
-    return C
+            Name += '_'+ ''.join([c for c in string.title() if c.isupper()])
+    return Name
 
 def save2latexfile(self,files,title):
     
@@ -63,7 +65,18 @@ def save2latexfile(self,files,title):
 class booksmenu(gui.MyFrame):
     def __init__(self):
         pass
+    def m_menuItemConvertOnMenuSelection( self, event ):
+        log.DEBUGLOG(debugmode=self.debugmode, msg=f'CLASS MENUBOOKS: pressed Convert Books')
+        m5.AddPathvar() #needed to make PDF2jpg work, it sets "Poppler for Windows" as pathvariable
+        from_    = str(self.dirpdfbook)
+        tempdir_ = str(self.tempdir)
+        to_      = str(self.booksdir)
+        
+        t_pdf = lambda self, from_, tempdir_, to_ : threading.Thread(target = m5.ConvertPDF_to_JPG , args=(self,from_, tempdir_, to_ )).start()
+        t_pdf(self, from_, tempdir_, to_) 
+    
     def m_menuCombineBooksOnMenuSelection( self, event ):
+        log.DEBUGLOG(debugmode=self.debugmode, msg=f'CLASS MENUBOOKS: pressed Combine Books')
         with wx.FileDialog(self, "Select multiples files to combine", wildcard="*.tex",style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST|wx.FD_MULTIPLE) as fileDialog:
             fileDialog.SetPath(str(self.notesdir)+'\.')    
             if fileDialog.ShowModal() == wx.ID_OK:
@@ -128,6 +141,7 @@ class booksmenu(gui.MyFrame):
 
                             
     def m_menuItemDelBookOnMenuSelection( self, event ):
+        log.DEBUGLOG(debugmode=self.debugmode, msg=f'CLASS MENUBOOKS: pressed Delete Book')
         #with wx.FileDialog(self, "Choose which file to delete", wildcard="*.tex",style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST) as fileDialog:
         with wx.FileDialog(self, "Choose which file to delete", wildcard="*.tex",style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST) as fileDialog:
             fileDialog.SetPath(str(self.notesdir)+'\.')    
