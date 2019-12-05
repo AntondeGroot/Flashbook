@@ -11,6 +11,7 @@ import wx.richtext
 import os
 from pathlib import Path
 
+VersionNumber = 'Version 1.5.3'
 
 basedir     = Path(os.getenv("LOCALAPPDATA"),"Flashbook")
 resourcedir = str(Path(basedir ,"resources"))
@@ -50,10 +51,6 @@ class MyFrame ( wx.Frame ):
 		self.m_menuItemJPG.SetBitmap( data[0] )
 		self.m_menuOpen.Append( self.m_menuItemJPG )
 		
-		self.m_menuItemConvert = wx.MenuItem( self.m_menuOpen, wx.ID_ANY, u"Convert Books", wx.EmptyString, wx.ITEM_NORMAL )
-		self.m_menuItemConvert.SetBitmap( data[1] )
-		self.m_menuOpen.Append( self.m_menuItemConvert )
-		
 		self.m_menuOpen.AppendSeparator()
 		
 		self.m_menuPDFfolder = wx.MenuItem( self.m_menuOpen, wx.ID_ANY, u"Notes PDF folder", wx.EmptyString, wx.ITEM_NORMAL )
@@ -66,9 +63,15 @@ class MyFrame ( wx.Frame ):
 		self.m_menuItemBackToMain.SetBitmap( wx.ArtProvider.GetBitmap( wx.ART_GO_HOME,  ) )
 		self.m_menuOpen.Append( self.m_menuItemBackToMain )
 		
-		self.m_menubar1.Append( self.m_menuOpen, u"Open" ) 
+		self.m_menubar1.Append( self.m_menuOpen, u"Folders" ) 
 		
 		self.m_menuBooks = wx.Menu()
+		self.m_menuItemConvert = wx.MenuItem( self.m_menuBooks, wx.ID_ANY, u"Convert Books", wx.EmptyString, wx.ITEM_NORMAL )
+		self.m_menuItemConvert.SetBitmap( data[1] )
+		self.m_menuBooks.Append( self.m_menuItemConvert )
+		
+		self.m_menuBooks.AppendSeparator()
+		
 		self.m_menuCombineBooks = wx.MenuItem( self.m_menuBooks, wx.ID_ANY, u"Combine booknotes", wx.EmptyString, wx.ITEM_NORMAL )
 		self.m_menuBooks.Append( self.m_menuCombineBooks )
 		
@@ -206,7 +209,7 @@ class MyFrame ( wx.Frame ):
 		
 		bSizer353.Add( self.m_staticText113, 0, wx.ALL, 0 )
 		
-		self.m_staticText1112 = wx.StaticText( self.panel0, wx.ID_ANY, u"Combine all the flashcards and save them\nas a PDF. Includes both Question and Answer.", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_staticText1112 = wx.StaticText( self.panel0, wx.ID_ANY, u"Combine all the flashcards and save them\nas a PDF. You can customize the file\nand edit / delete cards by clicking on them.", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.m_staticText1112.Wrap( -1 )
 		self.m_staticText1112.SetFont( wx.Font( 10, 74, 90, 90, False, "Verdana" ) )
 		
@@ -772,7 +775,7 @@ class MyFrame ( wx.Frame ):
 		sbSizer3 = wx.StaticBoxSizer( wx.StaticBox( self.m_panel31, wx.ID_ANY, wx.EmptyString ), wx.VERTICAL )
 		
 		sbSizer3.SetMinSize( wx.Size( 310,-1 ) ) 
-		self.m_staticText33 = wx.StaticText( sbSizer3.GetStaticBox(), wx.ID_ANY, u"Fine tune image size", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_staticText33 = wx.StaticText( sbSizer3.GetStaticBox(), wx.ID_ANY, u"Fine tune image size by page width %", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.m_staticText33.Wrap( -1 )
 		self.m_staticText33.SetFont( wx.Font( 8, 74, 93, 90, False, "Verdana" ) )
 		
@@ -783,11 +786,14 @@ class MyFrame ( wx.Frame ):
 		
 		sbSizer3.Add( self.m_sliderPDFsize, 0, wx.ALL, 0 )
 		
-		self.m_staticText331 = wx.StaticText( sbSizer3.GetStaticBox(), wx.ID_ANY, u"Limit image size by page width %", wx.DefaultPosition, wx.DefaultSize, 0 )
-		self.m_staticText331.Wrap( -1 )
-		self.m_staticText331.SetFont( wx.Font( 8, 74, 93, 90, False, "Verdana" ) )
+		self.m_staticText332 = wx.StaticText( sbSizer3.GetStaticBox(), wx.ID_ANY, u"Fine tune pdf quality", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_staticText332.Wrap( -1 )
+		self.m_staticText332.SetFont( wx.Font( 8, 74, 93, 90, False, "Verdana" ) )
 		
-		sbSizer3.Add( self.m_staticText331, 0, wx.ALL, 5 )
+		sbSizer3.Add( self.m_staticText332, 0, wx.ALL, 5 )
+		
+		self.m_sliderPDFquality = wx.Slider( sbSizer3.GetStaticBox(), wx.ID_ANY, 100, 10, 100, wx.DefaultPosition, wx.Size( 275,-1 ), wx.SL_HORIZONTAL|wx.SL_LABELS )
+		sbSizer3.Add( self.m_sliderPDFquality, 0, wx.ALL, 0 )
 		
 		self.m_staticText401 = wx.StaticText( sbSizer3.GetStaticBox(), wx.ID_ANY, u"You can select multiple widths.\nIf an image is wider than any given width,\nthen it will be resized to the nearest value.", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.m_staticText401.Wrap( -1 )
@@ -1002,30 +1008,11 @@ class MyFrame ( wx.Frame ):
 		
 		fgSizer1.Add( self.m_txtTargetIP, 0, wx.ALL, 5 )
 		
-		self.m_staticText411 = wx.StaticText( self.m_panel181, wx.ID_ANY, u"Client", wx.DefaultPosition, wx.DefaultSize, 0 )
-		self.m_staticText411.Wrap( -1 )
-		self.m_staticText411.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
-		
-		fgSizer1.Add( self.m_staticText411, 0, wx.ALL, 5 )
-		
-		self.m_radioClient = wx.RadioButton( self.m_panel181, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
-		self.m_radioClient.SetValue( True ) 
-		fgSizer1.Add( self.m_radioClient, 0, wx.ALL, 5 )
-		
-		self.m_staticText42 = wx.StaticText( self.m_panel181, wx.ID_ANY, u"Server", wx.DefaultPosition, wx.DefaultSize, 0 )
-		self.m_staticText42.Wrap( -1 )
-		self.m_staticText42.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
-		
-		fgSizer1.Add( self.m_staticText42, 0, wx.ALL, 5 )
-		
-		self.m_radioServer = wx.RadioButton( self.m_panel181, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
-		fgSizer1.Add( self.m_radioServer, 0, wx.ALL, 5 )
-		
 		
 		bSizer48.Add( fgSizer1, 0, wx.EXPAND, 5 )
 		
 		
-		bSizer48.Add( ( 0, 25), 0, wx.EXPAND, 5 )
+		bSizer48.Add( ( 0, 0), 0, wx.EXPAND, 5 )
 		
 		self.m_staticline7 = wx.StaticLine( self.m_panel181, wx.ID_ANY, wx.DefaultPosition, wx.Size( -1,1 ), wx.LI_HORIZONTAL )
 		self.m_staticline7.SetMaxSize( wx.Size( 500,-1 ) )
@@ -1034,7 +1021,7 @@ class MyFrame ( wx.Frame ):
 		
 		bSizer47 = wx.BoxSizer( wx.HORIZONTAL )
 		
-		self.m_buttonTransfer = wx.Button( self.m_panel181, wx.ID_ANY, u"Transfer", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_buttonTransfer = wx.Button( self.m_panel181, wx.ID_ANY, u"Synchronize", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.m_buttonTransfer.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
 		
 		bSizer47.Add( self.m_buttonTransfer, 0, wx.ALL, 5 )
@@ -1079,21 +1066,6 @@ class MyFrame ( wx.Frame ):
 		self.m_notebook = wx.Notebook( self.panelHelp, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.m_notebook.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
 		
-		self.m_panel40 = wx.Panel( self.m_notebook, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TAB_TRAVERSAL )
-		self.m_panel40.SetBackgroundColour( wx.SystemSettings.GetColour( wx.SYS_COLOUR_BTNHIGHLIGHT ) )
-		
-		bSizer62 = wx.BoxSizer( wx.VERTICAL )
-		
-		self.m_richText1 = wx.richtext.RichTextCtrl( self.m_panel40, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0|wx.VSCROLL|wx.HSCROLL|wx.NO_BORDER|wx.WANTS_CHARS )
-		self.m_richText1.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
-		
-		bSizer62.Add( self.m_richText1, 1, wx.EXPAND |wx.ALL, 0 )
-		
-		
-		self.m_panel40.SetSizer( bSizer62 )
-		self.m_panel40.Layout()
-		bSizer62.Fit( self.m_panel40 )
-		self.m_notebook.AddPage( self.m_panel40, u"General", False )
 		self.m_panel41 = wx.Panel( self.m_notebook, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TAB_TRAVERSAL )
 		bSizer63 = wx.BoxSizer( wx.VERTICAL )
 		
@@ -1132,7 +1104,7 @@ class MyFrame ( wx.Frame ):
 		self.m_panel43.SetSizer( bSizer65 )
 		self.m_panel43.Layout()
 		bSizer65.Fit( self.m_panel43 )
-		self.m_notebook.AddPage( self.m_panel43, u"Synchronize", True )
+		self.m_notebook.AddPage( self.m_panel43, u"Synchronize", False )
 		
 		bSizer442.Add( self.m_notebook, 1, wx.EXPAND |wx.ALL, 5 )
 		
@@ -1157,9 +1129,9 @@ class MyFrame ( wx.Frame ):
 		# Connect Events
 		self.Bind( wx.EVT_MENU, self.m_menuItemFlashbookOnMenuSelection, id = self.m_menuItemFlashbook.GetId() )
 		self.Bind( wx.EVT_MENU, self.m_menuItemJPGOnMenuSelection, id = self.m_menuItemJPG.GetId() )
-		self.Bind( wx.EVT_MENU, self.m_menuItemConvertOnMenuSelection, id = self.m_menuItemConvert.GetId() )
 		self.Bind( wx.EVT_MENU, self.m_menuPDFfolderOnMenuSelection, id = self.m_menuPDFfolder.GetId() )
 		self.Bind( wx.EVT_MENU, self.m_menuItemBackToMainOnMenuSelection, id = self.m_menuItemBackToMain.GetId() )
+		self.Bind( wx.EVT_MENU, self.m_menuItemConvertOnMenuSelection, id = self.m_menuItemConvert.GetId() )
 		self.Bind( wx.EVT_MENU, self.m_menuCombineBooksOnMenuSelection, id = self.m_menuCombineBooks.GetId() )
 		self.Bind( wx.EVT_MENU, self.m_menuNewBookOnMenuSelection, id = self.m_menuNewBook.GetId() )
 		self.Bind( wx.EVT_MENU, self.m_menuItemDelBookOnMenuSelection, id = self.m_menuItemDelBook.GetId() )
@@ -1289,6 +1261,7 @@ class MyFrame ( wx.Frame ):
 		self.m_checkBoxSameColor.Bind( wx.EVT_CHECKBOX, self.m_checkBoxSameColorOnCheckBox )
 		self.m_sliderPDFsize.Bind( wx.EVT_KEY_UP, self.m_sliderPDFsizeOnKeyUp )
 		self.m_sliderPDFsize.Bind( wx.EVT_SCROLL_CHANGED, self.m_sliderPDFsizeOnScrollChanged )
+		self.m_sliderPDFquality.Bind( wx.EVT_SCROLL_CHANGED, self.m_sliderPDFqualityOnScrollChanged )
 		self.m_slider_col1.Bind( wx.EVT_SCROLL_CHANGED, self.m_slider_col1OnScrollChanged )
 		self.m_checkBox_col1.Bind( wx.EVT_CHECKBOX, self.m_checkBox_col1OnCheckBox )
 		self.m_slider_col2.Bind( wx.EVT_SCROLL_CHANGED, self.m_slider_col2OnScrollChanged )
@@ -1308,10 +1281,7 @@ class MyFrame ( wx.Frame ):
 		self.m_btnImportScreenshot.Bind( wx.EVT_BUTTON, self.m_btnImportScreenshotOnButtonClick )
 		self.m_txtMyIP.Bind( wx.EVT_KEY_UP, self.m_txtMyIPOnKeyUp )
 		self.m_txtTargetIP.Bind( wx.EVT_KEY_UP, self.m_txtTargetIPOnKeyUp )
-		self.m_radioClient.Bind( wx.EVT_RADIOBUTTON, self.m_radioClientOnRadioButton )
-		self.m_radioServer.Bind( wx.EVT_RADIOBUTTON, self.m_radioServerOnRadioButton )
 		self.m_buttonTransfer.Bind( wx.EVT_BUTTON, self.m_buttonTransferOnButtonClick )
-		self.m_richText1.Bind( wx.EVT_LEFT_DOWN, self.m_richText1OnLeftDown )
 		self.m_richText2.Bind( wx.EVT_LEFT_DOWN, self.m_richText2OnLeftDown )
 		self.m_richText3.Bind( wx.EVT_LEFT_DOWN, self.m_richText3OnLeftDown )
 		self.m_richText4.Bind( wx.EVT_LEFT_DOWN, self.m_richText4OnLeftDown )
@@ -1327,13 +1297,13 @@ class MyFrame ( wx.Frame ):
 	def m_menuItemJPGOnMenuSelection( self, event ):
 		event.Skip()
 	
-	def m_menuItemConvertOnMenuSelection( self, event ):
-		event.Skip()
-	
 	def m_menuPDFfolderOnMenuSelection( self, event ):
 		event.Skip()
 	
 	def m_menuItemBackToMainOnMenuSelection( self, event ):
+		event.Skip()
+	
+	def m_menuItemConvertOnMenuSelection( self, event ):
 		event.Skip()
 	
 	def m_menuCombineBooksOnMenuSelection( self, event ):
@@ -1577,6 +1547,9 @@ class MyFrame ( wx.Frame ):
 	def m_sliderPDFsizeOnScrollChanged( self, event ):
 		event.Skip()
 	
+	def m_sliderPDFqualityOnScrollChanged( self, event ):
+		event.Skip()
+	
 	def m_slider_col1OnScrollChanged( self, event ):
 		event.Skip()
 	
@@ -1634,16 +1607,7 @@ class MyFrame ( wx.Frame ):
 	def m_txtTargetIPOnKeyUp( self, event ):
 		event.Skip()
 	
-	def m_radioClientOnRadioButton( self, event ):
-		event.Skip()
-	
-	def m_radioServerOnRadioButton( self, event ):
-		event.Skip()
-	
 	def m_buttonTransferOnButtonClick( self, event ):
-		event.Skip()
-	
-	def m_richText1OnLeftDown( self, event ):
 		event.Skip()
 	
 	def m_richText2OnLeftDown( self, event ):
@@ -2572,7 +2536,7 @@ class MyDialogAbout ( wx.Dialog ):
 		
 		bSizer91.Add( self.m_staticText58, 0, wx.ALL, 0 )
 		
-		self.m_staticText59 = wx.StaticText( self.m_panel33, wx.ID_ANY, 'Version 1.5.3', wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_staticText59 = wx.StaticText( self.m_panel33, wx.ID_ANY, VersionNumber, wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.m_staticText59.Wrap( -1 )
 		self.m_staticText59.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
 		
