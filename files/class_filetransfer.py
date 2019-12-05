@@ -52,26 +52,21 @@ class filetransfer(gui.MyFrame):
     def m_txtMyIPOnKeyUp( self, event ):
         self.IP1 = self.m_txtMyIP.GetValue()
         with open(Path(self.dirIP,'IPadresses.txt'),'w') as f:
-            f.write(json.dumps({'IP1' : self.IP1,'IP2': self.IP2,'client': self.client})) 
+            f.write(json.dumps({'IP1' : self.IP1,'IP2': self.IP2})) 
             f.close()        
     def m_txtTargetIPOnKeyUp( self, event ):
         self.IP2 = self.m_txtTargetIP.GetValue()
         with open(Path(self.dirIP,'IPadresses.txt'),'w') as f:
-            f.write(json.dumps({'IP1' : self.IP1,'IP2': self.IP2,'client': self.client})) 
+            f.write(json.dumps({'IP1' : self.IP1,'IP2': self.IP2})) 
             f.close()
-    def m_radioServerOnRadioButton( self, event ):
-        self.client = not self.m_radioServer.GetValue()
-        with open(Path(self.dirIP,'IPadresses.txt'),'w') as f:
-            f.write(json.dumps({'IP1' : self.IP1,'IP2': self.IP2,'client': self.client})) 
-            f.close()
-    def m_radioClientOnRadioButton( self, event ):
-        self.client = self.m_radioClient.GetValue()
-        with open(Path(self.dirIP,'IPadresses.txt'),'w') as f:
-            f.write(json.dumps({'IP1' : self.IP1,'IP2': self.IP2,'client': self.client})) 
-            f.close()
+    
     def m_buttonTransferOnButtonClick(self,event):
-        Client = self.m_radioClient.GetValue()
-        if Client:
+        log.DEBUGLOG(debugmode=self.debugmode,msg=f'CLASS FILETRANSFER: starting synchronisation')
+        Client = True
+        if Client: 
+            """First try to run the Client, if the server is online it proceeds normally. 
+            When no server is detected it will assume the role of server.
+            This way the user does not have to choose which side is client/server."""
             HOST = self.IP2
             
             self.SetCursor(wx.Cursor(wx.CURSOR_ARROWWAIT))
@@ -83,10 +78,10 @@ class filetransfer(gui.MyFrame):
                 t_sync = lambda self,mode,HOST :threading.Thread(target=m4.SyncDevices,args=(self,mode,HOST)).start()
                 t_sync(self,"CLIENT",HOST)        
             else:
-                ctypes.windll.user32.MessageBoxW(0, "Server is not online. \nMake sure you start the server before you start the client.\nTry to connect again.", "Warning", ICON_STOP)               
-        else:
-            HOST = self.IP1
-            log.DEBUGLOG(debugmode=self.debugmode,msg=f'CLASS FILETRANSFER: Host is {HOST}\n\t Starting Server')
-            self.m_txtStatus.SetValue("starting server")
-            t_sync = lambda self,mode,HOST :threading.Thread(target=m4.SyncDevices,args=(self,mode,HOST)).start()
-            t_sync(self,"SERVER",HOST)
+                #ctypes.windll.user32.MessageBoxW(0, "Server is not online. \nMake sure you start the server before you start the client.\nTry to connect again.", "Warning", ICON_STOP)               
+                #else:
+                HOST = self.IP1
+                log.DEBUGLOG(debugmode=self.debugmode,msg=f'CLASS FILETRANSFER: Host is {HOST}\n\t Starting Server')
+                self.m_txtStatus.SetValue("starting server")
+                t_sync = lambda self,mode,HOST :threading.Thread(target=m4.SyncDevices,args=(self,mode,HOST)).start()
+                t_sync(self,"SERVER",HOST)
