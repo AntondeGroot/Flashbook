@@ -53,7 +53,7 @@ org = [
 # sometimes a variable can change for example the Version number, this variable is unknown but everything left and right of it IS known
 # the following will replace it and update it
 fragments = ['self.m_staticText59 = wx.StaticText( self.m_panel33, wx.ID_ANY, ',', wx.DefaultPosition, wx.DefaultSize, 0 )']
-fragments_middle = [f"'Version {versionnumber}'"]
+fragments_middle = [f"VersionNumber"]
 
 a = []
 for string in read:  
