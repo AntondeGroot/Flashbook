@@ -7,8 +7,6 @@ Created on Fri Jun 28 13:48:13 2019
 import gui_flashbook as gui
 import subprocess
 import program as p
-import threading
-import pdf_modules as m5
 
 ICON_EXCLAIM=0x30
 
@@ -44,11 +42,4 @@ class menuopen(gui.MyFrame):
         else:
             p.SwitchPanel(self,0)  
         
-    def m_menuItemConvertOnMenuSelection( self, event ):
-        m5.AddPathvar() #needed to make PDF2jpg work, it sets "Poppler for Windows" as pathvariable
-        from_    = str(self.dirpdfbook)
-        tempdir_ = str(self.tempdir)
-        to_      = str(self.booksdir)
-        
-        t_pdf = lambda self, from_, tempdir_, to_ : threading.Thread(target = m5.ConvertPDF_to_JPG , args=(self,from_, tempdir_, to_ )).start()
-        t_pdf(self, from_, tempdir_, to_) 
+    
