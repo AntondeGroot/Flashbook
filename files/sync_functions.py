@@ -132,6 +132,7 @@ def SEND(key,dict_data,HOST,PORT,_debugmode):
     TRYSEND = True
     i = 0
     while TRYSEND:
+        print(f"key = {key}")
         # send file name, mode , creation time
         message = json.dumps({key: dict_data}).encode('utf-8')
         data = Socket_send(HOST,PORT,message)
@@ -164,18 +165,18 @@ def SendGroupOfFiles(self,filelist,N,HOST,PORT):
         if len(sublist) == N:
             #send    
             log.DEBUGLOG(debugmode=self.debugmode, msg=f'SYNC FUNC: client sends {len(sublist)} files')
-            SEND(self,key,dict_data,HOST,PORT)#send because you have N items
+            SEND(key,dict_data,HOST,PORT,self.debugmode)#send because you have N items
             sublist = {}
         elif i == len(filelist)-1:
             #send
-            SEND(self,key,dict_data,HOST,PORT)#send because you have last items
+            SEND(key,dict_data,HOST,PORT,self.debugmode)#send because you have last items
     log.DEBUGLOG(debugmode=self.debugmode, msg=f'SYNC FUNC: client has send last file')
     
 def compare_server_with_client(self,datadict,key):
     if 'compare' in datadict.keys(): 
         RUNCON    = True
         RUNSERVER = True
-        SWITCH_BOOL = True
+        #SWITCH_BOOL = True
         
         sendtoServer = []
         self.sendtoClient = []
@@ -228,11 +229,11 @@ def compare_server_with_client(self,datadict,key):
                 data_out = json.dumps({'switch mode':''}).encode('utf-8')
                 RUNCON = False
                 RUNSERVER = False                          
-                SWITCH_BOOL = True
+                #SWITCH_BOOL = True
         self.data_out = data_out
         self.RUNCON = RUNCON
         self.RUNSERVER = RUNSERVER
-        self.SWITCH_BOOL = SWITCH_BOOL
+        #self.SWITCH_BOOL = SWITCH_BOOL
 
 def request_files_from_client(self,datadict,key):
     if 'sendtoServer' in datadict.keys():
@@ -269,25 +270,27 @@ def finish_server(self,datadict,key):
                     self.RUNSERVER = False
                     self.m_txtStatus.SetValue("finished")
                     self.data_out = json.dumps({'finished':''}).encode('utf-8')                                    
-                    self.SWITCH_BOOL = False
+                    SWITCH_BOOL = False
                     
                 else:#if you need to send files to the client
                     self.RUNCON = False
                     self.RUNSERVER = False
                     self.data_out = json.dumps({'switch mode':''}).encode('utf-8')
-                    self.SWITCH_BOOL = True
+                    SWITCH_BOOL = True
             else:
                 self.RUNCON = False
                 self.RUNSERVER = False
                 self.m_txtStatus.SetValue("finished")
                 self.data_out = json.dumps({'finished':''}).encode('utf-8')                                    
-                self.SWITCH_BOOL = False
+                SWITCH_BOOL = False
         elif datadict['finished'] == 'clientprocedure_sendlastfiles':   
             self.RUNCON = False
             self.RUNSERVER = False
             self.m_txtStatus.SetValue("finished")
             self.data_out = json.dumps({'finished':''}).encode('utf-8')                                    
-            self.SWITCH_BOOL = False
+            SWITCH_BOOL = False
+        return SWITCH_BOOL
+            
 
 
 # -*- coding: utf-8 -*-
