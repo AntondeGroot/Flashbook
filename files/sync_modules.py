@@ -51,11 +51,15 @@ def clientprocedure(HOST,PORT,self):
             
         elif 'finished' in datadict.keys():
             log.DEBUGLOG(debugmode=self.debugmode, msg=f'SYNCMODULE: clientprocedure: Client -> Server is done')            
-            self.SWITCH_BOOL = False
+            SWITCH_BOOL = False
         
         elif 'switch mode' in datadict.keys():
             log.DEBUGLOG(debugmode=self.debugmode, msg=f'SYNCMODULE: clientprocedure: now switching from client to server')
-            self.SWITCH_BOOL = True
+            SWITCH_BOOL = True
+        else:
+            log.DEBUGLOG(debugmode=self.debugmode, msg=f'SYNCMODULE: invalid key was given to clientprocedure, keys = {datadict.keys()}')
+            SWITCH_BOOL = False
+            
     
     for i in range(2):
         #should actually loop only twice
@@ -71,18 +75,18 @@ def clientprocedure(HOST,PORT,self):
                 
             elif 'finished' in datadict.keys():
                 log.DEBUGLOG(debugmode=self.debugmode, msg=f'SYNCMODULE: clientprocedure: Client -> Server is done')                
-                self.SWITCH_BOOL = False            
+                SWITCH_BOOL = False            
             elif 'switch mode' in datadict.keys():
                 log.DEBUGLOG(debugmode=self.debugmode, msg=f'SYNCMODULE: clientprocedure: received switchmode to SERVER')
-                self.SWITCH_BOOL = True
-    
+                SWITCH_BOOL = True
+    return SWITCH_BOOL
     
     
     
 def serverprocedure(HOST, PORT, self):
     self.RUNSERVER = True
     self.m_txtStatus.SetValue("server is now listening")
-    
+    SWITCH_BOOL = False
     try:
         while self.RUNSERVER:
             #setup socket
@@ -121,20 +125,22 @@ def serverprocedure(HOST, PORT, self):
                             f4.establish_connection_server_client(self,datadict,'establish connection')  
                             f4.compare_server_with_client(self,datadict,'compare')
                             f4.request_files_from_client(self,datadict,'sendtoServer') 
-                            f4.finish_server(self,datadict,'finished')
+                            SWITCH_BOOL = f4.finish_server(self,datadict,'finished')
                             ###
-                            
                             #send message back
                             f4.send_msg(conn, self.data_out)
                             if not self.RUNSERVER:
-                                return self.SWITCH_BOOL
+                                return SWITCH_BOOL
         Display("Sync complete",self) 
     except socket.timeout:
         Display("",self) 
-        ctypes.windll.user32.MessageBoxW(0, "Server timed out and is now shutting down.", "Warning", MB_ICONINFORMATION)   
+        ctypes.windll.user32.MessageBoxW(0, "Server timed out and is now shutting down.", "Warning", MB_ICONINFORMATION)
+        log.DEBUGLOG(debugmode=self.debugmode, msg=f'SYNCMODULE: serverprocedure: server has timed out')
+        return SWITCH_BOOL
         
 def SyncDevices(self, mode, HOST):  
-
+    
+    log.DEBUGLOG(debugmode=self.debugmode, msg=f'SYNCMODULE: start SyncDevices')
     self.dirlist    = os.listdir(self.basedir)
     self.appendDir  = ["pics"]   # dont overwrite files in these directories
     self.excludeDir = ["IPadresses","books","resources","temporary"] # exclude this directory from synchronizing  
@@ -145,8 +151,8 @@ def SyncDevices(self, mode, HOST):
         HOST = self.IP1
         Display("starting server",self)        
         #check if server is online:
-        serverprocedure(HOST,PORT,self) #returns switch_bool
-        if self.SWITCH_BOOL: #switch Server -> Client
+        SWITCH_BOOL = serverprocedure(HOST,PORT,self) #returns switch_bool
+        if SWITCH_BOOL: #switch Server -> Client
             log.DEBUGLOG(debugmode=self.debugmode, msg=f'SYNCMODULE: syncdevices: server is now client')
             Display("finished server, starting client",self)
             time.sleep(2)
@@ -157,25 +163,28 @@ def SyncDevices(self, mode, HOST):
         else:
             Display("Sync completed",self)
     elif mode == "CLIENT":# first start client, then afterwards server but make sure it starts before a new client is stqarted
+        
+        
         HOST = self.IP2
         #start client
         Display("starting client",self)
         
-        clientprocedure(HOST,PORT,self) #DETERMINES SELF.SWITCH_BOOL
+        SWITCH_BOOL = clientprocedure(HOST,PORT,self)
         
-        if self.SWITCH_BOOL:
+        if SWITCH_BOOL:
             log.DEBUGLOG(debugmode=self.debugmode, msg=f'SYNCMODULE: syncdevices: client is now server')
             Display("finished client",self)
             time.sleep(0.1)
             Display("starting server",self)
             HOST = self.IP1            
-            serverprocedure(HOST,PORT,self)
+            _ = serverprocedure(HOST,PORT,self)
         else:
             log.DEBUGLOG(debugmode=self.debugmode, msg=f'SYNCMODULE: syncdevices: client has stopped')
     Display("Sync completed",self)
+    log.DEBUGLOG(debugmode=self.debugmode, msg=f'SYNCMODULE: syncdevices: sync completed')
     #except:
     #    ctypes.windll.user32.MessageBoxW(0, "Cannot start server: no internet connection detected", "Warning", 1)   
-    #self.m_txtStatus.SetValue("Synching complete!")
+    
 
 
 def initialize(self):
@@ -202,15 +211,12 @@ def initialize(self):
         data = json.load(file)
         self.IP1 = data['IP1']
         self.IP2 = data['IP2']
-        self.client = data['client']
         
     if self.IP1 != myIP:
         ctypes.windll.user32.MessageBoxW(0, "Your IP address has changed!\nThis device has updated the IP in the settings.\nMake sure the device connecting to your device changes the IP address accordingly!", "Warning", 1)
         with open(os.path.join(self.dirIP,'IPadresses.txt'),'w') as f:
-                f.write(json.dumps({'IP1' : myIP,'IP2': self.IP2, 'client':self.client})) 
+                f.write(json.dumps({'IP1' : myIP,'IP2': self.IP2})) 
                 f.close()
         self.IP1 = myIP
     self.m_txtMyIP.SetValue(self.IP1)
     self.m_txtTargetIP.SetValue(self.IP2) 
-    self.m_radioClient.SetValue(self.client)
-    self.m_radioServer.SetValue(not self.client)
