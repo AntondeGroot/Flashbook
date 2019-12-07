@@ -110,8 +110,10 @@ def serverprocedure(HOST, PORT, self):
                         # termination
                         if not data_in:    
                             self.RUNCON = False                        
+                            return SWITCH_BOOL
                         if data_in == None:
-                            self.RUNCON = False       
+                            self.RUNCON = False  
+                            return SWITCH_BOOL
                         # manipulation of data
                         if data_in != None and data_in != b'':
                             #decode data: in 
@@ -126,6 +128,8 @@ def serverprocedure(HOST, PORT, self):
                             f4.compare_server_with_client(self,datadict,'compare')
                             f4.request_files_from_client(self,datadict,'sendtoServer') 
                             SWITCH_BOOL = f4.finish_server(self,datadict,'finished')
+                            
+                            log.DEBUGLOG(debugmode=self.debugmode, msg=f'SYNCMODULE: syncdevices: SWITCH_BOOL from within serverprocedure has status {SWITCH_BOOL}')
                             ###
                             #send message back
                             f4.send_msg(conn, self.data_out)
@@ -136,6 +140,8 @@ def serverprocedure(HOST, PORT, self):
         Display("",self) 
         ctypes.windll.user32.MessageBoxW(0, "Server timed out and is now shutting down.", "Warning", MB_ICONINFORMATION)
         log.DEBUGLOG(debugmode=self.debugmode, msg=f'SYNCMODULE: serverprocedure: server has timed out')
+        return SWITCH_BOOL
+    finally:
         return SWITCH_BOOL
         
 def SyncDevices(self, mode, HOST):  
@@ -152,6 +158,7 @@ def SyncDevices(self, mode, HOST):
         Display("starting server",self)        
         #check if server is online:
         SWITCH_BOOL = serverprocedure(HOST,PORT,self) #returns switch_bool
+        log.DEBUGLOG(debugmode=self.debugmode, msg=f'SYNCMODULE: syncdevices: SWITCH_BOOL from Server has status {SWITCH_BOOL}')
         if SWITCH_BOOL: #switch Server -> Client
             log.DEBUGLOG(debugmode=self.debugmode, msg=f'SYNCMODULE: syncdevices: server is now client')
             Display("finished server, starting client",self)
@@ -161,7 +168,7 @@ def SyncDevices(self, mode, HOST):
             HOST = self.IP2
             clientprocedure_sendlastfiles(HOST,PORT,self)
         else:
-            Display("Sync completed",self)
+            log.DEBUGLOG(debugmode=self.debugmode, msg=f'SYNCMODULE: syncdevices: server has stopped')
     elif mode == "CLIENT":# first start client, then afterwards server but make sure it starts before a new client is stqarted
         
         
@@ -177,7 +184,8 @@ def SyncDevices(self, mode, HOST):
             time.sleep(0.1)
             Display("starting server",self)
             HOST = self.IP1            
-            _ = serverprocedure(HOST,PORT,self)
+            SWITCH_BOOL = serverprocedure(HOST,PORT,self)
+            log.DEBUGLOG(debugmode=self.debugmode, msg=f'SYNCMODULE: syncdevices: SWITCH_BOOL from Client has status {SWITCH_BOOL}')
         else:
             log.DEBUGLOG(debugmode=self.debugmode, msg=f'SYNCMODULE: syncdevices: client has stopped')
     Display("Sync completed",self)
