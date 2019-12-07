@@ -31,13 +31,11 @@ def AddPathvar():
     if "poppler" not in PathSTR:
         dir_ = os.path.dirname(__file__)
         FileName = [x for x in os.listdir(dir_) if 'poppler' in x]
-        if len(FileName) != 0:
+        if FileName:
             FileName = FileName[0]
         if FileName != []:
             DirPath = os.path.join(dir_ , FileName, "bin")        
             os.environ["PATH"] += os.pathsep + DirPath
-
-
 
 
 def ConvertPDF_to_JPG(self, PDFdir, tempdir, JPGdir):
