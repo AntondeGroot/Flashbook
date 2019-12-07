@@ -78,8 +78,6 @@ class filetransfer(gui.MyFrame):
                 t_sync = lambda self,mode,HOST :threading.Thread(target=m4.SyncDevices,args=(self,mode,HOST)).start()
                 t_sync(self,"CLIENT",HOST)        
             else:
-                #ctypes.windll.user32.MessageBoxW(0, "Server is not online. \nMake sure you start the server before you start the client.\nTry to connect again.", "Warning", ICON_STOP)               
-                #else:
                 HOST = self.IP1
                 log.DEBUGLOG(debugmode=self.debugmode,msg=f'CLASS FILETRANSFER: Host is {HOST}\n\t Starting Server')
                 self.m_txtStatus.SetValue("starting server")
