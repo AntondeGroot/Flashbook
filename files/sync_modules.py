@@ -39,7 +39,7 @@ def clientprocedure(HOST,PORT,self):
     msg = f4.GetDataList(self.basedir, self.appendDir, self.excludeDir, mode='relative', PICKLE=True)
     data_in = f4.SEND('compare',msg,HOST,PORT,self.debugmode)
     Display("client is receiving data ...",self)
-    if data_in != None and data_in != b'':
+    if data_in:
         datadict = json.loads(data_in.decode('utf-8'))
         if 'sendtoServer' in datadict.keys():
             log.DEBUGLOG(debugmode=self.debugmode, msg=f'SYNCMODULE: clientprocedure: client received sendtoserver')
@@ -60,7 +60,7 @@ def clientprocedure(HOST,PORT,self):
             log.DEBUGLOG(debugmode=self.debugmode, msg=f'SYNCMODULE: invalid key was given to clientprocedure, keys = {datadict.keys()}')
             SWITCH_BOOL = False
             
-    
+    """
     for i in range(2):
         #should actually loop only twice
         if data_in != None and data_in != b'':
@@ -79,6 +79,7 @@ def clientprocedure(HOST,PORT,self):
             elif 'switch mode' in datadict.keys():
                 log.DEBUGLOG(debugmode=self.debugmode, msg=f'SYNCMODULE: clientprocedure: received switchmode to SERVER')
                 SWITCH_BOOL = True
+    """
     return SWITCH_BOOL
     
     
