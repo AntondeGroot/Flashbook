@@ -312,6 +312,7 @@ class Flashcard():
         self.size_topic = (0,0)
         self.sizelist = '[(0,0),(0,0),(0,0),(0,0),(0,0)]'
         self.LaTeXfontsize = fontsize
+        
     def reset(self):
         self.question = ''
         self.questionpic = ''
@@ -457,18 +458,17 @@ class Flashcard():
     def setA(self,usertext):
         if usertext.strip() != '':
             self.answer = r"\text{" + usertext + r"}"
-            imbool, im = f2.CreateTextCard(self,'manual',usertext)
-            if imbool:
-                self.size_a_txt = im.size 
+            image_exists, image = f2.CreateTextCard(self,'manual',usertext)
+            if image_exists:
+                self.size_a_txt = image.size 
+                
     def getmode(self):
         return str(self.mode)
     def setApic(self,partialpath):
         self.answerpic = r"\pic{" + partialpath + r"}"
     #save the final card  
     def saveCard(self,path):
-        self.setSizes()
-        print(f"path is {self.pic_question_dir}")
-        
+        self.setSizes()        
         with open(path, 'a') as output:
             output.write(r"\quiz{"  + self.question + self.questionpic + "}")
             output.write(r"\ans{"   + self.answer   + self.answerpic   + "}")
