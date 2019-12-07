@@ -167,28 +167,28 @@ class booksmenu(gui.MyFrame):
                             assert len(library) == 1
                             path2del = library[0]
                             EXISTS = True
-                        elif pathlib != []:
+                        elif pathlib:
                             assert len(pathlib) == 1
                             path2del = pathlib[0]
                             EXISTS = True
                             
                         if EXISTS:
-                            #books jpg pages
+                            # try to remove books jpg pages
                             folder = Path(self.booksdir,path2del)
                             [file.unlink() for file in folder.iterdir() if (filename in file.name and file.suffix =='.jpg' )]
-                        #pics
+                        # try to remove pics
                         try:
                             folder = Path(self.picsdir,filename)
                             [file.unlink() for file in folder.iterdir() if (filename in file.name and file.suffix =='.jpg' )]
                         except:
                             pass
-                        #tempfiles
+                        # try to remove tempfiles
                         try:
                             folder = Path(self.tempdir)
                             [file.unlink() for file in folder.iterdir() if (filename in file.name and file.suffix =='.txt' )]
                         except:
                             pass
-                        #notes latex
+                        # try to remove LaTeX notes
                         try:
                             folder = Path(self.notesdir)
                             [file.unlink() for file in folder.iterdir() if (filename in file.name and file.suffix =='.tex' )]
