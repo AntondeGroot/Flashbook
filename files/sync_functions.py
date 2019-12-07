@@ -124,10 +124,10 @@ def GetDataList(basedir,appendDir,excludeDir,mode,PICKLE):
 
 
 def SEND(key,dict_data,HOST,PORT,_debugmode):
-    
-    # send mode:
-    # it keeps sending information that includes the name of the file, the server processes this
-    # the server then sends back the name of the file. If the name matches the name of the file that was sent: we know the transfer was successful.
+    """send mode:
+    # it keeps sending information that includes the name of the file
+    # the server sends back the name of the file. 
+    # If the name matches the name of the file that was sent, the transfer was succesful."""
     #%%
     TRYSEND = True
     i = 0
@@ -135,11 +135,11 @@ def SEND(key,dict_data,HOST,PORT,_debugmode):
         print(f"key = {key}")
         # send file name, mode , creation time
         message = json.dumps({key: dict_data}).encode('utf-8')
-        data = Socket_send(HOST,PORT,message)
-        if data != None and data != []:
-            if data.decode('utf-8')!= None and data.decode('utf-8')!= '':
-                TRYSEND = False
-                return data
+        data_received = Socket_send(HOST,PORT,message)
+        if data_received:
+            TRYSEND = False
+            return data_received
+        
         i += 1
         if i >= 20:
             log.DEBUGLOG(debugmode=_debugmode, msg=f'SYNC FUNC: error could not connect and send data')
@@ -148,27 +148,27 @@ def SEND(key,dict_data,HOST,PORT,_debugmode):
 def SendGroupOfFiles(self,filelist,N,HOST,PORT):
     #filelist has absolutepaths
     sublist = {}
-    for i,file in enumerate(filelist):
-        filepath_rel = os.path.relpath(file, self.basedir)
+    for i,file_path in enumerate(filelist):
+        filepath_rel = os.path.relpath(file_path, self.basedir)
         
         #load data
-        bytesfile = open(file, 'rb').read()
+        bytesfile = open(file_path, 'rb').read()
         bytesfile = bytes2string(bytesfile)
-        #  update the time this file has been last 'modified' or in this case looked at. 
-        #  This makes sure you on both server and client the synchronized files are *really synchronized*
-        os.utime(file, None) 
+        
+        """update the time this file has been last 'modified' or in this case looked at. 
+        This makes sure you on both server and client the synchronized files are *really synchronized*"""
+        
+        os.utime(file_path, None) 
         #put in dict
         sublist[filepath_rel] = bytesfile
         key = 'sendtoServer'
         dict_data = sublist
         
         if len(sublist) == N:
-            #send    
             log.DEBUGLOG(debugmode=self.debugmode, msg=f'SYNC FUNC: client sends {len(sublist)} files')
             SEND(key,dict_data,HOST,PORT,self.debugmode)#send because you have N items
             sublist = {}
         elif i == len(filelist)-1:
-            #send
             SEND(key,dict_data,HOST,PORT,self.debugmode)#send because you have last items
     log.DEBUGLOG(debugmode=self.debugmode, msg=f'SYNC FUNC: client has send last file')
     
@@ -259,112 +259,22 @@ def establish_connection_server_client(self,datadict,key):
         
 def finish_server(self,datadict,key):
     if 'reallyfinished' in datadict.keys():
-        pass
+        SWITCH_BOOL = False
+        
     if 'finished' in datadict.keys():
+        _instruction = 'finished'
         log.DEBUGLOG(debugmode=self.debugmode, msg=f'SYNC FUNC: client -> server has finished')
+        
+        self.RUNCON = False
+        self.RUNSERVER = False
+        SWITCH_BOOL = False
         if datadict['finished'] == '':
             #check if server -> Client has also finished
             if hasattr(self,'sendtoClient'): 
-                if self.sendtoClient == []:
-                    self.RUNCON = False
-                    self.RUNSERVER = False
-                    self.m_txtStatus.SetValue("finished")
-                    self.data_out = json.dumps({'finished':''}).encode('utf-8')                                    
-                    SWITCH_BOOL = False
-                    
-                else:#if you need to send files to the client
-                    self.RUNCON = False
-                    self.RUNSERVER = False
-                    self.data_out = json.dumps({'switch mode':''}).encode('utf-8')
-                    SWITCH_BOOL = True
-            else:
-                self.RUNCON = False
-                self.RUNSERVER = False
-                self.m_txtStatus.SetValue("finished")
-                self.data_out = json.dumps({'finished':''}).encode('utf-8')                                    
-                SWITCH_BOOL = False
-        elif datadict['finished'] == 'clientprocedure_sendlastfiles':   
-            self.RUNCON = False
-            self.RUNSERVER = False
-            self.m_txtStatus.SetValue("finished")
-            self.data_out = json.dumps({'finished':''}).encode('utf-8')                                    
-            SWITCH_BOOL = False
-        return SWITCH_BOOL
-            
-
-
-# -*- coding: utf-8 -*-
-"""
-Created on Fri Apr 26 11:28:31 2019
-
-@author: Anton
-"""
-
-# -*- coding: utf-8 -*-
-"""
-Created on Thu Mar 21 19:23:41 2019
-@author: Anton
-"""
-
-import threading
-import time
-#import flashbook as fb
-"""
-class StoppableDisplayThread(threading.Thread):
-    ""Thread class with a stop() method. The thread itself has to check
-    regularly for the stopped() condition.""
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self._stop_event = threading.Event()
-        self.message = ''
-        self.status  = ''
-        self.delay   = 0.5
-        self.nrdots  = 4
-    #getters and setters
-    def set_delay(self,var):
-        self.delay = var
-    def set_nrdots(self,var):
-        self.delay = var
-    def get_nrdots(self):
-        return self.nrdots
-    def set_msg(self,var):
-        self.message = var
-    def set_status(self,var):
-        self.status = var
-    def get_msg(self):
-        return self.message  
-    def get_status(self):
-        return self.status
-    def get_delay(self):
-        return 0.5
-    #to stop it
-    def stop(self):
-        self._stop_event.set()
-    def stopped(self):
-        return self._stop_event.is_set()
-
-
-def Display(text,self):
-    self.m_txtStatus.SetValue(text)
-class DisplayStatus(fb.MainFrame,StoppableDisplayThread):
-    def __init__(self):
-        super(DisplayStatus, self).__init__()
-    ""To Use:
-    t = DisplayStatus()
-    t.set_status("some text") #after status dots will be printed
-    t.start()
-    ...
-    t.stop()
-    ""
-    def run(self):
-        mod = self.get_nrdots()+1
-        i = 0 
-        while not self.stopped():
-            time.sleep(self.get_delay())
-            message = self.get_status()+" "+"."*int(i%mod)+" "*int(mod-i%mod)+self.get_msg()
-            Display(message,self)
-            i += 1
-""" 
-
-
+                if self.sendtoClient: 
+                    _instruction = 'switch mode'
+                    SWITCH_BOOL = True                                                
+        self.m_txtStatus.SetValue(_instruction)
+        self.data_out = json.dumps({_instruction:''}).encode('utf-8')                                    
+    return SWITCH_BOOL
 
