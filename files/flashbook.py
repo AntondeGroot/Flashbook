@@ -246,32 +246,31 @@ class CardsDeck(settings):
             else:
                 self.cards[_key_] = card
         
-        if notesdir != None and cards != None:
+        if notesdir and cards:
+            """The cardindex does not change between a Topic Card and a Question Card
+            They are considered to be the same card. Therefore it does not take the index of the enumerate()
+            in 'Cards' the question and topic card are still seperated because they will be printed seperately"""
             self.nrcards = len(cards)
             log.DEBUGLOG(debugmode=self.debugmode, msg=f'CLASS CARDSDECK: nr cards = {self.nrcards}')
             cardindex = 0
-            for _,item in enumerate(cards):
-                i = cardindex
-                card = cards[i] # cards i : {qi,ti,si}
-                card = item
+            for _, card in enumerate(cards):                
+                # card i : {qi,si} or {ti,si}
                 sizelist = card['size']                
                 
                 if 't' in card:
                     mode = 't'
-                    #for mode in ['t']:
-                    key = self.key + f"{mode}{i}"
-                    if i == 0:
+                    key = self.key + f"{mode}{cardindex}"
+                    if cardindex == 0:
                         line = self.bookname
                     else:
                         line = card[mode]                    
-                    if line.strip() != '':
+                    if line.strip() != '': #if the line is not empty, spaces are considered to be empty 
                         _card_ = {'text': line, 'size' : sizelist}
                         addtodict(self, key, _card_)           
                 if 'q' in card:
                     sizecard  = sizelist[:4]
                     mode = 'q'
-                    #for mode in ['q']:
-                    key = self.key + f"{mode}{i}"
+                    key = self.key + f"{mode}{cardindex}"
                     
                     line = card[mode]
                     _card_ = {'text': line, 'size' : sizecard}
@@ -436,7 +435,9 @@ class Flashcard():
             except:
                 w,h = 'Error','Error'
             self.size_a_pic = (w,h)
-        self.sizelist = str([self.size_q_txt, self.size_q_pic, self.size_a_txt, self.size_a_pic, self.size_topic])
+        self.sizelist = str([self.size_q_txt, self.size_q_pic, 
+                             self.size_a_txt, self.size_a_pic, 
+                             self.size_topic])
     #store user data and save sizes of images/text
     def setT(self,text):
         self.topic = text
@@ -473,8 +474,8 @@ class Flashcard():
             output.write(r"\quiz{"  + self.question + self.questionpic + "}")
             output.write(r"\ans{"   + self.answer   + self.answerpic   + "}")
             output.write(r"\topic{" + self.topic    + "}")
-            output.write(r"\size{"  + self.sizelist + "}" + "\n")
-    
+            output.write(r"\size{"  + self.sizelist + "}")
+            output.write("\n")
     def switchmode(self):
         if self.mode == 'Question':
             self.mode = 'Answer'
