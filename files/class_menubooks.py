@@ -30,14 +30,15 @@ MB_DEFBUTTON2 = 0x00000100
 
 def CombineBookTitles(booknames):
     """To combine multiple book titles, since this would otherwise end up in a very long
-    name, it will instead only take the first full name and then abbreviate the following
-    books to only the first letters of the books."""
+    name, it will instead only take the first full name and then the acronyms of the subsequent books."""
+    
     Name = 'MULTI_'
-    for i,string in enumerate(booknames):
-        if i==0:
-            Name += string
+    for i,bookname in enumerate(booknames):
+        if i == 0:
+            Name += bookname
         else:
-            Name += '_'+ ''.join([c for c in string.title() if c.isupper()])
+            acronym = ''.join([c for c in bookname.title() if c.isupper()])
+            Name += '_'+ acronym
     return Name
 
 def save2latexfile(self,files,title):
