@@ -324,47 +324,45 @@ class printer(gui.MyFrame):
         t_preview = lambda self : threading.Thread(target = m3.print_preview, name = 't_preview' , args=(self, )).run()
         t_preview(self) 
     def m_pdfButtonPrevOnButtonClick( self, event ):
-        switchpage = self.pdfpage.prevpage()
-        if switchpage:
-            pdfimage_i = self.pdfpage.loadpage()
-            # display result
-            _, PanelHeight = self.m_panel32.GetSize()
-            PanelWidth = round(float(PanelHeight)/1754.0*1240.0)
-            #only select first page and display it on the bitmap
-            
-            image = pdfimage_i
-            image = image.resize((PanelWidth, PanelHeight), PIL.Image.ANTIALIAS)
-            image2 = wx.Image( image.size)
-            image2.SetData( image.tobytes() )
-            
-            bitmapimage = wx.Bitmap(image2)
-            self.m_bitmap3.SetBitmap(bitmapimage)
-            self.Layout()
-            
-            #page info
-            currentpage, maxpage = self.pdfpage.getpageinfo()
-            self.m_pdfCurrentPage.SetValue(f"{currentpage}/{maxpage}")
+        self.pdfpage.prevpage()
+        pdfimage_i = self.pdfpage.loadpage()
+        # display result
+        _, PanelHeight = self.m_panel32.GetSize()
+        PanelWidth = round(float(PanelHeight)/1754.0*1240.0)
+        #only select first page and display it on the bitmap
+        
+        image = pdfimage_i
+        image = image.resize((PanelWidth, PanelHeight), PIL.Image.ANTIALIAS)
+        image2 = wx.Image( image.size)
+        image2.SetData( image.tobytes() )
+        
+        bitmapimage = wx.Bitmap(image2)
+        self.m_bitmap3.SetBitmap(bitmapimage)
+        self.Layout()
+        
+        #page info
+        currentpage, maxpage = self.pdfpage.getpageinfo()
+        self.m_pdfCurrentPage.SetValue(f"{currentpage}/{maxpage}")
         self.SetCursor(wx.Cursor(wx.CURSOR_ARROW))
 	
     def m_pdfButtonNextOnButtonClick( self, event ):
-        switchpage = self.pdfpage.nextpage()
-        if switchpage:
-            pdfimage_i = self.pdfpage.loadpage()
-            # display result
-            _, PanelHeight = self.m_panel32.GetSize()
-            PanelWidth = round(float(PanelHeight)/1754.0*1240.0)
-            #only select first page and display it on the bitmap
-            
-            image = pdfimage_i
-            image = image.resize((PanelWidth, PanelHeight), PIL.Image.ANTIALIAS)
-            image2 = wx.Image( image.size)
-            image2.SetData( image.tobytes() )
-            
-            bitmapimage = wx.Bitmap(image2)
-            self.m_bitmap3.SetBitmap(bitmapimage)
-            self.Layout()
-            
-            #page info
-            currentpage, maxpage = self.pdfpage.getpageinfo()
-            self.m_pdfCurrentPage.SetValue(f"{currentpage}/{maxpage}")
+        self.pdfpage.nextpage()
+        pdfimage_i = self.pdfpage.loadpage()
+        # display result
+        _, PanelHeight = self.m_panel32.GetSize()
+        PanelWidth = round(float(PanelHeight)/1754.0*1240.0)
+        #only select first page and display it on the bitmap
+        
+        image = pdfimage_i
+        image = image.resize((PanelWidth, PanelHeight), PIL.Image.ANTIALIAS)
+        image2 = wx.Image( image.size)
+        image2.SetData( image.tobytes() )
+        
+        bitmapimage = wx.Bitmap(image2)
+        self.m_bitmap3.SetBitmap(bitmapimage)
+        self.Layout()
+        
+        #page info
+        currentpage, maxpage = self.pdfpage.getpageinfo()
+        self.m_pdfCurrentPage.SetValue(f"{currentpage}/{maxpage}")
         self.SetCursor(wx.Cursor(wx.CURSOR_ARROW))
