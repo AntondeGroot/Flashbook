@@ -9,12 +9,10 @@ from pathlib import Path
 import logging
 import traceback
 import os
-import PIL
 from termcolor import colored
 
 def INITIALIZE(debugmode=False):
     try:
-        PIL.Image.init()
         if debugmode:               
             basepath = Path(os.getenv("LOCALAPPDATA"),'FlashBook','temporary')
             LOG_FILENAME = Path(basepath,'logging_traceback.out')
