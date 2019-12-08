@@ -27,7 +27,7 @@ def CheckServerStatus(HOST,PORT):
             message = json.dumps({'establish connection': ''}).encode('utf-8')            
             send_msg(s, message)
             data_in = recv_msg(s)
-        if data_in != None and data_in != b'':
+        if data_in:
             datadict = json.loads(data_in.decode('utf-8'))
             if 'establish connection' in datadict.keys():
                 BOOL = True
@@ -252,7 +252,7 @@ def request_files_from_client(self,datadict,key):
             
         self.data_out = json.dumps({'continue':''}).encode('utf-8')
 
-def establish_connection_server_client(self,datadict,key):
+def establish_connection(self,datadict,key):
     if 'establish connection' in datadict.keys(): 
         log.DEBUGLOG(debugmode=self.debugmode, msg=f'SYNC FUNC: connection established')
         self.data_out = json.dumps({'establish connection': True}).encode('utf-8')
