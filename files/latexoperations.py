@@ -205,7 +205,7 @@ class Latexfile(Commands,settings):
     def loadfile(self,path):
         
         
-        if path != None:
+        if path:
             self.filepath = path
             log.DEBUGLOG(debugmode=self.debugmode, msg=f'CLASS LATEXFILE: selected file {path}')
             self.bookname = Path(path).stem
