@@ -126,9 +126,9 @@ def buttonPreviousCard(self):
     f2.clearbitmap(self)
     if hasattr(self,'nr_questions') and self.nr_questions != 0 and hasattr(self,'bookname') and self.bookname != '':
         runprogram = self.runprogram
-        if self.index != 0:
+        if self.index > 0:
             self.index -= 1
-        if self.score != 0:
+        if self.score > 0:
             self.score -= 1
         self.mode = 'Question'
         self.m_modeDisplayFC.SetValue(self.mode)  
