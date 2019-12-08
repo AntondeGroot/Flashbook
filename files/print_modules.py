@@ -235,8 +235,7 @@ class SortImages():
         
         k = 0
         self.line_nr = 0
-        while len(self.images_w) != 0: #continue until all pictures have been processed     
-             
+        while self.images_w: #continue until all pictures have been processed     
             """Method:
             Cumsum the widths of images.
             Use bisect to look first instance where the cumsum is too large to fit on a page.
@@ -534,14 +533,14 @@ class pdfpage(settings):
             w,h = im.size
             #scale = 0.5 #this determines the resolution / dpi of the final pdf page
             scale = 1
-            im = im.resize((int(w*scale),int(h*scale)), PIL.Image.ANTIALIAS)
+            im = im.resize((int(w*scale), int(h*scale)), PIL.Image.ANTIALIAS)
             im.save(path)
             pdflist[i] = path
             
             
         self.backuppage = self.page_nr
         pdflist = [] #contains all images
-        if self.tempdir != None:
+        if self.tempdir:
             threads = [None] * len(range(self.page_max))        
             pdflist = [None] * len(range(self.page_max))        
             for i in range(self.page_max):
@@ -635,18 +634,16 @@ class pdfpage(settings):
         return imcanvas
         
     def prevpage(self):
-        if self.page_nr != 0:
+        if self.page_nr:
             self.page_nr -= 1
-        else: 
+        else: #Go back to the last page
             self.page_nr = self.page_max - 1 
-        return True
         
     def nextpage(self):
         if self.page_nr != self.page_max-1:
             self.page_nr += 1
         else:
             self.page_nr = 0
-        return True
         
     def getmode(self):
         pass
