@@ -9,16 +9,19 @@ from pathlib import Path
 import logging
 import traceback
 import os
+import PIL
 from termcolor import colored
 
 def INITIALIZE(debugmode=False):
     try:
+        PIL.Image.init()
         if debugmode:               
             basepath = Path(os.getenv("LOCALAPPDATA"),'FlashBook','temporary')
             LOG_FILENAME = Path(basepath,'logging_traceback.out')
             logging.basicConfig(filename=str(LOG_FILENAME), level=logging.DEBUG)
             logging.debug('\n\nNEW SESSION HAS STARTED')
             logging.shutdown()
+            
     except:
         pass        
 
@@ -43,6 +46,8 @@ def DEBUGLOG(*args, debugmode=False, msg='', info=''):
     try:
         basepath = Path(os.getenv("LOCALAPPDATA"),'FlashBook','temporary')
         LOG_FILENAME = Path(basepath,'logging_traceback.out')
+        
+        #logging.basicConfig(filename=str(LOG_FILENAME), level=logging.DEBUG)
         logging.basicConfig(filename=str(LOG_FILENAME), level=logging.DEBUG)
         if debugmode:  
             if msg != '':             
