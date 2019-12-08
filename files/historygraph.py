@@ -112,7 +112,7 @@ def drawcard(legend):
     for tick in yticks:
         hours = int(tick/60)
         minutes = int(tick-hours*60)        
-        if tick != 0:
+        if tick > 0:
             if double_digit_hour:
                 # if you have 10 hrs, then the steps should not include 1h30m
                 new_yticks.append(f"{hours}h")
@@ -155,8 +155,8 @@ def seconds_to_timestring(seconds):
             seconds = seconds - hours*3600 
         
         minutes = int(seconds/60)
-        if minutes > 0 or hours != 0:
-            if len(str(minutes)) == 1 and hours != 0:
+        if minutes > 0 or hours > 0:
+            if len(str(minutes)) == 1 and hours > 0:
                 txt += f"0{minutes}m"
             else:
                 txt += f"{minutes}m"
@@ -164,7 +164,7 @@ def seconds_to_timestring(seconds):
             
         seconds = int(seconds)
         if seconds >= 0 and hours == 0:
-            if len(str(seconds)) == 1 and (minutes != 0 or hours != 0):
+            if len(str(seconds)) == 1 and (minutes > 0 or hours > 0):
                 txt += f"0{seconds}s"
             else:
                 txt += f"{seconds}s"
