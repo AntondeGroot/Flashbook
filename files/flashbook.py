@@ -346,13 +346,21 @@ class Flashcard():
             
     def removepics(self):
         def unlinkpics(dir_):    
+            print(f"dir = {dir_}")
             if len(dir_) > 1:
-                for pic in dir_:
+                if isinstance(dir_,str):
                     try:
-                        if type(pic) == str and Path(pic).exists():
-                            Path(pic).unlink()
+                        if Path(dir_).exists():
+                            Path(dir_).unlink()
                     except:
                         pass
+                elif isinstance(dir_,dir):
+                    for pic in dir_:
+                        try:
+                            if type(pic) == str and Path(pic).exists():
+                                Path(pic).unlink()
+                        except:
+                            pass
             elif len(dir_) == 1:
                 try:
                     #just one image
@@ -360,6 +368,7 @@ class Flashcard():
                     if type(pic) == str and Path(pic).exists():
                             Path(pic).unlink()
                 except:
+                    print("could not remove single image")
                     pass
                 
         if len(self.pic_question_dir) > 0:
