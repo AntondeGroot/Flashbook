@@ -345,17 +345,22 @@ class Flashcard():
             return self.pic_question_dir
             
     def removepics(self):
-        def unlinkpics(dir_):
+        def unlinkpics(dir_):    
             if len(dir_) > 1:
-                #multiple images
                 for pic in dir_:
-                    if type(pic) == str and Path(pic).exists():
-                        Path(pic).unlink()
+                    try:
+                        if type(pic) == str and Path(pic).exists():
+                            Path(pic).unlink()
+                    except:
+                        pass
             elif len(dir_) == 1:
-                #just one image
-                pic = dir_[0]
-                if type(pic) == str and Path(pic).exists():
-                        Path(pic).unlink()
+                try:
+                    #just one image
+                    pic = dir_[0]
+                    if type(pic) == str and Path(pic).exists():
+                            Path(pic).unlink()
+                except:
+                    pass
                 
         if len(self.pic_question_dir) > 0:
             dir_ = self.pic_question_dir
