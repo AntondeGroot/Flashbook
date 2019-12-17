@@ -43,8 +43,7 @@ class filetransfer(gui.MyFrame):
     
     def m_OpenTransferOnButtonClick(self,event):
         initialize(self)
-        """START MAIN PROGRAM : WIFI SYNC"""
-        
+        """START MAIN PROGRAM : WIFI SYNC"""     
         p.SwitchPanel(self,5)
         p.get_IP(self,event)
         m4.initialize(self)
@@ -69,7 +68,7 @@ class filetransfer(gui.MyFrame):
         log.DEBUGLOG(debugmode=self.debugmode,msg=f'CLASS FILETRANSFER: starting synchronisation')
         HOST = self.IP2
         self.PORT = 65432 # Port to listen on (non-privileged ports are > 1023)
-        SERVERONLINE = f4.CheckServerStatus(HOST,self.PORT)
+        SERVERONLINE = f4.CheckServerStatus(HOST,self.PORT,self)
         log.DEBUGLOG(debugmode=self.debugmode,msg=f'CLASS FILETRANSFER: \n\t server is online: {SERVERONLINE}')
         if SERVERONLINE:
             self.m_txtStatus.SetValue("starting client")
@@ -77,6 +76,7 @@ class filetransfer(gui.MyFrame):
             t_sync = lambda self, :threading.Thread(target=m4.Thread_Client,args=(self,)).start()
             t_sync(self)        
         else:
+            
             self.m_txtStatus.SetValue("starting server")
             log.DEBUGLOG(debugmode=self.debugmode,msg=f'CLASS FILETRANSFER: \n\t Starting Server')
             t_sync = lambda self, :threading.Thread(target=m4.Thread_Server,args=(self,)).start()
