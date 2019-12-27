@@ -354,7 +354,7 @@ class Flashcard():
                             Path(dir_).unlink()
                     except:
                         pass
-                elif isinstance(dir_,dir):
+                elif isinstance(dir_,list):
                     for pic in dir_:
                         try:
                             if type(pic) == str and Path(pic).exists():
