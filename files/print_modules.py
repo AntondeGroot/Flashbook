@@ -410,50 +410,7 @@ def calculate_pdflines(_input):
     assert len(B) == len(_input)-1
     return B
 
-def import_screenshot(self,event):
-    """Import a screenshot, it takes multiple monitors into account. 
-    The bytestream from win32 is from a Device Independent Bitmap, i.e.'RGBquad', meaning that it is not RGBA but BGRA coded.
-    The image is also flipped and rotated."""
-    #win32api: total width of all monitors
-    SM_CXVIRTUALSCREEN = 78
-    
-    ScrWidth, ScrHeight = GetSystemMetrics(SM_CXVIRTUALSCREEN),GetSystemMetrics(1)
-    win32clipboard.OpenClipboard()
-    
-    if hasattr(self,"bookname"):
-        if self.bookname != '':
-            try:
-                if win32clipboard.IsClipboardFormatAvailable(win32clipboard.CF_DIB):# Device Independent Bitmap
-                    #PrtScr available
-                    data = win32clipboard.GetClipboardData(win32clipboard.CF_DIB)
-                    win32clipboard.CloseClipboard()                
-                    
-                    #convert bytes to PIL Image
-                    img = Image.frombytes('RGBA', (ScrWidth,ScrHeight), data)
-                    b,g,r,a = img.split() 
-                    image = Image.merge("RGB", (r, g, b))
-                    image = image.rotate(180)
-                    image = image.transpose(Image.FLIP_LEFT_RIGHT)
-                    image.save(str(Path(self.tempdir,"screenshot.png")))
-                    
-                    #convert back to wxBitmap
-                    data = image.tobytes()
-                    image3 = wx.Bitmap().FromBuffer(ScrWidth,ScrHeight,data)
-                        
-                    self.backupimage = image3
-                    self.m_bitmap4.SetBitmap(image3)
-                    p.SwitchPanel(self,4)
-                    
-                else:
-                    MessageBox(0, "There is no screenshot available\npress PrtScr again\nor press Alt+PrtScr to only copy an active window", "Error", ICON_EXCLAIM)
-            except:
-                MessageBox(0, "There is no screenshot available\npress PrtScr again\nor press Alt+PrtScr to only copy an active window", "Error", ICON_EXCLAIM)
-        else:
-            MessageBox(0, "Please open a book first", "Error", ICON_EXCLAIM)
-    try:
-        win32clipboard.CloseClipboard()
-    except:
-        pass
+
     
 
 def print_preview(self): 
@@ -555,7 +512,12 @@ class pdfpage(settings):
         
     def loadpage(self):
         key = f"pdfpage{self.page_nr}"
-        linenumbers = self.DICT_page_line_card[key].keys()
+        try:
+            linenumbers = self.DICT_page_line_card[key].keys()
+        except KeyError:
+            key = f"pdfpage{self.page_nr-1}" #the current page no longer exists, look a page before it
+            linenumbers = self.DICT_page_line_card[key].keys()
+            
         imcanvas = im = PIL.Image.new("RGB", (self.a4page_w ,self.a4page_h), 'white')        
         
         threads = [None]*len(linenumbers)
