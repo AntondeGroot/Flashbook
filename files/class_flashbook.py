@@ -34,7 +34,7 @@ class flashbook(gui.MyFrame):
         self.m_bitmapScroll.SetBitmap(wx.Bitmap(wx.Image( 1,1 ))) # always empty bitmap, in case someone reruns the program
         self.m_CurrentPageFB.SetValue('')
         self.m_TotalPagesFB.SetValue('')                      
-        self.stayonpage = False
+        self.screenshotmode = False
         self.resetselection = False
         #short cuts
         
@@ -74,9 +74,13 @@ class flashbook(gui.MyFrame):
                 m.dirchanged(self,dirpath)
     def m_btnScreenshotOnButtonClick( self, event ):
         self.BoolCropped = False # is image cropped
-        self.currentpage_backup = self.currentpage
+        self.screenshotmode = True
+        if isinstance(self.currentpage,int):
+            # If you keep pressing 'import screenshot' it should not override 
+            # the backup with the string 'prtscr' 
+            self.currentpage_backup = self.currentpage
         self.currentpage = 'prtscr'
-        m3.import_screenshot(self,event)
+        f.import_screenshot(self,event)
         
     def m_userInputOnEnterWindow( self, event ):
         log.DEBUGLOG(debugmode=self.debugmode,msg=f'CLASS FLASHBOOK: user entered window')
@@ -92,15 +96,15 @@ class flashbook(gui.MyFrame):
         self.Layout()
     
     def m_btnImportScreenshotOnButtonClick( self, event ):
-        self.stayonpage = True
+        self.screenshotmode = True
         #load screenshot
-        if not self.BoolCropped: #load original screenshot
-            img = PIL.Image.open(str(Path(self.tempdir,"screenshot.png")))
-            self.pageimagecopy = img
-            self.pageimage = img        
-            image2 = wx.Image( self.width, self.height )
-            image2.SetData( self.pageimage.tobytes() )
-            self.m_bitmapScroll.SetBitmap(wx.Bitmap(image2))
+        
+        img = PIL.Image.open(str(Path(self.tempdir,"screenshot.png")))
+        self.pageimagecopy = img
+        self.pageimage = img        
+        image2 = wx.Image( self.width, self.height )
+        image2.SetData( self.pageimage.tobytes() )
+        self.m_bitmapScroll.SetBitmap(wx.Bitmap(image2))
         p.SwitchPanel(self,1)
         f.ShowPrintScreen(self)
         
@@ -124,11 +128,11 @@ class flashbook(gui.MyFrame):
 	
     # change page 
     def m_pageBackFBOnToolClicked( self, event ):
-        self.stayonpage = False
+        self.screenshotmode = False
         m.previouspage(self,event)
 	
     def m_pageNextFBOnToolClicked( self, event ):
-        self.stayonpage = False
+        self.screenshotmode = False
         m.nextpage(self,event)
     def m_pageUPOnToolClicked( self, event ):
         m.arrowscroll(self,event,'up')
@@ -175,5 +179,5 @@ class flashbook(gui.MyFrame):
         while all the other elements are stitched vertically
         all it does is switch [a,...,[x]] for [a,...,x] and back to [a,...,[x]] depending on whether the user has pushed a button to change the direction in which the notes should be stitched together.  """
         
-        if hasattr(self,'bookname') and self.bookname != '': # a book has been chosen
+        if hasattr(self,'bookname') and self.bookname: # a book has been chosen
             self.Flashcard.StitchCards(self.stitchmode_v)
