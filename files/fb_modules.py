@@ -171,7 +171,7 @@ def bitmapleftup(self,event):
             self.tempdictionary.update({f'page {self.currentpage}' : [self.BorderCoords]})
             
         #crop image
-        if not self.stayonpage:
+        if not self.screenshotmode:
             img = PIL.Image.open(self.jpgdir)
         else:
             img = self.pageimage
@@ -181,7 +181,7 @@ def bitmapleftup(self,event):
         FIND = True
         while FIND:
             rand_nr = str(randint(0, 9999)).rjust(4, "0") #The number must be of length 4: '0006' must be a possible result.
-            if not self.stayonpage:
+            if not self.screenshotmode:
                 picname =  f"{self.bookname}_{self.currentpage}_{rand_nr}.jpg" 
             else:
                 picname =  f"{self.bookname}_prtscr_{rand_nr}.jpg"
@@ -238,11 +238,11 @@ def panel4_bitmapleftup(self,event):
     
 def selectionentered(self,event):
     
-    if hasattr(self,'bookname') and self.bookname != '':
+    if hasattr(self,'bookname') and self.bookname:
         USER_textinput = self.m_userInput.GetValue()       
         PICS_DRAWN = self.Flashcard.nrpics("Question")
         QUESTION_MODE = self.Flashcard.getquestionmode()
-        if  USER_textinput != '' or PICS_DRAWN > 0:
+        if  USER_textinput or PICS_DRAWN > 0:
             log.DEBUGLOG(debugmode=self.debugmode,msg=f"FB MODULE: a selection was entered")
             usertext = USER_textinput
             if QUESTION_MODE:
@@ -289,19 +289,25 @@ def selectionentered(self,event):
                 # save everything
                 findic = self.dictionary
                 tempdic = self.tempdictionary
+                
+                """Add temporary dictionary to permanent dictionary to add itto the border list file
+                Don't do this for the PRTscr pages because they are not important
+                """
                 for key in list(tempdic):      # go over all keys
-                    for value in tempdic[key]: # go over all values
-                        if key in findic:      # if already exists: just add value
-                            findic[key].append(value)
-                        else:                  # if not, add key and value, where key = pagenr and value is rectangle coordinates
-                            findic.update({key : [value]})
+                    #key = page nr / page prtscr
+                    if 'prtscr' not in key:
+                        for value in tempdic[key]: # go over all values
+                            if key in findic:      # if already exists: just add value
+                                findic[key].append(value)
+                            else:                  # if not, add key and value, where key = pagenr and value is rectangle coordinates
+                                findic.update({key : [value]})
                 self.dictionary = findic
                 self.tempdictionary = {}
                 
                 # remove temporary borders
                 self.pageimage = self.pageimagecopy
                 f.ShowPage_fb(self)
-                if not self.stayonpage: # if screenshot mode
+                if self.dictionary:
                     with open(self.PathBorders, 'w') as file:
                         file.write(json.dumps(self.dictionary))
                         
@@ -350,7 +356,7 @@ def selectionentered(self,event):
             self.pageimage = self.pageimagecopy
             f.ShowPage_fb(self)
             list_A = self.Flashcard.getpiclist("Answer")
-            if not self.stayonpage: # if screenshot mode
+            if self.dictionary:
                 with open(self.PathBorders, 'w') as file:
                         file.write(json.dumps(self.dictionary)) 
             if len(list_A) > 1:
@@ -440,19 +446,32 @@ def mousewheel(self,event):
     if scrollbar_exists:
         if topofpage and wheel_scrollsup:
             reset_scrollpos(self)
-            if self.currentpage != 1:
+            if not self.screenshotmode:
+                if self.currentpage != 1:
+                    self.m_pageBackFBOnToolClicked(self)
+                    scroll_end_of_page(scrollWin)
+                else:
+                    scroll_begin_of_page(scrollWin)
+            else:
+                #to stay effectively on the same page as before you imported a screenshot
+                self.currentpage = self.currentpage_backup + 1 
                 self.m_pageBackFBOnToolClicked(self)
                 scroll_end_of_page(scrollWin)
-            else:
-                scroll_begin_of_page(scrollWin)
                 
         elif bottomofpage and wheel_scrollsdown:
             reset_scrollpos(self)
-            if self.currentpage < self.totalpages:
+            if not self.screenshotmode:
+                if self.currentpage < self.totalpages:
+                    self.m_pageNextFBOnToolClicked(self)
+                    scroll_begin_of_page(scrollWin)
+                else:
+                    pass    
+            else:
+                #to stay effectively on the same page as before you imported a screenshot
+                self.currentpage = self.currentpage_backup - 1
                 self.m_pageNextFBOnToolClicked(self)
                 scroll_begin_of_page(scrollWin)
-            else:
-                pass    
+                
     else:# there is no scrollbar
         if wheel_scrollsup:
             reset_scrollpos(self)
