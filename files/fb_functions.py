@@ -3,7 +3,6 @@
 Created on Fri Sep 14 12:39:47 2018
 @author: Anton
 """
-from termcolor import colored
 import numpy as np
 import PIL
 import wx
@@ -17,6 +16,15 @@ from PIL import ImageOps
 import imageoperations as imop
 import fc_functions as fc
 import log_module as log
+
+import ctypes
+#ctypes:
+ICON_EXCLAIM=0x30
+ICON_STOP = 0x10
+MessageBox = ctypes.windll.user32.MessageBoxW
+from PIL import Image
+import win32clipboard
+from win32api import GetSystemMetrics
 #import matplotlib.backends.backend_agg as agg
 
 pylab.ioff() # make sure it is inactive, otherwise possible qwindows error    .... https://stackoverflow.com/questions/26970002/matplotlib-cant-suppress-figure-window
@@ -76,7 +84,65 @@ class Window2(wx.PopupWindow):
     def OnRightUp(self, evt):#orininal
         self.Show(False)
         self.Destroy()
+
+def import_screenshot(self,event):
+    """Import a screenshot, it takes multiple monitors into account. 
+    The bytestream from win32 is from a Device Independent Bitmap, i.e.'RGBquad', meaning that it is not RGBA but BGRA coded.
+    The image is also flipped and rotated."""
+    #win32api: total width of all monitors
+    SM_CXVIRTUALSCREEN = 78
     
+    ScrWidth, ScrHeight = GetSystemMetrics(SM_CXVIRTUALSCREEN),GetSystemMetrics(1)
+    win32clipboard.OpenClipboard()
+    
+    if hasattr(self,"bookname"):
+        if self.bookname != '':
+            try:
+                if win32clipboard.IsClipboardFormatAvailable(win32clipboard.CF_DIB):# Device Independent Bitmap
+                    #PrintScreen is available
+                    data = win32clipboard.GetClipboardData(win32clipboard.CF_DIB)
+                    win32clipboard.CloseClipboard()                
+                    
+                    #convert bytes to PIL Image
+                    img = Image.frombytes('RGBA', (ScrWidth,ScrHeight), data)
+                    b,g,r,a = img.split() 
+                    image = Image.merge("RGB", (r, g, b))
+                    image = image.rotate(180)
+                    image = image.transpose(Image.FLIP_LEFT_RIGHT)
+                    image.save(str(Path(self.tempdir,"screenshot.png")))
+                    
+                    #convert back to wxBitmap
+                    data = image.tobytes()
+                    image3 = wx.Bitmap().FromBuffer(ScrWidth,ScrHeight,data)
+                    
+                    #store image as backup
+                    self.backupimage = image3
+                else:
+                    pass
+                    #this should be a valid error, but somehow if the clipboard is not available it can still give a screenshot?!
+                    #MessageBox(0, "AThere is no screenshot available\npress PrtScr again\nor press Alt+PrtScr to only copy an active window", "Error", ICON_EXCLAIM)
+            except:
+                MessageBox(0, "BThere is no screenshot available\npress PrtScr again\nor press Alt+PrtScr to only copy an active window", "Error", ICON_EXCLAIM)
+        else:
+            MessageBox(0, "Please open a book first", "Error", ICON_EXCLAIM)
+    try:
+        win32clipboard.CloseClipboard()
+    except:
+        pass
+    
+    #self.m_bitmap4.SetBitmap(image3)
+    #p.SwitchPanel(self,4)
+    img = PIL.Image.open(str(Path(self.tempdir,"screenshot.png")))
+    self.pageimagecopy = img#img
+    self.pageimage = img  
+    self.width, self.height = self.pageimage.size     
+    image2 = wx.Image( self.width, self.height )
+    image2.SetData( self.pageimage.tobytes() )
+    #image2 = data
+    self.m_bitmapScroll.SetBitmap(wx.Bitmap(image2))
+    ShowPrintScreen(self)
+    
+        
 def is_number(s):
     try:
         int(s)
@@ -131,7 +197,8 @@ def drawCoordinates(self,pageimage):
     img = np.array(pageimage)
     img = np.uint8(img)
     key = f'page {self.currentpage}'
-    try:#try to look if there already exists borders that need to be drawn
+    try:
+        #try to look if there already exists borders that need to be drawn
         coordinatelist = self.dictionary[key]
         for coordinates in coordinatelist:    
             self.cord1 = coordinates[0:2]
@@ -139,7 +206,8 @@ def drawCoordinates(self,pageimage):
             img = drawrect(self,img,self.colorlist[0])
     except:
         pass
-    try:    #there won't always be tempdict borders, so try and otherwise go further
+    try:    
+        #there won't always be tempdict borders, so try and otherwise go further
         coordinatelist = self.tempdictionary[key]
         for coordinates in coordinatelist:    
             self.cord1 = coordinates[0:2]
@@ -159,7 +227,7 @@ def LoadPage(self):
     try:
         self.jpgdir = str(Path(self.booksdir, self.booknamepath, self.picnames[self.currentpage-1]))
         
-        if not self.stayonpage:
+        if not self.screenshotmode:
             self.pageimage = PIL.Image.open(self.jpgdir)
             self.pageimagecopy = self.pageimage
         width, height = self.pageimage.size
@@ -170,7 +238,7 @@ def LoadPage(self):
     except:
         log.ERRORMESSAGE("Error: cannot load page")
     
-def ShowPrintScreen(self): # no error
+def ShowPrintScreen(self):
     try:
         # update
         self.m_CurrentPageFB.SetValue("PrtScr")
@@ -183,12 +251,12 @@ def ShowPrintScreen(self): # no error
         image2.SetData( self.pageimage.tobytes() )
         #display
         self.m_bitmapScroll.SetBitmap(wx.Bitmap(image2))
-        self.m_bitmap4.SetBitmap(wx.Bitmap(image2))
         self.Layout()
     except:
         log.ERRORMESSAGE("Error: cannot show PrintScreen page")
     
 def LoadPageNr(self):
+    """When a book is opened either start where you left off, or start at page 1"""
     path_file = Path(self.dirsettings, 'userdata_bookpages.txt')
     if path_file.exists():
         with open(path_file,'r') as file:
@@ -236,7 +304,8 @@ def ShowPage_fb(self):
         image2 = wx.Image( width, height )
         image2.SetData( self.pageimage.tobytes() )
         self.m_bitmapScroll.SetBitmap(wx.Bitmap(image2))
-        SavePageNr(self)
+        if not self.screenshotmode:
+            SavePageNr(self)
     except:
         log.ERRORMESSAGE("Error: cannot show page")
         
