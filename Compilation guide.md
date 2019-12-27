@@ -26,7 +26,8 @@ in Linux(https://gist.github.com/frfahim/73c0fad6350332cef7a653bcd762f08d)
 ## Compiling
 
 1. download all the files in the `files` folder
-1. go in command prompt to the relevant folder
+1. Open the command prompt and type: `flashbook-env\Scripts\activate.bat`
+1. change the directory to the relevant folder
 1. create a .spec file by typing: `pyi-makespec --noconsole flashbook.py --icon=book.ico`
 4. run pyinstaller `pyinstaller flashbook.spec` 
 
