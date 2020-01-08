@@ -456,7 +456,7 @@ def mousewheel(self,event):
                 #to stay effectively on the same page as before you imported a screenshot
                 self.currentpage = self.currentpage_backup + 1 
                 self.m_pageBackFBOnToolClicked(self)
-                scroll_end_of_page(scrollWin)
+                
                 
         elif bottomofpage and wheel_scrollsdown:
             reset_scrollpos(self)
@@ -470,7 +470,7 @@ def mousewheel(self,event):
                 #to stay effectively on the same page as before you imported a screenshot
                 self.currentpage = self.currentpage_backup - 1
                 self.m_pageNextFBOnToolClicked(self)
-                scroll_begin_of_page(scrollWin)
+                
                 
     else:# there is no scrollbar
         if wheel_scrollsup:
