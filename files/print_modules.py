@@ -515,7 +515,8 @@ class pdfpage(settings):
         try:
             linenumbers = self.DICT_page_line_card[key].keys()
         except KeyError:
-            key = f"pdfpage{self.page_nr-1}" #the current page no longer exists, look a page before it
+            self.page_nr -= 1
+            key = f"pdfpage{self.page_nr}" #the current page no longer exists, look a page before it
             linenumbers = self.DICT_page_line_card[key].keys()
             
         imcanvas = im = PIL.Image.new("RGB", (self.a4page_w ,self.a4page_h), 'white')        
