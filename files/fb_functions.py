@@ -117,12 +117,25 @@ def import_screenshot(self,event):
                     
                     #store image as backup
                     self.backupimage = image3
+                    
+                    
+                    #self.m_bitmap4.SetBitmap(image3)
+                    #p.SwitchPanel(self,4)
+                    img = PIL.Image.open(str(Path(self.tempdir,"screenshot.png")))
+                    self.pageimagecopy = img#img
+                    self.pageimage = img  
+                    self.width, self.height = self.pageimage.size     
+                    image2 = wx.Image( self.width, self.height )
+                    image2.SetData( self.pageimage.tobytes() )
+                    #image2 = data
+                    self.m_bitmapScroll.SetBitmap(wx.Bitmap(image2))
+                    ShowPrintScreen(self)
+                    
+                    
                 else:
-                    pass
-                    #this should be a valid error, but somehow if the clipboard is not available it can still give a screenshot?!
-                    #MessageBox(0, "AThere is no screenshot available\npress PrtScr again\nor press Alt+PrtScr to only copy an active window", "Error", ICON_EXCLAIM)
+                    MessageBox(0, "There is no screenshot available\npress PrtScr again\nor press Alt+PrtScr to only copy an active window", "Error", ICON_EXCLAIM)
             except:
-                MessageBox(0, "BThere is no screenshot available\npress PrtScr again\nor press Alt+PrtScr to only copy an active window", "Error", ICON_EXCLAIM)
+                MessageBox(0, "There is no screenshot available\npress PrtScr again\nor press Alt+PrtScr to only copy an active window", "Error", ICON_EXCLAIM)
         else:
             MessageBox(0, "Please open a book first", "Error", ICON_EXCLAIM)
     try:
@@ -130,17 +143,7 @@ def import_screenshot(self,event):
     except:
         pass
     
-    #self.m_bitmap4.SetBitmap(image3)
-    #p.SwitchPanel(self,4)
-    img = PIL.Image.open(str(Path(self.tempdir,"screenshot.png")))
-    self.pageimagecopy = img#img
-    self.pageimage = img  
-    self.width, self.height = self.pageimage.size     
-    image2 = wx.Image( self.width, self.height )
-    image2.SetData( self.pageimage.tobytes() )
-    #image2 = data
-    self.m_bitmapScroll.SetBitmap(wx.Bitmap(image2))
-    ShowPrintScreen(self)
+    
     
         
 def is_number(s):
