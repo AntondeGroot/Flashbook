@@ -3,6 +3,9 @@ Topics applied: TCP networks / WMI SQL queries / win32 processes / OOP / multith
 
 # Flashbook : PDF reader & study tool
 
+[![Watch the video](https://imgur.com/a/sDESAml)](https://www.youtube.com/watch?v=DPtxar7-H1g)
+
+
 ## for a more in depth guide see the [wiki](https://github.com/AntondeGroot/Flashbook/wiki)
 
 **The program can do the following:**
