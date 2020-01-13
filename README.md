@@ -5,8 +5,19 @@ Topics applied: TCP networks / WMI SQL queries / win32 processes / OOP / multith
 Brief introductory video:
 [![Watch the video](https://img.youtube.com/vi/DPtxar7-H1g/maxresdefault.jpg)](https://www.youtube.com/watch?v=DPtxar7-H1g)
 
+## How to 'install' Flashbook
+It only supports Windows
+To install it: 
 
-## for a more in depth guide see the [wiki](https://github.com/AntondeGroot/Flashbook/wiki)
+- Go to https://github.com/AntondeGroot/Flashbook/releases/
+- Click on the latest release and download the .zip file
+- Unzip it
+- Go to executables / Windows / Flashbook and unzip all the files
+- You can place this main Flashbook folder anywhere you like
+- Make a shortcut to the Flashbook.exe file
+- You can now use the program!
+
+## For a more in depth guide see the [wiki](https://github.com/AntondeGroot/Flashbook/wiki)
 
 **The program can do the following:**
 
