@@ -6,7 +6,8 @@ Brief introductory video:
 [![Watch the video](https://img.youtube.com/vi/DPtxar7-H1g/maxresdefault.jpg)](https://www.youtube.com/watch?v=DPtxar7-H1g)
 
 ## How to 'install' Flashbook
-It only supports Windows
+(It only supports Windows)
+
 To install it: 
 
 - Go to https://github.com/AntondeGroot/Flashbook/releases/
