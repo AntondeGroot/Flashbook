@@ -14,6 +14,19 @@ from pathlib import Path
 import PIL
 import shutil
 import sys
+
+flashbookfolder = os.path.join(os.getcwd(),'Flashbook')
+flashbookfolder = os.path.join(os.getcwd(),'Flashcard')
+
+import sys, os
+sys.path.append(os.path.abspath(os.path.join('..', 'Flashbook')))
+# Now do your import
+from Flashbook.fb_modules import *
+from Flashbook.fb_functions import *
+
+#%%
+sys.path.insert(1,flashbookfolder)
+
 import threading
 import wx
 import wx.adv as adv
