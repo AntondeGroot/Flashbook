@@ -18,6 +18,14 @@ import gui_flashbook as gui
 import imageoperations as imop
 import log_module as log
 #%% functions
+def is_number(s):
+    try:
+        int(s)
+        return True
+    except ValueError:
+        return False
+
+
 
 def find_hook(hookpos, string):    
     """Method:
@@ -101,6 +109,76 @@ def find_arguments(hookpos, sentence, defined_command, nr_arguments):
         arguments.append(sentence[argopen_index[i]+1:argclose_index[i]])
     return arguments, argopen_index, argclose_index 
 
+def replacecommands(defined_command,LaTeX_command,inputstring,nr_arg):        
+    length_c = len(defined_command) 
+    #check if the command can be found in Q&A card
+    while defined_command in inputstring:
+        # if a command has arguments: you need to find their positions
+        if nr_arg != 0:
+            cmd_start = [m.start() for m in re.finditer(r'\{}'.format(defined_command), inputstring )][0]
+            arguments = find_arguments(cmd_start, inputstring, defined_command, nr_arg)[0]
+            
+            index1 = find_arguments(cmd_start, inputstring ,defined_command, nr_arg)[1][0]-length_c
+            index2 = find_arguments(cmd_start, inputstring ,defined_command, nr_arg)[2][1]+1
+            
+            #replace the command by a LaTeX command
+            inputstring = inputstring.replace(inputstring[index1:index2], LaTeX_command )
+            #replace the temporary arguments #1,#2... by the real arguments
+            for i in range(nr_arg):
+                inputstring = inputstring.replace(f"#{i+1}", arguments[i])
+        else:
+            #if there are no arguments to begin with you can directly replace the defined_cmd for the latex_cmd
+            inputstring = inputstring.replace(defined_command, LaTeX_command)
+    return inputstring
+
+
+def text_to_latex(self,usertext):
+    """EXAMPLE:
+    defined command = " \secpar{x}{t}}   " for the second partial derivative of a wrt b
+    nr = #arguments = 2 which are (a,b)
+    sentence = "if we take the second partial derivative \secpar{X+Y}{t}"
+    returns: position where (X+Y), (t)  begin and end and in the string and that they are the arguments
+    """
+    # find all user defined commands in a separate file
+    # start reading after "###" because I defined that as the end of the notes    
+    with open(Path(self.notesdir,"usercommands.txt"),'r') as file1:
+        commandsfile = file1.readlines()
+    file1.close()
+    
+    index = 0
+    for i,line in enumerate(commandsfile):
+        if "###" in line:
+            index = i+1
+    # remove the lines that precede the ###     
+    commandsfile[:index] = []
+    # only look at lines containing "newcommand" 
+    commands = [x for x in commandsfile if ("newcommand"  in x) and ("Note:" not in x)] 
+    ###  how to replace a user defined command with a command that is known in latex ### 
+    # check for all commands
+    for _, command_line in enumerate(commands):
+        # extract all the data from a commandline
+        definition_start = fc.findchar('{',command_line,0)
+        definition_end   = fc.findchar('}',command_line,0)
+        
+        num_start = fc.findchar('\[',command_line,"")
+        num_end   = fc.findchar('\]',command_line,"")
+        
+        latex_start = fc.findchar('{',command_line,1)   
+        latex_end   = fc.findchar('}',command_line,-1)
+        # find the commands explicitly
+        defined_command = command_line[definition_start+1:definition_end]     ## finds \secpar        
+        LaTeX_command   = command_line[latex_start+1:latex_end] ## finds \frac{\partial^2 #1}{\partial #2^2}
+        nr_arg = int(command_line[int(num_start[0]+1):int(num_end[0])]) 
+        
+        
+        while defined_command in usertext:
+            usertext = replacecommands(defined_command, LaTeX_command, usertext, nr_arg)              
+    return usertext
+
+
+
+
+
 
 def replace_allcommands(defined_command, LaTeX_command, STRING, nr_arg):    
     """replace all defined commands in a string"""
@@ -136,6 +214,9 @@ def replace_allcommands(defined_command, LaTeX_command, STRING, nr_arg):
             break
     
     return STRING
+
+
+
 def ReplaceUserCommands(commandsfile,line):
     assert type(commandsfile) == list
     assert type(line) == str
