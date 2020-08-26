@@ -7,10 +7,10 @@ Created on Fri Sep 14 12:39:47 2018
 import json
 import math
 import os
-import imageoperations as imop
+import _shared_operations.imageoperations as imop
 import PIL
 import PIL.Image
-import log_module as log
+import _logging.log_module as log
 import re
 from pathlib import Path
 import wx

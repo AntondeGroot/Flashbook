@@ -3,7 +3,7 @@
 Created on Fri Sep 14 13:26:43 2018
 @author: Anton
 """
-from settingsfile import settings
+from _settings.settingsfile import settings
 import bisect
 import ctypes
 import img2pdf
@@ -13,16 +13,16 @@ import os
 from PIL import Image
 import PIL
 import program as p
-import log_module as log
+import _logging.log_module as log
 from termcolor import colored
 import win32clipboard
 from win32api import GetSystemMetrics
 import wx
 import threading
-from timingmodule import Timing
-import latexoperations as ltx
-import imageoperations as imop
-from class_progressdialog import ProgressDialog
+from _logging.timingmodule import Timing
+import _shared_operations.latexoperations as ltx
+import _shared_operations.imageoperations as imop
+from _GUI.class_progressdialog import ProgressDialog
 
 def findfullpicpath(self,picname):
     """Instead of just opening the path of a picture

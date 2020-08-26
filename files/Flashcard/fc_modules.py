@@ -12,165 +12,19 @@ import math
 from pathlib import Path
 import random
 import fc_functions as f2
-import timingmodule as m6
-import log_module as log
+import _logging.timingmodule as timing
+import _logging.log_module as log
 import json
 import ctypes
-import gui_flashbook as gui
+import _GUI.gui_flashbook as gui
 import program as p
 
 MB_ICONINFORMATION = 0x00000040
 MessageBox = ctypes.windll.user32.MessageBoxW
 
-def buttonCorrect(self):
-    self.NEWCARD = True
-    f2.clearbitmap(self)
-    if hasattr(self,'nr_questions') and self.nr_questions != 0 and hasattr(self,'bookname') and self.bookname != '':
-        #import
-        runprogram = self.runprogram
-        self.index += 1    
-        if runprogram:
-            self.score +=1
-        self.mode = 'Question'
-        self.m_modeDisplayFC.SetValue(self.mode)
-        
-        if self.score > self.nr_questions + 1:
-            self.score = self.nr_questions
-        if self.index > (self.nr_questions-1): 
-            self.index = (self.nr_questions-1)
-            f2.remove_stats(self)
-            _score_ = round(float(self.score)/self.nr_questions*100,1)
-            #MessageBox(0, f"Your score is: {_score_}%", "Result", 1 )    
-            message = f"Your score is: {_score_}%"
-            with gui.MyDialogScore(self,message) as dlg:
-                if dlg.ShowModal() == wx.ID_OK:  
-                    p.SwitchPanel(self,0)
-                    log.DEBUGLOG(debugmode=self.debugmode,msg=f"FC MODULE: flashcard program finished")
-                    
-            self.m_menubar1.EnableTop(2,False)
-            runprogram = False
-            if hasattr(self,'bookname'): # to stop from pop-up windows from appearing after the test is done
-                delattr(self,'bookname')
-            
-        _score_ = round(float(self.score)/self.nr_questions*100,1)
-        self.m_Score.SetValue(f"{_score_} %")     
-        self.m_CurrentCard.SetValue(f"{self.index+1}")
-        
-        # update stats
-        if runprogram:
-            f2.set_stats(self)
-            f2.save_stats(self)   
-            # display cards
-            f2.displaycard(self)
-            f2.switch_bitmap(self)
-        else:
-            self.m_Score.SetValue("")     
-            self.m_CurrentCard.SetValue("")
-            self.m_TotalCards.SetValue("")
-            #reset pictogram
-            path_repeat    = Path(self.resourcedir,"repeat.png")
-            id_ = self.m_toolSwitchFC.GetId()
-            self.m_toolBar3.SetToolNormalBitmap(id_, wx.Bitmap( str(path_repeat), wx.BITMAP_TYPE_ANY ))
-        #update self.vars accordingly
-        self.runprogram = runprogram
-    
-def buttonWrong(self):
-    self.NEWCARD = True
-    matplotlib.pyplot.close('all') # otherwise too many pyplot figures will be opened -> memory
-    f2.clearbitmap(self)
-    if hasattr(self,'nr_questions') and self.nr_questions != 0 and hasattr(self,'bookname') and self.bookname != '':
-        runprogram = self.runprogram
-        self.index += 1
-        self.mode = 'Question'
-        self.m_modeDisplayFC.SetValue(self.mode)  
-        if self.index > (self.nr_questions-1):
-            self.index = (self.nr_questions-1)
-            f2.remove_stats(self)
-            _score_ = round(float(self.score)/self.nr_questions*100,1)
-            #MessageBox(0, f"Your score is: {_score_}%", "Result", 1) 
-            message = f"Your score is: {_score_}%"
-            with gui.MyDialogScore(self,message) as dlg:
-                if dlg.ShowModal() == wx.ID_OK: 
-                    p.SwitchPanel(self,0)
-                    log.DEBUGLOG(debugmode=self.debugmode,msg=f"FC MODULE: flashcard program finished")
-            self.m_menubar1.EnableTop(2,False)
-            runprogram = False
-            if hasattr(self,'bookname'): # to stop from pop-up windows from appearing after the test is done
-                delattr(self,'bookname')
-            
-        if self.score > self.nr_questions+1:
-            self.score = self.nr_questions
-            _score_ = round(float(self.score)/self.nr_questions*100,1)
-        _score_ = round(float(self.score)/self.nr_questions*100,1)
-        self.m_Score.SetValue(f"{_score_} %")      
-        self.m_CurrentCard.SetValue(str(self.index+1))
-        
-        ## update stats
-        if runprogram:
-            f2.set_stats(self)
-            f2.save_stats(self)    
-            f2.displaycard(self)
-            f2.switch_bitmap(self)
-        f2.SetScrollbars_fc(self)
-        if not runprogram:
-            self.m_Score.SetValue("")     
-            self.m_CurrentCard.SetValue("")
-            self.m_TotalCards.SetValue("")
-            #reset pictogram
-            path_repeat    = Path(self.resourcedir,"repeat.png")
-            id_ = self.m_toolSwitchFC.GetId()
-            self.m_toolBar3.SetToolNormalBitmap(id_, wx.Bitmap( str(path_repeat), wx.BITMAP_TYPE_ANY ))
-        self.runprogram = runprogram
 
-def buttonPreviousCard(self):
-    f2.clearbitmap(self)
-    if hasattr(self,'nr_questions') and self.nr_questions != 0 and hasattr(self,'bookname') and self.bookname != '':
-        runprogram = self.runprogram
-        if self.index > 0:
-            self.index -= 1
-        if self.score > 0:
-            self.score -= 1
-        self.mode = 'Question'
-        self.m_modeDisplayFC.SetValue(self.mode)  
-        _score_ = round(float(self.score)/self.nr_questions*100,1)
-        self.m_Score.SetValue(f"{_score_} %")      
-        self.m_CurrentCard.SetValue(str(self.index+1))
-        
-        ## update stats
-        if runprogram:
-            f2.set_stats(self)
-            f2.save_stats(self)    
-            f2.displaycard(self)
-            f2.switch_bitmap(self)
-        f2.SetScrollbars_fc(self)
-        if not runprogram:
-            self.m_Score.SetValue("")     
-            self.m_CurrentCard.SetValue("")
-            self.m_TotalCards.SetValue("")
-            #reset pictogram
-            path_repeat    = Path(self.resourcedir,"repeat.png")
-            id_ = self.m_toolSwitchFC.GetId()
-            self.m_toolBar3.SetToolNormalBitmap(id_, wx.Bitmap( str(path_repeat), wx.BITMAP_TYPE_ANY ))
-        self.runprogram = runprogram
 
-        
-def switchCard(self):
-    #matplotlib.pyplot.close('all') # otherwise too many pyplot figures will be opened -> memory
-    f2.clearbitmap(self)
-    try:
-        if self.runprogram:
-            # change mode Q <-> A
-            if self.mode == 'Question': 
-                self.mode = 'Answer'
-            else:
-                self.mode = 'Question'
-            self.m_modeDisplayFC.SetValue(self.mode)
-            # check if there is an answer: if not switch_bitmap sets the mode back to 'question'
-            f2.switch_bitmap(self)       
-            f2.displaycard(self)
-            f2.SetScrollbars_fc(self)
-    except:
-        log.ERRORMESSAGE("Error: Couldn't switch card")
+
         
 
 def startprogram(self,filepath): 
@@ -205,7 +59,7 @@ def startprogram(self,filepath):
         
         if hasattr(self,'TC'):
             delattr(self,'TC')
-        self.TC = m6.TimeCount(self.bookname,"flashcard")
+        self.TC = timing.TimeCount(self.bookname,"flashcard")
     except:
         log.ERRORMESSAGE("Error: Couldn't open path {filepath}")
     self.resumedata = {self.bookname : {'score': self.score, 'index': self.index, 'nr_questions':self.nr_questions}}
@@ -280,57 +134,5 @@ def startprogram(self,filepath):
     f2.SetScrollbars_fc(self)
     f2.switch_bitmap(self)
 
-def DetermineCardorder(self,USERINPUT):
-    """
-    USERINPUT: boolean, 
-    - TRUE it will ask the user for input to determine
-           the order in which the cards should be displayed.
-    - FALSE, it will display them chronologically without userinput.
-    """
-    log.DEBUGLOG(debugmode=self.debugmode,msg=f"FC MODULE: nrcards = {len(self.CardsDeck)}")
-    
-    try:        
-        """CARD ORDER"""
-        ## determine cardorder based on user given input
-        if USERINPUT == False:
-            self.cardorder = range(self.nr_questions)  
-        else:
-            
-            if not hasattr(self,'continueSession'): #look if variable even exists./ should be initialized
-                self.continueSession = False
-                        
-            if self.continueSession == False:
-                if self.nr_questions < len(self.CardsDeck):   
-                    if self.chrono:
-                        self.cardorder = range(self.nr_questions)    
-                    else:
-                        self.cardorder = random.sample(range(len(self.CardsDeck)),self.nr_questions) 
-                else: 
-                    ## If there are more questions than cards
-                    # we would like to get every question about the same number of times, to do this we do sampling without
-                    # replacement, then we remove a question if it is immediately repeated.
-                    if self.chrono:
-                        self.cardorder = list(range(len(self.CardsDeck)))*self.nr_questions
-                        self.cardorder = self.cardorder[:self.nr_questions]
-                    else:
-                        cardorder = []
-                        for i in range(len(self.CardsDeck)):   # possibly way larger than needed:
-                            cardorder.append(random.sample(range(len(self.CardsDeck)),len(self.CardsDeck)))
-                        cardorder = [val for sublist in cardorder for val in sublist]
-                        SEARCH = True
-                        index = 0
-                        # remove duplicate numbers
-                        while SEARCH:
-                            if index == len(cardorder)-2:
-                                SEARCH = False
-                            if cardorder[index] == cardorder[index+1]:
-                                del cardorder[index+1]
-                                index += 1
-                            index += 1    
-                        self.cardorder = cardorder[:self.nr_questions] 
-            else:
-                f2.load_stats(self)  
-        self.CardsDeck.set_cardorder(self.cardorder)            
-    except:
-       log.ERRORMESSAGE("Error: couldn't put the cards in a specific order")
+
     

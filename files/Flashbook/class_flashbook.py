@@ -4,17 +4,18 @@ Created on Fri Jun 28 10:27:03 2019
 
 @author: Anton
 """
-import gui_flashbook as gui
+import _GUI.gui_flashbook as gui
 import wx
+import Flashbook.page as page
 import PIL
 import program as p
-import fb_modules    as m
-import fb_functions as f
-import print_modules as m3
+import Flashbook.fb_modules    as m
+import Flashbook.fb_functions as f
+import Print.print_modules as m3
 from pathlib import Path
 ICON_EXCLAIM=0x30
-import accelerators_module as m7
-import log_module as log
+import _GUI.accelerators_module as acc
+import _logging.log_module as log
 import ctypes
 ICON_STOP = 0x10
 MB_ICONINFORMATION = 0x00000040
@@ -55,14 +56,14 @@ class flashbook(gui.MyFrame):
         self.m_modeDisplay.SetValue("Question:")
         self.m_ZoomFB.SetValue(f"{int(self.zoom*100)}%")  
         #f.ResetQuestions(self)
-        f.SetScrollbars(self)
+        page.SetScrollbars(self)
             
         
         self.stitchmode_v = True # stich vertical or horizontal
         self.m_bitmapScroll.SetWindowStyleFlag(False)  # first disable the border of the bitmap, otherwise you get a bordered empty bitmap. Enable the border only when there is a bitmap
         #setup_sources(self)
         p.SwitchPanel(self,1)      
-        m7.AcceleratorTableSetup(self,"flashbook","set")
+        acc.AcceleratorTableSetup(self,"flashbook","set")
         with wx.DirDialog(self, "Choose which book to open",style=wx.DD_DEFAULT_STYLE | wx.DD_DIR_MUST_EXIST,defaultPath=str(self.booksdir)) as DirDialog:
             #fileDialog.SetPath(str(self.notesdir)+'\.')
             if DirDialog.ShowModal() == wx.ID_CANCEL:
@@ -84,10 +85,10 @@ class flashbook(gui.MyFrame):
         
     def m_userInputOnEnterWindow( self, event ):
         log.DEBUGLOG(debugmode=self.debugmode,msg=f'CLASS FLASHBOOK: user entered window')
-        m7.AcceleratorTableSetup(self,"flashbook","textwindow")
+        acc.AcceleratorTableSetup(self,"flashbook","textwindow")
 	
     def m_userInputOnLeaveWindow( self, event ):
-        m7.AcceleratorTableSetup(self,"flashbook","set")
+        acc.AcceleratorTableSetup(self,"flashbook","set")
     
     def m_btnUndoChangesOnButtonClick( self, event ):
         if hasattr(self,"backupimage"):
@@ -141,10 +142,10 @@ class flashbook(gui.MyFrame):
         m.arrowscroll(self,event,'down')        
     
     def m_CurrentPageFBOnEnterWindow( self, event ):
-        m7.AcceleratorTableSetup(self,"flashbook","pagewindow")
+        acc.AcceleratorTableSetup(self,"flashbook","pagewindow")
         
     def m_CurrentPageFBOnLeaveWindow( self, event ):
-        m7.AcceleratorTableSetup(self,"flashbook","set")
+        acc.AcceleratorTableSetup(self,"flashbook","set")
         try:
             self.currentpage = int(self.m_CurrentPageFB.GetValue())
         except:

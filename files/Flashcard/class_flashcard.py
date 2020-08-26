@@ -4,16 +4,16 @@ Created on Fri Jun 28 10:44:11 2019
 
 @author: Anton
 """
-import gui_flashbook as gui
+import _GUI.gui_flashbook as gui
 import wx
 import program as p
 import fc_functions    as f2
 import fc_modules as m2
 ICON_EXCLAIM=0x30
-import accelerators_module as m7
+import _GUI.accelerators_module as acc
 import os
 import ctypes
-import log_module as log
+import _logging.log_module as log
 
 ICON_STOP = 0x10
 MB_ICONINFORMATION = 0x00000040
@@ -59,7 +59,7 @@ class flashcard(gui.MyFrame):
         f2.SetScrollbars_fc(self)
         
         self.NEWCARD = True
-        m7.AcceleratorTableSetup(self,"flashcard","set")
+        acc.AcceleratorTableSetup(self,"flashcard","set")
         p.SwitchPanel(self,2)
         
         #%%

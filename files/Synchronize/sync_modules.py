@@ -17,10 +17,10 @@ import os
 #%% The server
 import socket
 import time
-import sync_functions  as f4
+import Synchronize.sync_functions  as f4
 import ctypes
 import json
-import log_module as log
+import _logging.log_module as log
 
 def Display(text,self):
     self.m_txtStatus.SetValue(text)

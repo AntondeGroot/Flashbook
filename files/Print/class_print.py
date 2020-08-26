@@ -4,14 +4,14 @@ Created on Fri Jun 28 13:33:22 2019
 
 @author: Anton
 """
-import gui_flashbook as gui
+import _GUI.gui_flashbook as gui
 import threading
-import latexoperations as ltx
+import _shared_operations.latexoperations as ltx
 import wx
 import PIL
 import program as p
-import print_modules as m3
-import log_module    as log
+import Print.print_modules as m3
+import _logging.log_module    as log
 ICON_EXCLAIM=0x30
 
 import ctypes

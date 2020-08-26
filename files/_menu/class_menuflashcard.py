@@ -5,11 +5,11 @@ Created on Fri Jun 28 14:04:23 2019
 @author: Anton
 """
 
-import gui_flashbook as gui
+import _GUI.gui_flashbook as gui
 import wx
-import fc_functions as f2
-import fc_modules   as m2
-import latexoperations as ltx
+import Flashcard.fc_functions as f2
+import Flashcard.fc_modules   as m2
+import _shared_operations.latexoperations as ltx
 
 class flashcardmenu(gui.MyFrame):
     def __init__(self):

@@ -19,10 +19,24 @@ flashbookfolder = os.path.join(os.getcwd(),'Flashbook')
 flashbookfolder = os.path.join(os.getcwd(),'Flashcard')
 
 import sys, os
-sys.path.append(os.path.abspath(os.path.join('..', 'Flashbook')))
+
+def addmodule(foldername):
+    sys.path.append(os.path.abspath(os.path.join('..', foldername)))
+
+addmodule('Flashbook')
+addmodule('_settings')
+addmodule('_GUI')
+addmodule('_logging')
+addmodule('_shared_operations')
+addmodule('Print')
+addmodule('Synchronize')
+
 # Now do your import
 from Flashbook.fb_modules import *
 from Flashbook.fb_functions import *
+import Flashbook.events_mouse as evt_m
+from _shared_operations import *
+from _logging import *
 
 #%%
 sys.path.insert(1,flashbookfolder)
@@ -37,30 +51,30 @@ import platform
 _platform = platform.system() 
     
 #------------------------------------------------------------------- modules
-import gui_flashbook as gui
+import _GUI.gui_flashbook as gui
 import program as p
-from settingsfile import settings
-from latexoperations import Latexfile
-import resources
-import fb_modules    as m
-import accelerators_module as m7
+from _settings.settingsfile import settings
+from _shared_operations.latexoperations import Latexfile
+import _resources.resources as resources
+import Flashbook.fb_modules    as m
+import _GUI.accelerators_module as acc
 import fc_functions    as f2
 
 import math
 import pylab
 pylab.ioff() # make sure it is inactive, otherwise possible qwindows error    .... https://stackoverflow.com/questions/26970002/matplotlib-cant-suppress-figure-window
 
-from class_print import printer
-from class_flashbook import flashbook
-from class_flashcard import flashcard
-from class_filetransfer import filetransfer
-from class_menusettings import menusettings
-from class_helpmenu import helpmenu
-from class_menuopen import menuopen
-from class_menuflashcard import flashcardmenu
-from class_menubooks import booksmenu
+from Print.class_print import printer
+from Flashbook.class_flashbook import flashbook
+from Flashcard.class_flashcard import flashcard
+from Synchronize.class_filetransfer import filetransfer
+from _menu.class_menusettings import menusettings
+from _menu.class_helpmenu import helpmenu
+from _menu.class_menuopen import menuopen
+from _menu.class_menuflashcard import flashcardmenu
+from _menu.class_menubooks import booksmenu
 
-import log_module as log
+import _logging.log_module as log
 
 sys.setrecursionlimit(5000)
 PIL.Image.MAX_IMAGE_PIXELS = 1000000000  
@@ -157,8 +171,8 @@ class MainFrame(settings,flashbook,flashcard,printer,filetransfer,menusettings,h
         self.m_checkBoxSelections.Check(self.drawborders)
         self.m_checkBoxDebug.Check(self.debugmode)
         
-        m.setcursor(self)
-        m7.AcceleratorTableSetup(self,"general","set")    
+        evt_m.setcursor(self)
+        acc.AcceleratorTableSetup(self,"general","set")    
         
     #%% timecount
     def m_scrolledWindow1OnMouseEvents( self, event ):

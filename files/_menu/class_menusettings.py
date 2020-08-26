@@ -4,13 +4,13 @@ Created on Fri Jun 28 13:33:22 2019
 
 @author: Anton
 """
-import print_modules as m3
-import gui_flashbook as gui
-import fb_functions    as f
-import fb_modules as m
+import Print.print_modules as m3
+import _GUI.gui_flashbook as gui
+import Flashbook.fb_functions    as f
+import Flashbook.fb_modules as m
 from pathlib import Path
 ICON_EXCLAIM=0x30
-import historygraph
+import _GUI.historygraph as historygraph
 
 def settings_reset(self):
     settingsfile = Path(self.dirsettings,"settings.txt")

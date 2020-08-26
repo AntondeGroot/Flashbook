@@ -5,13 +5,13 @@ Created on Fri Jun 28 14:13:17 2019
 @author: Anton
 """
 import math
-import gui_flashbook as gui
+import _GUI.gui_flashbook as gui
 import wx
 import PIL
 from pathlib import Path
-import imageoperations as imop
+import _shared_operations.imageoperations as imop
 import threading
-import pdf_modules as m5
+import _pdf.pdf_modules as m5
 import os
 import random
 import itertools
@@ -20,7 +20,7 @@ pylab.ioff() # make sure it is inactive, otherwise possible qwindows error    ..
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 import ctypes
-import log_module as log
+import _logging.log_module as log
 ICON_EXCLAIM=0x30
 ICON_STOP = 0x10
 MB_ICONINFORMATION = 0x00000040

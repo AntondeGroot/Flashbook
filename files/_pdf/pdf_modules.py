@@ -10,7 +10,7 @@ from pathlib import Path
 import PIL
 from pdf2image import convert_from_path
 from pdf2image import convert_from_bytes
-from class_progressdialog import ProgressDialog
+from _GUI.class_progressdialog import ProgressDialog
 import shutil
 import threading
 import ctypes

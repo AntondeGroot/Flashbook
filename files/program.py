@@ -18,9 +18,10 @@ import wx.richtext
 import wx.html as html
 import wx._html
 #------------------------------------------------------------------- modules
-import fb_modules    as m
-import fb_functions    as f
-import log_module as log
+import Flashbook.fb_modules    as m
+import Flashbook.events_mouse as evt_m
+import Flashbook.fb_functions    as f
+import _logging.log_module as log
 #for colored error messages
 
 #ctypes:
@@ -193,7 +194,7 @@ def set_richtext(self):
                        "\t 4) After completion you can safely continue using Flashbook.")
     self.txt.EndFontSize()
     self.Layout()
-import historygraph
+import _GUI.historygraph as historygraph
 def SwitchPanel(self,n):
     self.m_menubar1.EnableTop(2, False)#disable Flashcard menu
     self.m_menuHelp.Enable(True)
@@ -231,7 +232,7 @@ def SwitchPanel(self,n):
     elif n == 6:
         self.panelHelp.Show()        
     #reset mouse arrow
-    m.setcursor(self)    
+    evt_m.setcursor(self)    
     self.Layout() # force refresh of windows
     
 def Imgpath_to_SquareBitmap(path,size): 

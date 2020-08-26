@@ -5,7 +5,7 @@ Created on Sat Jun 15 18:18:50 2019
 @author: aammd
 """
 import ast
-from settingsfile import settings
+from _settings.settingsfile import settings
 import PIL
 import os
 import fc_functions    as f2
@@ -14,9 +14,9 @@ import numpy as np
 import re
 import math
 import wx
-import gui_flashbook as gui
-import imageoperations as imop
-import log_module as log
+import _GUI.gui_flashbook as gui
+import _shared_operations.imageoperations as imop
+import _logging.log_module as log
 #%% functions
 def is_number(s):
     try:

@@ -5,7 +5,7 @@ Created on Wed Mar 13 16:32:13 2019
 @author: Anton
 """
 import wx
-import log_module as log
+import _logging.log_module as log
 
 class AccIDs:
     """

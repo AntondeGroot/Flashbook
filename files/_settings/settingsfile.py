@@ -5,7 +5,7 @@ Created on Sat Jun 15 19:04:27 2019
 @author: aammd
 """
 from pathlib import Path
-from folderpaths import paths
+from _GUI.folderpaths import paths
 import json
 class settings(paths):
     

@@ -4,7 +4,7 @@ Created on Fri Jun 28 13:48:13 2019
 
 @author: Anton
 """
-import gui_flashbook as gui
+import _GUI.gui_flashbook as gui
 import subprocess
 import program as p
 

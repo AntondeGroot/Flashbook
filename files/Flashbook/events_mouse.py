@@ -4,7 +4,7 @@ Created on Tue Aug 25 21:56:19 2020
 
 @author: Anton
 """
-
+import wx
 def bitmapleftup(self,event):
     if not self.cursor:
         self.SetCursor(wx.Cursor(wx.CURSOR_ARROW))

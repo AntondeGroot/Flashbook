@@ -4,10 +4,10 @@ Created on Fri Jun 28 13:44:04 2019
 
 @author: Anton
 """
-import gui_flashbook as gui
+import _GUI.gui_flashbook as gui
 import wx
 import PIL
-import imageoperations as imop
+import _shared_operations.imageoperations as imop
 import program as p
 from pathlib import Path
 

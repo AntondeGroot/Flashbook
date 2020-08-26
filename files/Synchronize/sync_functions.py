@@ -13,7 +13,7 @@ import socket
 import struct
 import json
 import base64
-import log_module as log
+import _logging.log_module as log
 
 def CheckServerStatus(HOST,PORT,self):
     BOOL = False

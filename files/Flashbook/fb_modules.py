@@ -8,9 +8,10 @@ import numpy as np
 import PIL
 import wx
 import os
-import fb_functions as f
-import timingmodule as m6
-import log_module as log
+#import fb_functions as f
+import Flashbook.fb_functions as f
+import _logging.timingmodule as timing
+import _logging.log_module as log
 import json
 import ctypes
 from pathlib import Path
@@ -92,7 +93,7 @@ def dirchanged(self,path):
     self.bookname = eventpath.name
     if hasattr(self,'TC'):
         delattr(self,'TC')
-    self.TC = m6.TimeCount(self.bookname,"flashbook")
+    self.TC = timing.TimeCount(self.bookname,"flashbook")
     self.booknamepath = eventpath.relative_to(self.booksdir)
     self.currentpage = 1
     self.PathBorders = Path(self.bordersdir, self.bookname + '_borders.txt')

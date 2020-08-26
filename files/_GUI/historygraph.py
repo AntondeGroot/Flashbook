@@ -20,8 +20,8 @@ from pathlib import Path
 import json
 import time
 from datetime import datetime
-import imageoperations as imop
-import log_module as log
+import _shared_operations.imageoperations as imop
+import _logging.log_module as log
 
 #% FUNCTIONS
 def GetValues(timedict,datethreshold):

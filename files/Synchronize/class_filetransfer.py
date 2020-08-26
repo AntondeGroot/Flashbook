@@ -4,14 +4,14 @@ Created on Fri Jun 28 13:11:31 2019
 
 @author: Anton
 """
-import gui_flashbook as gui
+import _GUI.gui_flashbook as gui
 import threading
 import wx
 import program as p
-import sync_functions  as f4
-import sync_modules  as m4
+import Synchronize.sync_functions  as f4
+import Synchronize.sync_modules  as m4
 from pathlib import Path
-import log_module    as log
+import _logging.log_module    as log
 ICON_EXCLAIM=0x30
 import json
 import ctypes
