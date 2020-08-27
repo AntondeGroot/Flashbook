@@ -25,7 +25,7 @@ MessageBox = ctypes.windll.user32.MessageBoxW
 
 
 
-        
+import Flashcard.cardsorder as crd
 
 def startprogram(self,filepath): 
     """main program that does all the preprocessing"""
@@ -128,7 +128,8 @@ def startprogram(self,filepath):
     # display nr of questions and current index of questions            
     self.m_CurrentCard.SetValue(f"{self.index+1}")
     self.m_TotalCards.SetValue(f"{self.nr_questions}")
-    DetermineCardorder(self,True)
+    
+    crd.DetermineCardorder(self,True)
     
     f2.displaycard(self)     
     f2.SetScrollbars_fc(self)

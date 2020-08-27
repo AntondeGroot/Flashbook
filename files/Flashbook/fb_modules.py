@@ -63,13 +63,12 @@ def dirchanged(self,path):
         while SEARCH:
             for j in range(name_len):
                 k = name_len - j - 1      
-                if (f.is_number(picname[k]) == True) and SEARCH:
+                if isinstance(picname[k],int) and SEARCH:
                     indexlist.append(k)  
-                elif (f.is_number(picname[k]) == False):
-                    if j > 0:
-                        if (f.is_number(picname[k+1])) == True:
-                            SEARCH = False
-                            break
+                elif not isinstance(picname[k],int):
+                    if j > 0 and isinstance(picname[k+1],int):
+                        SEARCH = False
+                        break
                 elif j == name_len - 1: #EOS
                     SEARCH = False
                     break

@@ -1,5 +1,5 @@
 
-versionnumber = '1.5.3'
+versionnumber = '2.0.0'
 
 
 filename = "gui_flashbook.py"
@@ -13,9 +13,9 @@ Cpath = r'u"D:\\Anton\\Documents\\'
 # every first item will be replaced by the one following it.
 org = [
        ".AddSpacer",'.Add',
-       Cpath + 'path_min"','path_min',
-       Cpath + 'path_add"','path_add',
-       Cpath + 'path_switch"','path_switch',
+       'u"path_add", wx.BITMAP_TYPE_RESOURCE','path_add, wx.BITMAP_TYPE_ANY',
+       'u"path_min", wx.BITMAP_TYPE_RESOURCE','path_min, wx.BITMAP_TYPE_ANY',
+       'u"path_switch", wx.BITMAP_TYPE_RESOURCE', 'path_switch, wx.BITMAP_TYPE_ANY',
        '.AddLabelTool','.AddTool',
        '.AppendItem','.Append',
        '.SetSizeHintsSz','.SetSizeHints',

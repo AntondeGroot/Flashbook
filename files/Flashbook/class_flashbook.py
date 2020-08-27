@@ -64,6 +64,14 @@ class flashbook(gui.MyFrame):
         #setup_sources(self)
         p.SwitchPanel(self,1)      
         acc.AcceleratorTableSetup(self,"flashbook","set")
+        ## open window asking user what topic he wants to study
+        
+        
+         
+                
+        
+        
+        
         with wx.DirDialog(self, "Choose which book to open",style=wx.DD_DEFAULT_STYLE | wx.DD_DIR_MUST_EXIST,defaultPath=str(self.booksdir)) as DirDialog:
             #fileDialog.SetPath(str(self.notesdir)+'\.')
             if DirDialog.ShowModal() == wx.ID_CANCEL:
@@ -73,6 +81,9 @@ class flashbook(gui.MyFrame):
                 dirpath = DirDialog.GetPath()
                 log.DEBUGLOG(debugmode=self.debugmode,msg=f'CLASS FLASHBOOK: opened dirdialog {dirpath}')
                 m.dirchanged(self,dirpath)
+                
+                
+                
     def m_btnScreenshotOnButtonClick( self, event ):
         self.BoolCropped = False # is image cropped
         self.screenshotmode = True

@@ -10,19 +10,34 @@ Created on Sun Mar 17 15:42:25 2019
 any file in the same directory of this file. This is for debugging purposes
 in case you change a function in a certain file which would influence other files."""  
 #%%
-SEARCH_keyword = "settings_set"
+SEARCH_keyword = "path_add"
 DISPLAY_LINE   = False
+
+import os
+from pathlib import Path
+
+
+
+
+
+
 
 #%%
 SEARCH_keyword = SEARCH_keyword.lower()
-import os
+
 from termcolor import colored
 dir_path = os.path.dirname(os.path.realpath(__file__))
-files = os.listdir(dir_path)
-pyfiles = [os.path.join(dir_path,f) for f in files if (os.path.isfile(f) and os.path.splitext(f)[1]=='.py' and f != os.path.basename( __file__))]
+dir_path = Path(os.getcwd()).parent
+pyfiles = []
+for path, subdirs, files in os.walk(dir_path):
+    for name in files:
+        pyfiles.append(os.path.join(path, name))
+
+
+pyfiles = [f for f in pyfiles if (os.path.isfile(f) and os.path.splitext(f)[1]=='.py' and os.path.basename(f) != os.path.basename( __file__))]
 
 GLOBCOUNT = 0 
-for _, pyfile in enumerate(pyfiles):
+for pyfile in pyfiles:
     FOUND = False
     COUNT = 0
     with open(pyfile, 'r') as file:

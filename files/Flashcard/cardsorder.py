@@ -4,7 +4,9 @@ Created on Tue Aug 25 23:41:55 2020
 
 @author: Anton
 """
-
+import random
+import _logging.log_module as log
+import Flashcard.fc_functions as f2
 def DetermineCardorder(self,USERINPUT):
     """
     USERINPUT: boolean, 

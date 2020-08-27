@@ -105,6 +105,7 @@ def setup_sources(self):
     elif _platform == 'Linux':
         pass
     rdir = Path(bdir,"resources")
+    print(f"rdir = {rdir}\n"*10)
     self.appdir         = bdir
     self.path_add     = Path(rdir,"add.png")
     self.path_min     = Path(rdir,"min.png")
