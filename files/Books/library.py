@@ -63,9 +63,14 @@ class Library(gui.MyFrame):
         
         
         if index >= 0: #error code is -1
+            
             topic = self.listctrl.GetItemText(index)
+            self.topic_books[topic] += ["label"]
             self.listctrl.DeleteItem (index)
-            self.listctrl.Append([topic, "label"])
+            self.listctrl.Append([topic, self.topic_books[topic]])
+            
+            
+            
         print("end")
 
     def addtopic(self,event):
@@ -75,7 +80,7 @@ class Library(gui.MyFrame):
                 self.clear()    
                 self.listctrl.InsertColumn(0, "Topic")
                 self.listctrl.InsertColumn(1, "Book title 1")
-                self.topic_books = {topic : None}
+                self.topic_books = {topic : []}
             self.listctrl.Append([topic])
             self.mainframe.m_textTopic.SetValue('')
         
