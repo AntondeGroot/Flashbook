@@ -21,6 +21,7 @@ class paths():
         self.dirpdf = Path(app,"PDF folder")
         self.dirpdfbook  = Path(app,"PDF books")
         self.dirsettings = Path(app,"settings")
+        self.dir_topicbook_file = Path(self.dirsettings, 'data_topicbook.json')
         self.statsdir = Path(self.dirsettings, 'data_sessions.json')
         
         dirs = [self.appdir, self.notesdir, self.picsdir, self.booksdir, self.tempdir, self.bordersdir, self.resourcedir, self.dirpdf, self.dirsettings, self.dirIP, self.dirpdfbook]

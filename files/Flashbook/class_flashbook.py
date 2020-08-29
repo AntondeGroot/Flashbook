@@ -70,7 +70,7 @@ class flashbook(gui.MyFrame):
         
         
          
-        self.FlashbookLibrary.showcasefunctionality()
+        self.FlashbookLibrary.showdata()
         
         
         """        

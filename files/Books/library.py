@@ -6,6 +6,7 @@ Created on Sat Aug 29 08:40:20 2020
 """
 import _GUI.active_panel as panel
 import _GUI.gui_flashbook as gui
+import json
 
 class Library(gui.MyFrame):
     def __init__(self,mainframe):
@@ -19,69 +20,111 @@ class Library(gui.MyFrame):
         self.mainframe = mainframe
         self.topic_books = {}
         self.itemselected = None
+        self.datafilepath = mainframe.dir_topicbook_file
         pass
         
         
-    def clear(self):
+    def cleargrid(self):
         self.listctrl.ClearAll()
+    
+    
+    def setcolumns(self):
+        
+        self.userdata
+        self.listctrl.SetColumnWidth(0,self.topicwidth)
+        """Determine how many columns you need"""
+        columnnr = 1
+        for entry in self.userdata.values():
+            if len(entry) > columnnr:
+                columnnr = len(entry)
+        """Set nr of columns """
+        self.listctrl.InsertColumn(0, "Topic")
+        for i in range(columnnr):
+            self.listctrl.InsertColumn(i+1, f"Book title {i+1}")
+            self.listctrl.SetColumnWidth(i+1,self.bookwidth)
+        """resize ListCtrl"""
+        panelwidth = self.topicwidth + self.bookwidth*columnnr
+        self.listctrl.SetSize(panelwidth,-1)
+        
+    def setdata(self):
+        for key in self.userdata:
+            topic = [key]
+            books = self.userdata[key]
+            self.listctrl.Append(topic+books)
+    
+    
+    def showdata(self):
+        self.cleargrid()
+        self.loaddata()
+        if not self.userdata:
+            self.showcasefunctionality()
+        else:
+            self.setcolumns()
+            self.setdata()
+            self.setcolumns()
+        panel.SwitchPanel(self.mainframe,7)
         
     def showcasefunctionality(self):
-        """Ïf there are no books, showcase how it is used"""
-    
+        """Ïf there are no books, showcase how it is used""" 
+        self.cleargrid()        
         Topic = ["Example: Physics"]
         Booktitles = ["Classical Mechanics for dummies.pdf", "Classical Mechanics for noobs.pdf","Homework assignments.pdf"]
         
-        self.clear()
-        
-        
-        panel.SwitchPanel(self.mainframe,7)
-        
-        
         self.listctrl.InsertColumn(0, "Topic")
+        for i in range(len(Booktitles)):
+            print(f"i {i}")
+            self.listctrl.InsertColumn(i+1, f"Book title {i+1}")
+                
         self.listctrl.SetColumnWidth(0,self.topicwidth)
         for i in range(len(Booktitles)):
-            self.listctrl.InsertColumn(i+1, f"Book title {i+1}")
             self.listctrl.SetColumnWidth(i+1,self.bookwidth)
-        self.listctrl.Append(Topic + Booktitles)
-        
+        self.listctrl.Append(Topic + Booktitles)        
+        #resize panel
         panelwidth = self.topicwidth + self.bookwidth*len(Booktitles)
         self.listctrl.SetSize(panelwidth,-1)
     
-         
-    def m_buttonTopicOnButtonClick(self,event):
-        print("test")
-            
-    def get_books():
-        pass
-    def itemselect(self):
-        pass        
+
+    
+    def loaddata(self):
+        self.userdata = {}
+        try:
+            with open(self.datafilepath, 'r') as file:
+                self.userdata = json.load(file)
+            file.close()
+        except:
+            pass
+    
+    def savedata(self):
+        try:
+            with open(self.datafilepath, 'w') as file:
+                file.write(json.dumps(self.userdata))
+            file.close()
+        except:
+            pass        
     
     def addbook(self,event):
-        print(self.listctrl.GetItemText(0,0))
-        index = self.listctrl.GetFocusedItem()
-        print(index)
-        
-        
+        index = self.listctrl.GetFocusedItem()        
         if index >= 0: #error code is -1
+            print(f"found entry")
             
             topic = self.listctrl.GetItemText(index)
-            self.topic_books[topic] += ["label"]
-            self.listctrl.DeleteItem (index)
-            self.listctrl.Append([topic, self.topic_books[topic]])
+            print(f"topic = {topic}")
+            if topic in self.userdata:
+                self.userdata[topic] += ["booklabel"]
+            else:
+                self.userdata[topic] = ["booklabel"]
+            self.savedata()
+            self.showdata()
             
-            
-            
-        print("end")
-
     def addtopic(self,event):
         topic = self.mainframe.m_textTopic.GetValue()
-        if topic.rstrip():
-            if not self.topic_books:
-                self.clear()    
-                self.listctrl.InsertColumn(0, "Topic")
-                self.listctrl.InsertColumn(1, "Book title 1")
-                self.topic_books = {topic : []}
-            self.listctrl.Append([topic])
+        if topic.rstrip():#entry should not be empty
+            if topic not in self.userdata:
+                self.userdata[topic] = []
+                self.savedata()
+                self.showdata()
+                
+            #self.listctrl.Append([topic])
             self.mainframe.m_textTopic.SetValue('')
         
         
