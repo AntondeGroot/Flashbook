@@ -34,6 +34,9 @@ addmodule('Synchronize')
 # Now do your import
 from Flashbook.fb_modules import *
 from Flashbook.fb_functions import *
+import _GUI.active_panel as panel
+import Books.library as Books
+
 import Flashbook.events_mouse as evt_m
 from _shared_operations import *
 from _logging import *
@@ -49,7 +52,7 @@ import wx.html as html
 import wx._html
 import platform
 _platform = platform.system() 
-    
+import Books.events_buttons as Bookbuttons
 #------------------------------------------------------------------- modules
 import _GUI.gui_flashbook as gui
 import program as p
@@ -127,7 +130,7 @@ def setup_sources(self):
 ###############################################################################
 """
 
-class MainFrame(settings,flashbook,flashcard,printer,filetransfer,menusettings,helpmenu,menuopen,flashcardmenu,booksmenu):
+class MainFrame(settings,flashbook,flashcard,printer,filetransfer,menusettings,helpmenu,menuopen,flashcardmenu,booksmenu,Bookbuttons.libbuttons):
     
     """ INITIALIZE """
     def __init__(self,parent): 
@@ -151,6 +154,7 @@ class MainFrame(settings,flashbook,flashcard,printer,filetransfer,menusettings,h
         self.Latexfile = Latexfile()
         self.Flashcard = Flashcard(self.LaTeXfontsize)
         self.CardsDeck = CardsDeck()
+        self.FlashbookLibrary = Books.Library(self)
         
         self.library   = [None]
         
@@ -166,7 +170,7 @@ class MainFrame(settings,flashbook,flashcard,printer,filetransfer,menusettings,h
         # icon
         iconimage = wx.Icon(str(self.path_icon), type=wx.BITMAP_TYPE_ANY, desiredWidth=40, desiredHeight=40)
         self.SetIcon(iconimage)
-        p.SwitchPanel(self,0)
+        panel.SwitchPanel(self,0)
         self.printpreview = True
         
         self.m_checkBoxSelections.Check(self.drawborders)
@@ -174,7 +178,19 @@ class MainFrame(settings,flashbook,flashcard,printer,filetransfer,menusettings,h
         
         evt_m.setcursor(self)
         acc.AcceleratorTableSetup(self,"general","set")    
+    def m_buttonTopicOnButtonClick( self, event ):
+        print(f"testing")
+        self.FlashbookLibrary.addtopic(event)
+    def m_buttonBookOnButtonClick(self,event):
+        self.FlashbookLibrary.addbook(event)
         
+    def m_listTopicsOnListItemSelected(self,event):
+        
+        pass
+    def m_listTopicsOnListItemDeselected(self,event):    
+        pass
+    
+    
     #%% timecount
     def m_scrolledWindow1OnMouseEvents( self, event ):
         SaveTime(self)

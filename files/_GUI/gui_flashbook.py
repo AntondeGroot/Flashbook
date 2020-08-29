@@ -1061,6 +1061,111 @@ class MyFrame ( wx.Frame ):
 		bSizer44.Fit( self.panel5 )
 		bSizer7.Add( self.panel5, 1, wx.EXPAND |wx.ALL, 0 )
 		
+		self.panel6 = wx.Panel( self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TAB_TRAVERSAL )
+		self.panel6.SetBackgroundColour( wx.Colour( 254, 240, 231 ) )
+		
+		bSizer443 = wx.BoxSizer( wx.VERTICAL )
+		
+		self.panel511 = wx.Panel( self.panel6, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TAB_TRAVERSAL )
+		bSizer4411 = wx.BoxSizer( wx.HORIZONTAL )
+		
+		
+		bSizer4411.Add( ( 100, 0), 0, wx.EXPAND, 5 )
+		
+		bSizer3211 = wx.BoxSizer( wx.VERTICAL )
+		
+		
+		bSizer3211.Add( ( 100, 100), 0, wx.EXPAND, 5 )
+		
+		self.m_panel1811 = wx.Panel( self.panel511, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TAB_TRAVERSAL )
+		bSizer482 = wx.BoxSizer( wx.VERTICAL )
+		
+		fgSizer11 = wx.FlexGridSizer( 0, 2, 0, 0 )
+		fgSizer11.SetFlexibleDirection( wx.HORIZONTAL )
+		fgSizer11.SetNonFlexibleGrowMode( wx.FLEX_GROWMODE_SPECIFIED )
+		
+		self.m_listTopics = wx.ListCtrl( self.m_panel1811, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.LC_REPORT|wx.LC_SINGLE_SEL|wx.LC_VRULES )
+		self.m_listTopics.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), 70, 90, 90, False, wx.EmptyString ) )
+		self.m_listTopics.SetMinSize( wx.Size( 400,-1 ) )
+		
+		fgSizer11.Add( self.m_listTopics, 1, wx.ALL, 5 )
+		
+		
+		bSizer482.Add( fgSizer11, 0, wx.EXPAND, 5 )
+		
+		
+		bSizer482.Add( ( 0, 0), 0, wx.EXPAND, 5 )
+		
+		bSizer472 = wx.BoxSizer( wx.VERTICAL )
+		
+		bSizer104 = wx.BoxSizer( wx.HORIZONTAL )
+		
+		self.m_buttonTopic = wx.Button( self.m_panel1811, wx.ID_ANY, u"Add Topic", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_buttonTopic.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
+		
+		bSizer104.Add( self.m_buttonTopic, 0, wx.ALL, 5 )
+		
+		self.m_textTopic = wx.TextCtrl( self.m_panel1811, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_textTopic.SetMinSize( wx.Size( 300,-1 ) )
+		
+		bSizer104.Add( self.m_textTopic, 0, wx.ALL, 5 )
+		
+		self.m_buttonTopic1 = wx.Button( self.m_panel1811, wx.ID_ANY, u"Rename Topic", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_buttonTopic1.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
+		
+		bSizer104.Add( self.m_buttonTopic1, 0, wx.ALL, 5 )
+		
+		self.m_buttonTopic11 = wx.Button( self.m_panel1811, wx.ID_ANY, u"Delete Topic", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_buttonTopic11.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
+		
+		bSizer104.Add( self.m_buttonTopic11, 0, wx.ALL, 5 )
+		
+		
+		bSizer472.Add( bSizer104, 0, wx.EXPAND, 5 )
+		
+		self.m_buttonBook = wx.Button( self.m_panel1811, wx.ID_ANY, u"Add Book", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_buttonBook.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
+		
+		bSizer472.Add( self.m_buttonBook, 0, wx.ALL, 5 )
+		
+		
+		bSizer482.Add( bSizer472, 0, wx.EXPAND, 0 )
+		
+		self.m_staticline71 = wx.StaticLine( self.m_panel1811, wx.ID_ANY, wx.DefaultPosition, wx.Size( -1,1 ), wx.LI_HORIZONTAL )
+		self.m_staticline71.SetMaxSize( wx.Size( 500,-1 ) )
+		
+		bSizer482.Add( self.m_staticline71, 0, wx.EXPAND |wx.ALL, 5 )
+		
+		self.m_buttonStartBook = wx.Button( self.m_panel1811, wx.ID_ANY, u"Read", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_buttonStartBook.SetFont( wx.Font( 20, 70, 90, 90, False, wx.EmptyString ) )
+		self.m_buttonStartBook.SetMinSize( wx.Size( 200,50 ) )
+		
+		bSizer482.Add( self.m_buttonStartBook, 0, wx.ALL, 5 )
+		
+		
+		self.m_panel1811.SetSizer( bSizer482 )
+		self.m_panel1811.Layout()
+		bSizer482.Fit( self.m_panel1811 )
+		bSizer3211.Add( self.m_panel1811, 1, wx.EXPAND |wx.ALL, 0 )
+		
+		
+		bSizer3211.Add( ( 0, 0), 1, wx.EXPAND, 5 )
+		
+		
+		bSizer4411.Add( bSizer3211, 1, wx.EXPAND, 5 )
+		
+		
+		self.panel511.SetSizer( bSizer4411 )
+		self.panel511.Layout()
+		bSizer4411.Fit( self.panel511 )
+		bSizer443.Add( self.panel511, 1, wx.EXPAND |wx.ALL, 5 )
+		
+		
+		self.panel6.SetSizer( bSizer443 )
+		self.panel6.Layout()
+		bSizer443.Fit( self.panel6 )
+		bSizer7.Add( self.panel6, 1, wx.EXPAND |wx.ALL, 50 )
+		
 		self.panelHelp = wx.Panel( self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TAB_TRAVERSAL )
 		self.panelHelp.SetBackgroundColour( wx.Colour( 254, 240, 231 ) )
 		
@@ -1286,6 +1391,13 @@ class MyFrame ( wx.Frame ):
 		self.m_txtMyIP.Bind( wx.EVT_KEY_UP, self.m_txtMyIPOnKeyUp )
 		self.m_txtTargetIP.Bind( wx.EVT_KEY_UP, self.m_txtTargetIPOnKeyUp )
 		self.m_buttonTransfer.Bind( wx.EVT_BUTTON, self.m_buttonTransferOnButtonClick )
+		self.m_listTopics.Bind( wx.EVT_LIST_ITEM_DESELECTED, self.m_listTopicsOnListItemDeselected )
+		self.m_listTopics.Bind( wx.EVT_LIST_ITEM_SELECTED, self.m_listTopicsOnListItemSelected )
+		self.m_buttonTopic.Bind( wx.EVT_BUTTON, self.m_buttonTopicOnButtonClick )
+		self.m_buttonTopic1.Bind( wx.EVT_BUTTON, self.m_buttonTopicOnButtonClick )
+		self.m_buttonTopic11.Bind( wx.EVT_BUTTON, self.m_buttonTopicOnButtonClick )
+		self.m_buttonBook.Bind( wx.EVT_BUTTON, self.m_buttonBookOnButtonClick )
+		self.m_buttonStartBook.Bind( wx.EVT_BUTTON, self.m_buttonStartBookOnButtonClick )
 		self.m_richText2.Bind( wx.EVT_LEFT_DOWN, self.m_richText2OnLeftDown )
 		self.m_richText3.Bind( wx.EVT_LEFT_DOWN, self.m_richText3OnLeftDown )
 		self.m_richText4.Bind( wx.EVT_LEFT_DOWN, self.m_richText4OnLeftDown )
@@ -1615,6 +1727,23 @@ class MyFrame ( wx.Frame ):
 		event.Skip()
 	
 	def m_buttonTransferOnButtonClick( self, event ):
+		event.Skip()
+	
+	def m_listTopicsOnListItemDeselected( self, event ):
+		event.Skip()
+	
+	def m_listTopicsOnListItemSelected( self, event ):
+		event.Skip()
+	
+	def m_buttonTopicOnButtonClick( self, event ):
+		event.Skip()
+	
+	
+	
+	def m_buttonBookOnButtonClick( self, event ):
+		event.Skip()
+	
+	def m_buttonStartBookOnButtonClick( self, event ):
 		event.Skip()
 	
 	def m_richText2OnLeftDown( self, event ):

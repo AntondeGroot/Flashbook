@@ -10,6 +10,8 @@ import Flashbook.page as page
 import PIL
 import program as p
 import Flashbook.fb_modules    as m
+import _GUI.active_panel as panel
+import Books.library as Books
 import Flashbook.fb_functions as f
 import Print.print_modules as m3
 from pathlib import Path
@@ -62,26 +64,29 @@ class flashbook(gui.MyFrame):
         self.stitchmode_v = True # stich vertical or horizontal
         self.m_bitmapScroll.SetWindowStyleFlag(False)  # first disable the border of the bitmap, otherwise you get a bordered empty bitmap. Enable the border only when there is a bitmap
         #setup_sources(self)
-        p.SwitchPanel(self,1)      
+        panel.SwitchPanel(self,1)      
         acc.AcceleratorTableSetup(self,"flashbook","set")
         ## open window asking user what topic he wants to study
         
         
          
-                
+        self.FlashbookLibrary.showcasefunctionality()
+        
+        
+        """        
         
         
         
         with wx.DirDialog(self, "Choose which book to open",style=wx.DD_DEFAULT_STYLE | wx.DD_DIR_MUST_EXIST,defaultPath=str(self.booksdir)) as DirDialog:
             #fileDialog.SetPath(str(self.notesdir)+'\.')
             if DirDialog.ShowModal() == wx.ID_CANCEL:
-                p.SwitchPanel(self,0) 
+                panel.SwitchPanel(self,0) 
                 return None    # the user changed their mind
             else:
                 dirpath = DirDialog.GetPath()
                 log.DEBUGLOG(debugmode=self.debugmode,msg=f'CLASS FLASHBOOK: opened dirdialog {dirpath}')
                 m.dirchanged(self,dirpath)
-                
+        """                
                 
                 
     def m_btnScreenshotOnButtonClick( self, event ):
@@ -117,7 +122,7 @@ class flashbook(gui.MyFrame):
         image2 = wx.Image( self.width, self.height )
         image2.SetData( self.pageimage.tobytes() )
         self.m_bitmapScroll.SetBitmap(wx.Bitmap(image2))
-        p.SwitchPanel(self,1)
+        panel.SwitchPanel(self,1)
         f.ShowPrintScreen(self)
         
         

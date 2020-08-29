@@ -5,6 +5,7 @@ Created on Fri Jun 28 13:48:13 2019
 @author: Anton
 """
 import _GUI.gui_flashbook as gui
+import _GUI.active_panel as panel
 import subprocess
 import program as p
 
@@ -40,6 +41,6 @@ class menuopen(gui.MyFrame):
             if value == IDOK: 
                 self.Destroy()
         else:
-            p.SwitchPanel(self,0)  
+            panel.SwitchPanel(self,0)  
         
     

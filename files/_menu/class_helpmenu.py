@@ -5,8 +5,10 @@ Created on Fri Jun 28 13:44:04 2019
 @author: Anton
 """
 import _GUI.gui_flashbook as gui
+import _GUI.active_panel as panel
 import wx
 import PIL
+import _GUI.active_panel as panel
 import _shared_operations.imageoperations as imop
 import program as p
 from pathlib import Path
@@ -28,7 +30,7 @@ class helpmenu(gui.MyFrame):
             self.lastpage = 4
         elif self.panel5.IsShown():
             self.lastpage = 5
-        p.SwitchPanel(self,6)
+        panel.SwitchPanel(self,6)
         
     def m_menuItemAboutOnMenuSelection( self, event ):      
         image = PIL.Image.open(str(Path(self.resourcedir,"flashbook_logo.png")))
@@ -40,13 +42,13 @@ class helpmenu(gui.MyFrame):
                 pass
             
     def m_richText1OnLeftDown(self,event): 
-        p.SwitchPanel(self,self.lastpage)
+        panel.SwitchPanel(self,self.lastpage)
         
     def m_richText2OnLeftDown(self,event): 
-        p.SwitchPanel(self,self.lastpage)
+        panel.SwitchPanel(self,self.lastpage)
         
     def m_richText3OnLeftDown(self,event): 
-        p.SwitchPanel(self,self.lastpage)
+        panel.SwitchPanel(self,self.lastpage)
         
     def m_richText4OnLeftDown(self,event): 
-        p.SwitchPanel(self,self.lastpage)
+        panel.SwitchPanel(self,self.lastpage)

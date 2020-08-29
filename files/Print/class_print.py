@@ -5,6 +5,7 @@ Created on Fri Jun 28 13:33:22 2019
 @author: Anton
 """
 import _GUI.gui_flashbook as gui
+import _GUI.active_panel as panel
 import threading
 import _shared_operations.latexoperations as ltx
 import wx
@@ -58,7 +59,7 @@ class printer(gui.MyFrame):
         self.onlyonce = 0
         self.onlyatinitialize = 0
         """START MAIN PROGRAM : PRINT PDF NOTES"""
-        t_panel = lambda self,page : threading.Thread(target = p.SwitchPanel , args=(self,page )).start()
+        t_panel = lambda self,page : threading.Thread(target = panel.SwitchPanel , args=(self,page )).start()
         t_panel(self, 3) 
         self.settings_get()                
         
@@ -101,7 +102,7 @@ class printer(gui.MyFrame):
                            wildcard="*.tex", style=wx.FD_DEFAULT_STYLE ) as fileDialog:
             
             if fileDialog.ShowModal() == wx.ID_CANCEL:
-                p.SwitchPanel(self,0) 
+                panel.SwitchPanel(self,0) 
                 return None    # the user changed their mind
             else:
                 
@@ -219,7 +220,7 @@ class printer(gui.MyFrame):
         m3.print_preview(self)
         if self.printsuccessful:
             self.printpreview = True
-            p.SwitchPanel(self,0)
+            panel.SwitchPanel(self,0)
             # remove all temporary files of the form "temporary(...).png"    
             if not self.debugmode:
                 folder = self.tempdir

@@ -5,6 +5,7 @@ Created on Fri Jun 28 13:11:31 2019
 @author: Anton
 """
 import _GUI.gui_flashbook as gui
+import _GUI.active_panel as panel
 import threading
 import wx
 import program as p
@@ -44,7 +45,7 @@ class filetransfer(gui.MyFrame):
     def m_OpenTransferOnButtonClick(self,event):
         initialize(self)
         """START MAIN PROGRAM : WIFI SYNC"""     
-        p.SwitchPanel(self,5)
+        panel.SwitchPanel(self,5)
         p.get_IP(self,event)
         m4.initialize(self)
     

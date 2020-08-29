@@ -6,6 +6,7 @@ Created on Wed Aug 26 20:11:52 2020
 """
 from PIL import Image
 from pathlib import Path
+
 import wx
 import ctypes
 #ctypes:
@@ -51,7 +52,7 @@ def import_screenshot(self,event):
                     
                     
                     #self.m_bitmap4.SetBitmap(image3)
-                    #p.SwitchPanel(self,4)
+                    
                     img = Image.open(str(Path(self.tempdir,"screenshot.png")))
                     self.pageimagecopy = img#img
                     self.pageimage = img  

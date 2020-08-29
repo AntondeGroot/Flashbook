@@ -6,8 +6,8 @@ Created on Fri Jun 28 10:44:11 2019
 """
 import _GUI.gui_flashbook as gui
 import wx
-import program as p
 import fc_functions    as f2
+import _GUI.active_panel as panel
 import fc_modules as m2
 ICON_EXCLAIM=0x30
 import _GUI.accelerators_module as acc
@@ -60,7 +60,7 @@ class flashcard(gui.MyFrame):
         
         self.NEWCARD = True
         acc.AcceleratorTableSetup(self,"flashcard","set")
-        p.SwitchPanel(self,2)
+        panel.SwitchPanel(self,2)
         
         #%%
         # When Flashbook is run in the Spyder IDE it may not open the correct folder, this however is no problem when it is run
@@ -77,7 +77,7 @@ class flashcard(gui.MyFrame):
         with wx.FileDialog(self, "Choose a subject to study",defaultDir=str(self.notesdir),defaultFile = defaultfile, wildcard="*.tex",style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST) as fileDialog:
             if fileDialog.ShowModal() == wx.ID_CANCEL:
                 #the user changed their mind
-                p.SwitchPanel(self,0) 
+                panel.SwitchPanel(self,0) 
                 return None    
             else:
                 self.m_menubar1.EnableTop(2,True)

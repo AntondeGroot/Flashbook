@@ -10,7 +10,7 @@ Created on Sun Mar 17 15:42:25 2019
 any file in the same directory of this file. This is for debugging purposes
 in case you change a function in a certain file which would influence other files."""  
 #%%
-SEARCH_keyword = "path_add"
+SEARCH_keyword = f"selectionentered"
 DISPLAY_LINE   = False
 
 import os
@@ -40,18 +40,22 @@ GLOBCOUNT = 0
 for pyfile in pyfiles:
     FOUND = False
     COUNT = 0
-    with open(pyfile, 'r') as file:
-        lines = file.readlines()
-    file.close()
-    for _, line in enumerate(lines):
-        if SEARCH_keyword in line.lower():
-            if DISPLAY_LINE == True:
-                print(line)
-            FOUND = True
-            COUNT += 1
-            GLOBCOUNT += 1
+    try:
+        with open(pyfile, 'r') as file:
+            lines = file.readlines()
+        file.close()
+        for _, line in enumerate(lines):
+            if SEARCH_keyword in line.lower():
+                if DISPLAY_LINE == True:
+                    print(line)
+                FOUND = True
+                COUNT += 1
+                GLOBCOUNT += 1
+    except:
+        pass
     if FOUND:
-        print(colored(f"found {COUNT} times in file {os.path.basename(pyfile)}","red"))
+        parentdir = Path(pyfile).parent
+        print(colored(f"found {COUNT} times in file {os.path.basename(Path(pyfile).parent)}\{os.path.basename(pyfile)}","red"))
 
 if GLOBCOUNT == 0:
     print("Nothing found")

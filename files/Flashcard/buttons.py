@@ -4,6 +4,7 @@ Created on Tue Aug 25 23:38:01 2020
 
 @author: Anton
 """
+import _GUI.active_panel as panel
 
 def buttonCorrect(self):
     self.NEWCARD = True
@@ -27,7 +28,7 @@ def buttonCorrect(self):
             message = f"Your score is: {_score_}%"
             with gui.MyDialogScore(self,message) as dlg:
                 if dlg.ShowModal() == wx.ID_OK:  
-                    p.SwitchPanel(self,0)
+                    panel.SwitchPanel(self,0)
                     log.DEBUGLOG(debugmode=self.debugmode,msg=f"FC MODULE: flashcard program finished")
                     
             self.m_menubar1.EnableTop(2,False)
@@ -74,7 +75,7 @@ def buttonWrong(self):
             message = f"Your score is: {_score_}%"
             with gui.MyDialogScore(self,message) as dlg:
                 if dlg.ShowModal() == wx.ID_OK: 
-                    p.SwitchPanel(self,0)
+                    panel.SwitchPanel(self,0)
                     log.DEBUGLOG(debugmode=self.debugmode,msg=f"FC MODULE: flashcard program finished")
             self.m_menubar1.EnableTop(2,False)
             runprogram = False
