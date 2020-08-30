@@ -7,6 +7,8 @@ Created on Sat Aug 29 08:40:20 2020
 import _GUI.active_panel as panel
 import _GUI.gui_flashbook as gui
 import json
+import os
+import wx
 
 class Library(gui.MyFrame):
     def __init__(self,mainframe):
@@ -15,7 +17,7 @@ class Library(gui.MyFrame):
         This way you can still access all panels etc from the original GUI"""
         
         self.bookwidth = 250
-        self.topicwidth = 120
+        self.topicwidth = 150
         self.listctrl = mainframe.m_listTopics
         self.mainframe = mainframe
         self.topic_books = {}
@@ -31,7 +33,7 @@ class Library(gui.MyFrame):
     def setcolumns(self):
         
         self.userdata
-        self.listctrl.SetColumnWidth(0,self.topicwidth)
+        
         """Determine how many columns you need"""
         columnnr = 1
         for entry in self.userdata.values():
@@ -39,6 +41,7 @@ class Library(gui.MyFrame):
                 columnnr = len(entry)
         """Set nr of columns """
         self.listctrl.InsertColumn(0, "Topic")
+        self.listctrl.SetColumnWidth(0,self.topicwidth)
         for i in range(columnnr):
             self.listctrl.InsertColumn(i+1, f"Book title {i+1}")
             self.listctrl.SetColumnWidth(i+1,self.bookwidth)
@@ -50,19 +53,22 @@ class Library(gui.MyFrame):
         for key in self.userdata:
             topic = [key]
             books = self.userdata[key]
+            print(f"tb = {topic+books}")
             self.listctrl.Append(topic+books)
-    
+        
     
     def showdata(self):
         self.cleargrid()
         self.loaddata()
+        panel.SwitchPanel(self.mainframe,7)
+        
         if not self.userdata:
             self.showcasefunctionality()
         else:
             self.setcolumns()
             self.setdata()
-            self.setcolumns()
-        panel.SwitchPanel(self.mainframe,7)
+            
+        
         
     def showcasefunctionality(self):
         """Ïf there are no books, showcase how it is used""" 
@@ -74,6 +80,7 @@ class Library(gui.MyFrame):
         for i in range(len(Booktitles)):
             print(f"i {i}")
             self.listctrl.InsertColumn(i+1, f"Book title {i+1}")
+            
                 
         self.listctrl.SetColumnWidth(0,self.topicwidth)
         for i in range(len(Booktitles)):
@@ -101,20 +108,69 @@ class Library(gui.MyFrame):
             file.close()
         except:
             pass        
-    
-    def addbook(self,event):
-        index = self.listctrl.GetFocusedItem()        
+        
+    def deletetopic(self,event):
+        index = self.listctrl.GetFocusedItem()  
+        print(f"index = {index}")
         if index >= 0: #error code is -1
             print(f"found entry")
             
-            topic = self.listctrl.GetItemText(index)
-            print(f"topic = {topic}")
-            if topic in self.userdata:
-                self.userdata[topic] += ["booklabel"]
-            else:
-                self.userdata[topic] = ["booklabel"]
+            
+            oldtopic = self.listctrl.GetItemText(index)
+            
+            
+            if oldtopic in self.userdata:                
+                self.userdata.pop(oldtopic,None)
+            
+            self.mainframe.m_textTopic.SetValue('') 
             self.savedata()
             self.showdata()
+            self.listctrl.Focus(index)   
+            self.listctrl.Select(index)
+        
+    def renametopic(self,event):
+        index = self.listctrl.GetFocusedItem()  
+        print(f"index = {index}")
+        if index >= 0: #error code is -1
+            print(f"found entry")
+            
+            
+            oldtopic = self.listctrl.GetItemText(index)
+            newtopic = self.mainframe.m_textTopic.GetValue()
+            
+            if oldtopic in self.userdata and newtopic not in self.userdata:
+                books = self.userdata[oldtopic] 
+                self.userdata.pop(oldtopic,None)
+                self.userdata[newtopic] = books
+            
+            self.mainframe.m_textTopic.SetValue('') 
+            self.savedata()
+            self.showdata()
+            self.listctrl.Focus(index)   
+            self.listctrl.Select(index)
+        
+    def addbook(self,event):
+        index = self.listctrl.GetFocusedItem()        
+        if index >= 0: #error code is -1
+            with wx.DirDialog(self.mainframe, "Choose which book to open",style=wx.DD_DEFAULT_STYLE | wx.DD_DIR_MUST_EXIST,defaultPath=str(self.mainframe.booksdir)) as DirDialog:
+                #fileDialog.SetPath(str(self.notesdir)+'\.')
+                if DirDialog.ShowModal() == wx.ID_CANCEL:
+                    return None    # the user changed their mind
+                else:
+                    dirpath = DirDialog.GetPath()
+                    filename = os.path.basename(dirpath)
+                    print(f"found entry")
+                    
+                    topic = self.listctrl.GetItemText(index)
+                    print(f"topic = {topic}")
+                    if topic in self.userdata:
+                        self.userdata[topic] += [filename]
+                    else:
+                        self.userdata[topic] = [filename]
+                    self.savedata()
+                    self.showdata()
+            self.listctrl.Focus(index)   
+            self.listctrl.Select(index)
             
     def addtopic(self,event):
         topic = self.mainframe.m_textTopic.GetValue()
@@ -123,9 +179,6 @@ class Library(gui.MyFrame):
                 self.userdata[topic] = []
                 self.savedata()
                 self.showdata()
-                
-            #self.listctrl.Append([topic])
+            
             self.mainframe.m_textTopic.SetValue('')
-        
-        
         pass

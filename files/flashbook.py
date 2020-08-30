@@ -183,7 +183,11 @@ class MainFrame(settings,flashbook,flashcard,printer,filetransfer,menusettings,h
         self.FlashbookLibrary.addtopic(event)
     def m_buttonBookOnButtonClick(self,event):
         self.FlashbookLibrary.addbook(event)
-        
+    def m_buttonReTopicOnButtonClick(self,event):
+        self.FlashbookLibrary.renametopic(event)
+    
+    def m_buttonDelTopicOnButtonClick(self,event):
+        self.FlashbookLibrary.deletetopic(event)
     def m_listTopicsOnListItemSelected(self,event):
         
         pass
