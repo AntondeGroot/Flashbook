@@ -1164,7 +1164,7 @@ class MyFrame ( wx.Frame ):
 		self.panel6.SetSizer( bSizer443 )
 		self.panel6.Layout()
 		bSizer443.Fit( self.panel6 )
-		bSizer7.Add( self.panel6, 1, wx.EXPAND |wx.ALL, 50 )
+		bSizer7.Add( self.panel6, 1, wx.EXPAND |wx.ALL, 0 )
 		
 		self.panelHelp = wx.Panel( self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TAB_TRAVERSAL )
 		self.panelHelp.SetBackgroundColour( wx.Colour( 254, 240, 231 ) )

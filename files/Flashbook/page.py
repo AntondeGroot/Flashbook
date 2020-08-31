@@ -4,6 +4,11 @@ Created on Wed Aug 26 20:23:08 2020
 
 @author: Anton
 """
+import _logging.log_module as log
+from pathlib import Path
+import PIL
+import json
+import wx
 
 def SetScrollbars(self): 
     scrollWin = self.m_scrolledWindow1

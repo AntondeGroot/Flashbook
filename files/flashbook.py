@@ -193,8 +193,15 @@ class MainFrame(settings,flashbook,flashcard,printer,filetransfer,menusettings,h
         pass
     def m_listTopicsOnListItemDeselected(self,event):    
         pass
-    
-    
+    def m_buttonStartBookOnButtonClick(self,event):
+        index = self.m_listTopics.GetFocusedItem()  
+        print(f"index = {index}")
+        if index >= 0: #error code is -1
+            
+            
+            
+            oldtopic = self.m_listTopics.GetItemText(index)
+            print(f"topic {oldtopic}")
     #%% timecount
     def m_scrolledWindow1OnMouseEvents( self, event ):
         SaveTime(self)
