@@ -33,6 +33,7 @@ addmodule('Synchronize')
 
 # Now do your import
 from Flashbook.fb_modules import *
+import Flashbook.page as page
 from Flashbook.fb_functions import *
 import _GUI.active_panel as panel
 import Books.library as Books
@@ -201,7 +202,10 @@ class MainFrame(settings,flashbook,flashcard,printer,filetransfer,menusettings,h
             
             
             oldtopic = self.m_listTopics.GetItemText(index)
+            self.booktopic = oldtopic
             print(f"topic {oldtopic}")
+            self.booknames = self.FlashbookLibrary.getbooknames(oldtopic)
+            page.savetopic(self)
     #%% timecount
     def m_scrolledWindow1OnMouseEvents( self, event ):
         SaveTime(self)

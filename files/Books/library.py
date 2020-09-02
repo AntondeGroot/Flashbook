@@ -90,7 +90,15 @@ class Library(gui.MyFrame):
         panelwidth = self.topicwidth + self.bookwidth*len(Booktitles)
         self.listctrl.SetSize(panelwidth,-1)
     
-
+    def getbooknames(self,topic):
+        
+        try:
+            with open(self.datafilepath, 'r') as file:
+                userdata = json.load(file)
+            file.close()
+            return userdata[topic]
+        except:
+            return None
     
     def loaddata(self):
         self.userdata = {}

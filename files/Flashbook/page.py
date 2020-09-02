@@ -29,8 +29,6 @@ def LoadPage(self):
     except:
         log.ERRORMESSAGE("Error: cannot load page")
     
-
-    
 def LoadPageNr(self):
     """When a book is opened either start where you left off, or start at page 1"""
     path_file = Path(self.dirsettings, 'userdata_bookpages.txt')
@@ -46,6 +44,8 @@ def LoadPageNr(self):
         self.currentpage = 1
     
 def SavePageNr(self):
+    
+    
     path_file = Path(self.dirsettings, 'userdata_bookpages.txt')
     
     if self.currentpage == 'prtscr' and hasattr(self,'currentpage_backup'):
@@ -58,10 +58,35 @@ def SavePageNr(self):
             file.close()
     else:
         dictionary = {self.bookname:self.currentpage}
+        #dictionary = {self.booktopic : {'bookindex' : self.bookindex, 'booknames':[],'currentpage':self.currentpage}}
     log.DEBUGLOG(debugmode=self.debugmode, msg=f'FB FUNC: save page number, dictionary = {dictionary}')
     with open(path_file,'w') as file:
         file.write(json.dumps(dictionary))
         file.close()
+
+def savetopic(self):
+    topic = self.booktopic
+    "topic : [bookindex,[book1.pdf, ... , bookN.pdf], pagenr]"
+    path_file = Path(self.dirsettings, 'userdata_topicbook.txt')
+    
+    if self.currentpage == 'prtscr' and hasattr(self,'currentpage_backup'):
+        self.currentpage = self.currentpage_backup
+    
+    if path_file.exists():
+        with open(path_file,'r') as file:
+            dictionary = json.load(file)        
+            #dictionary[self.bookname] = self.currentpage
+            dictionary[topic] = [self.bookindex, self.booknames, self.currentpage]
+            file.close()
+    else:
+        dictionary = {topic: [self.bookindex, self.booknames, self.currentpage]}
+        print(f"dictionary = {dictionary}")
+        #dictionary = {self.booktopic : {'bookindex' : self.bookindex, 'booknames':[],'currentpage':self.currentpage}}
+    log.DEBUGLOG(debugmode=self.debugmode, msg=f'FB FUNC: save topicpage number, dictionary = {dictionary}')
+    with open(path_file,'w') as file:
+        file.write(json.dumps(dictionary))
+        file.close()
+    
 
 def ShowPage_fb(self): 
     try:

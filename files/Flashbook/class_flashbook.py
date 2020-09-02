@@ -46,6 +46,9 @@ class flashbook(gui.MyFrame):
         # for scrolling: only remember current and last position, append and pop, if the numbers repeat [0,0] or [X,X] then you know you've reached either the beginning or the end of the window: then flip page 
         # initialize variables:
         self.bookname       = ''
+        self.booktopic      = ''
+        self.booknames      = []
+        self.bookindex      = 0
         self.BorderCoords   = []         
         self.colorlist      = self.bordercolors
         self.currentpage    = 1
@@ -73,20 +76,7 @@ class flashbook(gui.MyFrame):
         self.FlashbookLibrary.showdata()
         
         
-        """        
-        
-        
-        
-        with wx.DirDialog(self, "Choose which book to open",style=wx.DD_DEFAULT_STYLE | wx.DD_DIR_MUST_EXIST,defaultPath=str(self.booksdir)) as DirDialog:
-            #fileDialog.SetPath(str(self.notesdir)+'\.')
-            if DirDialog.ShowModal() == wx.ID_CANCEL:
-                panel.SwitchPanel(self,0) 
-                return None    # the user changed their mind
-            else:
-                dirpath = DirDialog.GetPath()
-                log.DEBUGLOG(debugmode=self.debugmode,msg=f'CLASS FLASHBOOK: opened dirdialog {dirpath}')
-                m.dirchanged(self,dirpath)
-        """                
+                  
                 
                 
     def m_btnScreenshotOnButtonClick( self, event ):
