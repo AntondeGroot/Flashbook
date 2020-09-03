@@ -6,6 +6,8 @@ Created on Sat Aug 29 08:40:20 2020
 """
 import _GUI.active_panel as panel
 import _GUI.gui_flashbook as gui
+import _logging.log_module as log
+from pathlib import Path
 import json
 import os
 import wx
@@ -18,6 +20,7 @@ class Library(gui.MyFrame):
         
         self.bookwidth = 250
         self.topicwidth = 150
+        self.topic = ''
         self.listctrl = mainframe.m_listTopics
         self.mainframe = mainframe
         self.topic_books = {}
@@ -67,7 +70,30 @@ class Library(gui.MyFrame):
         else:
             self.setcolumns()
             self.setdata()
-            
+
+
+    def savetopic(self):
+        topic = self.topic
+        "topic : [bookindex,[book1.pdf, ... , bookN.pdf], pagenr]"
+        path_file = Path(self.mainframe.dirsettings, 'userdata_topicbook.txt')
+        
+        
+        
+        if path_file.exists():
+            with open(path_file,'r') as file:
+                dictionary = json.load(file)        
+                #dictionary[self.bookname] = self.currentpage
+                self.bookindex,_ ,_ =  dictionary[topic]
+                file.close()
+        else:
+            dictionary = {topic: [self.mainframe.bookindex, self.booknames]}
+            print(f"dictionary = {dictionary}")
+            #dictionary = {self.booktopic : {'bookindex' : self.bookindex, 'booknames':[],'currentpage':self.currentpage}}
+        log.DEBUGLOG(debugmode=self.mainframe.debugmode, msg=f'FB FUNC: save topicpage number, dictionary = {dictionary}')
+        with open(path_file,'w') as file:
+            file.write(json.dumps(dictionary))
+            file.close()
+        
         
         
     def showcasefunctionality(self):
@@ -91,7 +117,7 @@ class Library(gui.MyFrame):
         self.listctrl.SetSize(panelwidth,-1)
     
     def getbooknames(self,topic):
-        
+        self.topic = topic
         try:
             with open(self.datafilepath, 'r') as file:
                 userdata = json.load(file)
@@ -116,7 +142,10 @@ class Library(gui.MyFrame):
             file.close()
         except:
             pass        
-        
+    
+    
+    
+    
     def deletetopic(self,event):
         index = self.listctrl.GetFocusedItem()  
         print(f"index = {index}")

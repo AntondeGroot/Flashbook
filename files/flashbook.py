@@ -17,7 +17,7 @@ import sys
 
 flashbookfolder = os.path.join(os.getcwd(),'Flashbook')
 flashbookfolder = os.path.join(os.getcwd(),'Flashcard')
-
+"""
 import sys, os
 
 def addmodule(foldername):
@@ -30,7 +30,7 @@ addmodule('_logging')
 addmodule('_shared_operations')
 addmodule('Print')
 addmodule('Synchronize')
-
+"""
 # Now do your import
 from Flashbook.fb_modules import *
 import Flashbook.page as page
@@ -43,7 +43,7 @@ from _shared_operations import *
 from _logging import *
 
 #%%
-sys.path.insert(1,flashbookfolder)
+#sys.path.insert(1,flashbookfolder)
 
 import threading
 import wx
@@ -62,7 +62,7 @@ from _shared_operations.latexoperations import Latexfile
 import _resources.resources as resources
 import Flashbook.fb_modules    as m
 import _GUI.accelerators_module as acc
-import fc_functions    as f2
+import Flashcard.fc_functions    as f2
 
 import math
 import pylab
@@ -198,14 +198,14 @@ class MainFrame(settings,flashbook,flashcard,printer,filetransfer,menusettings,h
         index = self.m_listTopics.GetFocusedItem()  
         print(f"index = {index}")
         if index >= 0: #error code is -1
+            topic = self.m_listTopics.GetItemText(index)
+            self.booktopic = topic
+            print(f"topic {topic}")
+            self.booknames = self.FlashbookLibrary.getbooknames(topic)
+            self.FlashbookLibrary.savetopic()
+            path = os.path.join(self.booksdir,self.booknames[0])
+            m.openbook(self,path)
             
-            
-            
-            oldtopic = self.m_listTopics.GetItemText(index)
-            self.booktopic = oldtopic
-            print(f"topic {oldtopic}")
-            self.booknames = self.FlashbookLibrary.getbooknames(oldtopic)
-            page.savetopic(self)
     #%% timecount
     def m_scrolledWindow1OnMouseEvents( self, event ):
         SaveTime(self)

@@ -11,7 +11,7 @@ import matplotlib
 import math
 from pathlib import Path
 import random
-import fc_functions as f2
+import Flashcard.fc_functions as f2
 import _logging.timingmodule as timing
 import _logging.log_module as log
 import json

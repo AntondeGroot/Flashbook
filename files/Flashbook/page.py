@@ -5,6 +5,7 @@ Created on Wed Aug 26 20:23:08 2020
 @author: Anton
 """
 import _logging.log_module as log
+import Flashbook.fb_functions as f
 from pathlib import Path
 import PIL
 import json
@@ -64,28 +65,7 @@ def SavePageNr(self):
         file.write(json.dumps(dictionary))
         file.close()
 
-def savetopic(self):
-    topic = self.booktopic
-    "topic : [bookindex,[book1.pdf, ... , bookN.pdf], pagenr]"
-    path_file = Path(self.dirsettings, 'userdata_topicbook.txt')
-    
-    if self.currentpage == 'prtscr' and hasattr(self,'currentpage_backup'):
-        self.currentpage = self.currentpage_backup
-    
-    if path_file.exists():
-        with open(path_file,'r') as file:
-            dictionary = json.load(file)        
-            #dictionary[self.bookname] = self.currentpage
-            dictionary[topic] = [self.bookindex, self.booknames, self.currentpage]
-            file.close()
-    else:
-        dictionary = {topic: [self.bookindex, self.booknames, self.currentpage]}
-        print(f"dictionary = {dictionary}")
-        #dictionary = {self.booktopic : {'bookindex' : self.bookindex, 'booknames':[],'currentpage':self.currentpage}}
-    log.DEBUGLOG(debugmode=self.debugmode, msg=f'FB FUNC: save topicpage number, dictionary = {dictionary}')
-    with open(path_file,'w') as file:
-        file.write(json.dumps(dictionary))
-        file.close()
+
     
 
 def ShowPage_fb(self): 
@@ -99,7 +79,7 @@ def ShowPage_fb(self):
         try:   #draw borders if they exist
             if self.drawborders:
                 pageimage = self.pageimage
-                self.pageimage = drawCoordinates(self,pageimage)
+                self.pageimage = f.drawCoordinates(self,pageimage)
         except:
             pass        
         image2 = wx.Image( width, height )

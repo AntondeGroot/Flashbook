@@ -19,6 +19,7 @@ ICON_EXCLAIM=0x30
 ICON_STOP = 0x10
 MB_ICONINFORMATION = 0x00000040
 MessageBox = ctypes.windll.user32.MessageBoxW
+
 def AddPathvar():
     """
     A binary containing "Poppler for Windows", a PDF rendering library.
@@ -31,9 +32,9 @@ def AddPathvar():
     if "poppler" not in PathSTR:
         dir_ = os.path.dirname(__file__)
         FileName = [x for x in os.listdir(dir_) if 'poppler' in x]
-        if FileName:
+        if isinstance(FileName,list):
             FileName = FileName[0]
-        if FileName != []:
+        if FileName:
             DirPath = os.path.join(dir_ , FileName, "bin")        
             os.environ["PATH"] += os.pathsep + DirPath
 

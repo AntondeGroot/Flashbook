@@ -8,7 +8,7 @@ import ast
 from _settings.settingsfile import settings
 import PIL
 import os
-import fc_functions    as f2
+import Flashcard.fc_functions    as f2
 from pathlib import Path
 import numpy as np
 import re

@@ -10,6 +10,8 @@ import Flashbook.page as page
 import PIL
 import program as p
 import Flashbook.fb_modules    as m
+import Flashbook.events_mouse as mouse
+import Flashbook.scrolling as scroll
 import _GUI.active_panel as panel
 import Books.library as Books
 import Flashbook.fb_functions as f
@@ -160,7 +162,7 @@ class flashbook(gui.MyFrame):
     
     
     def m_bitmapScrollOnMouseWheel( self, event ):
-        m.mousewheel(self,event)
+        scroll.mousewheel(self,event)
         event.Skip()
         
 	# draw borders 

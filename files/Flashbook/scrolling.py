@@ -87,6 +87,7 @@ def mousewheel(self,event):
                     self.m_pageNextFBOnToolClicked(self)
                     scroll_begin_of_page(scrollWin)
                 else:
+                    #check to change pdf files
                     pass    
             else:
                 #to stay effectively on the same page as before you imported a screenshot

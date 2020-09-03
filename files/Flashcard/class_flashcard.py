@@ -6,9 +6,9 @@ Created on Fri Jun 28 10:44:11 2019
 """
 import _GUI.gui_flashbook as gui
 import wx
-import fc_functions    as f2
+import Flashcard.fc_functions    as f2
 import _GUI.active_panel as panel
-import fc_modules as m2
+import Flashcard.fc_modules as m2
 ICON_EXCLAIM=0x30
 import _GUI.accelerators_module as acc
 import os

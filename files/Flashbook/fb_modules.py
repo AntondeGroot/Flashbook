@@ -6,10 +6,12 @@ Created on Fri Sep 14 13:26:43 2018
 from random import randint
 import numpy as np
 import PIL
+import _GUI.active_panel as panel
 import wx
 import os
 #import fb_functions as f
 import Flashbook.fb_functions as f
+import Flashbook.page as page
 import _logging.timingmodule as timing
 import _logging.log_module as log
 import json
@@ -37,7 +39,7 @@ def list2path(templist):
     return output
 
 #%%
-def dirchanged(self,path):
+def openbook(self,path):
     
     """For scrolling: only remember last few positions, append and pop 
     if the numbers repeat [0,...,0] or [X,...,X] then you know you've reached either 
@@ -47,7 +49,8 @@ def dirchanged(self,path):
     self.scrollpos = self.scrollpos_reset
     
     #Keep track of "nrlist" which is a 4 digit nr 18-> "0018" so that it is easily sorted in other programs
-    eventpath = Path(path)#Path(event.GetPath())
+    
+    eventpath = Path(path)
     nrlist = []
     picnames = [str(pic) for pic in eventpath.iterdir() if pic.suffix == '.jpg']
     self.totalpages = len(picnames)
@@ -55,48 +58,27 @@ def dirchanged(self,path):
     if self.totalpages == 0:
         MessageBox(0, " The selected folder does not contain any images!", "Error", MB_ICONINFORMATION)
     
-    for _, picname in enumerate(picnames):
-        
-        SEARCH    = True
-        name_len  = len(picname)
-        indexlist = []
-        while SEARCH:
-            for j in range(name_len):
-                k = name_len - j - 1      
-                if isinstance(picname[k],int) and SEARCH:
-                    indexlist.append(k)  
-                elif not isinstance(picname[k],int):
-                    if j > 0 and isinstance(picname[k+1],int):
-                        SEARCH = False
-                        break
-                elif j == name_len - 1: #EOS
-                    SEARCH = False
-                    break
-        indexlist.sort()
-        len_nr = len(indexlist)
-        
+    for number, picname in enumerate(picnames):        
+        im_number = number+1 #images are 1 indexed numbers        
         # I only expect in the order of 1000 pages
         # make sure you can use the nrlist for later use so you can save the output as 
         # "Bookname + ****" a sorted 4 digit number
-        if len_nr == 1:
-            nrlist.append("000{}".format(picname[indexlist[0]]))
-        elif len_nr == 0:
-            log.DEBUGLOG(debugmode=self.debugmode,msg=f"FB MODULE: found no number for {picname}")
-        else:
-            I = indexlist[0]
-            F = indexlist[-1] + 1
-            nrlist.append("0"*(4-len_nr) + f"{picname[I:F]}")
+        nrlist.append( str(im_number).zfill(4) )
+        
+            
+    print(f"nr_list = {nrlist}")
     picnames = [x for _,x in sorted(zip(nrlist,picnames))]
     
     self.picnames = picnames
     self.bookname = eventpath.name
+    print(f"bookname = {self.bookname}")
     if hasattr(self,'TC'):
         delattr(self,'TC')
     self.TC = timing.TimeCount(self.bookname,"flashbook")
     self.booknamepath = eventpath.relative_to(self.booksdir)
     self.currentpage = 1
     self.PathBorders = Path(self.bordersdir, self.bookname + '_borders.txt')
-    f.LoadPageNr(self)
+    page.LoadPageNr(self)
     
     #Create empty dictionary if it doesn't exist
     if not self.PathBorders.exists():
@@ -140,9 +122,10 @@ def dirchanged(self,path):
         image2 = wx.Image( self.width, self.height )
         image2.SetData( self.pageimage.tobytes() )
         self.m_bitmapScroll.SetBitmap(wx.Bitmap(image2))
-        f.SetScrollbars(self)
+        page.SetScrollbars(self)
     except:
         log.ERRORMESSAGE("Error: could not load scrolled window 2")
+    panel.SwitchPanel(self,1)
     self.Layout()
     
 
