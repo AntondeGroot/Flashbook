@@ -15,7 +15,7 @@ ICON_STOP = 0x10
 MessageBox = ctypes.windll.user32.MessageBoxW
 import win32clipboard
 from win32api import GetSystemMetrics
-import log_module as log
+import _logging.log_module as log
 
 def import_screenshot(self,event):
     """Import a screenshot, it takes multiple monitors into account. 

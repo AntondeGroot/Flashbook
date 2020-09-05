@@ -27,6 +27,9 @@ def AddPathvar():
     It will then add "\bin" within to the path variable.
     This is necessary for the module PDF2Image to work.
     source:     https://simply-python.com/tag/pdftoimage/
+    
+    If using sys.path.insert(,) when loading modules this will result in pdf2image
+    to not work anymore.
     """
     PathSTR = os.environ["PATH"]
     if "poppler" not in PathSTR:

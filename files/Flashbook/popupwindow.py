@@ -5,6 +5,7 @@ Created on Wed Aug 26 20:09:56 2020
 @author: Anton
 """
 import wx
+import _shared_operations.imageoperations as imop
 class Window2(wx.PopupWindow):
     def __init__(self, parent, style,image):
         wx.PopupWindow.__init__(self, parent, style)

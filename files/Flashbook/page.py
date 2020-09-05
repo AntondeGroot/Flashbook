@@ -89,3 +89,47 @@ def ShowPage_fb(self):
             SavePageNr(self)
     except:
         log.ERRORMESSAGE("Error: cannot show page")
+        
+        
+def switchpage(self,event):
+    try:
+        pagenumber = self.currentpage
+        if pagenumber < 1:
+            pagenumber = 1
+        if pagenumber > self.totalpages:
+            pagenumber = self.totalpages
+        self.currentpage = pagenumber
+        f.LoadPage(self)
+        f.ShowPage_fb(self)
+    except:
+        log.ERRORMESSAGE("Error: invalid page number")
+    self.Layout()
+    
+def nextpage(self,event):
+    try:
+        if self.currentpage == 'prtscr':
+            self.currentpage = self.currentpage_backup
+            log.DEBUGLOG(debugmode=self.debugmode,msg=f"FB MODULE: page is now {self.currentpage}")
+        else:
+            if self.currentpage < self.totalpages:
+                self.currentpage += 1
+        LoadPage(self)
+        ShowPage_fb(self)
+        SetScrollbars(self)
+    except:
+        log.ERRORMESSAGE("Error: can't click on next")
+    self.Layout()
+    
+def previouspage(self,event):    
+    try:
+        if self.currentpage == 'prtscr':
+            self.currentpage = self.currentpage_backup
+        else:
+            if self.currentpage > 1:
+                self.currentpage -= 1    
+        LoadPage(self)
+        ShowPage_fb(self)
+        SetScrollbars(self)            
+    except:
+        log.ERRORMESSAGE("Error: can't click on back")
+    self.Layout()

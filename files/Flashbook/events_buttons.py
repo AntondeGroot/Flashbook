@@ -4,6 +4,15 @@ Created on Tue Aug 25 21:57:02 2020
 
 @author: Anton
 """
+import os
+import json
+import Flashbook.page as page
+import _logging.log_module as log
+import _shared_operations.latexoperations as latex
+import _shared_operations.imageoperations as imop
+from Flashbook.fb_modules import list2path
+import Flashbook.popupwindow as popup
+from pathlib import Path
 
 def selectionentered(self,event):
     
@@ -17,7 +26,7 @@ def selectionentered(self,event):
             if QUESTION_MODE:
                 log.DEBUGLOG(debugmode=self.debugmode,msg=f"FB MODULE: question mode")
                 # change mode to answer
-                self.usertext = f.text_to_latex(self,usertext)
+                self.usertext = latex.text_to_latex(self,usertext)
                 self.Flashcard.switchmode()
                 self.m_modeDisplay.SetValue(self.Flashcard.getmode()+":")
                 self.Flashcard.setT(self.m_TopicInput.GetValue())
@@ -27,7 +36,7 @@ def selectionentered(self,event):
                 if PICS_DRAWN > 1:
                     log.DEBUGLOG(debugmode=self.debugmode,msg=f"FB MODULE: multiple pics are drawn")
                     list_ = self.Flashcard.getpiclist("Question")
-                    f.CombinePics(self,list_)
+                    imop.CombinePics(self,list_)
                     list_ = list2path(list_)
                     #if type(list_[0]) is list:
                     self.Flashcard.setpiclist('Question',list_)   
@@ -38,7 +47,7 @@ def selectionentered(self,event):
                     list_ = self.Flashcard.getpiclist("Question")
                     log.DEBUGLOG(debugmode=self.debugmode,msg=f"FB MODULE: 1 pic is drawn,\n\t pic drawn is {list_},\n\t mode is {self.Flashcard.getmode()}")
                     if len(list_)>1 and type(list_[0]) is list:#list in list    
-                        f.CombinePics(self,list_)
+                        imop.CombinePics(self,list_)
                         list_ = list2path(list_)
                         
                     else:
@@ -49,11 +58,11 @@ def selectionentered(self,event):
                 elif PICS_DRAWN == 0:
                     log.DEBUGLOG(debugmode=self.debugmode,msg=f"FB MODULE: only user text input, 0 pics were drawn")
                     self.Flashcard.setQ(usertext)
-                f.ShowInPopup(self,event,"Question")
+                popup.ShowInPopup(self,event,"Question")
                 
             else:#ANSWER mode
                 log.DEBUGLOG(debugmode=self.debugmode,msg=f"FB MODULE: answer mode")
-                self.usertext = f.text_to_latex(self,usertext)
+                self.usertext = latex.text_to_latex(self,usertext)
                 self.questionmode = True
                 # save everything
                 findic = self.dictionary
@@ -75,7 +84,7 @@ def selectionentered(self,event):
                 
                 # remove temporary borders
                 self.pageimage = self.pageimagecopy
-                f.ShowPage_fb(self)
+                page.ShowPage_fb(self)
                 if self.dictionary:
                     with open(self.PathBorders, 'w') as file:
                         file.write(json.dumps(self.dictionary))
@@ -84,14 +93,14 @@ def selectionentered(self,event):
                 if list_A == None:
                     list_A = ''
                 if len(list_A) > 1:
-                    f.CombinePics(self,list_A)
+                    imop.CombinePics(self,list_A)
                     if type(list_A[0]) is list:
                         list_A[0] = list_A[0][0]
                     self.Flashcard.setA(usertext)
                     self.Flashcard.setApic(os.path.basename(list_A[0]))
                 elif len(list_A) == 1:
                     if type(list_A[0]) is list:        
-                        f.CombinePics(self,list_A)
+                        imop.CombinePics(self,list_A)
                         self.Flashcard.setA(usertext)
                         self.Flashcard.setApic(os.path.basename(list_A[0]))
                     else:
@@ -101,7 +110,7 @@ def selectionentered(self,event):
                     self.Flashcard.setA(usertext)
                 
 
-                f.ShowInPopup(self,event,"Answer")                    
+                popup.ShowInPopup(self,event,"Answer")                    
                 # save the user inputs in .tex file
                 
                 self.Flashcard.setT(self.m_TopicInput.GetValue())
@@ -123,27 +132,27 @@ def selectionentered(self,event):
             self.tempdictionary = {}
             # remove temporary borders
             self.pageimage = self.pageimagecopy
-            f.ShowPage_fb(self)
+            page.ShowPage_fb(self)
             list_A = self.Flashcard.getpiclist("Answer")
             if self.dictionary:
                 with open(self.PathBorders, 'w') as file:
                         file.write(json.dumps(self.dictionary)) 
             if len(list_A) > 1:
-                f.CombinePics(self,list_A)
+                imop.CombinePics(self,list_A)
                 if type(list_A[0]) is list:
                     list_A[0] = list_A[0][0]
                 self.Flashcard.setA(usertext)
                 self.Flashcard.setApic(str(list_A[0]))
             elif len(list_A) == 1:
                 if type(list_A[0]) is list:        
-                    f.CombinePics(self,list_A)
+                    imop.CombinePics(self,list_A)
                 else:
                     log.DEBUGLOG(debugmode=self.debugmode,msg=f"FB MODULE: is not a list")
                 self.Flashcard.setA(usertext)
                 self.Flashcard.setApic(str(list_A[0]))               
             
 
-            f.ShowInPopup(self,event,"Answer")                    
+            popup.ShowInPopup(self,event,"Answer")                    
             # save the user inputs in .tex file
             if self.Flashcard.QuestionExists():
                 path = str(Path(self.notesdir, self.bookname +'.tex'))
@@ -165,5 +174,5 @@ def resetselection(self,event):
     self.m_modeDisplay.SetValue(self.Flashcard.getmode()+":")
     # update drawn borders
     self.pageimage = self.pageimagecopy
-    f.LoadPage(self)
-    f.ShowPage_fb(self)
+    page.LoadPage(self)
+    page.ShowPage_fb(self)

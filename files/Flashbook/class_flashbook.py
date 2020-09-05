@@ -138,11 +138,11 @@ class flashbook(gui.MyFrame):
     # change page 
     def m_pageBackFBOnToolClicked( self, event ):
         self.screenshotmode = False
-        m.previouspage(self,event)
+        page.previouspage(self,event)
 	
     def m_pageNextFBOnToolClicked( self, event ):
         self.screenshotmode = False
-        m.nextpage(self,event)
+        page.nextpage(self,event)
     def m_pageUPOnToolClicked( self, event ):
         m.arrowscroll(self,event,'up')
             
@@ -173,7 +173,7 @@ class flashbook(gui.MyFrame):
         event.Skip()
         
     def m_bitmapScrollOnLeftUp( self, event ):
-        m.bitmapleftup(self,event)   
+        mouse.bitmapleftup(self,event)   
         event.Skip()
         
     def m_toolStitchOnButtonClick( self, event ):

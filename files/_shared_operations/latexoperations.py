@@ -157,14 +157,14 @@ def text_to_latex(self,usertext):
     # check for all commands
     for _, command_line in enumerate(commands):
         # extract all the data from a commandline
-        definition_start = fc.findchar('{',command_line,0)
-        definition_end   = fc.findchar('}',command_line,0)
+        definition_start = findchar('{',command_line,0)
+        definition_end   = findchar('}',command_line,0)
         
-        num_start = fc.findchar('\[',command_line,"")
-        num_end   = fc.findchar('\]',command_line,"")
+        num_start = findchar('\[',command_line,"")
+        num_end   = findchar('\]',command_line,"")
         
-        latex_start = fc.findchar('{',command_line,1)   
-        latex_end   = fc.findchar('}',command_line,-1)
+        latex_start = findchar('{',command_line,1)   
+        latex_end   = findchar('}',command_line,-1)
         # find the commands explicitly
         defined_command = command_line[definition_start+1:definition_end]     ## finds \secpar        
         LaTeX_command   = command_line[latex_start+1:latex_end] ## finds \frac{\partial^2 #1}{\partial #2^2}
@@ -262,6 +262,7 @@ class Commands():
             self.answer_command   = r"\\ans{"
             self.topic_command    = r"\\topic{"
             self.size_command     = r"\\size{"
+            
     def pic(self):
         return self.pic_command
     def question(self):

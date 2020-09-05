@@ -4,6 +4,13 @@ Created on Tue Aug 25 21:56:19 2020
 
 @author: Anton
 """
+import PIL
+import numpy as np
+import Flashbook.screenshot as screenshot
+import Flashbook.page as page
+from pathlib import Path
+from random import randint
+import Flashbook.fb_functions as f
 import wx
 def bitmapleftup(self,event):
     if not self.cursor:
@@ -73,7 +80,7 @@ def bitmapleftup(self,event):
                 #restore stitchmode to default
                 self.stitchmode_v =  True     
                 f.SetToolStitchArrow(self,orientation="vertical")
-        f.ShowPage_fb(self)     
+        page.ShowPage_fb(self)     
         
 def panel4_bitmapleftup(self,event):
     self.BoolCropped = True
@@ -95,7 +102,7 @@ def panel4_bitmapleftup(self,event):
         self.pageimagecopy = img
         self.pageimage = img
         # show current page
-        f.ShowPrintScreen(self)     
+        screenshot.ShowPrintScreen(self)     
     
 
 

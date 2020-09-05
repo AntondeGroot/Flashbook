@@ -8,6 +8,7 @@ import Print.print_modules as m3
 import _GUI.gui_flashbook as gui
 import Flashbook.fb_functions    as f
 import Flashbook.fb_modules as m
+import Flashbook.events_buttons as button
 from pathlib import Path
 ICON_EXCLAIM=0x30
 import _GUI.historygraph as historygraph
@@ -57,10 +58,10 @@ class menusettings(gui.MyFrame):
         historygraph.DisplayGraph(self)
         
     def m_resetselectionOnButtonClick( self, event ):           
-        m.resetselection(self,event)
+        button.resetselection(self,event)
     
     def m_enterselectionOnButtonClick( self, event ):
-        m.selectionentered(self,event)
+        button.selectionentered(self,event)
     
     # show drawn borders 
     def m_checkBoxSelectionsOnMenuSelection( self, event ):

@@ -180,15 +180,17 @@ class MainFrame(settings,flashbook,flashcard,printer,filetransfer,menusettings,h
         evt_m.setcursor(self)
         acc.AcceleratorTableSetup(self,"general","set")    
     def m_buttonTopicOnButtonClick( self, event ):
-        print(f"testing")
-        self.FlashbookLibrary.addtopic(event)
+        self.FlashbookLibrary.addtopic()
+        
     def m_buttonBookOnButtonClick(self,event):
-        self.FlashbookLibrary.addbook(event)
+        self.FlashbookLibrary.addbook()
+        
     def m_buttonReTopicOnButtonClick(self,event):
-        self.FlashbookLibrary.renametopic(event)
+        self.FlashbookLibrary.renametopic()
+        
     
     def m_buttonDelTopicOnButtonClick(self,event):
-        self.FlashbookLibrary.deletetopic(event)
+        self.FlashbookLibrary.deletetopic()
     def m_listTopicsOnListItemSelected(self,event):
         
         pass
@@ -202,8 +204,10 @@ class MainFrame(settings,flashbook,flashcard,printer,filetransfer,menusettings,h
             self.booktopic = topic
             print(f"topic {topic}")
             self.booknames = self.FlashbookLibrary.getbooknames(topic)
-            self.FlashbookLibrary.savetopic()
-            path = os.path.join(self.booksdir,self.booknames[0])
+            print(f"booknames = {self.booknames}")
+            
+            self.bookname = self.FlashbookLibrary.getcurrentbook(topic)
+            path = os.path.join(self.booksdir,self.bookname)
             m.openbook(self,path)
             
     #%% timecount
