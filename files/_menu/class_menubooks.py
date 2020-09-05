@@ -72,8 +72,6 @@ class booksmenu(gui.MyFrame):
         from_    = str(self.dirpdfbook)
         tempdir_ = str(self.tempdir)
         to_      = str(self.booksdir)
-        
-        
         m5.ConvertPDF_to_JPG(self,from_,tempdir_,to_)
         #t_pdf = lambda self, from_, tempdir_, to_ : threading.Thread(target = m5.ConvertPDF_to_JPG , args=(self,from_, tempdir_, to_ )).start()
         #t_pdf(self, from_, tempdir_, to_) 

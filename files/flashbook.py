@@ -35,6 +35,7 @@ addmodule('Synchronize')
 from Flashbook.fb_modules import *
 import Flashbook.page as page
 from Flashbook.fb_functions import *
+import _pdf.pdf_modules as pdf
 import _GUI.active_panel as panel
 import Books.library as Books
 
@@ -77,6 +78,7 @@ from _menu.class_helpmenu import helpmenu
 from _menu.class_menuopen import menuopen
 from _menu.class_menuflashcard import flashcardmenu
 from _menu.class_menubooks import booksmenu
+from Books.library import Library
 
 import _logging.log_module as log
 
@@ -131,7 +133,7 @@ def setup_sources(self):
 ###############################################################################
 """
 
-class MainFrame(settings,flashbook,flashcard,printer,filetransfer,menusettings,helpmenu,menuopen,flashcardmenu,booksmenu,Bookbuttons.libbuttons):
+class MainFrame(settings,flashbook,flashcard,printer,filetransfer,menusettings,helpmenu,menuopen,flashcardmenu,booksmenu,Bookbuttons.libbuttons,Library):
     
     """ INITIALIZE """
     def __init__(self,parent): 
@@ -205,7 +207,13 @@ class MainFrame(settings,flashbook,flashcard,printer,filetransfer,menusettings,h
             print(f"topic {topic}")
             self.booknames = self.FlashbookLibrary.getbooknames(topic)
             print(f"booknames = {self.booknames}")
-            
+            ## check if books need to be converted to jpg, so that users no longer need to do this manually
+            pdf.AddPathvar() #needed to make PDF2jpg work, it sets "Poppler for Windows" as pathvariable
+            from_    = str(self.dirpdfbook)
+            tempdir_ = str(self.tempdir)
+            to_      = str(self.booksdir)
+            pdf.ConvertPDF_to_JPG(self,from_,tempdir_,to_,SHOWMESSAGE = False)
+            ###
             self.bookname = self.FlashbookLibrary.getcurrentbook(topic)
             path = os.path.join(self.booksdir,self.bookname)
             m.openbook(self,path)

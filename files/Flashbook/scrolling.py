@@ -93,6 +93,8 @@ def mousewheel(self,event):
                 if self.currentpage < self.totalpages:
                     self.m_pageNextFBOnToolClicked(self)
                     scroll_begin_of_page(scrollWin)
+                    
+                    
                 else:
                     #check to change pdf files
                     self.FlashbookLibrary.switchbooks_next()
@@ -101,7 +103,6 @@ def mousewheel(self,event):
                     path = os.path.join(self.booksdir,self.bookname)
                     m.openbook(self,path)
                     
-                    pass    
             else:
                 #to stay effectively on the same page as before you imported a screenshot
                 self.currentpage = self.currentpage_backup - 1

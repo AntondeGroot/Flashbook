@@ -9,6 +9,7 @@ import _GUI.gui_flashbook as gui
 import _logging.log_module as log
 from pathlib import Path
 import json
+import shutil
 import os
 import wx
 
@@ -86,6 +87,8 @@ class Library(gui.MyFrame):
     #======================== show how to use it to new users    
     def showcasefunctionality(self):
         """Ïf there are no books, showcase how it is used""" 
+        
+        
         self.cleargrid()        
         Topic = ["Example: Physics"]
         Booktitles = ["Classical Mechanics for dummies.pdf", "Classical Mechanics for noobs.pdf","Homework assignments.pdf"]
@@ -103,6 +106,11 @@ class Library(gui.MyFrame):
         #resize panel
         panelwidth = self.topicwidth + self.bookwidth*len(Booktitles)
         self.listctrl.SetSize(panelwidth,-1)
+        
+        MessageBox(0, "Welcome new user!\n\n"+
+                   "First fill in the name of a topic in the textbox and click 'Add Topic'. For example Physics/Biology or something more specific\n\n"+
+                   "Then you can add PDFs that belong to that topic, for example a textbook & your homework assignments\n\n"+
+                   "Once you've finished reading 1 PDF the program will then continue with the next PDF belonging to the same topic", "Welcome new user!", MB_ICONINFORMATION)
 
     #======================== save data
     """
@@ -141,13 +149,14 @@ class Library(gui.MyFrame):
             return None
     #======================== save data
     def switchbooks_next(self):
+        
         print(f"switchbook topic = {self.topic}")
         _, booknames = self.data_topicbook[self.topic]
         nr_book_indices = len(booknames)-1
         if self.bookindex < nr_book_indices:
             self.bookindex += 1
             self.bookname = booknames[self.bookindex]
-        print(f"index = {self.bookname}")
+            print(f"index = {self.bookname}")
         self.savedata()    
         
     def switchbooks_previous(self):
@@ -237,17 +246,22 @@ class Library(gui.MyFrame):
             topic = self.listctrl.GetItemText(index)
             
             
-            with wx.DirDialog(self.mainframe, "Choose which book to open",style=wx.DD_DEFAULT_STYLE | wx.DD_DIR_MUST_EXIST,defaultPath=str(self.mainframe.booksdir)) as DirDialog:
-                #fileDialog.SetPath(str(self.notesdir)+'\.')
-                if DirDialog.ShowModal() == wx.ID_CANCEL:
+            #%%
+            
+            with wx.FileDialog(self.mainframe, "Choose a PDF",defaultDir=str(self.mainframe.dirpdfbook), wildcard="*.pdf",style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST) as fileDialog:
+                #fileDialog.SetPath(str(self.mainframe.dirpdfbook)+'\.') 
+                if fileDialog.ShowModal() == wx.ID_CANCEL:
                     return None    # the user changed their mind
                 else:
-                    dirpath = DirDialog.GetPath()
-                    filename = os.path.basename(dirpath)
-                    print(f"found entry")
+                    filepath = fileDialog.GetPath()
+                    if str(self.mainframe.dirpdfbook) not  in str(filepath):
+                        #pdf is not yet imported into correct folder and is selected from elsewhere
+                        src = filepath
+                        dst = self.mainframe.dirpdfbook
+                        shutil.copy2(src, dst, follow_symlinks=True)
+                        
+                    filename = os.path.basename(filepath)
                     
-                    
-                    print(f"topic = {topic}")
                     if topic in self.data_topicbook:
                         self.bookindex, booknames = self.data_topicbook[topic]                        
                         booknames += [filename]
@@ -257,19 +271,21 @@ class Library(gui.MyFrame):
                         self.data_topicbook[topic] = [self.bookindex,[filename]]
                     self.savedata()
                     self.showdata()
+                    
             self.listctrl.Focus(index)   
             self.listctrl.Select(index)
         else:
             if len(self.data_topicbook) == 1:
                 topic = list(self.data_topicbook.keys())[0]
                 #if only one topic exists choose that one,
-                with wx.DirDialog(self.mainframe, "Choose which book to open",style=wx.DD_DEFAULT_STYLE | wx.DD_DIR_MUST_EXIST,defaultPath=str(self.mainframe.booksdir)) as DirDialog:
+                with wx.FileDialog(self.mainframe, "Choose a PDF",defaultDir=str(self.mainframe.dirpdfbook), wildcard="*.pdf",style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST) as fileDialog:
+                    #with wx.DirDialog(self.mainframe, "Choose which book to open",style=wx.DD_DEFAULT_STYLE | wx.DD_DIR_MUST_EXIST,defaultPath=str(self.mainframe.booksdir)) as DirDialog:
                     #fileDialog.SetPath(str(self.notesdir)+'\.')
-                    if DirDialog.ShowModal() == wx.ID_CANCEL:
+                    if fileDialog.ShowModal() == wx.ID_CANCEL:
                         return None    # the user changed their mind
                     else:
-                        dirpath = DirDialog.GetPath()
-                        filename = os.path.basename(dirpath)
+                        filepath = fileDialog.GetPath()
+                        filename = os.path.basename(filepath)
                         print(f"found entry")
                         
                         
@@ -299,4 +315,6 @@ class Library(gui.MyFrame):
                 self.showdata()
             
             self.mainframe.m_textTopic.SetValue('')
+        else:
+            MessageBox(0, "You must fill in a name of the topic in the textbox!", "Error", MB_ICONINFORMATION)
         pass

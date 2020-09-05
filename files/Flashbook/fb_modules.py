@@ -49,7 +49,7 @@ def openbook(self,path):
     self.scrollpos = self.scrollpos_reset
     
     #Keep track of "nrlist" which is a 4 digit nr 18-> "0018" so that it is easily sorted in other programs
-    
+    path = os.path.splitext(path)[0] #always remove suffixes as they should refer to a folder not file.
     eventpath = Path(path)
     nrlist = []
     picnames = [str(pic) for pic in eventpath.iterdir() if pic.suffix == '.jpg']
