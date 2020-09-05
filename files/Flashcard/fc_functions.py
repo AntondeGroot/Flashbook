@@ -333,6 +333,7 @@ def clearbitmap(self):
 def displaycard(self):
     #try:
     log.DEBUGLOG(debugmode=self.debugmode,msg=f"FC FUNCTIONS: display card")
+    print(f"displaycard : index = {self.index} , cards = {len(self.cardorder)} cardorder = {self.cardorder}")
     trueindex = self.cardorder[self.index]
     rawcard = self.Latexfile.getline_i_card(trueindex)
     

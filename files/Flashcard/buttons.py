@@ -5,7 +5,13 @@ Created on Tue Aug 25 23:38:01 2020
 @author: Anton
 """
 import _GUI.active_panel as panel
-
+import Flashcard.userdata as data
+import Flashcard.card as card
+import _logging.log_module as log
+import _GUI.gui_flashbook as gui
+import wx
+import matplotlib
+import Flashcard.fc_functions as f2
 def buttonCorrect(self):
     self.NEWCARD = True
     f2.clearbitmap(self)
@@ -22,7 +28,7 @@ def buttonCorrect(self):
             self.score = self.nr_questions
         if self.index > (self.nr_questions-1): 
             self.index = (self.nr_questions-1)
-            f2.remove_stats(self)
+            data.remove_stats(self)
             _score_ = round(float(self.score)/self.nr_questions*100,1)
             #MessageBox(0, f"Your score is: {_score_}%", "Result", 1 )    
             message = f"Your score is: {_score_}%"
@@ -42,8 +48,8 @@ def buttonCorrect(self):
         
         # update stats
         if runprogram:
-            f2.set_stats(self)
-            f2.save_stats(self)   
+            data.set_stats(self)
+            data.save_stats(self)   
             # display cards
             f2.displaycard(self)
             f2.switch_bitmap(self)
@@ -91,8 +97,8 @@ def buttonWrong(self):
         
         ## update stats
         if runprogram:
-            f2.set_stats(self)
-            f2.save_stats(self)    
+            data.set_stats(self)
+            data.save_stats(self)    
             f2.displaycard(self)
             f2.switch_bitmap(self)
         f2.SetScrollbars_fc(self)

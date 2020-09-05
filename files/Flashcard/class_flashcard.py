@@ -7,8 +7,10 @@ Created on Fri Jun 28 10:44:11 2019
 import _GUI.gui_flashbook as gui
 import wx
 import Flashcard.fc_functions    as f2
+import Flashcard.card as card
 import _GUI.active_panel as panel
 import Flashcard.fc_modules as m2
+import Flashcard.buttons as button
 ICON_EXCLAIM=0x30
 import _GUI.accelerators_module as acc
 import os
@@ -85,43 +87,43 @@ class flashcard(gui.MyFrame):
                 m2.startprogram(self,filepath)
     # button events
     def m_buttonCorrectOnButtonClick( self, event ):  
-        m2.buttonCorrect(self)
+        button.buttonCorrect(self)
         SaveTime(self)
         event.Skip()
         
     def m_bitmapScrollFCOnLeftUp( self, event ):
-        m2.buttonCorrect(self)
+        button.buttonCorrect(self)
         event.Skip()
     
     # flip flashcard
     def m_toolSwitchOnToolClicked( self, event ):
-        m2.switchCard(self)
+        card.switchCard(self)
         SaveTime(self)
         event.Skip()
     
     def m_scrolledWindow11OnLeftUp( self, event ):
-        m2.buttonCorrect(self)
+        button.buttonCorrect(self)
         event.Skip()
         
     def m_scrolledWindow11OnRightUp( self, event ):
-        m2.buttonWrong(self)
+        button.buttonWrong(self)
         event.Skip()
         
     def m_scrolledWindow11OnMouseWheel( self, event ):
-        m2.switchCard(self)
+        card.switchCard(self)
         event.Skip()
     
     def m_buttonWrongOnButtonClick( self, event ):
-        m2.buttonWrong(self)
+        button.buttonWrong(self)
         SaveTime(self)
         event.Skip()
         
     def m_bitmapScrollFCOnRightUp( self, event ):
-        m2.buttonWrong(self)   
+        button.buttonWrong(self)   
         event.Skip()
 	
     def m_toolSwitchFCOnToolClicked( self, event ):
-        m2.switchCard(self)
+        card.switchCard(self)
 	
     def m_bitmapScrollFCOnMouseWheel( self, event ):
-        m2.switchCard(self)
+        card.switchCard(self)

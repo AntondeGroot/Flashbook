@@ -6,7 +6,7 @@ Created on Tue Aug 25 23:41:55 2020
 """
 import random
 import _logging.log_module as log
-import Flashcard.fc_functions as f2
+import Flashcard.userdata as userdata
 def DetermineCardorder(self,USERINPUT):
     """
     USERINPUT: boolean, 
@@ -56,7 +56,7 @@ def DetermineCardorder(self,USERINPUT):
                             index += 1    
                         self.cardorder = cardorder[:self.nr_questions] 
             else:
-                f2.load_stats(self)  
+                userdata.load_stats(self)  
         self.CardsDeck.set_cardorder(self.cardorder)            
     except:
        log.ERRORMESSAGE("Error: couldn't put the cards in a specific order")

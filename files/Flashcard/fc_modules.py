@@ -18,6 +18,7 @@ import json
 import ctypes
 import _GUI.gui_flashbook as gui
 import program as p
+import Flashcard.userdata as userdata
 
 MB_ICONINFORMATION = 0x00000040
 MessageBox = ctypes.windll.user32.MessageBoxW
@@ -95,10 +96,10 @@ def startprogram(self,filepath):
                 
             if self.continueSession:
                 log.DEBUGLOG(debugmode=self.debugmode,msg=f"FC MODULE: continue last flashcard session")
-                f2.load_stats(self)
+                userdata.load_stats(self)
             else:
                 log.DEBUGLOG(debugmode=self.debugmode,msg=f"FC MODULE: do not continue last flashcard session")
-                f2.remove_stats(self)
+                userdata.remove_stats(self)
             
         except:
             log.ERRORMESSAGE("Error: Couldn't open Dialog window nr 1")

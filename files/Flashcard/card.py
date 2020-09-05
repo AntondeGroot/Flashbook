@@ -4,6 +4,8 @@ Created on Tue Aug 25 23:38:49 2020
 
 @author: Anton
 """
+import Flashcard.fc_functions as f2
+import _logging.log_module as log
 
 def buttonPreviousCard(self):
     f2.clearbitmap(self)
