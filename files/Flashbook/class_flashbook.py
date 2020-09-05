@@ -16,6 +16,7 @@ import Flashbook.scrolling as scroll
 import _GUI.active_panel as panel
 import Books.library as Books
 import Flashbook.fb_functions as f
+import Flashbook.screenshot as screenshot
 import Print.print_modules as m3
 from pathlib import Path
 ICON_EXCLAIM=0x30
@@ -90,7 +91,7 @@ class flashbook(gui.MyFrame):
             # the backup with the string 'prtscr' 
             self.currentpage_backup = self.currentpage
         self.currentpage = 'prtscr'
-        f.import_screenshot(self,event)
+        screenshot.import_screenshot(self,event)
         
     def m_userInputOnEnterWindow( self, event ):
         log.DEBUGLOG(debugmode=self.debugmode,msg=f'CLASS FLASHBOOK: user entered window')
@@ -145,10 +146,10 @@ class flashbook(gui.MyFrame):
         self.screenshotmode = False
         page.nextpage(self,event)
     def m_pageUPOnToolClicked( self, event ):
-        m.arrowscroll(self,event,'up')
+        scroll.arrowscroll(self,event,'up')
             
     def m_pageDOWNOnToolClicked( self, event ):
-        m.arrowscroll(self,event,'down')        
+        scroll.arrowscroll(self,event,'down')        
     
     def m_CurrentPageFBOnEnterWindow( self, event ):
         acc.AcceleratorTableSetup(self,"flashbook","pagewindow")

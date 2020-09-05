@@ -26,6 +26,7 @@ def bitmapleftup(self,event):
     y1 = int(y1/self.zoom)
     
     VALID_RECTANGLE = abs(x1-x0)>2 and abs(y1-y0)>2 #should be at least of a certain width and height
+    print(f"rectangle = {VALID_RECTANGLE}")
     if VALID_RECTANGLE:            
         self.BorderCoords = [x0,y0,x1,y1]
         #save all borders in dict
@@ -57,6 +58,7 @@ def bitmapleftup(self,event):
             if not filename.exists():
                 FIND = False
         img.save(filename)
+        
         
         """The list will look like the following:
         [vert1 [hor1,hor2,hor3],vert2,vert3,[hor4,hor5]]
