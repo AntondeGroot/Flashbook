@@ -99,8 +99,8 @@ def switchpage(self,event):
         if pagenumber > self.totalpages:
             pagenumber = self.totalpages
         self.currentpage = pagenumber
-        f.LoadPage(self)
-        f.ShowPage_fb(self)
+        LoadPage(self)
+        ShowPage_fb(self)
     except:
         log.ERRORMESSAGE("Error: invalid page number")
     self.Layout()

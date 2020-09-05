@@ -4,15 +4,15 @@ Created on Tue Aug 25 21:39:06 2020
 
 @author: Anton
 """
-import fb_functions as f
-import log_module as log
+import Flashbook.page as page
+import _logging.log_module as log
 
 def zoomin(self,event):
     try:
         self.zoom += 0.1
-        f.LoadPage(self)
-        f.ShowPage_fb(self)
-        f.SetScrollbars(self)
+        page.LoadPage(self)
+        page.ShowPage_fb(self)
+        page.SetScrollbars(self)
         percentage = int(self.zoom*100)
         self.m_ZoomFB.SetValue(f"{percentage}%")
         self.Layout()
@@ -25,9 +25,9 @@ def zoomout(self,event):
             self.zoom = self.zoom
         else:
             self.zoom += -0.1
-        f.LoadPage(self)
-        f.ShowPage_fb(self)
-        f.SetScrollbars(self)
+        page.LoadPage(self)
+        page.ShowPage_fb(self)
+        page.SetScrollbars(self)
         percentage = int(self.zoom*100)
         self.m_ZoomFB.SetValue(f"{percentage}%")
         self.panel1.Refresh() # to remove the remnants of a larger bitmap when the page shrinks

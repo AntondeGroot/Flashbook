@@ -4,7 +4,8 @@ Created on Tue Aug 25 21:36:24 2020
 
 @author: Anton
 """
-
+import os
+import Flashbook.fb_modules as m
 import wx
 
 def arrowscroll(self,event,direction):
@@ -73,7 +74,13 @@ def mousewheel(self,event):
                     self.m_pageBackFBOnToolClicked(self)
                     scroll_end_of_page(scrollWin)
                 else:
-                    scroll_begin_of_page(scrollWin)
+                    self.FlashbookLibrary.switchbooks_previous()
+                    self.bookname = self.FlashbookLibrary.getcurrentbook(self.booktopic)
+                    print(f"current book after chagne = {self.bookname}")
+                    path = os.path.join(self.booksdir,self.bookname)
+                    m.openbook(self,path)
+                    scroll_end_of_page(scrollWin)
+                    #scroll_begin_of_page(scrollWin)
             else:
                 #to stay effectively on the same page as before you imported a screenshot
                 self.currentpage = self.currentpage_backup + 1 
@@ -88,6 +95,12 @@ def mousewheel(self,event):
                     scroll_begin_of_page(scrollWin)
                 else:
                     #check to change pdf files
+                    self.FlashbookLibrary.switchbooks_next()
+                    self.bookname = self.FlashbookLibrary.getcurrentbook(self.booktopic)
+                    print(f"current book after chagne = {self.bookname}")
+                    path = os.path.join(self.booksdir,self.bookname)
+                    m.openbook(self,path)
+                    
                     pass    
             else:
                 #to stay effectively on the same page as before you imported a screenshot

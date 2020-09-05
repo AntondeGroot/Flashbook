@@ -7,6 +7,7 @@ Created on Fri Jun 28 10:27:03 2019
 import _GUI.gui_flashbook as gui
 import wx
 import Flashbook.page as page
+import Flashbook.zoom as zoom
 import PIL
 import program as p
 import Flashbook.fb_modules    as m
@@ -130,10 +131,10 @@ class flashbook(gui.MyFrame):
     
 	# zoom in 
     def m_toolPlusFBOnToolClicked( self, event ):
-        m.zoomin(self,event)
+        zoom.zoomin(self,event)
 	
     def m_toolMinFBOnToolClicked( self, event ):
-        m.zoomout(self,event)
+        zoom.zoomout(self,event)
 	
     # change page 
     def m_pageBackFBOnToolClicked( self, event ):
@@ -158,7 +159,7 @@ class flashbook(gui.MyFrame):
             self.currentpage = int(self.m_CurrentPageFB.GetValue())
         except:
             self.currentpage = 1
-        m.switchpage(self,event)
+        page.switchpage(self,event)
     
     
     def m_bitmapScrollOnMouseWheel( self, event ):

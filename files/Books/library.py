@@ -140,6 +140,21 @@ class Library(gui.MyFrame):
         except:
             return None
     #======================== save data
+    def switchbooks_next(self):
+        print(f"switchbook topic = {self.topic}")
+        _, booknames = self.data_topicbook[self.topic]
+        nr_book_indices = len(booknames)-1
+        if self.bookindex < nr_book_indices:
+            self.bookindex += 1
+            self.bookname = booknames[self.bookindex]
+        print(f"index = {self.bookname}")
+        self.savedata()    
+        
+    def switchbooks_previous(self):
+        if self.bookindex > 0:
+            self.bookindex -= 1
+        self.savedata()
+    
     def getcurrentbook(self,topic):
         self.topic = topic
         try:
@@ -147,10 +162,10 @@ class Library(gui.MyFrame):
                 userdata = json.load(file)
             file.close()
             
-            bookindex,booknames = userdata[topic]
-            self.bookindex = bookindex
+            _,booknames = userdata[topic]
             
-            return booknames[bookindex]
+            
+            return booknames[self.bookindex]
         except:
             return None
     
