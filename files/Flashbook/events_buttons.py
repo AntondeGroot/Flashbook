@@ -21,6 +21,7 @@ def selectionentered(self,event):
         PICS_DRAWN = self.Flashcard.nrpics("Question")
         QUESTION_MODE = self.Flashcard.getquestionmode()
         if  USER_textinput or PICS_DRAWN > 0:
+            self.Flashcard.setbook(self.bookname)
             log.DEBUGLOG(debugmode=self.debugmode,msg=f"FB MODULE: a selection was entered")
             usertext = USER_textinput
             if QUESTION_MODE:
@@ -115,8 +116,7 @@ def selectionentered(self,event):
                 
                 self.Flashcard.setT(self.m_TopicInput.GetValue())
                 if self.Flashcard.QuestionExists():
-                    path = str(Path(self.notesdir, self.bookname +'.tex'))
-                    self.Flashcard.saveCard(path)
+                    self.Flashcard.saveCard()
                 #reset all
                 self.Flashcard.reset()
                 self.m_modeDisplay.SetValue(self.Flashcard.getmode()+":")
@@ -155,8 +155,8 @@ def selectionentered(self,event):
             popup.ShowInPopup(self,event,"Answer")                    
             # save the user inputs in .tex file
             if self.Flashcard.QuestionExists():
-                path = str(Path(self.notesdir, self.bookname +'.tex'))
-                self.Flashcard.saveCard(path)
+                #path = str(Path(self.notesdir, self.bookname +'.tex'))
+                self.Flashcard.saveCard()
             #reset all
             self.Flashcard.reset()
             self.m_modeDisplay.SetValue(self.Flashcard.getmode()+":")

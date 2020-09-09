@@ -155,7 +155,7 @@ class MainFrame(settings,flashbook,flashcard,printer,filetransfer,menusettings,h
         
         log.INITIALIZE(debugmode=self.debugmode)
         self.Latexfile = Latexfile()
-        self.Flashcard = Flashcard(self.LaTeXfontsize)
+        self.Flashcard = Flashcard(fontsize = self.LaTeXfontsize,savefolder = self.notesdir)
         self.CardsDeck = CardsDeck()
         self.FlashbookLibrary = Books.Library(self)
         
@@ -361,7 +361,7 @@ class CardsDeck(settings):
 
     
 class Flashcard():
-    def __init__(self,fontsize):
+    def __init__(self,fontsize = 20, savefolder = None):
         self.a4page_w = 1240
         self.question = ''
         self.questionpic = ''
@@ -382,6 +382,33 @@ class Flashcard():
         self.size_topic = (0,0)
         self.sizelist = '[(0,0),(0,0),(0,0),(0,0),(0,0)]'
         self.LaTeXfontsize = fontsize
+        self.savefolder = savefolder
+        self.carddict = {}
+        self.bookname = ''
+        self.pagenr = 1
+        
+        """{card_id : 12345, question : {rect_id: 54321, text: '',pic : '' }, answer : {rect_id: 12435, text: '',pic : '' }, topic : 'Topic', size: [0,0,0,0]}
+        
+        The idea is: each Q/A card has an unique ID
+        The Q card has an sub-id if a rectangle has been drawn
+        The A card has an sub-id"""
+    
+    def setbook(self,bookname):
+        self.bookname = bookname
+    
+    def addID(self):
+        from random import randint
+        FIND_ID = True
+        
+        settingsfile = Path(self.savefolder,"ID_list.txt")
+        
+            
+        
+        while FIND_ID:
+            rand_nr = str(randint(0, 99999)).rjust(5, "0")
+            print(rand_nr)
+        
+        pass
         
     def reset(self):
         self.question = ''
@@ -561,14 +588,35 @@ class Flashcard():
     def setApic(self,partialpath):
         self.answerpic = r"\pic{" + partialpath + r"}"
     #save the final card  
-    def saveCard(self,path):
-        self.setSizes()        
-        with open(path, 'a') as output:
-            output.write(r"\quiz{"  + self.question + self.questionpic + "}")
-            output.write(r"\ans{"   + self.answer   + self.answerpic   + "}")
-            output.write(r"\topic{" + self.topic    + "}")
-            output.write(r"\size{"  + self.sizelist + "}")
-            output.write("\n")
+    def saveCard(self):
+        import json
+        if self.savefolder and self.bookname:
+            path = os.path.join(self.savefolder, self.bookname + '.bok')
+            self.setSizes()        
+            
+            if not os.path.exists(path):
+                with open(path, 'w') as output:
+                    output.write("")
+                output.close
+            else:
+                with open(path,'w') as file:
+                    dictionary = {}
+                    if self.question:
+                        dictionary['text'] = self.question
+                    if self.questionpic:
+                        dictionary['pic'] = self.questionpic
+                    
+                    file.write(json.dumps(dictionary))
+                    file.close()
+            
+            with open(path, 'a') as output:
+                output.write(r"\quiz{"  + self.question + self.questionpic + "}")
+                output.write(r"\ans{"   + self.answer   + self.answerpic   + "}")
+                output.write(r"\topic{" + self.topic    + "}")
+                output.write(r"\size{"  + self.sizelist + "}")
+                output.write("\n")
+            output.close()
+            
     def switchmode(self):
         if self.mode == 'Question':
             self.mode = 'Answer'

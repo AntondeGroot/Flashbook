@@ -262,7 +262,8 @@ class Commands():
             self.answer_command   = r"\\ans{"
             self.topic_command    = r"\\topic{"
             self.size_command     = r"\\size{"
-            
+            self.page_command     = r"\\page{"
+            self.page_command     = r"\\position{"
     def pic(self):
         return self.pic_command
     def question(self):
@@ -273,11 +274,12 @@ class Commands():
         return self.topic_command
     def size(self):
         return self.size_command    
+    def page(self):
+        return self.page_command
     
 class Latexfile(Commands,settings):
     def __init__(self):
-        Commands.__init__(self)
-        
+        Commands.__init__(self) 
         settings.__init__(self)
         settings.settings_get(self)
         self.linefile = []

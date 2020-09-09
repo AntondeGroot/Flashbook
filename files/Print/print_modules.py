@@ -125,14 +125,16 @@ def createimage(self,card_i):
         if apic != '':
             picname = apic
             fullpath = findfullpicpath(self,picname)
-            
-            im0 = PIL.Image.open(fullpath)
-            w,h = int(im0.size[0]*scale),int(im0.size[1]*scale)
-            im0 = im0.resize((w,h), PIL.Image.ANTIALIAS)
-            im.paste(im0,(d0,d1))
-            height += h
-            width  += w
-            d1 += h
+            try:
+                im0 = PIL.Image.open(fullpath)
+                w,h = int(im0.size[0]*scale),int(im0.size[1]*scale)
+                im0 = im0.resize((w,h), PIL.Image.ANTIALIAS)
+                im.paste(im0,(d0,d1))
+                height += h
+                width  += w
+                d1 += h
+            except AttributeError:
+                apic = ''
         #create qa line
         if (atext or apic) and self.QAline_bool:
             imline = PIL.Image.new("RGB", (width, self.QAline_thickness), self.QAline_color)
