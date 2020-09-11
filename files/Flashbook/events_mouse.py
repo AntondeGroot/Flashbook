@@ -27,6 +27,7 @@ def bitmapleftup(self,event):
     
     VALID_RECTANGLE = abs(x1-x0)>2 and abs(y1-y0)>2 #should be at least of a certain width and height
     print(f"rectangle = {VALID_RECTANGLE}")
+    self.Flashcard.setpagenr(self.currentpage)
     if VALID_RECTANGLE:            
         self.BorderCoords = [x0,y0,x1,y1]
         #save all borders in dict
@@ -66,19 +67,19 @@ def bitmapleftup(self,event):
         then everythying will be combined vertically."""
         
         dir_ = str(Path(self.picsdir,self.bookname,picname))
-        if self.Flashcard.getmode() == 'Question':
+        if self.Flashcard.is_question():
             if self.stitchmode_v:
-                self.Flashcard.addpic('Question','vertical',picname,dir_)
+                self.Flashcard.addpic('vertical',dir_)
             else:
-                self.Flashcard.addpic('Question','horizontal',picname,dir_)
+                self.Flashcard.addpic('horizontal',dir_)
                 #restore stitchmode to default
                 self.stitchmode_v =  True   
                 f.SetToolStitchArrow(self,orientation="vertical")
         else:
             if self.stitchmode_v:
-                self.Flashcard.addpic('Answer','vertical',picname,dir_)
+                self.Flashcard.addpic('vertical',dir_)
             else:
-                self.Flashcard.addpic('Answer','horizontal',picname,dir_)
+                self.Flashcard.addpic('horizontal',dir_)
                 #restore stitchmode to default
                 self.stitchmode_v =  True     
                 f.SetToolStitchArrow(self,orientation="vertical")

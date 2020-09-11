@@ -16,20 +16,25 @@ from pathlib import Path
 
 def selectionentered(self,event):
     
+    print(f"{hasattr(self,'bookname')}\n"*10)
     if hasattr(self,'bookname') and self.bookname:
-        USER_textinput = self.m_userInput.GetValue()       
+        USER_textinput = self.m_userInput.GetValue()      
+        self.usertext = USER_textinput
         PICS_DRAWN = self.Flashcard.nrpics("Question")
-        QUESTION_MODE = self.Flashcard.getquestionmode()
+        
+        print(f"{PICS_DRAWN}\n"*10)
         if  USER_textinput or PICS_DRAWN > 0:
+            print(f"pic was drawn\n"*10)
             self.Flashcard.setbook(self.bookname)
             log.DEBUGLOG(debugmode=self.debugmode,msg=f"FB MODULE: a selection was entered")
-            usertext = USER_textinput
-            if QUESTION_MODE:
+            self.usertext = USER_textinput
+            if self.Flashcard.is_question():
+                print("mode is question/n"*10)
                 log.DEBUGLOG(debugmode=self.debugmode,msg=f"FB MODULE: question mode")
                 # change mode to answer
-                self.usertext = latex.text_to_latex(self,usertext)
+                self.usertext = latex.text_to_latex(self,self.usertext)
                 self.Flashcard.switchmode()
-                self.m_modeDisplay.SetValue(self.Flashcard.getmode()+":")
+                self.m_modeDisplay.SetValue("Answer:")
                 self.Flashcard.setT(self.m_TopicInput.GetValue())
                 self.m_userInput.SetValue("")
                 self.Refresh()
@@ -40,13 +45,13 @@ def selectionentered(self,event):
                     imop.CombinePics(self,list_)
                     list_ = list2path(list_)
                     #if type(list_[0]) is list:
-                    self.Flashcard.setpiclist('Question',list_)   
-                    self.Flashcard.setQ(usertext)                
-                    self.Flashcard.setQpic(os.path.basename(list_))
+                    #self.Flashcard.setpiclist('Question',list_)   
+                    self.Flashcard.setQ(text = self.usertext,pic = os.path.basename(list_))                
+                    #self.Flashcard.setQpic(os.path.basename(list_))
                 elif PICS_DRAWN == 1:
                                         
                     list_ = self.Flashcard.getpiclist("Question")
-                    log.DEBUGLOG(debugmode=self.debugmode,msg=f"FB MODULE: 1 pic is drawn,\n\t pic drawn is {list_},\n\t mode is {self.Flashcard.getmode()}")
+                    log.DEBUGLOG(debugmode=self.debugmode,msg=f"FB MODULE: 1 pic is drawn,\n\t pic drawn is {list_},\n\t mode is question: {self.Flashcard.is_question()}")
                     if len(list_)>1 and type(list_[0]) is list:#list in list    
                         imop.CombinePics(self,list_)
                         list_ = list2path(list_)
@@ -54,16 +59,18 @@ def selectionentered(self,event):
                     else:
                         list_ = list2path(list_)
                         
-                    self.Flashcard.setQ(usertext)
-                    self.Flashcard.setQpic(os.path.basename(list_))
+                    print(os.path.basename(list_))
+                    
+                    self.Flashcard.setQ(text = self.usertext, pic = os.path.basename(list_))
+                    
                 elif PICS_DRAWN == 0:
                     log.DEBUGLOG(debugmode=self.debugmode,msg=f"FB MODULE: only user text input, 0 pics were drawn")
-                    self.Flashcard.setQ(usertext)
+                    self.Flashcard.setQ(self.usertext)
                 popup.ShowInPopup(self,event,"Question")
                 
             else:#ANSWER mode
                 log.DEBUGLOG(debugmode=self.debugmode,msg=f"FB MODULE: answer mode")
-                self.usertext = latex.text_to_latex(self,usertext)
+                self.usertext = latex.text_to_latex(self,self.usertext)
                 self.questionmode = True
                 # save everything
                 findic = self.dictionary
@@ -91,24 +98,24 @@ def selectionentered(self,event):
                         file.write(json.dumps(self.dictionary))
                         
                 list_A = self.Flashcard.getpiclist("Answer")
-                if list_A == None:
+                if not list_A:
                     list_A = ''
                 if len(list_A) > 1:
                     imop.CombinePics(self,list_A)
                     if type(list_A[0]) is list:
                         list_A[0] = list_A[0][0]
-                    self.Flashcard.setA(usertext)
+                    self.Flashcard.setA(self.usertext)
                     self.Flashcard.setApic(os.path.basename(list_A[0]))
                 elif len(list_A) == 1:
                     if type(list_A[0]) is list:        
                         imop.CombinePics(self,list_A)
-                        self.Flashcard.setA(usertext)
+                        self.Flashcard.setA(self.usertext)
                         self.Flashcard.setApic(os.path.basename(list_A[0]))
                     else:
-                        self.Flashcard.setA(usertext)
+                        self.Flashcard.setA(self.usertext)
                         self.Flashcard.setApic(os.path.basename(list_A[0]))            
                 else:
-                    self.Flashcard.setA(usertext)
+                    self.Flashcard.setA(self.usertext)
                 
 
                 popup.ShowInPopup(self,event,"Answer")                    
@@ -119,12 +126,13 @@ def selectionentered(self,event):
                     self.Flashcard.saveCard()
                 #reset all
                 self.Flashcard.reset()
-                self.m_modeDisplay.SetValue(self.Flashcard.getmode()+":")
+                self.m_modeDisplay.SetValue("Question:")
                 self.m_TopicInput.SetValue('')
                 self.m_userInput.SetValue("")
                 
                 
-        elif not QUESTION_MODE:
+        elif not self.Flashcard.is_question(): #is answer card
+            print(f"pic was NOT drawn\n"*10)
             log.DEBUGLOG(debugmode=self.debugmode,msg=f"FB MODULE: answer mode without any input")
             
             # if in question mode the user only typed in some text and want to save that 
@@ -141,14 +149,14 @@ def selectionentered(self,event):
                 imop.CombinePics(self,list_A)
                 if type(list_A[0]) is list:
                     list_A[0] = list_A[0][0]
-                self.Flashcard.setA(usertext)
+                self.Flashcard.setA(self.usertext)
                 self.Flashcard.setApic(str(list_A[0]))
             elif len(list_A) == 1:
                 if type(list_A[0]) is list:        
                     imop.CombinePics(self,list_A)
                 else:
                     log.DEBUGLOG(debugmode=self.debugmode,msg=f"FB MODULE: is not a list")
-                self.Flashcard.setA(usertext)
+                self.Flashcard.setA(self.usertext)
                 self.Flashcard.setApic(str(list_A[0]))               
             
 
@@ -159,7 +167,7 @@ def selectionentered(self,event):
                 self.Flashcard.saveCard()
             #reset all
             self.Flashcard.reset()
-            self.m_modeDisplay.SetValue(self.Flashcard.getmode()+":")
+            self.m_modeDisplay.SetValue("Question:")
             self.m_TopicInput.SetValue('')
             self.m_userInput.SetValue("")
             

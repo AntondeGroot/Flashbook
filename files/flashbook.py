@@ -14,6 +14,7 @@ from pathlib import Path
 import PIL
 import shutil
 import sys
+import random
 
 flashbookfolder = os.path.join(os.getcwd(),'Flashbook')
 flashbookfolder = os.path.join(os.getcwd(),'Flashcard')
@@ -359,8 +360,267 @@ class CardsDeck(settings):
         return self.cards[self.key + str(index)]
 
 
-    
+import os
+import pandas as pd
 class Flashcard():
+    def __init__(self,fontsize = 20, savefolder = None):
+        #self.path = os.path.join(savefolder, 'userdata.txt')
+        self.path = savefolder
+        self.idfile = os.path.join(savefolder, 'unique_ids.txt')
+        print(f"path = {self.path}\n"*10)
+        self.columnnames = ['page','id','question','answer','topic','size']
+        """                [ 0    ,1234,{text:"hello", pic:"\path\img.jpg"}, ... , "topic",[(10,200),...(0,0)]    """
+        self.dict = {}
+        self.load_data()
+        
+        ###
+        self.a4page_w = 1240
+        self.question = {}
+        self.answer    = {}
+        
+        self.mode      = 'Question'
+        self.questionmode = True
+        self.topic    = ''
+        self.pic_question     = []
+        self.pic_answer       = []
+        self.pic_question_dir = []
+        self.pic_answer_dir   = []
+        self.usertext         = ''
+        self.size_q_txt = (0,0)
+        self.size_q_pic = (0,0)
+        self.size_a_txt = (0,0)
+        self.size_a_pic = (0,0)
+        self.size_topic = (0,0)
+        self.sizelist = [(0,0),(0,0),(0,0),(0,0),(0,0)] #qtext, qpic, atext,apic, topic
+        self.LaTeXfontsize = fontsize
+        self.savefolder = savefolder
+        
+        self.carddict = {}
+        self.questiondict = {}
+        self.answerdict = {}
+        self.bookname = ''
+        self.pagenr = 1
+    def reset(self):
+        self.question = {}
+        self.answer    = {}
+        
+        self.questionpic = ''
+        
+        self.answerpic = ''
+        self.mode     = 'Question'
+        self.questionmode = True
+        self.topic    = ''
+        self.pic_question     = []
+        self.pic_answer       = []
+        self.pic_question_dir = []
+        self.pic_answer_dir   = []
+        self.usertext         = ''
+        self.size_q_txt = (0,0)
+        self.size_q_pic = (0,0)
+        self.size_a_txt = (0,0)
+        self.size_a_pic = (0,0)
+        self.size_topic = (0,0)
+        self.sizelist = '[(0,0),(0,0),(0,0),(0,0),(0,0)]'
+    def generate_id(self):        
+        def loadid():
+            try:
+                df_id = pd.read_csv(self.idfile)
+            except FileNotFoundError: 
+                df_id = pd.DataFrame(columns=['id'])
+            return df_id
+        def saveid(df):
+            df.to_csv(self.idfile,index=False)
+        
+        df = loadid()
+        SEARCH = True
+        while SEARCH:
+            stringlow  = "abcdefghijklmnopqrstvwxyz"
+            stringup = stringlow.upper()
+            digits = '0123456789'
+            id_nr = ''.join(random.choices(stringlow+stringup+digits, k=4)) 
+            if id_nr not in set(df['id'].values):
+                #print(id_, set(df['id']), str(df['id'].values))
+                df = df.append({'id':str(id_nr)},ignore_index = True)    
+                saveid(df)
+                df = loadid()
+                SEARCH = False
+        return id_nr
+        
+    def setbook(self,bookname):
+        if bookname.strip():
+            self.bookname = bookname
+            self.path = os.path.join(self.savefolder, self.bookname+'.bok')
+            
+    def load_data(self):
+        try:
+            self.df = pd.read_csv(self.path)
+            self.check_columns()
+        except FileNotFoundError: 
+            self.df = pd.DataFrame(columns=self.columnnames)
+            self.save_data()
+        except:
+            print("failed to load")
+    def check_columns(self):
+        """To check if the saved file has enough columns, e.g. if I added more column names without adding data"""
+        columnnames = self.columnnames
+        nrcol = len(self.df.columns)
+        if len(columnnames) > nrcol:
+            for col in columnnames:
+                if col not in self.df.columns:
+                    pos = len(self.df.columns)
+                    self.df.insert(pos, col, None, True)
+    
+    def saveCard(self):
+        self.load_data()
+        id_nr = self.generate_id()#get unique id
+        self.insert_data(page = self.pagenr, id = id_nr,question = self.question, answer = self.answer, topic = self.topic,size = self.sizelist )
+        self.save_data()
+        """
+        import json
+        if self.savefolder and self.bookname:
+            path = os.path.join(self.savefolder, self.bookname + '.bok')
+            self.setSizes()        
+            
+            if not os.path.exists(path):
+                with open(path, 'w') as output:
+                    output.write("")
+                output.close
+            else:
+                with open(path,'a') as file:
+                    dictionary = {}
+                    if self.question:
+                        dictionary['qtext'] = self.question
+                    if self.questionpic:
+                        dictionary['qpic'] = self.questionpic
+                    if self.answer:
+                        dictionary['atext'] = self.answer
+                    if self.answerpic:
+                        dictionary['apic'] = self.answerpic
+                    
+                    file.write(json.dumps(dictionary))
+                    file.close()
+        """
+             
+    def save_data(self):
+        if self.dict:
+            self.df = self.df.append(self.dict,ignore_index = True)    
+            self.dict = {}
+        self.df.to_csv(self.path,index=False)
+        print(self.path)
+    def insert_data(self,**kwargs):
+        self.dict = {}
+        for key, value in kwargs.items():
+            if key in self.columnnames and value:
+                self.dict[key] = value
+            elif key not in self.columnnames:
+                print(f"argument '{key}' is not a column name of : {self.columnnames}")
+    
+        
+            
+    def get_colnames(self):
+        return self.columnnames
+    
+    def find_row(self,col,value):
+        if col in self.df.columns:
+            return self.df.loc[self.df[col] == value]    
+    
+    
+    
+    def setQ(self,text = '',pic = None):
+        if text.strip() != '':
+            self.question['text'] = text
+            imbool, im = f2.CreateTextCard(self,'manual',text)
+            print(f"text size is {imbool} {text}")
+            if imbool:
+                self.sizelist[0] = im.size
+                print(self.sizelist)
+        if pic:
+            #partial path to image
+            self.question['pic'] = pic 
+    
+    def setA(self,text = '',pic = None):
+        if text.strip() != '':
+            self.answer['text'] = text
+            image_exists, image = f2.CreateTextCard(self,'manual',text)
+            if image_exists:
+                self.sizelist[2] = image.size
+                self.size_a_txt = image.size 
+                
+        if pic:
+            #partial path to image
+            self.answer['pic'] = pic 
+            
+    def nrpics(self,mode):
+        try:
+            print(f"ANSWER {len(self.question['pic'])}  {self.question}\n"*100)
+            if mode.lower() == 'question':
+                
+                return len(self.question['pic'])
+            elif mode.lower() == 'answer':
+                return len(self.answer['pic'])
+        except:
+            return 0
+        #def getquestionmode(self):
+        #    return self.questionmode
+    
+    def switchmode(self):
+        self.questionmode = not self.questionmode
+    
+    def is_question(self):
+        return self.questionmode
+    
+    def addpic(self,orientation,path):        
+        pathlist = []
+        try:
+            if self.is_question():
+                pathlist = self.question['pic']
+            else:
+                pathlist = self.answer['pic']
+        except KeyError:
+            pathlist = []
+        except:
+            print(self.question)
+        # [1,2,3] is vertical, [[1,2,3]] is horizontal
+        if orientation == 'vertical':
+            pathlist.append(path)  
+        else:
+            try:
+                pathlist[-1].append(path)  
+            except:
+                pathlist.append([path])  
+        #save it back to original self.variable
+        if self.is_question():
+            self.question['pic'] = pathlist
+        else:
+            self.answer['pic'] = pathlist
+    
+    
+    def setT(self,text):
+        if text.strip():
+            self.topic = text
+            width_card = self.a4page_w
+            height_card = int(math.ceil(len(text)/40))*0.75*100
+            print(f"! topic = {text}, size = {width_card},{height_card}")
+            if height_card != 0:
+                print("topic size",width_card,height_card)
+                self.sizelist.insert(4,(width_card,height_card))
+    
+    def getpiclist(self,mode):
+        try:
+            if mode.lower() == 'question':
+                return self.question['pic']
+            elif mode.lower() == 'answer':
+                return self.answer['pic']
+        except KeyError:
+            return []
+        
+    def QuestionExists(self):
+        if len(self.question):
+            return True
+    def setpagenr(self,pagenr):
+        self.pagenr = pagenr
+        
+class Flashcard2():
     def __init__(self,fontsize = 20, savefolder = None):
         self.a4page_w = 1240
         self.question = ''
@@ -383,7 +643,11 @@ class Flashcard():
         self.sizelist = '[(0,0),(0,0),(0,0),(0,0),(0,0)]'
         self.LaTeXfontsize = fontsize
         self.savefolder = savefolder
+        
+        
         self.carddict = {}
+        self.questiondict = {}
+        self.answerdict = {}
         self.bookname = ''
         self.pagenr = 1
         
@@ -393,9 +657,9 @@ class Flashcard():
         The Q card has an sub-id if a rectangle has been drawn
         The A card has an sub-id"""
     
-    def setbook(self,bookname):
-        self.bookname = bookname
     
+    def setpagenr(self,pagenr):
+        self.pagenr = pagenr
     def addID(self):
         from random import randint
         FIND_ID = True
@@ -536,10 +800,12 @@ class Flashcard():
         elif mode.lower() == 'answer':
             return self.pic_answer_dir
     def nrpics(self,mode):
+        print(f"ANSWER {len(self.question['pic'])}  {self.question}\n"*100)
         if mode.lower() == 'question':
-            return len(self.pic_question)
+            
+            return len(self.question['pic'])
         elif mode.lower() == 'answer':
-            return len(self.pic_answer)
+            return len(self.answer['pic'])
     def setSizes(self):
         if len(self.pic_question_dir) == 1:
             path = self.pic_question_dir[0]
@@ -569,16 +835,16 @@ class Flashcard():
             self.size_topic = (width_card,height_card)                
     def setQ(self,usertext):
         if usertext.strip() != '':
-            self.question = r"\text{" + usertext + r"}"
+            self.question = usertext
             imbool, im = f2.CreateTextCard(self,'manual',usertext)
             print(f"text size is {imbool} {usertext}")
             if imbool:
                 self.size_q_txt = im.size
     def setQpic(self,partialpath):
-        self.questionpic = r"\pic{" + partialpath + r"}"        
+        self.questionpic = partialpath
     def setA(self,usertext):
         if usertext.strip() != '':
-            self.answer = r"\text{" + usertext + r"}"
+            self.answer = usertext
             image_exists, image = f2.CreateTextCard(self,'manual',usertext)
             if image_exists:
                 self.size_a_txt = image.size 
@@ -586,7 +852,7 @@ class Flashcard():
     def getmode(self):
         return str(self.mode)
     def setApic(self,partialpath):
-        self.answerpic = r"\pic{" + partialpath + r"}"
+        self.answerpic = partialpath
     #save the final card  
     def saveCard(self):
         import json
@@ -599,32 +865,32 @@ class Flashcard():
                     output.write("")
                 output.close
             else:
-                with open(path,'w') as file:
+                with open(path,'a') as file:
                     dictionary = {}
                     if self.question:
-                        dictionary['text'] = self.question
+                        dictionary['qtext'] = self.question
                     if self.questionpic:
-                        dictionary['pic'] = self.questionpic
+                        dictionary['qpic'] = self.questionpic
+                    if self.answer:
+                        dictionary['atext'] = self.answer
+                    if self.answerpic:
+                        dictionary['apic'] = self.answerpic
                     
                     file.write(json.dumps(dictionary))
                     file.close()
             
-            with open(path, 'a') as output:
-                output.write(r"\quiz{"  + self.question + self.questionpic + "}")
-                output.write(r"\ans{"   + self.answer   + self.answerpic   + "}")
-                output.write(r"\topic{" + self.topic    + "}")
-                output.write(r"\size{"  + self.sizelist + "}")
-                output.write("\n")
-            output.close()
-            
     def switchmode(self):
+        
         if self.mode == 'Question':
             self.mode = 'Answer'
             self.questionmode = False
         else:
             self.mode = 'Question'
             self.questionmode = True
-    def getquestionmode(self):
+        #def getquestionmode(self):
+        #    return self.questionmode
+    
+    def is_question(self):
         return self.questionmode
 
 

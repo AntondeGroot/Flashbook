@@ -73,6 +73,9 @@ def ShowInPopup(self,event,mode):
     
     usertext = self.usertext
     _, img_text  = imop.CreateTextCard(self,usertext)
+    
+        
+
     try:
         _, img_pic   = imop.findpicture_path(self,directory)
         self.image  = imop.CombinePics(img_text,img_pic)

@@ -71,6 +71,7 @@ def openbook(self,path):
     
     self.picnames = picnames
     self.bookname = eventpath.name
+    print(f"booktitle is {self.bookname}\n"*100)
     print(f"bookname = {self.bookname}")
     if hasattr(self,'TC'):
         delattr(self,'TC')

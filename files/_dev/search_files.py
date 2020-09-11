@@ -10,7 +10,7 @@ Created on Sun Mar 17 15:42:25 2019
 any file in the same directory of this file. This is for debugging purposes
 in case you change a function in a certain file which would influence other files."""  
 #%%
-SEARCH_keyword = "\\pic"
+SEARCH_keyword = "userdata.txt"
 DISPLAY_LINE   = False
 
 import os
