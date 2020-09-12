@@ -76,7 +76,7 @@ class flashcard(gui.MyFrame):
             defaultfile = self.notesdir
         #%%
         
-        with wx.FileDialog(self, "Choose a subject to study",defaultDir=str(self.notesdir),defaultFile = defaultfile, wildcard="*.tex",style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST) as fileDialog:
+        with wx.FileDialog(self, "Choose a subject to study",defaultDir=str(self.notesdir),defaultFile = defaultfile, wildcard="*.bok",style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST) as fileDialog:
             if fileDialog.ShowModal() == wx.ID_CANCEL:
                 #the user changed their mind
                 panel.SwitchPanel(self,0) 

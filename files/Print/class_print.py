@@ -98,7 +98,7 @@ class printer(gui.MyFrame):
             defaultfile = notesdir
         #%%
         with wx.FileDialog(self, "Choose which file to print", defaultDir = str(notesdir), defaultFile = defaultfile, 
-                           wildcard="*.tex", style=wx.FD_DEFAULT_STYLE ) as fileDialog:
+                           wildcard="*.bok", style=wx.FD_DEFAULT_STYLE ) as fileDialog:
             
             if fileDialog.ShowModal() == wx.ID_CANCEL:
                 panel.SwitchPanel(self,0) 

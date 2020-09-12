@@ -44,7 +44,7 @@ def CombineBookTitles(booknames):
 def save2latexfile(self,files,title):
     
     LISTOFLIST = (type(files[0])==list)
-    filepath = Path(self.notesdir,title+'.tex')
+    filepath = Path(self.notesdir,title+'.bok')
     if filepath.exists():
         filepath.unlink()
     if LISTOFLIST:#list of lists of data
@@ -78,7 +78,7 @@ class booksmenu(gui.MyFrame):
     
     def m_menuCombineBooksOnMenuSelection( self, event ):
         log.DEBUGLOG(debugmode=self.debugmode, msg=f'CLASS MENUBOOKS: pressed Combine Books')
-        with wx.FileDialog(self, "Select multiples files to combine", wildcard="*.tex",style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST|wx.FD_MULTIPLE) as fileDialog:
+        with wx.FileDialog(self, "Select multiples files to combine", wildcard="*.bok",style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST|wx.FD_MULTIPLE) as fileDialog:
             fileDialog.SetPath(str(self.notesdir)+'\.')    
             if fileDialog.ShowModal() == wx.ID_OK:
                 filepath = fileDialog.GetPaths()
@@ -103,7 +103,7 @@ class booksmenu(gui.MyFrame):
                             nr_lines = []
                             files = []
                             for name in filepath:
-                                filename = Path(Path(name).stem).with_suffix('.tex')
+                                filename = Path(Path(name).stem).with_suffix('.box')
                                 file = open(str(Path(self.notesdir, filename)), 'r')
                                 lines = file.readlines()
                                 files.append(lines)
@@ -128,8 +128,8 @@ class booksmenu(gui.MyFrame):
                                 save2latexfile(self,files,title)
                             
                             log.DEBUGLOG(debugmode=self.debugmode, msg=f'CLASS MENUBOOKS:\n\t nr lines = {nr_lines},\n\t files = {files},\n\t title = {title}')
-                            if title+'.tex' in os.listdir(self.notesdir):
-                                statinfo = os.stat(Path(self.notesdir,title+'.tex'))
+                            if title+'.bok' in os.listdir(self.notesdir):
+                                statinfo = os.stat(Path(self.notesdir,title+'.bok'))
                                 if statinfo.st_size > 0 :
                                     MessageBox(0, f"The books have been succesfully combined!\nAnd it has the filename: {title}", "Info", MB_ICONINFORMATION)
                                 else:
@@ -143,8 +143,8 @@ class booksmenu(gui.MyFrame):
                             
     def m_menuItemDelBookOnMenuSelection( self, event ):
         log.DEBUGLOG(debugmode=self.debugmode, msg=f'CLASS MENUBOOKS: pressed Delete Book')
-        #with wx.FileDialog(self, "Choose which file to delete", wildcard="*.tex",style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST) as fileDialog:
-        with wx.FileDialog(self, "Choose which file to delete", wildcard="*.tex",style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST) as fileDialog:
+        #with wx.FileDialog(self, "Choose which file to delete", wildcard="*.bok",style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST) as fileDialog:
+        with wx.FileDialog(self, "Choose which file to delete", wildcard="*.bok",style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST) as fileDialog:
             fileDialog.SetPath(str(self.notesdir)+'\.')    
             if fileDialog.ShowModal() == wx.ID_OK:
                 log.DEBUGLOG(debugmode=self.debugmode, msg=f'CLASS MENUBOOKS: delete book, clicked on OK ')
@@ -192,7 +192,7 @@ class booksmenu(gui.MyFrame):
                         # try to remove LaTeX notes
                         try:
                             folder = Path(self.notesdir)
-                            [file.unlink() for file in folder.iterdir() if (filename in file.name and file.suffix =='.tex' )]
+                            [file.unlink() for file in folder.iterdir() if (filename in file.name and file.suffix =='.bok' )]
                         except:
                             pass
                         #final check if it has been deleted and inform user
@@ -238,7 +238,7 @@ class booksmenu(gui.MyFrame):
                     IMG.paste(imagetext,(int(a4page_w/2-imagetext.width/2),100))
                     if not path.exists:
                         IMG.save(path)
-                    path = Path(self.notesdir,bookname+".tex") 
+                    path = Path(self.notesdir,bookname+".bok") 
                     open(path, 'a').close()
             else:
                 log.DEBUGLOG(debugmode=self.debugmode, msg=f"CLASS MENUBOOKS: closed dialog NewBook, pressed 'cancel'")

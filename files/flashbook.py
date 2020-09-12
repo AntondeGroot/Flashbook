@@ -536,9 +536,8 @@ class Flashcard():
         try:
             print(f"ANSWER {len(self.question['pic'])}  {self.question}\n"*100)
             if mode.lower() == 'question':
-                
                 return len(self.question['pic'])
-            elif mode.lower() == 'answer':
+            else:
                 return len(self.answer['pic'])
         except:
             return 0
@@ -601,6 +600,42 @@ class Flashcard():
             return True
     def setpagenr(self,pagenr):
         self.pagenr = pagenr
+        
+    def removepics(self):
+        def unlinkpics(dir_):    
+            print(f"dir = {dir_}")
+            if len(dir_) > 1:
+                if isinstance(dir_,str):
+                    try:
+                        if Path(dir_).exists():
+                            Path(dir_).unlink()
+                    except:
+                        pass
+                elif isinstance(dir_,list):
+                    for pic in dir_:
+                        try:
+                            if type(pic) == str and Path(pic).exists():
+                                Path(pic).unlink()
+                        except:
+                            pass
+            elif len(dir_) == 1:
+                try:
+                    #just one image
+                    pic = dir_[0]
+                    if type(pic) == str and Path(pic).exists():
+                            Path(pic).unlink()
+                except:
+                    print("could not remove single image")
+                    pass
+                
+        if len(self.pic_question_dir) > 0:
+            dir_ = self.pic_question_dir
+            unlinkpics(dir_)
+        if len(self.pic_answer_dir) > 0:
+            dir_ = self.pic_answer_dir    
+            unlinkpics(dir_)    
+        
+        
         
 class Flashcard2():
     def __init__(self,fontsize = 20, savefolder = None):

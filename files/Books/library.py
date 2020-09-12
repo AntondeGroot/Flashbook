@@ -39,19 +39,21 @@ class Library(gui.MyFrame):
         self.listctrl.ClearAll()
     
     def setcolumns(self):
+        
         """Determine how many columns you need"""
         columnnr = 1
-        
-        for entry in self.data_topicbook.values():
-            _,booklist = entry
-            if len(booklist) > columnnr:
-                columnnr = len(booklist)
-        """Set nr of columns """
-        self.listctrl.InsertColumn(0, "Topic")
-        self.listctrl.SetColumnWidth(0,self.topicwidth)
-        for i in range(columnnr):
-            self.listctrl.InsertColumn(i+1, f"Book title {i+1}")
-            self.listctrl.SetColumnWidth(i+1,self.bookwidth)
+        try:
+            for entry in self.data_topicbook.values():
+                _,booklist = entry
+                if len(booklist) > columnnr:
+                    columnnr = len(booklist)
+            """Set nr of columns """
+            self.listctrl.InsertColumn(0, "Topic")
+            self.listctrl.SetColumnWidth(0,self.topicwidth)
+            for i in range(columnnr):
+                self.listctrl.InsertColumn(i+1, f"Book title {i+1}")
+                self.listctrl.SetColumnWidth(i+1,self.bookwidth)
+        except:pass
         """resize ListCtrl"""
         panelwidth = self.topicwidth + self.bookwidth*columnnr
         self.listctrl.SetSize(panelwidth,-1)
@@ -63,10 +65,11 @@ class Library(gui.MyFrame):
         
         
         for topic in topicbook:
+            
             row = []
             row.append(topic)
             
-            print(topic)
+            print(f"topic is {topic}")
             bookindex,books = topicbook[topic]            
             row += books
             print(f"books = {books}")
@@ -78,6 +81,7 @@ class Library(gui.MyFrame):
         self.cleargrid()
         self.loaddata()
         panel.SwitchPanel(self.mainframe,7)
+        print(f"data topicbook = {self.data_topicbook}")
         if not self.data_topicbook:
             self.showcasefunctionality()
         else:
