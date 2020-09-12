@@ -157,6 +157,7 @@ class MainFrame(settings,flashbook,flashcard,printer,filetransfer,menusettings,h
         log.INITIALIZE(debugmode=self.debugmode)
         self.Latexfile = Latexfile()
         self.Flashcard = Flashcard(fontsize = self.LaTeXfontsize,savefolder = self.notesdir)
+        
         self.CardsDeck = CardsDeck()
         self.FlashbookLibrary = Books.Library(self)
         
@@ -362,12 +363,12 @@ class CardsDeck(settings):
 
 import os
 import pandas as pd
+
 class Flashcard():
     def __init__(self,fontsize = 20, savefolder = None):
         #self.path = os.path.join(savefolder, 'userdata.txt')
         self.path = savefolder
         self.idfile = os.path.join(savefolder, 'unique_ids.txt')
-        print(f"path = {self.path}\n"*10)
         self.columnnames = ['page','id','question','answer','topic','size']
         """                [ 0    ,1234,{text:"hello", pic:"\path\img.jpg"}, ... , "topic",[(10,200),...(0,0)]    """
         self.dict = {}
@@ -377,7 +378,7 @@ class Flashcard():
         self.a4page_w = 1240
         self.question = {}
         self.answer    = {}
-        
+        self.idnr = 0
         self.mode      = 'Question'
         self.questionmode = True
         self.topic    = ''
@@ -403,6 +404,7 @@ class Flashcard():
     def reset(self):
         self.question = {}
         self.answer    = {}
+        self.idnr = 0
         
         self.questionpic = ''
         
@@ -420,7 +422,7 @@ class Flashcard():
         self.size_a_txt = (0,0)
         self.size_a_pic = (0,0)
         self.size_topic = (0,0)
-        self.sizelist = '[(0,0),(0,0),(0,0),(0,0),(0,0)]'
+        self.sizelist = [(0,0),(0,0),(0,0),(0,0),(0,0)]#qtext, qpic, atext,apic, topic
     def generate_id(self):        
         def loadid():
             try:
@@ -469,37 +471,15 @@ class Flashcard():
                 if col not in self.df.columns:
                     pos = len(self.df.columns)
                     self.df.insert(pos, col, None, True)
-    
+    def setID(self):
+        if not self.idnr:
+            self.idnr = self.generate_id()
+            
     def saveCard(self):
         self.load_data()
-        id_nr = self.generate_id()#get unique id
-        self.insert_data(page = self.pagenr, id = id_nr,question = self.question, answer = self.answer, topic = self.topic,size = self.sizelist )
+        self.insert_data(page = self.pagenr, id = self.idnr,question = self.question, answer = self.answer, topic = self.topic,size = self.sizelist )
         self.save_data()
-        """
-        import json
-        if self.savefolder and self.bookname:
-            path = os.path.join(self.savefolder, self.bookname + '.bok')
-            self.setSizes()        
-            
-            if not os.path.exists(path):
-                with open(path, 'w') as output:
-                    output.write("")
-                output.close
-            else:
-                with open(path,'a') as file:
-                    dictionary = {}
-                    if self.question:
-                        dictionary['qtext'] = self.question
-                    if self.questionpic:
-                        dictionary['qpic'] = self.questionpic
-                    if self.answer:
-                        dictionary['atext'] = self.answer
-                    if self.answerpic:
-                        dictionary['apic'] = self.answerpic
-                    
-                    file.write(json.dumps(dictionary))
-                    file.close()
-        """
+        self.idnr = 0
              
     def save_data(self):
         if self.dict:
@@ -507,6 +487,7 @@ class Flashcard():
             self.dict = {}
         self.df.to_csv(self.path,index=False)
         print(self.path)
+        
     def insert_data(self,**kwargs):
         self.dict = {}
         for key, value in kwargs.items():
@@ -514,8 +495,9 @@ class Flashcard():
                 self.dict[key] = value
             elif key not in self.columnnames:
                 print(f"argument '{key}' is not a column name of : {self.columnnames}")
-    
         
+    def get_idnr(self):
+        return self.idnr
             
     def get_colnames(self):
         return self.columnnames

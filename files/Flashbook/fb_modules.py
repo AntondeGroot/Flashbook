@@ -38,6 +38,78 @@ def list2path(templist):
                 output = templist[0][0]
     return output
 
+
+import os
+import pandas as pd
+class Borders():
+    def __init__(self,savefolder = None,bookname = None):
+        if savefolder and bookname:
+            self.pathfile = os.path.join(savefolder,bookname + "_borders.bor" )
+        
+        self.id = 0
+        self.pagenr = 0
+        self.columnnames = ['page','id','rect']
+        self.borders_temp = pd.DataFrame(columns=self.columnnames) #empty df
+        self.borders_perm = {}
+        
+        self.load_data()
+        
+    def reset(self):
+        self.id = 0
+        self.borders_temp = pd.DataFrame(columns=self.columnnames)
+        self.pagenr = 0
+    def load_data(self):
+        try:
+            self.df = pd.read_csv(self.pathfile)
+        except FileNotFoundError: 
+            self.df = pd.DataFrame(columns=self.columnnames)
+        except:
+            print("failed to load")
+             
+    def save_data(self):
+        self.load_data()
+        #self.insertdata(self.borders_temp)
+        
+        if len(self.borders_temp):
+            self.df = self.df.append(self.borders_temp,ignore_index = True)    
+            self.dict = {}
+        self.df.to_csv(self.pathfile,index=False)
+        print(self.pathfile)
+    def gettempcoordinates(self,page = 0):
+        
+        print(f"gettemp page is {page}")
+        print(f"tempbord = {self.borders_temp}")
+        print("\n"*3)
+        try:
+            df = self.borders_temp
+            subdf = df.loc[df['page'] == page]
+            print(f"anton {df} \n {subdf} ")
+            return subdf['rect'].tolist()
+        except KeyError:
+            print("ERROR! get tempcoord\n"*10)
+                
+    def getcoordinates(self,page = 0):
+        self.load_data()
+        try:
+            subdf = self.df.loc[self.df['page'] == page]
+            coords = subdf['rect'].tolist()
+            coords = [json.loads(x) for x in coords] #otherwise the result is ['[]','[]'] a list of string representations of lists, not a list of lists
+            
+            if isinstance(coords,str):
+                coords = list(coords)
+            return coords
+        except KeyError:
+            print("ERROR! getcoord\n"*10)
+    def addtempborder(self,page = None, idnr= None, border = None):
+        if page and border and idnr:
+            print("added to tempbord\n"*10)
+            print(self.borders_temp.columns)
+            self.borders_temp = self.borders_temp.append({'page':page,'id': idnr,'rect':border}, ignore_index = True)  
+            print(f"result\n"*10)
+            print(f"result is {self.borders_temp}")
+        else:
+            print("ERROR!\n"*10)
+
 #%%
 def openbook(self,path):
     
@@ -78,13 +150,11 @@ def openbook(self,path):
     self.TC = timing.TimeCount(self.bookname,"flashbook")
     self.booknamepath = eventpath.relative_to(self.booksdir)
     self.currentpage = 1
-    self.PathBorders = Path(self.bordersdir, self.bookname + '_borders.txt')
+    #self.PathBorders = Path(self.bordersdir, self.bookname + '_borders.txt')
     page.LoadPageNr(self)
+    #to store all the drawn borders
+    self.Borders = Borders(savefolder = self.bordersdir , bookname = self.bookname)
     
-    #Create empty dictionary if it doesn't exist
-    if not self.PathBorders.exists():
-        with open(str(self.PathBorders), 'w') as file:
-            file.write(json.dumps({})) 
     
     book_dir = Path(self.picsdir,self.bookname)
     if not book_dir.exists():
@@ -96,12 +166,15 @@ def openbook(self,path):
     nrlist.sort()
     
     #Open dictionary if it exists
+    """
     try:
         with open(self.PathBorders, 'r') as file:
             self.dictionary = json.load(file)
     except:
         self.dictionary = {}
         log.DEBUGLOG(debugmode=self.debugmode,msg=f"FB MODULE: no drawn rects found for this file {self.bookname}, continue")
+    """ 
+        
     try: 
         self.jpgdir    = str(Path(self.booksdir, self.booknamepath, self.picnames[self.currentpage-1]))
         log.DEBUGLOG(debugmode=self.debugmode,msg=f"FB MODULE:\n\t booknamepath {self.booknamepath},\n\t booksdir {self.booksdir}")

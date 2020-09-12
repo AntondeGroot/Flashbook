@@ -31,14 +31,14 @@ def bitmapleftup(self,event):
     if VALID_RECTANGLE:            
         self.BorderCoords = [x0,y0,x1,y1]
         #save all borders in dict
-        
-        try:#dict key exists, so you should append its value
-            val = self.tempdictionary[f'page {self.currentpage}']
-            val.append(self.BorderCoords)
-            self.tempdictionary[f'page {self.currentpage}'] = val
-            
-        except:#dict key does not exist, just add the value to the new key
-            self.tempdictionary.update({f'page {self.currentpage}' : [self.BorderCoords]})
+        self.Flashcard.setID() #unique id to Q/A card, only when first data is entered in Q card
+        idnr = self.Flashcard.get_idnr()
+        print(f"idnr is {idnr}\n"*10)
+        print(f"current page {self.currentpage},idnr = {idnr},border = {self.BorderCoords}")
+        self.Borders.addtempborder(page = self.currentpage,idnr = idnr,border = self.BorderCoords)
+        print(f"currentpage is {self.currentpage}")
+        a= self.Borders.gettempcoordinates(page = self.currentpage)
+        print(a)
             
         #crop image
         if not self.screenshotmode:

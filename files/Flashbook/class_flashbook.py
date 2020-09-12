@@ -58,7 +58,6 @@ class flashbook(gui.MyFrame):
         self.currentpage    = 1
         self.image          = []
         self.imagecopy      = []
-        self.tempdictionary = {}
         self.panel_pos      = (0,0)        
         self.questionmode   = True
         #self.zoom           = 1.0

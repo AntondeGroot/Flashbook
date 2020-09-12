@@ -50,7 +50,6 @@ class printer(gui.MyFrame):
         self.drawborders    = True
         self.image          = []
         self.imagecopy      = []
-        self.tempdictionary = {}
         self.panel_pos      = (0,0)        
         self.questionmode   = True
         self.zoom           = 1.0

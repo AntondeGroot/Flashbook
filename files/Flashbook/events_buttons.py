@@ -29,10 +29,12 @@ def selectionentered(self,event):
             log.DEBUGLOG(debugmode=self.debugmode,msg=f"FB MODULE: a selection was entered")
             self.usertext = USER_textinput
             if self.Flashcard.is_question():
+                
                 print("mode is question/n"*10)
                 log.DEBUGLOG(debugmode=self.debugmode,msg=f"FB MODULE: question mode")
                 # change mode to answer
                 self.usertext = latex.text_to_latex(self,self.usertext)
+                self.Flashcard.setID() #unique id to Q/A card, only when first data is entered in Q card
                 self.Flashcard.switchmode()
                 self.m_modeDisplay.SetValue("Answer:")
                 self.Flashcard.setT(self.m_TopicInput.GetValue())
@@ -73,30 +75,18 @@ def selectionentered(self,event):
                 self.usertext = latex.text_to_latex(self,self.usertext)
                 self.questionmode = True
                 # save everything
-                findic = self.dictionary
-                tempdic = self.tempdictionary
                 
                 """Add temporary dictionary to permanent dictionary to add itto the border list file
                 Don't do this for the PRTscr pages because they are not important
                 """
-                for key in list(tempdic):      # go over all keys
-                    #key = page nr / page prtscr
-                    if 'prtscr' not in key:
-                        for value in tempdic[key]: # go over all values
-                            if key in findic:      # if already exists: just add value
-                                findic[key].append(value)
-                            else:                  # if not, add key and value, where key = pagenr and value is rectangle coordinates
-                                findic.update({key : [value]})
-                self.dictionary = findic
-                self.tempdictionary = {}
+                self.Borders.save_data()
+                
+                
                 
                 # remove temporary borders
                 self.pageimage = self.pageimagecopy
                 page.ShowPage_fb(self)
-                if self.dictionary:
-                    with open(self.PathBorders, 'w') as file:
-                        file.write(json.dumps(self.dictionary))
-                        
+  
                 list_A = self.Flashcard.getpiclist("Answer")
                 if not list_A:
                     list_A = ''
@@ -104,18 +94,16 @@ def selectionentered(self,event):
                     imop.CombinePics(self,list_A)
                     if type(list_A[0]) is list:
                         list_A[0] = list_A[0][0]
-                    self.Flashcard.setA(self.usertext)
-                    self.Flashcard.setApic(os.path.basename(list_A[0]))
+                    self.Flashcard.setA(text=self.usertext,pic = os.path.basename(list_A[0]))
                 elif len(list_A) == 1:
                     if type(list_A[0]) is list:        
                         imop.CombinePics(self,list_A)
-                        self.Flashcard.setA(self.usertext)
-                        self.Flashcard.setApic(os.path.basename(list_A[0]))
+                        self.Flashcard.setA(text=self.usertext, pic = os.path.basename(list_A[0]))
                     else:
-                        self.Flashcard.setA(self.usertext)
-                        self.Flashcard.setApic(os.path.basename(list_A[0]))            
+                        self.Flashcard.setA(text = self.usertext, pic = os.path.basename(list_A[0]))
+                        
                 else:
-                    self.Flashcard.setA(self.usertext)
+                    self.Flashcard.setA(text=self.usertext)
                 
 
                 popup.ShowInPopup(self,event,"Answer")                    
@@ -137,14 +125,16 @@ def selectionentered(self,event):
             
             # if in question mode the user only typed in some text and want to save that 
             self.Flashcard.setT(self.m_TopicInput.GetValue())
-            self.tempdictionary = {}
+            
             # remove temporary borders
             self.pageimage = self.pageimagecopy
             page.ShowPage_fb(self)
             list_A = self.Flashcard.getpiclist("Answer")
+            """
             if self.dictionary:
                 with open(self.PathBorders, 'w') as file:
                         file.write(json.dumps(self.dictionary)) 
+            """
             if len(list_A) > 1:
                 imop.CombinePics(self,list_A)
                 if type(list_A[0]) is list:
@@ -177,7 +167,8 @@ def resetselection(self,event):
     #  remove all temporary pictures taken
     self.Flashcard.removepics()
     #reset all values:
-    self.tempdictionary = {}
+    
+    self.Borders.reset()
     self.Flashcard.reset()
     self.m_modeDisplay.SetValue(self.Flashcard.getmode()+":")
     # update drawn borders
