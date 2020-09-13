@@ -21,6 +21,7 @@ def selectionentered(self,event):
         self.usertext = latex.text_to_latex(self,USER_textinput)
         QUESTION = self.Flashcard.is_question()
         ANSWER = not QUESTION
+        
         if QUESTION:
             PICS_DRAWN = self.Flashcard.nrpics("Question")
         else:
@@ -52,7 +53,8 @@ def selectionentered(self,event):
                 elif PICS_DRAWN == 1:                                        
                     list_ = self.Flashcard.getpiclist("Question")
                     log.DEBUGLOG(debugmode=self.debugmode,msg=f"FB MODULE: 1 pic is drawn,\n\t pic drawn is {list_},\n\t mode is question: {self.Flashcard.is_question()}")
-                    if len(list_)>1 and type(list_[0]) is list:#list in list    
+                    if len(list_)>1 and type(list_[0]) is list:#list in list  
+                        print(f"anton watch it\n"*20)
                         imop.CombinePics(self,list_)
                         list_ = list2path(list_)
                     else:
@@ -120,7 +122,7 @@ def resetselection(self,event):
     
     self.Borders.reset()
     self.Flashcard.reset()
-    self.m_modeDisplay.SetValue(self.Flashcard.getmode()+":")
+    self.m_modeDisplay.SetValue("Question:")
     # update drawn borders
     self.pageimage = self.pageimagecopy
     page.LoadPage(self)

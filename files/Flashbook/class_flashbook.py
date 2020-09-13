@@ -124,7 +124,8 @@ class flashbook(gui.MyFrame):
         self.SetCursor(wx.Cursor(wx.CURSOR_CROSS))
         
     def m_bitmap4OnLeftUp( self, event ):
-        m.panel4_bitmapleftup(self,event)   
+        print(f"bitmap 4 leftup")
+        mouse.panel4_bitmapleftup(self,event)   
         self.panel4.Layout()
         self.Update()
         self.Refresh()       
@@ -168,14 +169,16 @@ class flashbook(gui.MyFrame):
         
 	# draw borders 
     def m_bitmapScrollOnLeftDown( self, event ):
+        print(f"bitmapleft down\n"*10)
         self.panel_pos = self.m_bitmapScroll.ScreenToClient(wx.GetMousePosition())
         self.mousepos = wx.GetMousePosition() # absolute position
         self.SetCursor(wx.Cursor(wx.CURSOR_CROSS))
-        event.Skip()
+        #event.Skip()
         
     def m_bitmapScrollOnLeftUp( self, event ):
+        print(f"bitmapleft up\n"*10)
         mouse.bitmapleftup(self,event)   
-        event.Skip()
+        #event.Skip()
         
     def m_toolStitchOnButtonClick( self, event ):
         self.stitchmode_v =  not self.stitchmode_v

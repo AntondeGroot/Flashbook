@@ -574,7 +574,8 @@ class Flashcard():
             self.question['pic'] = pathlist
         else:
             self.answer['pic'] = pathlist
-    
+        
+        print(f"pathlist = {pathlist}\n"*5)
     
     def setT(self,text):
         if text.strip():
@@ -634,7 +635,26 @@ class Flashcard():
         if len(self.pic_answer_dir) > 0:
             dir_ = self.pic_answer_dir    
             unlinkpics(dir_)    
-        
+    def StitchCards(self,vertical_stitch):
+        if vertical_stitch:
+            #question mode
+            if self.questionmode and (len(self.pic_question) > 0) and (type(self.pic_question[-1]) is list) and (len(self.pic_question[-1])==1):
+                self.pic_question[-1] = self.pic_question[-1][0]
+                self.pic_question_dir[-1] = self.pic_question_dir[-1][0]
+            #answer mode
+            if (not self.questionmode) and (len(self.pic_answer) > 0) and (type(self.pic_answer[-1]) is list) and (len(self.pic_answer[-1])==1):
+                self.pic_answer[-1] = self.pic_answer[-1][0]
+                self.pic_answer_dir[-1] = self.pic_answer_dir[-1][0]    
+        #stitch it horizontally
+        else:
+            #question mode
+            if self.questionmode and (len(self.pic_question) > 0) and (type(self.pic_question[-1]) is not list):
+                self.pic_question[-1] = [self.pic_question[-1]]
+                self.pic_question_dir[-1] = [self.pic_question_dir[-1]]
+            #answer mode
+            if (not self.questionmode) and (len(self.pic_answer) > 0) and (type(self.pic_answer[-1]) is not list):
+                self.pic_answer[-1] = [self.pic_answer[-1]]
+                self.pic_answer_dir[-1] = [self.pic_answer_dir[-1]]
         
         
 class Flashcard2():

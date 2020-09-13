@@ -24,21 +24,17 @@ def bitmapleftup(self,event):
     y0 = int(y0/self.zoom)
     x1 = int(x1/self.zoom)
     y1 = int(y1/self.zoom)
+    print(f"leftup\n"*200)
     
     VALID_RECTANGLE = abs(x1-x0)>2 and abs(y1-y0)>2 #should be at least of a certain width and height
-    print(f"rectangle = {VALID_RECTANGLE}")
+    print(f"rectangle = {VALID_RECTANGLE}\n")
     self.Flashcard.setpagenr(self.currentpage)
     if VALID_RECTANGLE:            
         self.BorderCoords = [x0,y0,x1,y1]
         #save all borders in dict
         self.Flashcard.setID() #unique id to Q/A card, only when first data is entered in Q card
         idnr = self.Flashcard.get_idnr()
-        print(f"idnr is {idnr}\n"*10)
-        print(f"current page {self.currentpage},idnr = {idnr},border = {self.BorderCoords}")
         self.Borders.addtempborder(page = self.currentpage,idnr = idnr,border = self.BorderCoords)
-        print(f"currentpage is {self.currentpage}")
-        a= self.Borders.gettempcoordinates(page = self.currentpage)
-        print(a)
             
         #crop image
         if not self.screenshotmode:
@@ -67,22 +63,14 @@ def bitmapleftup(self,event):
         then everythying will be combined vertically."""
         
         dir_ = str(Path(self.picsdir,self.bookname,picname))
-        if self.Flashcard.is_question():
-            if self.stitchmode_v:
-                self.Flashcard.addpic('vertical',dir_)
-            else:
-                self.Flashcard.addpic('horizontal',dir_)
-                #restore stitchmode to default
-                self.stitchmode_v =  True   
-                f.SetToolStitchArrow(self,orientation="vertical")
+        print(f"fullpath is {dir_}"*20)        
+        if self.stitchmode_v:
+            self.Flashcard.addpic('vertical',dir_)
         else:
-            if self.stitchmode_v:
-                self.Flashcard.addpic('vertical',dir_)
-            else:
-                self.Flashcard.addpic('horizontal',dir_)
-                #restore stitchmode to default
-                self.stitchmode_v =  True     
-                f.SetToolStitchArrow(self,orientation="vertical")
+            self.Flashcard.addpic('horizontal',dir_)
+            #restore stitchmode to default
+            self.stitchmode_v =  True   
+            f.SetToolStitchArrow(self,orientation="vertical")
         page.ShowPage_fb(self)     
         
 def panel4_bitmapleftup(self,event):

@@ -158,6 +158,7 @@ def CombinePics(image1,image2):
         return 'PIL' in str(type(img))
     def isnotPILimage(img):
         return 'PIL' not in str(type(img))    
+    
     if isPILimage(image1) and isPILimage(image2):
         images = [image1,image2]
         widths, heights = zip(*(i.size for i in images))
@@ -170,6 +171,7 @@ def CombinePics(image1,image2):
             new_im.paste(im, (0,y_offset))
             y_offset += im.size[1]
         return new_im
+    
     elif isPILimage(image1) and isnotPILimage(image2):
         return image1
     elif isnotPILimage(image1) and isPILimage(image2):
