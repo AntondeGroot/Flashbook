@@ -34,6 +34,7 @@ class Library(gui.MyFrame):
         self.bookindex = 0
         self.topic_books = {}
         
+        self.newuser = False
     #======================== cosmetic    
     def cleargrid(self):
         self.listctrl.ClearAll()
@@ -89,9 +90,15 @@ class Library(gui.MyFrame):
             self.setdata()
 
     #======================== show how to use it to new users    
+    
+    def openmessagebox(self):
+        MessageBox(0, "Welcome new user!\n\n"+
+                   "First fill in the name of a topic in the textbox and click 'Add Topic'. For example Physics/Biology or something more specific\n\n"+
+                   "Then you can add PDFs that belong to that topic, for example a textbook & your homework assignments\n\n"+
+                   "Once you've finished reading 1 PDF the program will then continue with the next PDF belonging to the same topic", "Welcome new user!", MB_ICONINFORMATION)
     def showcasefunctionality(self):
         """Ïf there are no books, showcase how it is used""" 
-        
+        self.newuser = True
         
         self.cleargrid()        
         Topic = ["Example: Physics"]
@@ -110,11 +117,8 @@ class Library(gui.MyFrame):
         #resize panel
         panelwidth = self.topicwidth + self.bookwidth*len(Booktitles)
         self.listctrl.SetSize(panelwidth,-1)
+        self.openmessagebox()
         
-        MessageBox(0, "Welcome new user!\n\n"+
-                   "First fill in the name of a topic in the textbox and click 'Add Topic'. For example Physics/Biology or something more specific\n\n"+
-                   "Then you can add PDFs that belong to that topic, for example a textbook & your homework assignments\n\n"+
-                   "Once you've finished reading 1 PDF the program will then continue with the next PDF belonging to the same topic", "Welcome new user!", MB_ICONINFORMATION)
 
     #======================== save data
     """
@@ -191,6 +195,7 @@ class Library(gui.MyFrame):
             file.close()
             
         except:
+            
             pass
     
     def savedata(self):
@@ -198,6 +203,7 @@ class Library(gui.MyFrame):
             with open(self.datafilepath_topicbook, 'w') as file:
                 file.write(json.dumps(self.data_topicbook))
             file.close()
+            self.newuser = False
         except:
             pass        
     
@@ -233,16 +239,17 @@ class Library(gui.MyFrame):
             oldtopic = self.listctrl.GetItemText(index)
             newtopic = self.mainframe.m_textTopic.GetValue()
             
-            if oldtopic in self.data_topicbook and newtopic not in self.data_topicbook:
-                self.bookindex,books = self.data_topicbook[oldtopic] 
-                self.data_topicbook.pop(oldtopic,None)
-                self.data_topicbook[newtopic] = [self.bookindex,books]
-            
-            self.mainframe.m_textTopic.SetValue('') 
-            self.savedata()
-            self.showdata()
-            self.listctrl.Focus(index)   
-            self.listctrl.Select(index)
+            if newtopic.strip():
+                if oldtopic in self.data_topicbook and newtopic not in self.data_topicbook:
+                    self.bookindex,books = self.data_topicbook[oldtopic] 
+                    self.data_topicbook.pop(oldtopic,None)
+                    self.data_topicbook[newtopic] = [self.bookindex,books]
+                
+                self.mainframe.m_textTopic.SetValue('') 
+                self.savedata()
+                self.showdata()
+                self.listctrl.Focus(index)   
+                self.listctrl.Select(index)
         
     def addbook(self):
         index = self.listctrl.GetFocusedItem()        
@@ -322,3 +329,7 @@ class Library(gui.MyFrame):
         else:
             MessageBox(0, "You must fill in a name of the topic in the textbox!", "Error", MB_ICONINFORMATION)
         pass
+    
+    def User_is_New(self):
+        """A user uses this program for the first time and no books/topics have been added"""
+        return self.newuser

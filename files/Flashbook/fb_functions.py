@@ -122,7 +122,13 @@ def drawCoordinates(self,pageimage):
 
         
 
-def CombinePics(self,directorylist):
+def CombinePicsFromList(self,directorylist):
+    """LOOK AT LIST OF PATHS 
+    IF THE ELEMENT OF THE LIST IS A PATHSTRING IT WILL JOIN THEM VERTICALLY
+    IF THE ELEMENT IS ANOTHER LIST OF PATHSTRINGS THEN THOSE WILL BE JOINED HORIZONTALLY
+    THE COMBINED PICTURE WILL BE SAVED AS THE FIRST PATHSTRING, THE OTHER PICTURES WILL BE DELETED"""
+    
+    
     i = 0
     # combine horizontal pictures horizontally. They can be recognized as [] within a [] such that [vert,[hor,hor],vert,[hor,hor,hor]]
     for imagelist in directorylist:

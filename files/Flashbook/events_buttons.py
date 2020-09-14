@@ -7,12 +7,25 @@ Created on Tue Aug 25 21:57:02 2020
 import os
 import json
 import Flashbook.page as page
+import Flashbook.fb_functions as func
 import _logging.log_module as log
 import _shared_operations.latexoperations as latex
 import _shared_operations.imageoperations as imop
 from Flashbook.fb_modules import list2path
 import Flashbook.popupwindow as popup
 from pathlib import Path
+from termcolor import colored
+class bcolors:
+    HEADER = '\033[95m'
+    OKBLUE = '\033[94m'
+    OKGREEN = '\033[92m'
+    WARNING = '\033[93m'
+    FAIL = '\033[91m'
+    ENDC = '\033[0m'
+    BOLD = '\033[1m'
+    UNDERLINE = '\033[4m'
+
+
 
 def selectionentered(self,event):
     print(f"{hasattr(self,'bookname')}\n"*10)
@@ -44,10 +57,12 @@ def selectionentered(self,event):
                 self.m_userInput.SetValue("")
                 self.Refresh()
                 # check for [[1,2,3]]
+                
                 if PICS_DRAWN > 1:
+                    print(colored(f"{bcolors.WARNING}multiple pics drawn{bcolors.ENDC}","red"))    
                     log.DEBUGLOG(debugmode=self.debugmode,msg=f"FB MODULE: multiple pics are drawn")
                     list_ = self.Flashcard.getpiclist("Question")
-                    imop.CombinePics(self,list_)
+                    func.CombinePicsFromList(self,list_)
                     list_ = list2path(list_)
                     self.Flashcard.setQ(text = self.usertext,pic = os.path.basename(list_))                
                 elif PICS_DRAWN == 1:                                        
@@ -55,7 +70,7 @@ def selectionentered(self,event):
                     log.DEBUGLOG(debugmode=self.debugmode,msg=f"FB MODULE: 1 pic is drawn,\n\t pic drawn is {list_},\n\t mode is question: {self.Flashcard.is_question()}")
                     if len(list_)>1 and type(list_[0]) is list:#list in list  
                         print(f"anton watch it\n"*20)
-                        imop.CombinePics(self,list_)
+                        func.CombinePicsFromList(self,list_)
                         list_ = list2path(list_)
                     else:
                         list_ = list2path(list_)
@@ -85,14 +100,14 @@ def selectionentered(self,event):
                 list_A = ''
             if len(list_A) > 1:
                 """"multiple pictures were taken"""
-                imop.CombinePics(self,list_A)
+                func.CombinePicsFromList(self,list_A)
                 if type(list_A[0]) is list:
                     list_A[0] = list_A[0][0]
                 self.Flashcard.setA(text=self.usertext,pic = os.path.basename(list_A[0]))
             elif len(list_A) == 1:
                 """"only 1 picture was taken"""
                 if type(list_A[0]) is list:        
-                    imop.CombinePics(self,list_A)
+                    func.CombinePicsFromList(self,list_A)
                 self.Flashcard.setA(text = self.usertext, pic = os.path.basename(list_A[0]))
             else:
                 """"no pictures were taken"""

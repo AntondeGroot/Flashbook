@@ -43,7 +43,8 @@ import Books.library as Books
 import Flashbook.events_mouse as evt_m
 from _shared_operations import *
 from _logging import *
-
+MB_ICONINFORMATION = 0x00000040
+MessageBox = ctypes.windll.user32.MessageBoxW
 #%%
 #sys.path.insert(1,flashbookfolder)
 
@@ -207,19 +208,25 @@ class MainFrame(settings,flashbook,flashcard,printer,filetransfer,menusettings,h
             topic = self.m_listTopics.GetItemText(index)
             self.booktopic = topic
             print(f"topic {topic}")
-            self.booknames = self.FlashbookLibrary.getbooknames(topic)
-            print(f"booknames = {self.booknames}")
-            ## check if books need to be converted to jpg, so that users no longer need to do this manually
-            pdf.AddPathvar() #needed to make PDF2jpg work, it sets "Poppler for Windows" as pathvariable
-            from_    = str(self.dirpdfbook)
-            tempdir_ = str(self.tempdir)
-            to_      = str(self.booksdir)
-            pdf.ConvertPDF_to_JPG(self,from_,tempdir_,to_,SHOWMESSAGE = False)
-            ###
-            self.bookname = self.FlashbookLibrary.getcurrentbook(topic)
-            path = os.path.join(self.booksdir,self.bookname)
-            m.openbook(self,path)
             
+            if not self.FlashbookLibrary.User_is_New():
+                self.booknames = self.FlashbookLibrary.getbooknames(topic)
+                print(f"booknames = {self.booknames}")
+                ## check if books need to be converted to jpg, so that users no longer need to do this manually
+                pdf.AddPathvar() #needed to make PDF2jpg work, it sets "Poppler for Windows" as pathvariable
+                from_    = str(self.dirpdfbook)
+                tempdir_ = str(self.tempdir)
+                to_      = str(self.booksdir)
+                pdf.ConvertPDF_to_JPG(self,from_,tempdir_,to_,SHOWMESSAGE = False)
+                ###
+                self.bookname = self.FlashbookLibrary.getcurrentbook(topic)
+                
+                path = os.path.join(self.booksdir,self.bookname)
+                m.openbook(self,path)
+            else:
+                self.FlashbookLibrary.openmessagebox()
+        else:
+            MessageBox(0, "You must select a topic before you can start reading", "Error", MB_ICONINFORMATION)
     #%% timecount
     def m_scrolledWindow1OnMouseEvents( self, event ):
         SaveTime(self)
@@ -575,7 +582,8 @@ class Flashcard():
         else:
             self.answer['pic'] = pathlist
         
-        print(f"pathlist = {pathlist}\n"*5)
+        print(f"\n"*3)
+        print(f"pathlist multiple = {pathlist}\n")
     
     def setT(self,text):
         if text.strip():
@@ -636,17 +644,60 @@ class Flashcard():
             dir_ = self.pic_answer_dir    
             unlinkpics(dir_)    
     def StitchCards(self,vertical_stitch):
-        if vertical_stitch:
-            #question mode
+        
+        #question mode
+        
+        try:
+            if vertical_stitch:
+                if (self.questionmode and (len(self.question['pic']) > 0) and (isinstance(self.question['pic'][-1]),list) and (len(self.question['pic'][-1])==1)):
+                    self.question['pic'][-1] = self.question['pic'][-1][0]
+                    #self.pic_question_dir[-1] = self.pic_question_dir[-1][0]
+                    
+                #answer mode
+                if (not self.questionmode) and (len(self.answer['pic']) > 0) and (isinstance(self.pic_answer[-1]),list) and (len(self.answer['pic'][-1])==1):
+                    self.answer['pic'][-1] = self.answer['pic'][-1][0]
+                    #self.pic_answer_dir[-1] = self.pic_answer_dir[-1][0]    
+                #stitch it horizontally
+            else:
+                #question mode
+                if self.questionmode and (len(self.question['pic']) > 0) and (not isinstance(self.pic_question[-1]),list):
+                    self.question['pic'][-1] = [self.question['pic'][-1]]
+                    #self.pic_question_dir[-1] = [self.pic_question_dir[-1]]
+                #answer mode
+                if (not self.questionmode) and (len(self.answer['pic']) > 0) and (not isinstance(self.answer['pic'][-1]),list):
+                    self.pic_answer[-1] = [self.pic_answer[-1]]
+                    self.pic_answer_dir[-1] = [self.pic_answer_dir[-1]]
+                    pass
+        except KeyError:
+            print(f"ERROR\t"*10)
+            print(self.question)
+            "Do nothing, there havent been any pictures taken yet."
+            pass
+            """to switch it from 
+            [ver,[hor]] to [ver,ver] and back depending on the user. All the paths withint a double list will be stitched as horizontal, otherwise vertical
+            
+            """
+            
+            
+            
+            
+            
+            
+            
+            """
             if self.questionmode and (len(self.pic_question) > 0) and (type(self.pic_question[-1]) is list) and (len(self.pic_question[-1])==1):
                 self.pic_question[-1] = self.pic_question[-1][0]
                 self.pic_question_dir[-1] = self.pic_question_dir[-1][0]
+                
             #answer mode
             if (not self.questionmode) and (len(self.pic_answer) > 0) and (type(self.pic_answer[-1]) is list) and (len(self.pic_answer[-1])==1):
                 self.pic_answer[-1] = self.pic_answer[-1][0]
                 self.pic_answer_dir[-1] = self.pic_answer_dir[-1][0]    
-        #stitch it horizontally
-        else:
+                
+            """
+            
+            
+        """else:
             #question mode
             if self.questionmode and (len(self.pic_question) > 0) and (type(self.pic_question[-1]) is not list):
                 self.pic_question[-1] = [self.pic_question[-1]]
@@ -655,7 +706,7 @@ class Flashcard():
             if (not self.questionmode) and (len(self.pic_answer) > 0) and (type(self.pic_answer[-1]) is not list):
                 self.pic_answer[-1] = [self.pic_answer[-1]]
                 self.pic_answer_dir[-1] = [self.pic_answer_dir[-1]]
-        
+        """
         
 class Flashcard2():
     def __init__(self,fontsize = 20, savefolder = None):
