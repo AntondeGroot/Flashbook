@@ -253,33 +253,10 @@ def ReplaceUserCommands(commandsfile,line):
         line = replace_allcommands(defined_command,LaTeX_command,line,nr_arg)
     return line    
 #%% the classes
-class Commands():
-    def __init__(self):
-            # some commands used to create the flashcards and seperate elements: question/answer/picture
-            # this way it will remain clear for the user so that he could manually change an entry.
-            self.pic_command      = r"\\pic{"
-            self.question_command = r"\\quiz{"
-            self.answer_command   = r"\\ans{"
-            self.topic_command    = r"\\topic{"
-            self.size_command     = r"\\size{"
-            self.page_command     = r"\\page{"
-            self.page_command     = r"\\position{"
-    def pic(self):
-        return self.pic_command
-    def question(self):
-        return self.question_command
-    def answer(self):
-        return self.answer_command
-    def topic(self):
-        return self.topic_command
-    def size(self):
-        return self.size_command    
-    def page(self):
-        return self.page_command
+
     
-class Latexfile(Commands,settings):
+class Latexfile(settings):
     def __init__(self):
-        Commands.__init__(self) 
         settings.__init__(self)
         settings.settings_get(self)
         self.linefile = []
