@@ -121,27 +121,6 @@ class Library(gui.MyFrame):
         
 
     #======================== save data
-    """
-    def savewhichbook(self):
-        topic = self.topic
-        "topic : [bookindex,[book1.pdf, ... , bookN.pdf]]"
-        path_file = Path(self.mainframe.dirsettings, 'userdata_topicbook.txt')
-        if path_file.exists():
-            with open(path_file,'r') as file:
-                dictionary = json.load(file)        
-                #dictionary[self.bookname] = self.currentpage
-                if topic in dictionary:
-                    self.bookindex,_ ,_ =  dictionary[topic]
-                else:
-                    dictionary[topic]= [self.mainframe.bookindex, self.booknames]
-                file.close()
-        else:
-            dictionary = {topic: [self.mainframe.bookindex, self.booknames]}
-        with open(path_file,'w') as file:
-            file.write(json.dumps(dictionary))
-            file.close()
-    """    
-        
 
     
     def getbooknames(self,topic):
@@ -193,11 +172,12 @@ class Library(gui.MyFrame):
             with open(self.datafilepath_topicbook, 'r') as file:
                 self.data_topicbook = json.load(file)
             file.close()
-            
+            return self.data_topicbook
         except:
-            
+            return None
             pass
     
+        
     def savedata(self):
         try:
             with open(self.datafilepath_topicbook, 'w') as file:

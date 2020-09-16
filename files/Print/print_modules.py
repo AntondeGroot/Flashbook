@@ -83,7 +83,7 @@ def createimage(self,card_i):
         d1 = card_i['pos'][1]+card_i['border'][1]
         
         scale = card_i['scale']
-        if qtext.strip() != '':
+        if qtext:
             _, imagetext = imop.CreateTextCard(self,qtext)
             w,h = int(imagetext.size[0]*scale),int(imagetext.size[1]*scale)
             im0 = imagetext.resize((w,h), PIL.Image.ANTIALIAS)
@@ -92,7 +92,7 @@ def createimage(self,card_i):
             height += h
             width  += w
             d1 += h
-        if qpic.strip() != '':
+        if qpic:
             picname = qpic
             fullpath = findfullpicpath(self,picname)
             im0 = PIL.Image.open(fullpath)
@@ -108,7 +108,7 @@ def createimage(self,card_i):
             d1 += self.QAline_thickness
             height += self.QAline_thickness
             
-        if atext != '':
+        if atext:
             #self.usertext = text
             #w,h = self.sizelist[2]
             #w,h = int(w*scale),int(h*scale)
@@ -122,7 +122,7 @@ def createimage(self,card_i):
             width  += w
             d1 += h
             
-        if apic != '':
+        if apic:
             picname = apic
             fullpath = findfullpicpath(self,picname)
             try:

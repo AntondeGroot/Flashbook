@@ -93,6 +93,44 @@ def cropimage(img, x, backgroundcolor=(255,255,255), border=20):
         
     return img    
 
+def findpicturesize_relpath(self,relpath):
+    """Instead of just opening the path of a picture
+    Try to find out if the path exists
+    if it does not exist, try to look in all other folders.
+    This problem may occur if you have combined several books.
+    If the picture really doesn't exist, then the user gets notified with a messagebox."""
+    FOUNDPIC = False
+    imagepic = None
+    imsize = (0,0)
+    
+    path = Path(self.picsdir, relpath)
+    picname = path.stem + ".jpg"
+    if path.exists():
+        try:
+            imagepic = PIL.Image.open(str(path))
+            FOUNDPIC = True
+        except PermissionError:
+            #invalid path given, not just a pic that does not exist
+            FOUNDPIC = False
+            imagepic = None
+    else:
+        folders = os.listdir(self.picsdir)
+        for i,item in enumerate(folders):
+            path = Path(self.picsdir, item, picname)
+            if path.exists():
+                try:
+                    imagepic = PIL.Image.open(str(path))
+                    FOUNDPIC = True
+                except PermissionError:
+                    #invalid path given, not just a pic that does not exist
+                    FOUNDPIC = False
+                    imagepic = None
+    
+    if FOUNDPIC:
+        imsize = imagepic.size
+    return imsize
+
+
 
 def findpicture_path(self,picname,errorbox = False):
     """Instead of just opening the path of a picture

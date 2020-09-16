@@ -10,12 +10,14 @@ except:
     pass
 #------------------------------------------------------------------- general
 import os
+import numpy as np
 from pathlib import Path
 import PIL
 import shutil
 import sys
 import random
-
+import ast
+from _GUI.folderpaths import paths
 flashbookfolder = os.path.join(os.getcwd(),'Flashbook')
 flashbookfolder = os.path.join(os.getcwd(),'Flashcard')
 """
@@ -41,7 +43,7 @@ import _GUI.active_panel as panel
 import Books.library as Books
 
 import Flashbook.events_mouse as evt_m
-from _shared_operations import *
+from _shared_operations import imageoperations as imop
 from _logging import *
 MB_ICONINFORMATION = 0x00000040
 MessageBox = ctypes.windll.user32.MessageBoxW
@@ -61,7 +63,6 @@ import Books.events_buttons as Bookbuttons
 import _GUI.gui_flashbook as gui
 import program as p
 from _settings.settingsfile import settings
-from _shared_operations.latexoperations import Latexfile
 import _resources.resources as resources
 import Flashbook.fb_modules    as m
 import _GUI.accelerators_module as acc
@@ -156,10 +157,10 @@ class MainFrame(settings,flashbook,flashcard,printer,filetransfer,menusettings,h
         self.settings_set()
         
         log.INITIALIZE(debugmode=self.debugmode)
-        self.Latexfile = Latexfile()
-        self.Flashcard = Flashcard(fontsize = self.LaTeXfontsize,savefolder = self.notesdir)
         
-        self.CardsDeck = CardsDeck()
+        self.Flashcard = Flashcard(fontsize = self.LaTeXfontsize)
+        
+        self.Cardsdeck = Cardsdeck()
         self.FlashbookLibrary = Books.Library(self)
         
         self.library   = [None]
@@ -259,10 +260,13 @@ class MainFrame(settings,flashbook,flashcard,printer,filetransfer,menusettings,h
 #####              FLASHCARD                                              #####
 ###############################################################################
 """
-class CardsDeck(settings):
+
+
+
+
+
+class CardsDeck2(settings):
     def __init__(self):#,flashcard):
-        
-        
         """ - cards are dicts because then you can easily delete a card from the deck
             - you can then use cardorder to switch cards and just omit a cardnumber from that list"""
         self.cards = {}
@@ -337,7 +341,7 @@ class CardsDeck(settings):
                 # card i : {qi,si} or {ti,si}
                 sizelist = card['size']                
                 
-                if 't' in card:
+                if 'topic' in card:
                     mode = 't'
                     key = self.key + f"{mode}{cardindex}"
                     if cardindex == 0:
@@ -347,9 +351,9 @@ class CardsDeck(settings):
                     if line.strip() != '': #if the line is not empty, spaces are considered to be empty 
                         _card_ = {'text': line, 'size' : sizelist}
                         addtodict(self, key, _card_)           
-                if 'q' in card:
+                if 'question' in card:
                     sizecard  = sizelist[:4]
-                    mode = 'q'
+                    mode = 'question'
                     key = self.key + f"{mode}{cardindex}"
                     
                     line = card[mode]
@@ -371,13 +375,95 @@ class CardsDeck(settings):
 import os
 import pandas as pd
 
-class Flashcard():
-    def __init__(self,fontsize = 20, savefolder = None):
+class Cardsdeck(settings):
+    def __init__(self):#,flashcard):
+        """ - cards are dicts because then you can easily delete a card from the deck
+            - you can then use cardorder to switch cards and just omit a cardnumber from that list"""
+        settings.__init__(self)
+        settings.settings_get(self)
+        
+        
+        #self.settings_get()
+        self.cards_original = {}
+        self.cards_edited = {} #to turn latex commands into useable text
+        
+        self.bookname = ''            
+        self.columnnames = ['page','id','question','answer','topic','size']
+        
+
+        
+    
+    def loaddata(self,book = None):
+        if book:
+            self.bookname = book
+            self.path = os.path.join(self.notesdir, self.bookname+'.bok')
+            try:
+                self.df = pd.read_csv(self.path)
+                self.df = self.df.replace({np.nan: None})
+                self.loaddata2card()
+                
+            except FileNotFoundError: 
+                MessageBox(0, "Why would this file not exist?", "Error", MB_ICONINFORMATION)
+    
+    def loaddata2card(self):
+        cards = []
+        
+        for index in range(len(self.df)):
+            line = self.df.iloc[index]
+            #
+            question = ast.literal_eval(line['question'])
+            if line['answer']:
+                answer = ast.literal_eval(line['answer'])
+            else:
+                answer = None
+            topic = line['topic']
+            size = ast.literal_eval(line['size'])
+            card_id = line['id']
+            if topic:
+                """If it contains a topic, then add it as an extra card """
+                tsize = size[4]
+                cards.append({'index':index,'topic': topic,'size':tsize,'page':999,'pos':(0,0),'scale':1,'id':card_id})
+            size_qa = self.CardSizeWithoutTopic(size) #size of the whole Q/A card excluding the topic
+            
+            keylist = {'index':index,'question' : question, 'size':size_qa,'page':999,'pos':(0,0),'scale':1,'border' : (0,0),'id':card_id}
+            print(f"q = {question}, a = {type(question)}\n"*10)
+            if answer: #add the answer key
+                keylist['answer'] = answer
+                if 'text' in answer:
+                    keylist['answertext'] = answer['text']
+                if 'pic' in answer:
+                    keylist['answerpic'] = answer['pic']    
+            
+            if 'text' in question:
+                keylist['questiontext'] = question['text']
+            if 'pic' in question:
+                keylist['questionpic'] = question['pic']
+            cards.append(keylist)
+                
+        self.cards = cards
+        print(f"selfcards = {cards}")
+    def CardSizeWithoutTopic(self,tuples_list):
+        if isinstance(tuples_list,tuple):
+            tuples_list = [tuples_list]
+        if len(tuples_list) == 5:
+            tuples_list = tuples_list[:4]
+        totalwidth,totalheight = 0, 0 
+        for size in tuples_list:
+            w,h = size
+            totalwidth = max(totalwidth,w)
+            totalheight += h
+        return totalwidth,totalheight
+
+class Flashcard(paths):
+    def __init__(self,fontsize = 20):
+        paths.__init__(self)
         #self.path = os.path.join(savefolder, 'userdata.txt')
+        savefolder = self.notesdir
         self.path = savefolder
         self.idfile = os.path.join(savefolder, 'unique_ids.txt')
         self.columnnames = ['page','id','question','answer','topic','size']
         """                [ 0    ,1234,{text:"hello", pic:"\path\img.jpg"}, ... , "topic",[(10,200),...(0,0)]    """
+        self.bookname = ''
         self.dict = {}
         self.load_data()
         
@@ -406,7 +492,7 @@ class Flashcard():
         self.carddict = {}
         self.questiondict = {}
         self.answerdict = {}
-        self.bookname = ''
+        
         self.pagenr = 1
     def reset(self):
         self.question = {}
@@ -461,14 +547,19 @@ class Flashcard():
             self.path = os.path.join(self.savefolder, self.bookname+'.bok')
             
     def load_data(self):
-        try:
-            self.df = pd.read_csv(self.path)
-            self.check_columns()
-        except FileNotFoundError: 
-            self.df = pd.DataFrame(columns=self.columnnames)
-            self.save_data()
-        except:
-            print("failed to load")
+        if self.bookname:
+            print(f"path = {self.path}")
+            try:
+                self.df = pd.read_csv(self.path)
+                self.df = self.df.replace({np.nan: None})
+                self.check_columns()
+            except FileNotFoundError: 
+                self.df = pd.DataFrame(columns=self.columnnames)
+                self.save_data()
+        
+    def get_data(self):
+        return self.df
+    
     def check_columns(self):
         """To check if the saved file has enough columns, e.g. if I added more column names without adding data"""
         columnnames = self.columnnames
@@ -489,11 +580,12 @@ class Flashcard():
         self.idnr = 0
              
     def save_data(self):
-        if self.dict:
-            self.df = self.df.append(self.dict,ignore_index = True)    
-            self.dict = {}
-        self.df.to_csv(self.path,index=False)
-        print(self.path)
+        if self.bookname:
+            if self.dict:
+                self.df = self.df.append(self.dict,ignore_index = True)    
+                self.dict = {}
+            self.df.to_csv(self.path,index=False)
+            print(self.path)
         
     def insert_data(self,**kwargs):
         self.dict = {}
@@ -526,19 +618,20 @@ class Flashcard():
         if pic:
             #partial path to image
             self.question['pic'] = pic 
-    
+            imsize = imop.findpicturesize_relpath(self,pic)
+            self.sizelist[1] =  imsize
     def setA(self,text = '',pic = None):
         if text.strip() != '':
             self.answer['text'] = text
             image_exists, image = f2.CreateTextCard(self,'manual',text)
             if image_exists:
                 self.sizelist[2] = image.size
-                self.size_a_txt = image.size 
-                
+                #self.size_a_txt = image.size 
         if pic:
             #partial path to image
             self.answer['pic'] = pic 
-            
+            imsize = imop.findpicturesize_relpath(self,pic)
+            self.sizelist[3] =  imsize
     def nrpics(self,mode):
         try:
             print(f"ANSWER {len(self.question['pic'])}  {self.question}\n"*100)
@@ -591,9 +684,9 @@ class Flashcard():
             width_card = self.a4page_w
             height_card = int(math.ceil(len(text)/40))*0.75*100
             print(f"! topic = {text}, size = {width_card},{height_card}")
-            if height_card != 0:
+            if height_card:
                 print("topic size",width_card,height_card)
-                self.sizelist.insert(4,(width_card,height_card))
+                self.sizelist[4] = (width_card,height_card)
     
     def getpiclist(self,mode):
         try:

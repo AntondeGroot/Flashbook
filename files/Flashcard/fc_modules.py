@@ -63,9 +63,16 @@ def startprogram(self,filepath):
         self.TC = timing.TimeCount(self.bookname,"flashcard")
     except:
         log.ERRORMESSAGE("Error: Couldn't open path {filepath}")
-    self.resumedata = {self.bookname : {'score': self.score, 'index': self.index, 'nr_questions':self.nr_questions}}
-    self.Latexfile.loadfile(eventpath)
-    cards = self.Latexfile.file_to_rawcards() #cards contains the keys #index:  ,.... 'q' and if applicable also 'a'
+    self.resumedata = {self.bookname : {'score': self.score, 'index': self.index, 'nr_questions':self.nr_questions}}    
+    
+    self.Flashcard.setbook(self.bookname)
+    self.Flashcard.load_data()
+    
+    self.Cardsdeck.loaddata(book = self.bookname)
+    
+    
+    
+    cards = self.FlashcardReader.file_to_cards(df) #cards contains the keys #index:  ,.... 'q' and if applicable also 'a'
     self.CardsDeck.set_cards(cards=cards,notesdir=self.notesdir)  # set_cards converts the text to somthing Matplotlib can understand
     
     #open dialog window
@@ -73,9 +80,7 @@ def startprogram(self,filepath):
     and use these values to set the slider as you wish. Don't forget to add "self.Destroy" when you press the button"""
     
     data = len(self.CardsDeck)
-    #self.CardsDeck.getcards()
-    if data == 1:
-        data = 2
+    
     try:
         with open(self.statsdir, 'r') as file:    
             dictionary = json.load(file)
@@ -104,15 +109,15 @@ def startprogram(self,filepath):
         except:
             log.ERRORMESSAGE("Error: Couldn't open Dialog window nr 1")
     else:
-        try:
-            with gui.MyDialog(self,data) as dlg: #'data' sets the max range of the slider
-                dlg.ShowModal()
-                self.nr_questions = dlg.m_slider1.GetValue()                        
-                self.chrono = dlg.m_radioChrono.GetValue()
-                self.continueSession = False
-                self.multiplier = dlg.m_textCtrl11.GetValue()
-        except:
-            log.ERRORMESSAGE("Error: Couldn't open Dialog window nr 2")
+        #try:
+        with gui.MyDialog(self,data) as dlg: #'data' sets the max range of the slider
+            dlg.ShowModal()
+            self.nr_questions = dlg.m_slider1.GetValue()                        
+            self.chrono = dlg.m_radioChrono.GetValue()
+            self.continueSession = False
+            self.multiplier = dlg.m_textCtrl11.GetValue()
+        #except:
+        #    log.ERRORMESSAGE("Error: Couldn't open Dialog window nr 2")
     
     
     # if you want to use all cards twice or 1.5 times for the quiz: then exclude invalid selections of this multiplier
