@@ -86,35 +86,24 @@ def drawCoordinates(self,pageimage):
     img = np.array(pageimage)
     img = np.uint8(img)
     key = self.currentpage
-    try:
-        #try to look if there already exists borders that need to be drawn
-        # draw permanent borders as black
-        #coordinatelist = self.dictionary[key]
-        coordinatelist = self.Borders.getcoordinates(page = key)
-        print(f"permcoord = {coordinatelist}\n"*10)
-        if coordinatelist:
-            for coordinates in coordinatelist:    
-                self.cord1 = coordinates[0:2]
-                self.cord2 = coordinates[2:]
-                print(f"coord1 = {self.cord1}")
-                print(f"coord2 = {self.cord2}")
-                img = drawrect(self,img,self.colorlist[0])
-    except:
-        pass
     
-    try:    
-        #there won't always be tempdict borders, so try and otherwise go further
-        # draw temporary borders as red
-        key = self.currentpage
-        coordinatelist = self.Borders.gettempcoordinates(page=key)
-        print(f"tempcoord = {coordinatelist}\n"*10)
-        if coordinatelist:
-            for coordinates in coordinatelist:    
-                self.cord1 = coordinates[0:2]
-                self.cord2 = coordinates[2:]
-                img = drawrect(self,img,self.colorlist[1])
-    except:
-        pass
+    #draw permanent borders black
+    coordinatelist = self.Borders.getcoordinates(page = key)
+    if coordinatelist:
+        for coordinates in coordinatelist:    
+            self.cord1 = coordinates[0:2]
+            self.cord2 = coordinates[2:]            
+            img = drawrect(self,img,self.colorlist[0])
+    
+    # draw temporary borders as red
+    key = self.currentpage
+    coordinatelist = self.Borders.gettempcoordinates(page=key)
+    if coordinatelist:
+        for coordinates in coordinatelist:    
+            self.cord1 = coordinates[0:2]
+            self.cord2 = coordinates[2:]
+            img = drawrect(self,img,self.colorlist[1])
+    
     #export image
     pageimage = PIL.Image.fromarray(img)
     return pageimage

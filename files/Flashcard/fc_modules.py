@@ -72,7 +72,7 @@ def startprogram(self,filepath):
     
     
     
-    cards = self.FlashcardReader.file_to_cards(df) #cards contains the keys #index:  ,.... 'q' and if applicable also 'a'
+    cards = self.CardsDeck.loaddata2card() #cards contains the keys #index:  ,.... 'q' and if applicable also 'a'
     self.CardsDeck.set_cards(cards=cards,notesdir=self.notesdir)  # set_cards converts the text to somthing Matplotlib can understand
     
     #open dialog window

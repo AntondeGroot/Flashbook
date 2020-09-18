@@ -28,18 +28,20 @@ class bcolors:
 
 
 def selectionentered(self,event):
-    print(f"{hasattr(self,'bookname')}\n"*10)
+    print("selection entered")
     if hasattr(self,'bookname') and self.bookname:
         USER_textinput = self.m_userInput.GetValue()      
         self.usertext = latex.text_to_latex(self,USER_textinput)
         QUESTION = self.Flashcard.is_question()
         ANSWER = not QUESTION
         
+        self.Flashcard.StitchPicsTogether()  
+        
         if QUESTION:
             PICS_DRAWN = self.Flashcard.nrpics("Question")
         else:
             PICS_DRAWN = self.Flashcard.nrpics("Answer")
-        
+        print(f"nr pics drawn is {PICS_DRAWN}")
         if  QUESTION and (USER_textinput or PICS_DRAWN > 0):
             self.Flashcard.setbook(self.bookname)
             log.DEBUGLOG(debugmode=self.debugmode,msg=f"FB MODULE: a selection was entered")
@@ -49,36 +51,14 @@ def selectionentered(self,event):
                 print("mode is question/n"*10)
                 log.DEBUGLOG(debugmode=self.debugmode,msg=f"FB MODULE: question mode")
                 # change mode to answer
-                
                 self.Flashcard.setID() #unique id to Q/A card, only when first data is entered in Q card
                 self.Flashcard.switchmode()
                 self.m_modeDisplay.SetValue("Answer:")
                 self.Flashcard.setT(self.m_TopicInput.GetValue())
                 self.m_userInput.SetValue("")
                 self.Refresh()
-                # check for [[1,2,3]]
                 
-                if PICS_DRAWN > 1:
-                    print(colored(f"{bcolors.WARNING}multiple pics drawn{bcolors.ENDC}","red"))    
-                    log.DEBUGLOG(debugmode=self.debugmode,msg=f"FB MODULE: multiple pics are drawn")
-                    list_ = self.Flashcard.getpiclist("Question")
-                    func.CombinePicsFromList(self,list_)
-                    list_ = list2path(list_)
-                    self.Flashcard.setQ(text = self.usertext,pic = os.path.basename(list_))                
-                elif PICS_DRAWN == 1:                                        
-                    list_ = self.Flashcard.getpiclist("Question")
-                    log.DEBUGLOG(debugmode=self.debugmode,msg=f"FB MODULE: 1 pic is drawn,\n\t pic drawn is {list_},\n\t mode is question: {self.Flashcard.is_question()}")
-                    if len(list_)>1 and type(list_[0]) is list:#list in list  
-                        print(f"anton watch it\n"*20)
-                        func.CombinePicsFromList(self,list_)
-                        list_ = list2path(list_)
-                    else:
-                        list_ = list2path(list_)
-                    print(os.path.basename(list_))                    
-                    self.Flashcard.setQ(text = self.usertext, pic = os.path.basename(list_))                    
-                elif PICS_DRAWN == 0:
-                    log.DEBUGLOG(debugmode=self.debugmode,msg=f"FB MODULE: only user text input, 0 pics were drawn")
-                    self.Flashcard.setQ(self.usertext)
+                self.Flashcard.setQ(text = self.usertext)                
                 popup.ShowInPopup(self,event,"Question")
                 
         if ANSWER:    
@@ -94,31 +74,10 @@ def selectionentered(self,event):
             # remove temporary borders
             self.pageimage = self.pageimagecopy
             page.ShowPage_fb(self)
-  
-            list_A = self.Flashcard.getpiclist("Answer")
-            if not list_A:
-                list_A = ''
-            if len(list_A) > 1:
-                """"multiple pictures were taken"""
-                func.CombinePicsFromList(self,list_A)
-                if type(list_A[0]) is list:
-                    list_A[0] = list_A[0][0]
-                self.Flashcard.setA(text=self.usertext,pic = os.path.basename(list_A[0]))
-            elif len(list_A) == 1:
-                """"only 1 picture was taken"""
-                if type(list_A[0]) is list:        
-                    func.CombinePicsFromList(self,list_A)
-                self.Flashcard.setA(text = self.usertext, pic = os.path.basename(list_A[0]))
-            else:
-                """"no pictures were taken"""
-                self.Flashcard.setA(text=self.usertext)             
+            self.Flashcard.setA(text = self.usertext)
             
-
-        
-        if ANSWER: #if answer card is completed
             popup.ShowInPopup(self,event,"Answer")                    
-            # save the user inputs in file                
-            self.Flashcard.setT(self.m_TopicInput.GetValue())           
+            
             #save user inputs
             if self.Flashcard.QuestionExists():
                 self.Flashcard.saveCard()
@@ -127,7 +86,9 @@ def selectionentered(self,event):
             self.m_modeDisplay.SetValue("Question:")
             self.m_TopicInput.SetValue('')
             self.m_userInput.SetValue("")
-        
+            self.Borders.reset()
+            page.ShowPage_fb(self)
+            
 
     
 def resetselection(self,event):    

@@ -426,7 +426,7 @@ class Cardsdeck(settings):
             size_qa = self.CardSizeWithoutTopic(size) #size of the whole Q/A card excluding the topic
             
             keylist = {'index':index,'question' : question, 'size':size_qa,'page':999,'pos':(0,0),'scale':1,'border' : (0,0),'id':card_id}
-            print(f"q = {question}, a = {type(question)}\n"*10)
+            
             if answer: #add the answer key
                 keylist['answer'] = answer
                 if 'text' in answer:
@@ -493,6 +493,11 @@ class Flashcard(paths):
         self.questiondict = {}
         self.answerdict = {}
         
+        self.QuestionPicPaths = []
+        self.QuestionPicOrientation = []
+        self.AnswerPicPaths = []
+        self.AnswerPicOrientation = []
+        
         self.pagenr = 1
     def reset(self):
         self.question = {}
@@ -516,6 +521,12 @@ class Flashcard(paths):
         self.size_a_pic = (0,0)
         self.size_topic = (0,0)
         self.sizelist = [(0,0),(0,0),(0,0),(0,0),(0,0)]#qtext, qpic, atext,apic, topic
+        
+        
+        self.QuestionPicPaths = []
+        self.QuestionPicOrientation = []
+        self.AnswerPicPaths = []
+        self.AnswerPicOrientation = []
     def generate_id(self):        
         def loadid():
             try:
@@ -634,12 +645,11 @@ class Flashcard(paths):
             self.sizelist[3] =  imsize
     def nrpics(self,mode):
         try:
-            print(f"ANSWER {len(self.question['pic'])}  {self.question}\n"*100)
             if mode.lower() == 'question':
                 return len(self.question['pic'])
             else:
                 return len(self.answer['pic'])
-        except:
+        except KeyError:
             return 0
         #def getquestionmode(self):
         #    return self.questionmode
@@ -650,33 +660,27 @@ class Flashcard(paths):
     def is_question(self):
         return self.questionmode
     
-    def addpic(self,orientation,path):        
-        pathlist = []
+    def addpic(self,VerticalBool = True,fullpath = None):        
+        if self.is_question():
+            self.QuestionPicPaths.append(fullpath)
+            self.QuestionPicOrientation.append(VerticalBool)
+            print(self.QuestionPicPaths)
+            print(self.QuestionPicOrientation)
+            
+        else:
+            self.AnswerPicPaths.append(fullpath)
+            self.AnswerPicOrientation.append(VerticalBool)
+        
+            
+            
+    def fliporientation(self):
         try:
             if self.is_question():
-                pathlist = self.question['pic']
+                self.QuestionPicOrientation[-1] = not self.QuestionPicOrientation[-1]
             else:
-                pathlist = self.answer['pic']
-        except KeyError:
-            pathlist = []
-        except:
-            print(self.question)
-        # [1,2,3] is vertical, [[1,2,3]] is horizontal
-        if orientation == 'vertical':
-            pathlist.append(path)  
-        else:
-            try:
-                pathlist[-1].append(path)  
-            except:
-                pathlist.append([path])  
-        #save it back to original self.variable
-        if self.is_question():
-            self.question['pic'] = pathlist
-        else:
-            self.answer['pic'] = pathlist
-        
-        print(f"\n"*3)
-        print(f"pathlist multiple = {pathlist}\n")
+                self.AnswerPicOrientation[-1] = not self.AnswerPicOrientation[-1]
+        except IndexError:
+            pass
     
     def setT(self,text):
         if text.strip():
@@ -688,6 +692,59 @@ class Flashcard(paths):
                 print("topic size",width_card,height_card)
                 self.sizelist[4] = (width_card,height_card)
     
+    
+    def StitchPicsTogether(self):
+        """LOOK AT LIST OF PATHS 
+        IF THE ELEMENT OF THE LIST IS A PATHSTRING IT WILL JOIN THEM VERTICALLY
+        IF THE ELEMENT IS ANOTHER LIST OF PATHSTRINGS THEN THOSE WILL BE JOINED HORIZONTALLY
+        THE COMBINED PICTURE WILL BE SAVED AS THE FIRST PATHSTRING, THE OTHER PICTURES WILL BE DELETED"""
+        
+        
+        print("combine pics")
+        if self.is_question():
+            picpaths = self.QuestionPicPaths
+            orien = self.QuestionPicOrientation
+        else:
+            picpaths = self.AnswerPicPaths
+            orien = self.AnswerPicOrientation
+        
+        
+        originalpaths = picpaths.copy()
+        images = imop.fullpath_to_imagelist(picpaths)
+        index = 0
+        
+        if orien and picpaths:
+            """"""
+            orien[-1] = True
+            while False in orien:    
+                print("...")
+                if index < len(orien)-1:#last orientation does not matter
+                    if orien[index] == False:
+                        #combine with next
+                        combpic = imop.CombinePicturesHorizontal([images[index],images[index+1]])
+                        #replace the second image with the combined image, the combined image will then just assume the second pictures orientation
+                        images[index+1] = combpic            
+                        #pop the first bool and pic from list
+                        orien.pop(index)
+                        images.pop(index)            
+                    else:
+                        index += 1
+                else:
+                    break
+            """combine the images vertically"""
+            combinedim = imop.CombinePicturesVertical(images)            
+            combinedim.save(originalpaths[0]) #save the image as the first path, delete the other images that were merged    
+            for k, imagepath in enumerate(originalpaths):
+                if k != 0 and Path(imagepath).exists():
+                    Path(imagepath).unlink()
+                    
+            #convert fullpath to relpath
+            imagename = os.path.basename(originalpaths[0])
+            if self.is_question():
+                self.setQ(pic = imagename)
+            else:
+                self.setA(pic = imagename)
+            return originalpaths[0]
     def getpiclist(self,mode):
         try:
             if mode.lower() == 'question':
@@ -708,18 +765,12 @@ class Flashcard(paths):
             print(f"dir = {dir_}")
             if len(dir_) > 1:
                 if isinstance(dir_,str):
-                    try:
-                        if Path(dir_).exists():
-                            Path(dir_).unlink()
-                    except:
-                        pass
+                    if Path(dir_).exists():
+                        Path(dir_).unlink()
                 elif isinstance(dir_,list):
                     for pic in dir_:
-                        try:
-                            if type(pic) == str and Path(pic).exists():
-                                Path(pic).unlink()
-                        except:
-                            pass
+                        if type(pic) == str and Path(pic).exists():
+                            Path(pic).unlink()
             elif len(dir_) == 1:
                 try:
                     #just one image
@@ -730,349 +781,14 @@ class Flashcard(paths):
                     print("could not remove single image")
                     pass
                 
-        if len(self.pic_question_dir) > 0:
-            dir_ = self.pic_question_dir
+        if self.is_question():
+            dir_ = self.QuestionPicPaths
             unlinkpics(dir_)
-        if len(self.pic_answer_dir) > 0:
-            dir_ = self.pic_answer_dir    
+        else:
+            dir_ = self.AnswerPicPaths
             unlinkpics(dir_)    
-    def StitchCards(self,vertical_stitch):
-        
-        #question mode
-        
-        try:
-            if vertical_stitch:
-                if (self.questionmode and (len(self.question['pic']) > 0) and (isinstance(self.question['pic'][-1]),list) and (len(self.question['pic'][-1])==1)):
-                    self.question['pic'][-1] = self.question['pic'][-1][0]
-                    #self.pic_question_dir[-1] = self.pic_question_dir[-1][0]
-                    
-                #answer mode
-                if (not self.questionmode) and (len(self.answer['pic']) > 0) and (isinstance(self.pic_answer[-1]),list) and (len(self.answer['pic'][-1])==1):
-                    self.answer['pic'][-1] = self.answer['pic'][-1][0]
-                    #self.pic_answer_dir[-1] = self.pic_answer_dir[-1][0]    
-                #stitch it horizontally
-            else:
-                #question mode
-                if self.questionmode and (len(self.question['pic']) > 0) and (not isinstance(self.pic_question[-1]),list):
-                    self.question['pic'][-1] = [self.question['pic'][-1]]
-                    #self.pic_question_dir[-1] = [self.pic_question_dir[-1]]
-                #answer mode
-                if (not self.questionmode) and (len(self.answer['pic']) > 0) and (not isinstance(self.answer['pic'][-1]),list):
-                    self.pic_answer[-1] = [self.pic_answer[-1]]
-                    self.pic_answer_dir[-1] = [self.pic_answer_dir[-1]]
-                    pass
-        except KeyError:
-            print(f"ERROR\t"*10)
-            print(self.question)
-            "Do nothing, there havent been any pictures taken yet."
-            pass
-            """to switch it from 
-            [ver,[hor]] to [ver,ver] and back depending on the user. All the paths withint a double list will be stitched as horizontal, otherwise vertical
-            
-            """
-            
-            
-            
-            
-            
-            
-            
-            """
-            if self.questionmode and (len(self.pic_question) > 0) and (type(self.pic_question[-1]) is list) and (len(self.pic_question[-1])==1):
-                self.pic_question[-1] = self.pic_question[-1][0]
-                self.pic_question_dir[-1] = self.pic_question_dir[-1][0]
-                
-            #answer mode
-            if (not self.questionmode) and (len(self.pic_answer) > 0) and (type(self.pic_answer[-1]) is list) and (len(self.pic_answer[-1])==1):
-                self.pic_answer[-1] = self.pic_answer[-1][0]
-                self.pic_answer_dir[-1] = self.pic_answer_dir[-1][0]    
-                
-            """
-            
-            
-        """else:
-            #question mode
-            if self.questionmode and (len(self.pic_question) > 0) and (type(self.pic_question[-1]) is not list):
-                self.pic_question[-1] = [self.pic_question[-1]]
-                self.pic_question_dir[-1] = [self.pic_question_dir[-1]]
-            #answer mode
-            if (not self.questionmode) and (len(self.pic_answer) > 0) and (type(self.pic_answer[-1]) is not list):
-                self.pic_answer[-1] = [self.pic_answer[-1]]
-                self.pic_answer_dir[-1] = [self.pic_answer_dir[-1]]
-        """
-        
-class Flashcard2():
-    def __init__(self,fontsize = 20, savefolder = None):
-        self.a4page_w = 1240
-        self.question = ''
-        self.questionpic = ''
-        self.answer    = ''
-        self.answerpic = ''
-        self.mode      = 'Question'
-        self.questionmode = True
-        self.topic    = ''
-        self.pic_question     = []
-        self.pic_answer       = []
-        self.pic_question_dir = []
-        self.pic_answer_dir   = []
-        self.usertext         = ''
-        self.size_q_txt = (0,0)
-        self.size_q_pic = (0,0)
-        self.size_a_txt = (0,0)
-        self.size_a_pic = (0,0)
-        self.size_topic = (0,0)
-        self.sizelist = '[(0,0),(0,0),(0,0),(0,0),(0,0)]'
-        self.LaTeXfontsize = fontsize
-        self.savefolder = savefolder
-        
-        
-        self.carddict = {}
-        self.questiondict = {}
-        self.answerdict = {}
-        self.bookname = ''
-        self.pagenr = 1
-        
-        """{card_id : 12345, question : {rect_id: 54321, text: '',pic : '' }, answer : {rect_id: 12435, text: '',pic : '' }, topic : 'Topic', size: [0,0,0,0]}
-        
-        The idea is: each Q/A card has an unique ID
-        The Q card has an sub-id if a rectangle has been drawn
-        The A card has an sub-id"""
     
-    
-    def setpagenr(self,pagenr):
-        self.pagenr = pagenr
-    def addID(self):
-        from random import randint
-        FIND_ID = True
         
-        settingsfile = Path(self.savefolder,"ID_list.txt")
-        
-            
-        
-        while FIND_ID:
-            rand_nr = str(randint(0, 99999)).rjust(5, "0")
-            print(rand_nr)
-        
-        pass
-        
-    def reset(self):
-        self.question = ''
-        self.questionpic = ''
-        self.answer   = ''
-        self.answerpic = ''
-        self.mode     = 'Question'
-        self.questionmode = True
-        self.topic    = ''
-        self.pic_question     = []
-        self.pic_answer       = []
-        self.pic_question_dir = []
-        self.pic_answer_dir   = []
-        self.usertext         = ''
-        self.size_q_txt = (0,0)
-        self.size_q_pic = (0,0)
-        self.size_a_txt = (0,0)
-        self.size_a_pic = (0,0)
-        self.size_topic = (0,0)
-        self.sizelist = '[(0,0),(0,0),(0,0),(0,0),(0,0)]'
-    
-    def setpiclist(self,mode,text):
-        if mode.lower() == 'question':
-            self.pic_question_dir = text
-        else:
-            self.pic_question_dir = text
-            
-    def getpicdir(self,mode):
-        if mode.lower() == 'question':
-            return self.pic_question_dir
-        else:
-            return self.pic_question_dir
-            
-    def removepics(self):
-        def unlinkpics(dir_):    
-            print(f"dir = {dir_}")
-            if len(dir_) > 1:
-                if isinstance(dir_,str):
-                    try:
-                        if Path(dir_).exists():
-                            Path(dir_).unlink()
-                    except:
-                        pass
-                elif isinstance(dir_,list):
-                    for pic in dir_:
-                        try:
-                            if type(pic) == str and Path(pic).exists():
-                                Path(pic).unlink()
-                        except:
-                            pass
-            elif len(dir_) == 1:
-                try:
-                    #just one image
-                    pic = dir_[0]
-                    if type(pic) == str and Path(pic).exists():
-                            Path(pic).unlink()
-                except:
-                    print("could not remove single image")
-                    pass
-                
-        if len(self.pic_question_dir) > 0:
-            dir_ = self.pic_question_dir
-            unlinkpics(dir_)
-        if len(self.pic_answer_dir) > 0:
-            dir_ = self.pic_answer_dir    
-            unlinkpics(dir_)
-    
-    def addpic(self,mode,orientation,name,path):        
-        if mode == 'Question':
-            if orientation == 'vertical':
-                self.pic_question.append(name)  
-                self.pic_question_dir.append(path)  
-            elif orientation == 'horizontal':
-                try:
-                    self.pic_question[-1].append(name)  
-                    self.pic_question_dir[-1].append(path)  
-                except:
-                    self.pic_question.append([name])  
-                    self.pic_question_dir.append([path])  
-            else:
-                raise ValueError('Flashcard has been given a wrong orientation')
-        elif mode == 'Answer':  
-            if orientation == 'vertical':
-                self.pic_answer.append(name)  
-                self.pic_answer_dir.append(path)  
-            elif orientation == 'horizontal':
-                try:
-                    self.pic_answer[-1].append(name)  
-                    self.pic_answer_dir[-1].append(path)  
-                except:
-                    self.pic_answer.append([name])  
-                    self.pic_answer_dir.append([path])  
-            else:
-                raise ValueError('Flashcard has been given a wrong orientation')
-        else: 
-            raise ValueError('Flashcard has been given a wrong mode')
-            
-    def StitchCards(self,vertical_stitch):
-        if vertical_stitch:
-            #question mode
-            if self.questionmode and (len(self.pic_question) > 0) and (type(self.pic_question[-1]) is list) and (len(self.pic_question[-1])==1):
-                self.pic_question[-1] = self.pic_question[-1][0]
-                self.pic_question_dir[-1] = self.pic_question_dir[-1][0]
-            #answer mode
-            if (not self.questionmode) and (len(self.pic_answer) > 0) and (type(self.pic_answer[-1]) is list) and (len(self.pic_answer[-1])==1):
-                self.pic_answer[-1] = self.pic_answer[-1][0]
-                self.pic_answer_dir[-1] = self.pic_answer_dir[-1][0]    
-        #stitch it horizontally
-        else:
-            #question mode
-            if self.questionmode and (len(self.pic_question) > 0) and (type(self.pic_question[-1]) is not list):
-                self.pic_question[-1] = [self.pic_question[-1]]
-                self.pic_question_dir[-1] = [self.pic_question_dir[-1]]
-            #answer mode
-            if (not self.questionmode) and (len(self.pic_answer) > 0) and (type(self.pic_answer[-1]) is not list):
-                self.pic_answer[-1] = [self.pic_answer[-1]]
-                self.pic_answer_dir[-1] = [self.pic_answer_dir[-1]]
-    def QuestionExists(self):
-        if self.question.strip() != '' or self.questionpic.strip() != '':
-            return True
-        
-    def getpiclist(self,mode):
-        if mode.lower() == 'question':
-            return self.pic_question_dir
-        elif mode.lower() == 'answer':
-            return self.pic_answer_dir
-    def nrpics(self,mode):
-        print(f"ANSWER {len(self.question['pic'])}  {self.question}\n"*100)
-        if mode.lower() == 'question':
-            
-            return len(self.question['pic'])
-        elif mode.lower() == 'answer':
-            return len(self.answer['pic'])
-    def setSizes(self):
-        if len(self.pic_question_dir) == 1:
-            path = self.pic_question_dir[0]
-            try:
-                w,h = PIL.Image.open(path).size
-            except:
-                w,h = 'Error','Error'
-            self.size_q_pic = (w,h)
-        if len(self.pic_answer_dir) == 1:
-            path = self.pic_answer_dir[0]
-            try:
-                w,h = PIL.Image.open(path).size
-            except:
-                w,h = 'Error','Error'
-            self.size_a_pic = (w,h)
-        self.sizelist = str([self.size_q_txt, self.size_q_pic, 
-                             self.size_a_txt, self.size_a_pic, 
-                             self.size_topic])
-    #store user data and save sizes of images/text
-    def setT(self,text):
-        self.topic = text
-        width_card = self.a4page_w
-        height_card = int(math.ceil(len(text)/40))*0.75*100
-        print(f"! topic = {text}, size = {width_card},{height_card}")
-        if height_card != 0:
-            print("topic size",width_card,height_card)
-            self.size_topic = (width_card,height_card)                
-    def setQ(self,usertext):
-        if usertext.strip() != '':
-            self.question = usertext
-            imbool, im = f2.CreateTextCard(self,'manual',usertext)
-            print(f"text size is {imbool} {usertext}")
-            if imbool:
-                self.size_q_txt = im.size
-    def setQpic(self,partialpath):
-        self.questionpic = partialpath
-    def setA(self,usertext):
-        if usertext.strip() != '':
-            self.answer = usertext
-            image_exists, image = f2.CreateTextCard(self,'manual',usertext)
-            if image_exists:
-                self.size_a_txt = image.size 
-                
-    def getmode(self):
-        return str(self.mode)
-    def setApic(self,partialpath):
-        self.answerpic = partialpath
-    #save the final card  
-    def saveCard(self):
-        import json
-        if self.savefolder and self.bookname:
-            path = os.path.join(self.savefolder, self.bookname + '.bok')
-            self.setSizes()        
-            
-            if not os.path.exists(path):
-                with open(path, 'w') as output:
-                    output.write("")
-                output.close
-            else:
-                with open(path,'a') as file:
-                    dictionary = {}
-                    if self.question:
-                        dictionary['qtext'] = self.question
-                    if self.questionpic:
-                        dictionary['qpic'] = self.questionpic
-                    if self.answer:
-                        dictionary['atext'] = self.answer
-                    if self.answerpic:
-                        dictionary['apic'] = self.answerpic
-                    
-                    file.write(json.dumps(dictionary))
-                    file.close()
-            
-    def switchmode(self):
-        
-        if self.mode == 'Question':
-            self.mode = 'Answer'
-            self.questionmode = False
-        else:
-            self.mode = 'Question'
-            self.questionmode = True
-        #def getquestionmode(self):
-        #    return self.questionmode
-    
-    def is_question(self):
-        return self.questionmode
 
 
     

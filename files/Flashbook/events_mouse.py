@@ -24,10 +24,9 @@ def bitmapleftup(self,event):
     y0 = int(y0/self.zoom)
     x1 = int(x1/self.zoom)
     y1 = int(y1/self.zoom)
-    print(f"leftup\n"*200)
+    print(f"leftup\n")
     
     VALID_RECTANGLE = abs(x1-x0)>2 and abs(y1-y0)>2 #should be at least of a certain width and height
-    print(f"rectangle = {VALID_RECTANGLE}\n")
     self.Flashcard.setpagenr(self.currentpage)
     if VALID_RECTANGLE:            
         self.BorderCoords = [x0,y0,x1,y1]
@@ -57,20 +56,18 @@ def bitmapleftup(self,event):
         img.save(filename)
         
         
-        """The list will look like the following:
-        [vert1 [hor1,hor2,hor3],vert2,vert3,[hor4,hor5]]
-        So that first the horizontal [] within the list will be combined first, 
-        then everythying will be combined vertically."""
+        
         
         dir_ = str(Path(self.picsdir,self.bookname,picname))
-        print(f"fullpath is {dir_}"*20)        
-        if self.stitchmode_v:
-            self.Flashcard.addpic('vertical',dir_)
-        else:
-            self.Flashcard.addpic('horizontal',dir_)
+        print(f"fullpath is {dir_}"*2)        
+        self.Flashcard.addpic(VerticalBool = self.stitchmode_v, fullpath = dir_)
+        
+        if not self.stitchmode_v:
             #restore stitchmode to default
             self.stitchmode_v =  True   
+            self.Flashcard.fliporientation()
             f.SetToolStitchArrow(self,orientation="vertical")
+            
         page.ShowPage_fb(self)     
         
 def panel4_bitmapleftup(self,event):

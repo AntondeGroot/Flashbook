@@ -422,7 +422,7 @@ def CreateTextCard(self,mode,arg1):
             # convert picture to data, if the text is illegitimate the error will occur in canvas.draw()
             canvas = FigureCanvas(figure)
             canvas.draw()
-        except:
+        except KeyError:
             if mode == 'flashbook':
                 MessageBox(0, f"Error in text given by user.\nFaulty text or something mistakingly seen as a command used.\nGo to .../Flashbook/files/... and edit it manually.\nOr edit it in Flashcard.", "Message", ICON_STOP)
                 
@@ -584,14 +584,13 @@ def Cards_ReplaceUserCommands(self):
 
            
 def ShowPageBMP(self,bmp):
-    try:      
+    if bmp:
         self.m_bitmapScrollFC.SetBitmap(bmp)     
         self.Refresh()
-    except:        
-        log.ERRORMESSAGE("Error: cannot show image")
+    
     
 def ShowPage_fc(self,image):
-    try:
+    if image:
         image = imop.cropimage(image,0)
         image = imop.cropimage(image,1)
         width, height = image.size
@@ -599,8 +598,7 @@ def ShowPage_fc(self,image):
         image2.SetData( image.tobytes() )        
         self.m_bitmapScrollFC.SetBitmap(wx.Bitmap(image2))     
         self.Refresh()
-    except:        
-        log.ERRORMESSAGE("Error: cannot show image")
+
 
 # reset scroll bar when switching page:
 def SetScrollbars_fc(self):

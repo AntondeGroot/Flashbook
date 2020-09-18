@@ -165,15 +165,7 @@ def openbook(self,path):
     self.m_TotalPagesFB.SetValue(str(self.totalpages))
     nrlist.sort()
     
-    #Open dictionary if it exists
-    """
-    try:
-        with open(self.PathBorders, 'r') as file:
-            self.dictionary = json.load(file)
-    except:
-        self.dictionary = {}
-        log.DEBUGLOG(debugmode=self.debugmode,msg=f"FB MODULE: no drawn rects found for this file {self.bookname}, continue")
-    """ 
+    
         
     try: 
         self.jpgdir    = str(Path(self.booksdir, self.booknamepath, self.picnames[self.currentpage-1]))
@@ -185,20 +177,16 @@ def openbook(self,path):
         log.ERRORMESSAGE("Error : could not load scrolled window 1")
         
     #Draw borders if they exist
-    try:
-        if self.drawborders:                    
-            pageimage = self.pageimage
-            self.pageimage = f.drawCoordinates(self,pageimage)
-    except:
-        log.ERRORMESSAGE("Error: could not draw borders")
+    if self.drawborders:                    
+        pageimage = self.pageimage
+        self.pageimage = f.drawCoordinates(self,pageimage)
                   
-    try:
-        image2 = wx.Image( self.width, self.height )
-        image2.SetData( self.pageimage.tobytes() )
-        self.m_bitmapScroll.SetBitmap(wx.Bitmap(image2))
-        page.SetScrollbars(self)
-    except:
-        log.ERRORMESSAGE("Error: could not load scrolled window 2")
+    #Load page and dispay it
+    image2 = wx.Image( self.width, self.height )
+    image2.SetData( self.pageimage.tobytes() )
+    self.m_bitmapScroll.SetBitmap(wx.Bitmap(image2))
+    page.SetScrollbars(self)
+    
     panel.SwitchPanel(self,1)
     self.Layout()
     

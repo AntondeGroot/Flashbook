@@ -158,7 +158,7 @@ class flashbook(gui.MyFrame):
         acc.AcceleratorTableSetup(self,"flashbook","set")
         try:
             self.currentpage = int(self.m_CurrentPageFB.GetValue())
-        except:
+        except ValueError:
             self.currentpage = 1
         page.switchpage(self,event)
     
@@ -193,4 +193,4 @@ class flashbook(gui.MyFrame):
         all it does is switch [a,...,[x]] for [a,...,x] and back to [a,...,[x]] depending on whether the user has pushed a button to change the direction in which the notes should be stitched together.  """
         
         if hasattr(self,'bookname') and self.bookname: # a book has been chosen
-            self.Flashcard.StitchCards(self.stitchmode_v)
+            self.Flashcard.fliporientation()

@@ -27,7 +27,7 @@ def LoadPage(self):
         width, height = self.pageimagecopy.size #so that it doesn't rescale it everytime ShowPage() is used
         width , height = int(width*self.zoom) , int(height*self.zoom)
         self.pageimage = self.pageimage.resize((width, height), PIL.Image.ANTIALIAS)
-    except:
+    except KeyError:
         log.ERRORMESSAGE("Error: cannot load page")
     
 def LoadPageNr(self):
@@ -76,12 +76,12 @@ def ShowPage_fb(self):
         width, height = self.pageimagecopy.size #so that it doesn't rescale it everytime ShowPage() is used
         width, height = int(width*self.zoom) , int(height*self.zoom)
         self.pageimage = self.pageimage.resize((width, height), PIL.Image.ANTIALIAS)
-        try:   #draw borders if they exist
-            if self.drawborders:
-                pageimage = self.pageimage
-                self.pageimage = f.drawCoordinates(self,pageimage)
-        except:
-            pass        
+        
+        #draw borders if they exist
+        if self.drawborders:
+            pageimage = self.pageimage
+            self.pageimage = f.drawCoordinates(self,pageimage)
+        
         image2 = wx.Image( width, height )
         image2.SetData( self.pageimage.tobytes() )
         self.m_bitmapScroll.SetBitmap(wx.Bitmap(image2))
@@ -92,44 +92,33 @@ def ShowPage_fb(self):
         
         
 def switchpage(self,event):
-    try:
-        pagenumber = self.currentpage
-        if pagenumber < 1:
-            pagenumber = 1
-        if pagenumber > self.totalpages:
-            pagenumber = self.totalpages
-        self.currentpage = pagenumber
-        LoadPage(self)
-        ShowPage_fb(self)
-    except:
-        log.ERRORMESSAGE("Error: invalid page number")
+    pagenumber = self.currentpage
+    if pagenumber < 1:
+        pagenumber = 1
+    if pagenumber > self.totalpages:
+        pagenumber = self.totalpages
+    self.currentpage = pagenumber
+    LoadPage(self)
+    ShowPage_fb(self)
+    
     self.Layout()
     
 def nextpage(self,event):
-    try:
-        if self.currentpage == 'prtscr':
-            self.currentpage = self.currentpage_backup
-            log.DEBUGLOG(debugmode=self.debugmode,msg=f"FB MODULE: page is now {self.currentpage}")
-        else:
-            if self.currentpage < self.totalpages:
-                self.currentpage += 1
-        LoadPage(self)
-        ShowPage_fb(self)
-        SetScrollbars(self)
-    except:
-        log.ERRORMESSAGE("Error: can't click on next")
+    if self.currentpage == 'prtscr':
+        self.currentpage = self.currentpage_backup
+    elif self.currentpage < self.totalpages:
+        self.currentpage += 1
+    LoadPage(self)
+    ShowPage_fb(self)
+    SetScrollbars(self)
     self.Layout()
     
 def previouspage(self,event):    
-    try:
-        if self.currentpage == 'prtscr':
-            self.currentpage = self.currentpage_backup
-        else:
-            if self.currentpage > 1:
-                self.currentpage -= 1    
-        LoadPage(self)
-        ShowPage_fb(self)
-        SetScrollbars(self)            
-    except:
-        log.ERRORMESSAGE("Error: can't click on back")
+    if self.currentpage == 'prtscr':
+        self.currentpage = self.currentpage_backup
+    elif self.currentpage > 1:
+        self.currentpage -= 1    
+    LoadPage(self)
+    ShowPage_fb(self)
+    SetScrollbars(self)            
     self.Layout()

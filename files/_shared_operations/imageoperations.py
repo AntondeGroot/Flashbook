@@ -23,6 +23,39 @@ MB_YESNO = 0x00000004
 MB_DEFBUTTON2 = 0x00000100
 import numpy as np
 
+def fullpath_to_imagelist(picpaths):
+    return list(map(PIL.Image.open, picpaths))   
+
+#combine horizontal
+def CombinePicturesHorizontal(imagelist):
+    
+    widths, heights = zip(*(i.size for i in imagelist))
+    max_height = max(heights)
+    total_width = sum(widths)
+    new_im = PIL.Image.new('RGB', (total_width, max_height), "white")
+    x_offset = 0
+    for img in imagelist:
+        new_im.paste(img, (x_offset,0))
+        x_offset += img.size[0]
+    return new_im
+
+def CombinePicturesVertical(imagelist):
+    widths, heights = zip(*(i.size for i in imagelist))
+    total_height = sum(heights)
+    max_width = max(widths)
+    new_im = PIL.Image.new('RGB', (max_width, total_height), "white")
+    #combine images vertically
+    y_offset = 0
+    for im in imagelist:
+        new_im.paste(im, (0,y_offset))
+        y_offset += im.size[1]
+    return new_im
+
+
+
+
+
+
 def PILimage_to_Bitmap(image): 
     """ PIL image to wxBitmap """
     image2 = wx.Image( image.size)
