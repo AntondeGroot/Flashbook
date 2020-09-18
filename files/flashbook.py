@@ -453,6 +453,12 @@ class Cardsdeck(settings):
             totalwidth = max(totalwidth,w)
             totalheight += h
         return totalwidth,totalheight
+    
+    def __len__(self):
+        """nr of cards, without counting topics as separate cards"""
+        return len([x for x in self.cards if 'topic' not in x])
+        
+    
 
 class Flashcard(paths):
     def __init__(self,fontsize = 20):

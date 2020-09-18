@@ -69,17 +69,15 @@ def startprogram(self,filepath):
     self.Flashcard.load_data()
     
     self.Cardsdeck.loaddata(book = self.bookname)
-    
-    
-    
-    cards = self.CardsDeck.loaddata2card() #cards contains the keys #index:  ,.... 'q' and if applicable also 'a'
-    self.CardsDeck.set_cards(cards=cards,notesdir=self.notesdir)  # set_cards converts the text to somthing Matplotlib can understand
+    self.Cardsdeck.loaddata2card() #cards contains the keys #index:  ,.... 'q' and if applicable also 'a'
+    #self.Cardsdeck.set_cards(cards=cards,notesdir=self.notesdir)  # set_cards converts the text to somthing Matplotlib can understand
     
     #open dialog window
     """open My dialog, don't forget to add two parameters to "def __init__( self, parent,MaxValue,Value )" within MyDialog 
     and use these values to set the slider as you wish. Don't forget to add "self.Destroy" when you press the button"""
     
-    data = len(self.CardsDeck)
+    data = len(self.Cardsdeck)
+    print(f"nr cards = {data}")
     
     try:
         with open(self.statsdir, 'r') as file:    
