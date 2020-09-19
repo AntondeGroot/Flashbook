@@ -450,7 +450,7 @@ class Cardsdeck(settings):
                 self.cardswithouttopic.append(linedict)
         
         
-        print(f"selfcards = {cards}")
+        print(f"selfcards = {cards[-2]}")
     def CardSizeWithoutTopic(self,tuples_list):
         if isinstance(tuples_list,tuple):
             tuples_list = [tuples_list]
@@ -475,6 +475,30 @@ class Cardsdeck(settings):
         
     def getallcards(self):
         return self.cards
+    
+    def getoriginalcard_i(self,index,topic = False):
+        try:
+            line = self.df.iloc[index]
+            question = ast.literal_eval(line['question'])
+            if line['answer']:
+                answer = ast.literal_eval(line['answer'])
+            else:
+                answer = None
+            topic = line['topic']
+            size = ast.literal_eval(line['size'])
+            
+        except KeyError:
+            return None
+    def getcard_QATS(trueindex):
+        line = self.df.iloc[index]
+        question = ast.literal_eval(line['question'])
+        if line['answer']:
+            answer = ast.literal_eval(line['answer'])
+        else:
+            answer = None
+        topic = line['topic']
+        size = ast.literal_eval(line['size'])
+        qpic 
         
 class Flashcard(paths):
     def __init__(self,fontsize = 20):
@@ -483,7 +507,7 @@ class Flashcard(paths):
         savefolder = self.notesdir
         self.path = savefolder
         self.idfile = os.path.join(savefolder, 'unique_ids.txt')
-        self.columnnames = ['page','id','question','answer','topic','size']
+        self.columnnames = ['page','id','question','answer','topic','subtopic','size','relsize']
         """                [ 0    ,1234,{text:"hello", pic:"\path\img.jpg"}, ... , "topic",[(10,200),...(0,0)]    """
         self.bookname = ''
         self.dict = {}
@@ -608,7 +632,7 @@ class Flashcard(paths):
             
     def saveCard(self):
         self.load_data()
-        self.insert_data(page = self.pagenr, id = self.idnr,question = self.question, answer = self.answer, topic = self.topic,size = self.sizelist )
+        self.insert_data(page = self.pagenr, id = self.idnr,question = self.question, answer = self.answer, topic = self.topic,size = self.sizelist ,relsize = 100)
         self.save_data()
         self.idnr = 0
              

@@ -260,14 +260,15 @@ def ReplaceUserCommands(commandsfile,line):
 
 def ShowPopupCard(self,trueindex):
     # get the card
-    rawcard = self.Latexfile.getline_i_card(trueindex)
+    rawcard = self.Cardsdeck.getoriginalcard_i(trueindex)
     # get data from the cards
     log.DEBUGLOG(debugmode=self.debugmode, msg=f'LATEXOPERATIONS: show popupcard: rawcard = {rawcard}')
-    qtext = rawcard['qtext']
-    qpic  = rawcard['qpic'] 
-    atext = rawcard['atext']
-    apic  = rawcard['apic']
-    topic = rawcard['t']
+    qtext = rawcard['questiontext']
+    qpic  = rawcard['questionpic'] 
+    atext = rawcard['answertext']
+    apic  = rawcard['answerpic']
+    
+    topic = rawcard['topic']
     #create the images
     _, img_text  = imop.CreateTextCard(self,qtext)
     _, img_pic   = imop.findpicture_path(self,qpic)

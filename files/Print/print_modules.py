@@ -75,6 +75,7 @@ def createimage(self,card_i):
         if topic != '':
             _, imagetext = imop.CreateTopicCard(self,topic)
             im = imagetext
+            
             log.DEBUGLOG(debugmode=self.debugmode, msg=f'PRINTMODULE: createimage: topic card is created')
         return im
     else:
