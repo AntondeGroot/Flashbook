@@ -12,6 +12,8 @@ import _GUI.gui_flashbook as gui
 import wx
 import matplotlib
 import Flashcard.fc_functions as f2
+from pathlib import Path
+
 def buttonCorrect(self):
     self.NEWCARD = True
     f2.clearbitmap(self)

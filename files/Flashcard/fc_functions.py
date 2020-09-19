@@ -270,32 +270,25 @@ def switch_bitmap(self):
     Check if there is an answer card, if not changes mode back to question.
     source:   https://stackoverflow.com/questions/27957257/how-to-change-bitmap1-for-toolbartoolbase-object-in-wxpython"""
     
-    try:
-        # you always start with a question, check if there is an answer:
-        _key_ = f'card_a{self.cardorder[self.index]}' # do not use self.key: only check if there is an answer, don't change the key
-        log.DEBUGLOG(debugmode=self.debugmode,msg=f"FC FUNCTIONS:\n\t switch key = {_key_}, \n\t all card keys = {self.CardsDeck.getcards().keys()}")
-        try:
-            
-            #if _key_ not in self.CardsDeck.getcards().keys(): # there is no answer card!
-            if not self.ANSWER_CARD: # there is no answer card!
-                log.DEBUGLOG(debugmode=self.debugmode,msg=f"FC FUNCTIONS: there is no answer card")
-                self.mode = 'Question'
-                self.SwitchCard = False        
-                id_ = self.m_toolSwitchFC.GetId()
-                self.m_toolBar3.SetToolNormalBitmap(id_, wx.Bitmap( str(path_repeat_na), wx.BITMAP_TYPE_ANY ))  
-                self.m_modeDisplayFC.SetValue(self.mode) 
-                displaycard(self) 
-            else:
-                self.SwitchCard = True
-                id_ = self.m_toolSwitchFC.GetId()
-                self.m_toolBar3.SetToolNormalBitmap(id_, wx.Bitmap( str(path_repeat), wx.BITMAP_TYPE_ANY ))
-                self.m_modeDisplayFC.SetValue(self.mode) 
-                displaycard(self) 
-        except:
-            log.ERRORMESSAGE("Error: could not switch bitmap #2")
-    except:
-        
-        log.ERRORMESSAGE("Error: could not switch bitmap #1")
+    # you always start with a question, check if there is an answer:
+    _key_ = f'card_a{self.cardorder[self.index]}' # do not use self.key: only check if there is an answer, don't change the key
+    
+    
+    #if _key_ not in self.CardsDeck.getcards().keys(): # there is no answer card!
+    if not self.ANSWER_CARD: # there is no answer card!
+        log.DEBUGLOG(debugmode=self.debugmode,msg=f"FC FUNCTIONS: there is no answer card")
+        self.mode = 'Question'
+        self.SwitchCard = False        
+        id_ = self.m_toolSwitchFC.GetId()
+        self.m_toolBar3.SetToolNormalBitmap(id_, wx.Bitmap( str(path_repeat_na), wx.BITMAP_TYPE_ANY ))  
+        self.m_modeDisplayFC.SetValue(self.mode) 
+        displaycard(self) 
+    else:
+        self.SwitchCard = True
+        id_ = self.m_toolSwitchFC.GetId()
+        self.m_toolBar3.SetToolNormalBitmap(id_, wx.Bitmap( str(path_repeat), wx.BITMAP_TYPE_ANY ))
+        self.m_modeDisplayFC.SetValue(self.mode) 
+        displaycard(self) 
     
 
 
@@ -335,13 +328,13 @@ def displaycard(self):
     log.DEBUGLOG(debugmode=self.debugmode,msg=f"FC FUNCTIONS: display card")
     print(f"displaycard : index = {self.index} , cards = {len(self.cardorder)} cardorder = {self.cardorder}")
     trueindex = self.cardorder[self.index]
-    rawcard = self.Latexfile.getline_i_card(trueindex)
     
-    qtext = rawcard['qtext']
-    qpic  = rawcard['qpic'] 
-    atext = rawcard['atext']
-    apic  = rawcard['apic']
-    topic = rawcard['t']
+    card = self.Cardsdeck.getcard_i(trueindex)
+    qtext = card['questiontext']
+    qpic  = card['questionpic'] 
+    atext = card['answertext']
+    apic  = card['answerpic']
+    
     
     bool_textcard, img_text = CreateTextCard(self,'manual',qtext)
     bool_piccard,  img_pic  = imop.findpicture_path(self,qpic)

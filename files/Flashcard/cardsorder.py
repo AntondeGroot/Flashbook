@@ -16,47 +16,47 @@ def DetermineCardorder(self,USERINPUT):
     """
     log.DEBUGLOG(debugmode=self.debugmode,msg=f"FC MODULE: nrcards = {len(self.Cardsdeck)}")
     
-    try:        
-        """CARD ORDER"""
-        ## determine cardorder based on user given input
-        if USERINPUT == False:
-            self.cardorder = range(self.nr_questions)  
+    #try:        
+    """CARD ORDER"""
+    ## determine cardorder based on user given input
+    if USERINPUT == False:
+        self.cardorder = range(self.nr_questions)  
+    else:
+        
+        if not hasattr(self,'continueSession'): #look if variable even exists./ should be initialized
+            self.continueSession = False
+                    
+        if self.continueSession == False:
+            if self.nr_questions < len(self.Cardsdeck):   
+                if self.chrono:
+                    self.cardorder = range(self.nr_questions)    
+                else:
+                    self.cardorder = random.sample(range(len(self.Cardsdeck)),self.nr_questions) 
+            else: 
+                ## If there are more questions than cards
+                # we would like to get every question about the same number of times, to do this we do sampling without
+                # replacement, then we remove a question if it is immediately repeated.
+                if self.chrono:
+                    self.cardorder = list(range(len(self.Cardsdeck)))*self.nr_questions
+                    self.cardorder = self.cardorder[:self.nr_questions]
+                else:
+                    cardorder = []
+                    for i in range(len(self.Cardsdeck)):   # possibly way larger than needed:
+                        cardorder.append(random.sample(range(len(self.Cardsdeck)),len(self.Cardsdeck)))
+                    cardorder = [val for sublist in cardorder for val in sublist]
+                    SEARCH = True
+                    index = 0
+                    # remove duplicate numbers
+                    while SEARCH:
+                        if index == len(cardorder)-2:
+                            SEARCH = False
+                        if cardorder[index] == cardorder[index+1]:
+                            del cardorder[index+1]
+                            index += 1
+                        index += 1    
+                    self.cardorder = cardorder[:self.nr_questions] 
         else:
+            userdata.load_stats(self)  
             
-            if not hasattr(self,'continueSession'): #look if variable even exists./ should be initialized
-                self.continueSession = False
-                        
-            if self.continueSession == False:
-                if self.nr_questions < len(self.Cardsdeck):   
-                    if self.chrono:
-                        self.cardorder = range(self.nr_questions)    
-                    else:
-                        self.cardorder = random.sample(range(len(self.Cardsdeck)),self.nr_questions) 
-                else: 
-                    ## If there are more questions than cards
-                    # we would like to get every question about the same number of times, to do this we do sampling without
-                    # replacement, then we remove a question if it is immediately repeated.
-                    if self.chrono:
-                        self.cardorder = list(range(len(self.Cardsdeck)))*self.nr_questions
-                        self.cardorder = self.cardorder[:self.nr_questions]
-                    else:
-                        cardorder = []
-                        for i in range(len(self.Cardsdeck)):   # possibly way larger than needed:
-                            cardorder.append(random.sample(range(len(self.Cardsdeck)),len(self.Cardsdeck)))
-                        cardorder = [val for sublist in cardorder for val in sublist]
-                        SEARCH = True
-                        index = 0
-                        # remove duplicate numbers
-                        while SEARCH:
-                            if index == len(cardorder)-2:
-                                SEARCH = False
-                            if cardorder[index] == cardorder[index+1]:
-                                del cardorder[index+1]
-                                index += 1
-                            index += 1    
-                        self.cardorder = cardorder[:self.nr_questions] 
-            else:
-                userdata.load_stats(self)  
-        self.Cardsdeck.set_cardorder(self.cardorder)            
-    except:
-       log.ERRORMESSAGE("Error: couldn't put the cards in a specific order")
+    #except:
+    #   log.ERRORMESSAGE("Error: couldn't put the cards in a specific order")

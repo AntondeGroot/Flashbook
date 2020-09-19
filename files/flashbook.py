@@ -419,13 +419,16 @@ class Cardsdeck(settings):
             topic = line['topic']
             size = ast.literal_eval(line['size'])
             card_id = line['id']
+            page = line['page']
             if topic:
                 """If it contains a topic, then add it as an extra card """
                 tsize = size[4]
                 cards.append({'index':index,'topic': topic,'size':tsize,'page':999,'pos':(0,0),'scale':1,'id':card_id})
             size_qa = self.CardSizeWithoutTopic(size) #size of the whole Q/A card excluding the topic
             
-            keylist = {'index':index,'question' : question, 'size':size_qa,'page':999,'pos':(0,0),'scale':1,'border' : (0,0),'id':card_id}
+            keylist = {'index':index,'question' : question,'questiontext':'','questionpic':'','answer': answer,'answertext':'','answerpic':'', 'size':size_qa,'page':999,'pos':(0,0),'scale':1,'border' : (0,0),'id':card_id}
+            
+        
             
             if answer: #add the answer key
                 keylist['answer'] = answer
@@ -435,12 +438,18 @@ class Cardsdeck(settings):
                     keylist['answerpic'] = answer['pic']    
             
             if 'text' in question:
-                keylist['questiontext'] = question['text']
+                keylist['questiontext'] = question['text']                
             if 'pic' in question:
                 keylist['questionpic'] = question['pic']
             cards.append(keylist)
                 
         self.cards = cards
+        self.cardswithouttopic = []
+        for i,linedict in enumerate(self.cards):
+            if not 'topic' in linedict:
+                self.cardswithouttopic.append(linedict)
+        
+        
         print(f"selfcards = {cards}")
     def CardSizeWithoutTopic(self,tuples_list):
         if isinstance(tuples_list,tuple):
@@ -458,8 +467,12 @@ class Cardsdeck(settings):
         """nr of cards, without counting topics as separate cards"""
         return len([x for x in self.cards if 'topic' not in x])
         
-    
-
+    def getcard_i(self,index,topic = False):
+        try:
+            return self.cardswithouttopic[index]
+        except KeyError:
+            return None
+        
 class Flashcard(paths):
     def __init__(self,fontsize = 20):
         paths.__init__(self)
