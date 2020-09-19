@@ -57,20 +57,19 @@ def createimage(self,card_i):
     height = 0
     width  = 0
     
-    if 'q' in card_i:
-        quiz = card_i['q']
-        qtext = ltx.argument(r"\\text{",quiz)
-        qpic  = ltx.argument(r"\\pic{",quiz)    
-    if 'a' in card_i:
-        answer = card_i['a']
-        atext = ltx.argument(r"\\text{",answer)
-        apic  = ltx.argument(r"\\pic{",answer)  
-    if 'a' not in card_i:
-        atext = ''
-        apic = ''
-    if 't' in card_i:
+    if 'question' in card_i:
+        qtext = card_i['questiontext']
+        qpic = card_i['questionpic']
+    if 'answer' in card_i:
+        atext = card_i['answertext']
+        apic = card_i['answerpic']
+    
+    #if 'answer' not in card_i:
+    #    atext = ''
+    #    apic = ''
+    if 'topic' in card_i:
         
-        topic = card_i['t']
+        topic = card_i['topic']
         #im = PIL.Image.new("RGB", (card_i['size']), 'white')
         #im = PIL.Image.new("RGB", (int(self.total_width*self.scale)+self.bordersize[0]*2 ,int(self.total_height*self.scale)+self.bordersize[1]*2+self.QAline_thickness), 'white')
         if topic != '':
@@ -652,15 +651,16 @@ def notes2paper(self):
             log.ERRORMESSAGE("Error: Couldn't open path")
     self.onlyatinitialize += 1
     
-    try:
-        if self.bookname == '':
-            self.bookname = os.path.splitext(os.path.basename(self.booknamepath))[0]
-        TT.update("load the latexfile")
-        self.Cardsdeck.loadfile(self.path)
-        TT.update("Latex To cards")
-        cards = self.Latexfile.file_to_rawcards() # cards contains keys: q,a,t,s
-    except:
-        log.ERRORMESSAGE("Error: finding questions/answers")
+    
+    
+    
+    if self.bookname == '':
+        self.bookname = os.path.splitext(os.path.basename(self.booknamepath))[0]
+    TT.update("load the latexfile")
+    self.Cardsdeck.loaddata(book = self.bookname)
+    TT.update("Latex To cards")
+    cards = self.Cardsdeck.getallcards() # cards contains keys: q,a,t,s
+
     
     ## dialog display              
     self.chrono = True

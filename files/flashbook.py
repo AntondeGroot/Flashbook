@@ -473,6 +473,9 @@ class Cardsdeck(settings):
         except KeyError:
             return None
         
+    def getallcards(self):
+        return self.cards
+        
 class Flashcard(paths):
     def __init__(self,fontsize = 20):
         paths.__init__(self)
