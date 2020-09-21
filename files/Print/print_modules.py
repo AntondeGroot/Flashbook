@@ -67,6 +67,7 @@ def createimage(self,card_i):
     #if 'answer' not in card_i:
     #    atext = ''
     #    apic = ''
+    print(f"card = {card_i}")
     if 'topic' in card_i:
         
         topic = card_i['topic']
@@ -79,6 +80,7 @@ def createimage(self,card_i):
             log.DEBUGLOG(debugmode=self.debugmode, msg=f'PRINTMODULE: createimage: topic card is created')
         return im
     else:
+        print("no topic card")
         d0 = card_i['pos'][0]+card_i['border'][0]
         d1 = card_i['pos'][1]+card_i['border'][1]
         
@@ -205,7 +207,7 @@ class SortImages():
                     val_list = [val]
                     base = {subkey: val_list}
                     self.datadict2[key].update(base)
-        if 't' in self.library[0]:
+        if 'topic' in self.library[0]:
             cardname = 't'+str(self.library[0]['index']) #t0/q0 
         else:
             cardname = 'q'+str(self.library[0]['index']) #t0/q0 
@@ -728,8 +730,11 @@ def notes2paper(self):
     if hasattr(self,'SortImages'):
         delattr(self,'SortImages')
     
+       
     self.SortImages = SortImages(library = cards, page_width = self.a4page_w, page_height = self.a4page_h,debug = self.debugmode)
     DICT_page_card_rect, DICT_page_line_card, dct3 = self.SortImages.sortpages()
+    
+    
     
     
     #%% create test page
