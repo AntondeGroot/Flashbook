@@ -44,7 +44,7 @@ import pandas as pd
 class Borders():
     def __init__(self,savefolder = None,bookname = None):
         if savefolder and bookname:
-            self.pathfile = os.path.join(savefolder,bookname + "_borders.bor" )
+            self.pathfile = os.path.join(savefolder,bookname + "_borders.pkl" )
         
         self.id = 0
         self.pagenr = 0
@@ -60,11 +60,10 @@ class Borders():
         self.pagenr = 0
     def load_data(self):
         try:
-            self.df = pd.read_csv(self.pathfile)
+            self.df = pd.read_pickle(self.pathfile)
         except FileNotFoundError: 
             self.df = pd.DataFrame(columns=self.columnnames)
-        except:
-            print("failed to load")
+        
              
     def save_data(self):
         self.load_data()
@@ -73,7 +72,7 @@ class Borders():
         if len(self.borders_temp):
             self.df = self.df.append(self.borders_temp,ignore_index = True)    
             self.dict = {}
-        self.df.to_csv(self.pathfile,index=False)
+        self.df.to_pickle(self.pathfile)
         print(self.pathfile)
     def gettempcoordinates(self,page = 0):
         
@@ -93,10 +92,10 @@ class Borders():
         try:
             subdf = self.df.loc[self.df['page'] == page]
             coords = subdf['rect'].tolist()
-            coords = [json.loads(x) for x in coords] #otherwise the result is ['[]','[]'] a list of string representations of lists, not a list of lists
             
-            if isinstance(coords,str):
-                coords = list(coords)
+            if isinstance(coords,list):
+                print("this is a list"*10)
+
             return coords
         except KeyError:
             print("ERROR! getcoord\n"*10)

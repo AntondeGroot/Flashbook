@@ -69,26 +69,25 @@ def SavePageNr(self):
     
 
 def ShowPage_fb(self): 
-    try:
-        # update
-        self.m_CurrentPageFB.SetValue(str(self.currentpage))
-        #rescale image
-        width, height = self.pageimagecopy.size #so that it doesn't rescale it everytime ShowPage() is used
-        width, height = int(width*self.zoom) , int(height*self.zoom)
-        self.pageimage = self.pageimage.resize((width, height), PIL.Image.ANTIALIAS)
-        
-        #draw borders if they exist
-        if self.drawborders:
-            pageimage = self.pageimage
-            self.pageimage = f.drawCoordinates(self,pageimage)
-        
-        image2 = wx.Image( width, height )
-        image2.SetData( self.pageimage.tobytes() )
-        self.m_bitmapScroll.SetBitmap(wx.Bitmap(image2))
-        if not self.screenshotmode:
-            SavePageNr(self)
-    except:
-        log.ERRORMESSAGE("Error: cannot show page")
+    
+    # update
+    self.m_CurrentPageFB.SetValue(str(self.currentpage))
+    #rescale image
+    width, height = self.pageimagecopy.size #so that it doesn't rescale it everytime ShowPage() is used
+    width, height = int(width*self.zoom) , int(height*self.zoom)
+    self.pageimage = self.pageimage.resize((width, height), PIL.Image.ANTIALIAS)
+    
+    #draw borders if they exist
+    if self.drawborders:
+        pageimage = self.pageimage
+        self.pageimage = f.drawCoordinates(self,pageimage)
+    
+    image2 = wx.Image( width, height )
+    image2.SetData( self.pageimage.tobytes() )
+    self.m_bitmapScroll.SetBitmap(wx.Bitmap(image2))
+    if not self.screenshotmode:
+        SavePageNr(self)
+
         
         
 def switchpage(self,event):

@@ -42,9 +42,10 @@ def CombineBookTitles(booknames):
     return Name
 
 def save2latexfile(self,files,title):
-    
+    assert 0 == 1
+    """
     LISTOFLIST = (type(files[0])==list)
-    filepath = Path(self.notesdir,title+'.bok')
+    filepath = Path(self.notesdir,title+'.pkl')
     if filepath.exists():
         filepath.unlink()
     if LISTOFLIST:#list of lists of data
@@ -62,7 +63,7 @@ def save2latexfile(self,files,title):
                     log.DEBUGLOG(debugmode=self.debugmode, info=f'CLASS MENUBOOKS line = {line}')
                     f.write(line)
             f.close()  
-            
+      """     
 class booksmenu(gui.MyFrame):
     def __init__(self):
         pass
@@ -77,8 +78,9 @@ class booksmenu(gui.MyFrame):
         #t_pdf(self, from_, tempdir_, to_) 
     
     def m_menuCombineBooksOnMenuSelection( self, event ):
+        assert 0 == 1 #it should read as pickle file and combine pickle files!!!
         log.DEBUGLOG(debugmode=self.debugmode, msg=f'CLASS MENUBOOKS: pressed Combine Books')
-        with wx.FileDialog(self, "Select multiples files to combine", wildcard="*.bok",style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST|wx.FD_MULTIPLE) as fileDialog:
+        with wx.FileDialog(self, "Select multiples files to combine", wildcard="*.pkl",style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST|wx.FD_MULTIPLE) as fileDialog:
             fileDialog.SetPath(str(self.notesdir)+'\.')    
             if fileDialog.ShowModal() == wx.ID_OK:
                 filepath = fileDialog.GetPaths()
@@ -128,8 +130,8 @@ class booksmenu(gui.MyFrame):
                                 save2latexfile(self,files,title)
                             
                             log.DEBUGLOG(debugmode=self.debugmode, msg=f'CLASS MENUBOOKS:\n\t nr lines = {nr_lines},\n\t files = {files},\n\t title = {title}')
-                            if title+'.bok' in os.listdir(self.notesdir):
-                                statinfo = os.stat(Path(self.notesdir,title+'.bok'))
+                            if title+'.pkl' in os.listdir(self.notesdir):
+                                statinfo = os.stat(Path(self.notesdir,title+'.pkl'))
                                 if statinfo.st_size > 0 :
                                     MessageBox(0, f"The books have been succesfully combined!\nAnd it has the filename: {title}", "Info", MB_ICONINFORMATION)
                                 else:
@@ -143,8 +145,7 @@ class booksmenu(gui.MyFrame):
                             
     def m_menuItemDelBookOnMenuSelection( self, event ):
         log.DEBUGLOG(debugmode=self.debugmode, msg=f'CLASS MENUBOOKS: pressed Delete Book')
-        #with wx.FileDialog(self, "Choose which file to delete", wildcard="*.bok",style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST) as fileDialog:
-        with wx.FileDialog(self, "Choose which file to delete", wildcard="*.bok",style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST) as fileDialog:
+        with wx.FileDialog(self, "Choose which file to delete", wildcard="*.pkl",style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST) as fileDialog:
             fileDialog.SetPath(str(self.notesdir)+'\.')    
             if fileDialog.ShowModal() == wx.ID_OK:
                 log.DEBUGLOG(debugmode=self.debugmode, msg=f'CLASS MENUBOOKS: delete book, clicked on OK ')
@@ -192,7 +193,7 @@ class booksmenu(gui.MyFrame):
                         # try to remove LaTeX notes
                         try:
                             folder = Path(self.notesdir)
-                            [file.unlink() for file in folder.iterdir() if (filename in file.name and file.suffix =='.bok' )]
+                            [file.unlink() for file in folder.iterdir() if (filename in file.name and file.suffix =='.pkl' )]
                         except:
                             pass
                         #final check if it has been deleted and inform user
@@ -212,6 +213,8 @@ class booksmenu(gui.MyFrame):
                 bookname = dlg.m_textCtrl23.GetValue()
                 if bookname != '':
                     
+                    assert 0 == 1
+                    """
                     LaTeXcode = "intentionally left blank"
                     height_card = math.ceil(len(LaTeXcode)/40)/2
                     fig = Figure(figsize=[8, height_card], dpi=100)
@@ -238,8 +241,9 @@ class booksmenu(gui.MyFrame):
                     IMG.paste(imagetext,(int(a4page_w/2-imagetext.width/2),100))
                     if not path.exists:
                         IMG.save(path)
-                    path = Path(self.notesdir,bookname+".bok") 
+                    path = Path(self.notesdir,bookname+".pkl") 
                     open(path, 'a').close()
+                    """
             else:
                 log.DEBUGLOG(debugmode=self.debugmode, msg=f"CLASS MENUBOOKS: closed dialog NewBook, pressed 'cancel'")
                 

@@ -396,9 +396,9 @@ class Cardsdeck(settings):
     def loaddata(self,book = None):
         if book:
             self.bookname = book
-            self.path = os.path.join(self.notesdir, self.bookname+'.bok')
+            self.path = os.path.join(self.notesdir, self.bookname+'.pkl')
             try:
-                self.df = pd.read_csv(self.path)
+                self.df = pd.read_pickle(self.path)
                 self.df = self.df.replace({np.nan: None})
                 self.loaddata2card()
                 
@@ -411,13 +411,26 @@ class Cardsdeck(settings):
         for index in range(len(self.df)):
             line = self.df.iloc[index]
             #
-            question = ast.literal_eval(line['question'])
+            
+            #all these try except statements happen because when a file is correctly pickled literal_eval will throw an error, this is just for an old file
+            try:
+                question = ast.literal_eval(line['question'])
+            except ValueError:
+                question = line['question']
             if line['answer']:
-                answer = ast.literal_eval(line['answer'])
+                try:
+                    answer = ast.literal_eval(line['answer'])
+                except ValueError:
+                    answer = line['answer']
             else:
                 answer = None
             topic = line['topic']
-            size = ast.literal_eval(line['size'])
+            try:
+                size = ast.literal_eval(line['size'])
+            except ValueError:
+                size = line['size']
+                
+                
             card_id = line['id']
             page = line['page']
             if topic:
@@ -479,26 +492,20 @@ class Cardsdeck(settings):
     def getoriginalcard_i(self,index,topic = False):
         try:
             line = self.df.iloc[index]
-            question = ast.literal_eval(line['question'])
-            if line['answer']:
-                answer = ast.literal_eval(line['answer'])
-            else:
-                answer = None
+            question = line['question']
+            answer = line['answer']
             topic = line['topic']
-            size = ast.literal_eval(line['size'])
+            size = line['size']
             
         except KeyError:
             return None
     def getcard_QATS(trueindex):
         line = self.df.iloc[index]
-        question = ast.literal_eval(line['question'])
-        if line['answer']:
-            answer = ast.literal_eval(line['answer'])
-        else:
-            answer = None
+        question = line['question']
+        answer = line['answer']
         topic = line['topic']
-        size = ast.literal_eval(line['size'])
-        qpic 
+        size = line['size']
+        qpic = None
         
 class Flashcard(paths):
     def __init__(self,fontsize = 20):
@@ -601,13 +608,13 @@ class Flashcard(paths):
     def setbook(self,bookname):
         if bookname.strip():
             self.bookname = bookname
-            self.path = os.path.join(self.savefolder, self.bookname+'.bok')
+            self.path = os.path.join(self.savefolder, self.bookname+'.pkl')
             
     def load_data(self):
         if self.bookname:
             print(f"path = {self.path}")
             try:
-                self.df = pd.read_csv(self.path)
+                self.df = pd.read_pickle(self.path)
                 self.df = self.df.replace({np.nan: None})
                 self.check_columns()
             except FileNotFoundError: 
@@ -641,7 +648,8 @@ class Flashcard(paths):
             if self.dict:
                 self.df = self.df.append(self.dict,ignore_index = True)    
                 self.dict = {}
-            self.df.to_csv(self.path,index=False)
+            self.df.to_pickle(self.path)
+            
             print(self.path)
         
     def insert_data(self,**kwargs):
