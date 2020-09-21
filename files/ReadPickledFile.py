@@ -7,7 +7,7 @@ Created on Sun Sep 20 10:15:14 2020
 import ast
 import pandas as pd
 import numpy as np
-filepath = r"C:\Users\Anton\AppData\Local\Flashbook\borders\Norwegian - An Essential Grammar_borders.pkl"
+filepath = r"C:\Users\Anton\AppData\Local\Flashbook\borders\Java for Dummies (2018)_borders.pkl"
 
 df = pd.read_pickle(filepath)
 df = df.replace({np.nan: None})

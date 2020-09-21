@@ -261,15 +261,20 @@ def ReplaceUserCommands(commandsfile,line):
 def ShowPopupCard(self,trueindex):
     # get the card
     rawcard = self.Cardsdeck.getoriginalcard_i(trueindex)
+    print(f"rawcard = {rawcard},type {type(rawcard)}")
     # get data from the cards
     log.DEBUGLOG(debugmode=self.debugmode, msg=f'LATEXOPERATIONS: show popupcard: rawcard = {rawcard}')
-    qtext = rawcard['questiontext']
-    qpic  = rawcard['questionpic'] 
-    atext = rawcard['answertext']
-    apic  = rawcard['answerpic']
     
-    topic = rawcard['topic']
+    answer = ['','','','',''] #check all keywords if they occur in the dict / they must be empty strings and not None, because they need to be put in a textbox
+    for index,key in enumerate(['questiontext','questionpic','answertext','answerpic','topic']):
+        if key in rawcard:
+            answer[index] = rawcard[key]
+    qtext, qpic, atext ,apic,topic = answer
+    
+    print(f"answer = {answer}")
+    
     #create the images
+    
     _, img_text  = imop.CreateTextCard(self,qtext)
     _, img_pic   = imop.findpicture_path(self,qpic)
     _, img_text2 = imop.CreateTextCard(self,atext)
@@ -290,6 +295,7 @@ def ShowPopupCard(self,trueindex):
         BMP_a = wx.NullBitmap
     #%% images to dialog window                
     data = [BMP_q, BMP_a, qtext, qpic, atext, apic, topic]        
+    print(f"data = {data}")
     
     with gui.MyDialog9(self,data) as dlg:
         if dlg.ShowModal() == wx.ID_OK:

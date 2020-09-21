@@ -491,13 +491,12 @@ class Cardsdeck(settings):
     
     def getoriginalcard_i(self,index,topic = False):
         try:
-            line = self.df.iloc[index]
-            question = line['question']
-            answer = line['answer']
-            topic = line['topic']
-            size = line['size']
+            #{'index': , 'question': {'pic': ..., 'text': ...}, 'questiontext': 'testttopic1', 'questionpic': ..., 'answer': None, 'answertext': '', 'answerpic': '', 'size': (987, 133), 'page': 999, 'pos': (0, 0), 'scale': 1.1581, 'border': (10, 10), 'id': 'k1Ht'}
             
+            print(f"original card = {self.cards[index]}\n")
+            return self.cards[index]
         except KeyError:
+            print(f"original error card")
             return None
     def getcard_QATS(trueindex):
         line = self.df.iloc[index]

@@ -174,7 +174,6 @@ def findpicture_path(self,picname,errorbox = False):
     FOUNDPIC = False
     imagepic = None
     #if key in self.picdictionary:
-    
     path = Path(self.picsdir, self.bookname, picname)
     if path.exists():
         try:
@@ -252,7 +251,7 @@ def CreateTextCard(self,usertext):
     """The creation of a card can fail because the userinput was incorrect it can see something starting with '\' as LaTeX code
     when it should not, or if the user used some undefined function.
     """
-    if usertext.strip() != '':
+    if usertext and usertext.strip() != '':
         try:            
             # display text in a plot
             height_card = math.ceil(len(usertext)/40)/2
