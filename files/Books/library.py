@@ -33,6 +33,7 @@ class Library(gui.MyFrame):
         self.topic = ''
         self.bookindex = 0
         self.topic_books = {}
+        self.indexfile = os.path.join(self.mainframe.dirsettings,'indexfile.txt')
         
         self.newuser = False
     #======================== cosmetic    
@@ -88,8 +89,33 @@ class Library(gui.MyFrame):
         else:
             self.setcolumns()
             self.setdata()
+        self.pickrow()
 
     #======================== show how to use it to new users    
+    
+
+    def pickrow(self):
+        #index = self.listctrl.GetFocusedItem()        
+        #if index >= 0: #error code is -1        
+        try:
+            with open(self.indexfile, 'r') as file:
+                index = json.load(file)        
+            file.close()
+        except FileNotFoundError:
+            index = 0     
+        self.listctrl.Focus(index) 
+        self.listctrl.Select(index)  
+        
+    def saverowpicked(self):
+        index = self.listctrl.GetFocusedItem()        
+        if index >= 0:
+            with open(self.indexfile,'w') as file:
+                file.write(json.dumps(index))
+            file.close()
+        
+        
+        
+        
     
     def openmessagebox(self):
         MessageBox(0, "Welcome new user!\n\n"+
