@@ -63,31 +63,33 @@ class Window2(wx.PopupWindow):
 def ShowInPopup(self,event,mode):
     # a picture directory may not exist
     dir_ = self.Flashcard.getpiclist(mode)
-    try:
-        if type(dir_) == list: 
-            directory = dir_[0]
-        else: 
-            directory = dir_
-    except:
-        pass
+    print(f"popupdir = {dir_},type = {type(dir_)}")
+
+    if isinstance(dir_,list) and dir_: 
+        directory = dir_[0]
+    else:
+        directory = dir_
+
     
     usertext = self.usertext
     _, img_text  = imop.CreateTextCard(self,usertext)
     
         
 
-    try:
+
+    if dir_:
         _, img_pic   = imop.findpicture_path(self,directory)
         self.image  = imop.CombinePics(img_text,img_pic)
-    except:
+        
+    else:
         self.image = img_text
+        
     try:
         image = self.image
         """Try to access mousepos, if there wasn't any mouseclick: then just place the popupwindow in the middle of your screen. 
         this is the case if you only entered text, but didn't select anything with the mouse"""
-        try:
-            a = self.mousepos  
-        except:
+        
+        if not hasattr(self,'mousepos'): #if no mouse has been used, set it to the middle of the screen.            
             self.mousepos = (int(wx.GetDisplaySize()[0]/2),int(wx.GetDisplaySize()[1]/2))
             
         win = Window2(self.GetTopLevelParent(), wx.SIMPLE_BORDER,image)    
