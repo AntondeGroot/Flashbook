@@ -643,13 +643,43 @@ class Flashcard(paths):
         self.idnr = 0
              
     def save_data(self):
-        if self.bookname:
-            if self.dict:
-                self.df = self.df.append(self.dict,ignore_index = True)    
-                self.dict = {}
+        if self.bookname and self.dict:
+            
+            #set of all pages on which notes are taken
+            line = self.dict
+            pagenr = self.pagenr
+            page_list = set(self.df['page'])
+            page_df = self.df['page']
+            currentpage = self.pagenr
+            df2 = self.df.copy()
+            # find last index
+            absolute_difference = lambda list_value : abs(list_value - currentpage)
+            closest_pagenr = min(page_list, key=absolute_difference)    
+            """Use index of 0.5 so that you can put someting between index 2&3, using .reset_index() makes
+            sure that index 2.5 will now be renamed as 3 and the rest will be shifted 1 up"""
+            if closest_pagenr > pagenr:
+                #if you want to ad something infront of the closest page
+                closest_index = page_df.where(page_df==closest_pagenr).first_valid_index() - 0.5
+            else:
+                #if you make a note on a page where already something exists, or at the end of the book, add it to the end.
+                closest_index = page_df.where(page_df==closest_pagenr).last_valid_index() + 0.5
+            
+            # append to dataframe
+            """You can't just put any dict into a dataframe,
+            in this case certain elements contain another dict, 
+            this gives an error if you try to put this directly into a dataframe.
+            If you use dict[key] = [dict] then it works fine"""
+            dfline = pd.DataFrame( index=[closest_index]) #empty dataframe
+            for key, value in line.items():
+                dfline[key] = [value]            
+            df2 = df2.append(dfline, ignore_index=False,sort = False)
+            df2 = df2.sort_index().reset_index(drop=True)
+            
+            #save and reset            
+            self.df = df2            
+            self.dict = {}            
             self.df.to_pickle(self.path)
             
-            print(self.path)
         
     def insert_data(self,**kwargs):
         self.dict = {}

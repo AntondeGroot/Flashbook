@@ -153,6 +153,7 @@ def openbook(self,path):
     page.LoadPageNr(self)
     #to store all the drawn borders
     self.Borders = Borders(savefolder = self.bordersdir , bookname = self.bookname)
+    self.Flashcard.setpagenr(self.currentpage)
     
     
     book_dir = Path(self.picsdir,self.bookname)

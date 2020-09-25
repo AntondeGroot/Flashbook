@@ -17,8 +17,11 @@ from pathlib import Path
 from termcolor import colored
 
 def selectionentered(self,event):
+    
     print("selection entered")
     if hasattr(self,'bookname') and self.bookname:
+        self.Flashcard.setpagenr(self.currentpage)
+        
         USER_textinput = self.m_userInput.GetValue()      
         self.usertext = latex.text_to_latex(self,USER_textinput)
         QUESTION = self.Flashcard.is_question()
