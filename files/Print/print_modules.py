@@ -659,9 +659,9 @@ def notes2paper(self):
     
     if self.bookname == '':
         self.bookname = os.path.splitext(os.path.basename(self.booknamepath))[0]
-    TT.update("load the latexfile")
+    TT.update("load the cardsdeck")
     self.Cardsdeck.loaddata(book = self.bookname)
-    TT.update("Latex To cards")
+    TT.update("get all cards")
     cards = self.Cardsdeck.getallcards() # cards contains keys: q,a,t,s
 
     

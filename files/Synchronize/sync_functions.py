@@ -10,6 +10,7 @@ from termcolor import colored
 import os  
 #%% The server
 import socket
+
 import struct
 import json
 import base64
@@ -36,7 +37,7 @@ def CheckServerStatus(HOST,PORT,self):
                 BOOL = True
         if data_in != None and data_in != b'':
             print("b\n"*10)
-    except:
+    except socket.timeout:
         log.ERRORMESSAGE("could not check if server was online")
         pass
     return BOOL

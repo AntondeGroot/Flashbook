@@ -265,13 +265,34 @@ def ShowPopupCard(self,trueindex):
     # get data from the cards
     log.DEBUGLOG(debugmode=self.debugmode, msg=f'LATEXOPERATIONS: show popupcard: rawcard = {rawcard}')
     
-    answer = ['','','','',''] #check all keywords if they occur in the dict / they must be empty strings and not None, because they need to be put in a textbox
-    for index,key in enumerate(['questiontext','questionpic','answertext','answerpic','topic']):
-        if key in rawcard:
-            answer[index] = rawcard[key]
-    qtext, qpic, atext ,apic,topic = answer
+    qtext, qpic,atext,apic = '','' ,'',''
     
-    print(f"answer = {answer}")
+    questiondict = ''
+    if 'question' in rawcard:
+        questiondict = rawcard['question']
+        if questiondict:
+            if 'text' in questiondict:
+                qtext = questiondict['text']
+            if 'pic' in questiondict:
+                qpic = questiondict['pic']
+    if 'answer' in rawcard:
+        answerdict = rawcard['answer']
+        if answerdict:
+            if 'text' in answerdict:
+                atext = answerdict['text']
+            if 'pic' in answerdict:
+                apic = answerdict['pic']
+            
+    answer = ['','','','',''] #check all keywords if they occur in the dict / they must be empty strings and not None, because they need to be put in a textbox
+    #for index,key in enumerate(['questiontext','questionpic','answertext','answerpic','topic']):
+    #    if key in rawcard:
+    #        answer[index] = rawcard[key]
+    #qtext, qpic, atext ,apic,topic = answer
+    topic = rawcard['topic']
+    if not topic:
+        topic = '' #otherwise this is Nonetype and will give an error
+    
+    
     
     #create the images
     
@@ -310,13 +331,13 @@ def ShowPopupCard(self,trueindex):
             #make changes
             if DelCard or (qtext.strip() == '' and qpic.strip() ==''):
                 """the entire card will be deleted"""
-                self.Latexfile.popline(trueindex)
+                self.FlashcardPLACEHOLDER.popline(trueindex)
                 try:
                     self.nr_questions -= 1
                 except:
                     pass
             else:
-                self.Latexfile.replace_line(trueindex, qtext= qtext, qpic = qpic, atext = atext,apic = apic, topic = topic)
+                self.FlashcardPLACEHOLDER.replace_line(trueindex, qtext= qtext, qpic = qpic, atext = atext,apic = apic, topic = topic)
             
             self.Refresh()                                    
             

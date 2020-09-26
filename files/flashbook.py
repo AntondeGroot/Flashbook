@@ -338,6 +338,7 @@ class CardsDeck2(settings):
             log.DEBUGLOG(debugmode=self.debugmode, msg=f'CLASS CARDSDECK: nr cards = {self.nrcards}')
             cardindex = 0
             for _, card in enumerate(cards):                
+                print(f"card = {_}")
                 # card i : {qi,si} or {ti,si}
                 sizelist = card['size']                
                 
@@ -345,6 +346,7 @@ class CardsDeck2(settings):
                     mode = 't'
                     key = self.key + f"{mode}{cardindex}"
                     if cardindex == 0:
+                        print("first line is present\n"*100)
                         line = self.bookname
                     else:
                         line = card[mode]                    
@@ -425,11 +427,17 @@ class Cardsdeck(settings):
             else:
                 answer = None
             topic = line['topic']
+            if index == 0:
+                topic = self.bookname
+            
             try:
                 size = ast.literal_eval(line['size'])
             except ValueError:
                 size = line['size']
-                
+            if topic and index ==0:
+                width =  1240
+                height = int(math.ceil(len(topic)/40))*0.75*100
+                size[4] = (width,height)
                 
             card_id = line['id']
             page = line['page']
@@ -494,7 +502,8 @@ class Cardsdeck(settings):
             #{'index': , 'question': {'pic': ..., 'text': ...}, 'questiontext': 'testttopic1', 'questionpic': ..., 'answer': None, 'answertext': '', 'answerpic': '', 'size': (987, 133), 'page': 999, 'pos': (0, 0), 'scale': 1.1581, 'border': (10, 10), 'id': 'k1Ht'}
             
             print(f"original card = {self.cards[index]}\n")
-            return self.cardswithouttopic[index]
+            #return self.cardswithouttopic[index]
+            return self.df.iloc[index]
         except KeyError:
             print(f"original error card")
             return None
@@ -679,7 +688,19 @@ class Flashcard(paths):
             self.df = df2            
             self.dict = {}            
             self.df.to_pickle(self.path)
-            
+    def replace_line(self,index, **kwargs):
+        
+       
+        print(f"cardid = {self.df}\n"*10)
+        
+        
+    def popline(self,index):
+        try:
+            self.df = self.df.drop(index)
+            self.df = self.df.reset_index(drop=True)
+            self.df.to_pickle(self.path)
+        except:
+            pass
         
     def insert_data(self,**kwargs):
         self.dict = {}
