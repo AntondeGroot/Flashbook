@@ -7,7 +7,7 @@ Created on Sun Sep 20 10:15:14 2020
 import ast
 import pandas as pd
 import numpy as np
-filepath = r"C:\Users\Anton\AppData\Local\Flashbook\files\Java for Dummies (2018).pkl"
+filepath = r"C:\Users\Anton\AppData\Local\Flashbook\Borders\Java for Dummies (2018)_borders.pkl"
 
 df = pd.read_pickle(filepath)
 df = df.replace({np.nan: None})
@@ -65,6 +65,7 @@ closest_index = -0.5
 
 
 index = closest_index
+print("tst  "*20)
 print(df['page'])
 df2 = df.copy()
 line = {'page': 1, 'id': 'Kl8W', 'question': {'text': '123'}, 'size': [(87, 50), (0, 0), (0, 0), (0, 0), (0, 0)], 'relsize': 100}
@@ -79,9 +80,14 @@ for key, value in line.items():
 #%%
 print(f"dfline = {type(line)}")
 df3 = df2.append(dfline, ignore_index=False,sort = False)
-print(f"df3 = {type(df3)}")
+
 df3 = df3.sort_index().reset_index(drop=True)
 
 print(pagenumber ,"/",closest_value)
-
+print("test")
 replacedata = {}
+print(f"df3 = {type(df3)}")
+indices = df['page'].where(df['page']==10)
+indices = [bool(x) for x in indices]
+
+df.drop

@@ -23,7 +23,7 @@ from _logging.timingmodule import Timing
 import _shared_operations.latexoperations as ltx
 import _shared_operations.imageoperations as imop
 from _GUI.class_progressdialog import ProgressDialog
-
+import Flashbook.fb_modules as m
 def findfullpicpath(self,picname):
     """Instead of just opening the path of a picture
     Try to find out if the path exists
@@ -659,6 +659,8 @@ def notes2paper(self):
     
     if self.bookname == '':
         self.bookname = os.path.splitext(os.path.basename(self.booknamepath))[0]
+        
+    self.Borders = m.Borders(savefolder = self.bordersdir , bookname = self.bookname)
     TT.update("load the cardsdeck")
     self.Cardsdeck.loaddata(book = self.bookname)
     TT.update("get all cards")

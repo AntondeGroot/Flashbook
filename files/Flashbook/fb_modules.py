@@ -17,6 +17,8 @@ import _logging.log_module as log
 import json
 import ctypes
 from pathlib import Path
+
+#import Flashbook.fb_modules as m
 #ctypes:
 ICON_EXCLAIM=0x30
 ICON_STOP = 0x10
@@ -63,8 +65,23 @@ class Borders():
             self.df = pd.read_pickle(self.pathfile)
         except FileNotFoundError: 
             self.df = pd.DataFrame(columns=self.columnnames)
+    def remove_by_id(self,idnr):
+        self.load_data()
+        id_df = self.df['id']
         
-             
+        
+        while True:
+            index = self.df.where(self.df['id']==idnr).first_valid_index()
+            if not index:
+                break
+            try:
+                self.df = self.df.drop(index)
+            except KeyError:
+                print(f"could not find index = {index}")
+                pass#is mostlikely a NaN value, continue
+        self.df = self.df.reset_index(drop=True)
+        self.df.to_pickle(self.pathfile)
+        
     def save_data(self):
         self.load_data()
         #self.insertdata(self.borders_temp)

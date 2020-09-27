@@ -35,7 +35,7 @@ addmodule('Print')
 addmodule('Synchronize')
 """
 # Now do your import
-from Flashbook.fb_modules import *
+#from Flashbook.fb_modules import *
 import Flashbook.page as page
 from Flashbook.fb_functions import *
 import _pdf.pdf_modules as pdf

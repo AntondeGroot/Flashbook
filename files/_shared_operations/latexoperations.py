@@ -331,7 +331,9 @@ def ShowPopupCard(self,trueindex):
             #make changes
             if DelCard or (qtext.strip() == '' and qpic.strip() ==''):
                 """the entire card will be deleted"""
+                card_id = self.Cardsdeck.getid(trueindex)
                 self.Cardsdeck.popline(trueindex)
+                self.Borders.remove_by_id(card_id)
                 try:
                     self.nr_questions -= 1
                 except:
