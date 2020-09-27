@@ -391,9 +391,20 @@ class Cardsdeck(settings):
         
         self.bookname = ''            
         self.columnnames = ['page','id','question','answer','topic','size']
+     
         
-
+    def popline(self,index):
+        try:
+            self.df = self.df.drop(index)
+            self.df = self.df.reset_index(drop=True)
+            self.df.to_pickle(self.path)
+        except:
+            pass
+    def getid(self,index):
         
+        line = self.df.iloc[index]
+        idnumber = line['id']
+        return idnumber
     
     def loaddata(self,book = None):
         if book:
@@ -536,6 +547,7 @@ class Flashcard(paths):
         self.mode      = 'Question'
         self.questionmode = True
         self.topic    = ''
+        self.subtopic = ''
         self.pic_question     = []
         self.pic_answer       = []
         self.pic_question_dir = []
@@ -571,6 +583,7 @@ class Flashcard(paths):
         self.mode     = 'Question'
         self.questionmode = True
         self.topic    = ''
+        self.subtopic = ''
         self.pic_question     = []
         self.pic_answer       = []
         self.pic_question_dir = []
@@ -642,8 +655,12 @@ class Flashcard(paths):
                     pos = len(self.df.columns)
                     self.df.insert(pos, col, None, True)
     def setID(self):
+        #automatically generates a unique id
         if not self.idnr:
             self.idnr = self.generate_id()
+    def setCustomID(self,idnr):
+        #incase you want to reuse an ID: when you want to edit a card
+        self.idnr = idnr
             
     def saveCard(self):
         self.load_data()
@@ -688,25 +705,56 @@ class Flashcard(paths):
             self.df = df2            
             self.dict = {}            
             self.df.to_pickle(self.path)
-    def replace_line(self,index, **kwargs):
+    def replace_line(self,idnr):
         
-       
-        print(f"cardid = {self.df}\n"*10)
+        id_df = self.df['id']
+        index = id_df.where(id_df==idnr).first_valid_index()
         
-        
-    def popline(self,index):
-        try:
-            self.df = self.df.drop(index)
-            self.df = self.df.reset_index(drop=True)
+        pagenr = self.df['page'].iloc[index]
+        original_idnr = self.df['id'].iloc[index]
+        if idnr == original_idnr:
+            
+            df2 = self.df.copy()
+            self.insert_data(page = pagenr, id = idnr,question = self.question, answer = self.answer, topic = self.topic,subtopic = self.subtopic,size = self.sizelist ,relsize = 100)     
+            print(f"dict = {len(self.dict)}\n\n"*20)
+            """You can't just put any dict into a dataframe,
+            in this case certain elements contain another dict, 
+            this gives an error if you try to put this directly into a dataframe.
+            If you use dict[key] = [dict] then it works fine"""
+            dfline = pd.DataFrame( index=[index]) #empty dataframe
+            for key, value in self.dict.items():
+                dfline[key] = [value]            
+            
+            
+            
+            
+            print(len(df2.iloc[index]))
+            print(df2.iloc[index])
+            
+            df2 = df2.drop(index)
+            df2 = df2.append(dfline, ignore_index=False,sort = False)
+            df2 = df2.sort_index().reset_index(drop=True)
+            
+            
+            
+            print(df2.values)
+            #save and reset            
+            self.df = df2    
+            self.dict = {}            
             self.df.to_pickle(self.path)
-        except:
-            pass
+            
+            
+        else:
+            print(f"ID did not match\n"*20)
         
     def insert_data(self,**kwargs):
         self.dict = {}
         for key, value in kwargs.items():
+            print(f"key,value = {key,value}")
             if key in self.columnnames and value:
                 self.dict[key] = value
+            elif key in self.columnnames and not value:
+                self.dict[key] = None
             elif key not in self.columnnames:
                 print(f"argument '{key}' is not a column name of : {self.columnnames}")
         

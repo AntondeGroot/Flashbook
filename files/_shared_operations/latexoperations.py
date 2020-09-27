@@ -331,13 +331,23 @@ def ShowPopupCard(self,trueindex):
             #make changes
             if DelCard or (qtext.strip() == '' and qpic.strip() ==''):
                 """the entire card will be deleted"""
-                self.FlashcardPLACEHOLDER.popline(trueindex)
+                self.Cardsdeck.popline(trueindex)
                 try:
                     self.nr_questions -= 1
                 except:
                     pass
             else:
-                self.FlashcardPLACEHOLDER.replace_line(trueindex, qtext= qtext, qpic = qpic, atext = atext,apic = apic, topic = topic)
+                card_id = self.Cardsdeck.getid(trueindex)
+                print(f"bookname = {self.bookname}     "*10)
+                self.Flashcard.reset()
+                self.Flashcard.setbook(bookname = self.bookname)
+                self.Flashcard.load_data()
+                self.Flashcard.setCustomID(card_id)
+                self.Flashcard.setQ(text = qtext,pic = qpic)
+                self.Flashcard.setA(text = atext,pic = apic)
+                self.Flashcard.setT(topic)
+                self.Flashcard.replace_line(card_id)
+                #.replace_line(trueindex, qtext= qtext, qpic = qpic, atext = atext,apic = apic, topic = topic)
             
             self.Refresh()                                    
             

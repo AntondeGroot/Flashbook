@@ -83,3 +83,5 @@ print(f"df3 = {type(df3)}")
 df3 = df3.sort_index().reset_index(drop=True)
 
 print(pagenumber ,"/",closest_value)
+
+replacedata = {}
