@@ -54,6 +54,7 @@ def checkBooks(self,sleeptime):
     tab  = ' '*3
     
     pdfnames = [os.path.splitext(x)[0] for x in os.listdir(self.dirpdfbook) if os.path.splitext(x)[1] == '.pdf']
+    print(f"pdfnames checkbookx = {pdfnames}")
     """Look for all final folders""" 
     for root, dirs, _ in os.walk(str(self.booksdir), topdown = False):
         for name in dirs:
@@ -66,7 +67,7 @@ def checkBooks(self,sleeptime):
                     categories.append(f"{tab+name}")
                     pathlib.append(name)
     pdfs2send = [x for x in os.listdir(self.dirpdfbook) if os.path.splitext(x)[0] not in str(pathlib)]    
-    
+    print(f"checkbookx pathlib = {pathlib}")
     library.sort()
     categories.sort()
     pathlib.sort()

@@ -680,15 +680,21 @@ class Flashcard(paths):
             df2 = self.df.copy()
             # find last index
             absolute_difference = lambda list_value : abs(list_value - currentpage)
-            closest_pagenr = min(page_list, key=absolute_difference)    
+            if page_list:
+                closest_pagenr = min(page_list, key=absolute_difference)    
+            else:#no entries
+                closest_pagenr = currentpage
             """Use index of 0.5 so that you can put someting between index 2&3, using .reset_index() makes
             sure that index 2.5 will now be renamed as 3 and the rest will be shifted 1 up"""
-            if closest_pagenr > pagenr:
-                #if you want to ad something infront of the closest page
-                closest_index = page_df.where(page_df==closest_pagenr).first_valid_index() - 0.5
-            else:
-                #if you make a note on a page where already something exists, or at the end of the book, add it to the end.
-                closest_index = page_df.where(page_df==closest_pagenr).last_valid_index() + 0.5
+            if page_list:
+                if closest_pagenr > pagenr:
+                    #if you want to ad something infront of the closest page
+                    closest_index = page_df.where(page_df==closest_pagenr).first_valid_index() - 0.5
+                else:
+                    #if you make a note on a page where already something exists, or at the end of the book, add it to the end.
+                    closest_index = page_df.where(page_df==closest_pagenr).last_valid_index() + 0.5
+            else:#no entries
+                closest_index = 0
             
             # append to dataframe
             """You can't just put any dict into a dataframe,

@@ -65,6 +65,7 @@ def ConvertPDF_to_JPG(self, PDFdir, tempdir, JPGdir,SHOWMESSAGE = True):
     #t_MBox(0, f'The PDF -> JPG conversion has started.\nIt may take a few minutes per book.', "Message", MB_ICONINFORMATION)   
     
     pdfs2send, _, _, _ = p.checkBooks(self,0)
+    print(f"pdf2send = {pdfs2send}\n"*10)
     
     i = 1
     for booknr, item in enumerate(pdfs2send):
