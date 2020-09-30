@@ -282,13 +282,15 @@ def switch_bitmap(self):
         id_ = self.m_toolSwitchFC.GetId()
         self.m_toolBar3.SetToolNormalBitmap(id_, wx.Bitmap( str(path_repeat_na), wx.BITMAP_TYPE_ANY ))  
         self.m_modeDisplayFC.SetValue(self.mode) 
-        displaycard(self) 
+        #don't display card or refresh scrollbars
     else:
+        clearbitmap(self)
         self.SwitchCard = True
         id_ = self.m_toolSwitchFC.GetId()
         self.m_toolBar3.SetToolNormalBitmap(id_, wx.Bitmap( str(path_repeat), wx.BITMAP_TYPE_ANY ))
         self.m_modeDisplayFC.SetValue(self.mode) 
         displaycard(self) 
+        SetScrollbars_fc(self)
     
 
 

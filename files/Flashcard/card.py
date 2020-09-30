@@ -41,7 +41,7 @@ def buttonPreviousCard(self):
         
 def switchCard(self):
     #matplotlib.pyplot.close('all') # otherwise too many pyplot figures will be opened -> memory
-    f2.clearbitmap(self)
+    
     try:
         if self.runprogram:
             # change mode Q <-> A
@@ -52,7 +52,5 @@ def switchCard(self):
             self.m_modeDisplayFC.SetValue(self.mode)
             # check if there is an answer: if not switch_bitmap sets the mode back to 'question'
             f2.switch_bitmap(self)       
-            f2.displaycard(self)
-            f2.SetScrollbars_fc(self)
     except:
         log.ERRORMESSAGE("Error: Couldn't switch card")
