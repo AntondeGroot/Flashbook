@@ -47,6 +47,10 @@ def findfullpicpath(self,picname):
         as replacement for the missing picture."""        
         MessageBox(0, f"Error: Picture '{picname}' could not be found in any folder.", "Message", ICON_STOP)
             
+def istopicdict(card):
+    if card:
+        return 'topic' in card
+        
 
 def createimage(self,card_i):
     
