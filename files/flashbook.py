@@ -10,10 +10,46 @@ except:
     pass
 #------------------------------------------------------------------- general
 import os
+import numpy as np
 from pathlib import Path
 import PIL
 import shutil
 import sys
+import random
+import ast
+from _GUI.folderpaths import paths
+flashbookfolder = os.path.join(os.getcwd(),'Flashbook')
+flashbookfolder = os.path.join(os.getcwd(),'Flashcard')
+"""
+import sys, os
+
+def addmodule(foldername):
+    sys.path.append(os.path.abspath(os.path.join('..', foldername)))
+
+addmodule('Flashbook')
+addmodule('_settings')
+addmodule('_GUI')
+addmodule('_logging')
+addmodule('_shared_operations')
+addmodule('Print')
+addmodule('Synchronize')
+"""
+# Now do your import
+#from Flashbook.fb_modules import *
+import Flashbook.page as page
+from Flashbook.fb_functions import *
+import _pdf.pdf_modules as pdf
+import _GUI.active_panel as panel
+import Books.library as Books
+
+import Flashbook.events_mouse as evt_m
+from _shared_operations import imageoperations as imop
+from _logging import *
+MB_ICONINFORMATION = 0x00000040
+MessageBox = ctypes.windll.user32.MessageBoxW
+#%%
+#sys.path.insert(1,flashbookfolder)
+
 import threading
 import wx
 import wx.adv as adv
@@ -22,32 +58,32 @@ import wx.html as html
 import wx._html
 import platform
 _platform = platform.system() 
-    
+import Books.events_buttons as Bookbuttons
 #------------------------------------------------------------------- modules
-import gui_flashbook as gui
+import _GUI.gui_flashbook as gui
 import program as p
-from settingsfile import settings
-from latexoperations import Latexfile
-import resources
-import fb_modules    as m
-import accelerators_module as m7
-import fc_functions    as f2
+from _settings.settingsfile import settings
+import _resources.resources as resources
+import Flashbook.fb_modules    as m
+import _GUI.accelerators_module as acc
+import Flashcard.fc_functions    as f2
 
 import math
 import pylab
 pylab.ioff() # make sure it is inactive, otherwise possible qwindows error    .... https://stackoverflow.com/questions/26970002/matplotlib-cant-suppress-figure-window
 
-from class_print import printer
-from class_flashbook import flashbook
-from class_flashcard import flashcard
-from class_filetransfer import filetransfer
-from class_menusettings import menusettings
-from class_helpmenu import helpmenu
-from class_menuopen import menuopen
-from class_menuflashcard import flashcardmenu
-from class_menubooks import booksmenu
+from Print.class_print import printer
+from Flashbook.class_flashbook import flashbook
+from Flashcard.class_flashcard import flashcard
+from Synchronize.class_filetransfer import filetransfer
+from _menu.class_menusettings import menusettings
+from _menu.class_helpmenu import helpmenu
+from _menu.class_menuopen import menuopen
+from _menu.class_menuflashcard import flashcardmenu
+from _menu.class_menubooks import booksmenu
+from Books.library import Library
 
-import log_module as log
+import _logging.log_module as log
 
 sys.setrecursionlimit(5000)
 PIL.Image.MAX_IMAGE_PIXELS = 1000000000  
@@ -78,6 +114,7 @@ def setup_sources(self):
     elif _platform == 'Linux':
         pass
     rdir = Path(bdir,"resources")
+    print(f"rdir = {rdir}\n"*10)
     self.appdir         = bdir
     self.path_add     = Path(rdir,"add.png")
     self.path_min     = Path(rdir,"min.png")
@@ -99,7 +136,7 @@ def setup_sources(self):
 ###############################################################################
 """
 
-class MainFrame(settings,flashbook,flashcard,printer,filetransfer,menusettings,helpmenu,menuopen,flashcardmenu,booksmenu):
+class MainFrame(settings,flashbook,flashcard,printer,filetransfer,menusettings,helpmenu,menuopen,flashcardmenu,booksmenu,Bookbuttons.libbuttons,Library):
     
     """ INITIALIZE """
     def __init__(self,parent): 
@@ -120,9 +157,11 @@ class MainFrame(settings,flashbook,flashcard,printer,filetransfer,menusettings,h
         self.settings_set()
         
         log.INITIALIZE(debugmode=self.debugmode)
-        self.Latexfile = Latexfile()
-        self.Flashcard = Flashcard(self.LaTeXfontsize)
-        self.CardsDeck = CardsDeck()
+        
+        self.Flashcard = Flashcard(fontsize = self.LaTeXfontsize)
+        
+        self.Cardsdeck = Cardsdeck()
+        self.FlashbookLibrary = Books.Library(self)
         
         self.library   = [None]
         
@@ -138,15 +177,57 @@ class MainFrame(settings,flashbook,flashcard,printer,filetransfer,menusettings,h
         # icon
         iconimage = wx.Icon(str(self.path_icon), type=wx.BITMAP_TYPE_ANY, desiredWidth=40, desiredHeight=40)
         self.SetIcon(iconimage)
-        p.SwitchPanel(self,0)
+        panel.SwitchPanel(self,0)
         self.printpreview = True
         
         self.m_checkBoxSelections.Check(self.drawborders)
         self.m_checkBoxDebug.Check(self.debugmode)
         
-        m.setcursor(self)
-        m7.AcceleratorTableSetup(self,"general","set")    
+        evt_m.setcursor(self)
+        acc.AcceleratorTableSetup(self,"general","set")    
+    def m_buttonTopicOnButtonClick( self, event ):
+        self.FlashbookLibrary.addtopic()
         
+    def m_buttonBookOnButtonClick(self,event):
+        self.FlashbookLibrary.addbook()
+        
+    def m_buttonReTopicOnButtonClick(self,event):
+        self.FlashbookLibrary.renametopic()
+        
+    
+    def m_buttonDelTopicOnButtonClick(self,event):
+        self.FlashbookLibrary.deletetopic()
+    def m_listTopicsOnListItemSelected(self,event):
+        self.FlashbookLibrary.saverowpicked()
+        
+    def m_listTopicsOnListItemDeselected(self,event):    
+        pass
+    def m_buttonStartBookOnButtonClick(self,event):
+        index = self.m_listTopics.GetFocusedItem()  
+        print(f"index = {index}")
+        if index >= 0: #error code is -1
+            topic = self.m_listTopics.GetItemText(index)
+            self.booktopic = topic
+            print(f"topic {topic}")
+            
+            if not self.FlashbookLibrary.User_is_New():
+                self.booknames = self.FlashbookLibrary.getbooknames(topic)
+                print(f"booknames = {self.booknames}")
+                ## check if books need to be converted to jpg, so that users no longer need to do this manually
+                pdf.AddPathvar() #needed to make PDF2jpg work, it sets "Poppler for Windows" as pathvariable
+                from_    = str(self.dirpdfbook)
+                tempdir_ = str(self.tempdir)
+                to_      = str(self.booksdir)
+                pdf.ConvertPDF_to_JPG(self,from_,tempdir_,to_,SHOWMESSAGE = False)
+                ###
+                self.bookname = self.FlashbookLibrary.getcurrentbook(topic)
+                
+                path = os.path.join(self.booksdir,self.bookname)
+                m.openbook(self,path)
+            else:
+                self.FlashbookLibrary.openmessagebox()
+        else:
+            MessageBox(0, "You must select a topic before you can start reading", "Error", MB_ICONINFORMATION)
     #%% timecount
     def m_scrolledWindow1OnMouseEvents( self, event ):
         SaveTime(self)
@@ -179,10 +260,13 @@ class MainFrame(settings,flashbook,flashcard,printer,filetransfer,menusettings,h
 #####              FLASHCARD                                              #####
 ###############################################################################
 """
-class CardsDeck(settings):
+
+
+
+
+
+class CardsDeck2(settings):
     def __init__(self):#,flashcard):
-        
-        
         """ - cards are dicts because then you can easily delete a card from the deck
             - you can then use cardorder to switch cards and just omit a cardnumber from that list"""
         self.cards = {}
@@ -254,22 +338,24 @@ class CardsDeck(settings):
             log.DEBUGLOG(debugmode=self.debugmode, msg=f'CLASS CARDSDECK: nr cards = {self.nrcards}')
             cardindex = 0
             for _, card in enumerate(cards):                
+                print(f"card = {_}")
                 # card i : {qi,si} or {ti,si}
                 sizelist = card['size']                
                 
-                if 't' in card:
+                if 'topic' in card:
                     mode = 't'
                     key = self.key + f"{mode}{cardindex}"
                     if cardindex == 0:
+                        print("first line is present\n"*100)
                         line = self.bookname
                     else:
                         line = card[mode]                    
                     if line.strip() != '': #if the line is not empty, spaces are considered to be empty 
                         _card_ = {'text': line, 'size' : sizelist}
                         addtodict(self, key, _card_)           
-                if 'q' in card:
+                if 'question' in card:
                     sizecard  = sizelist[:4]
-                    mode = 'q'
+                    mode = 'question'
                     key = self.key + f"{mode}{cardindex}"
                     
                     line = card[mode]
@@ -288,17 +374,180 @@ class CardsDeck(settings):
         return self.cards[self.key + str(index)]
 
 
+import os
+import pandas as pd
+
+class Cardsdeck(settings):
+    def __init__(self):#,flashcard):
+        """ - cards are dicts because then you can easily delete a card from the deck
+            - you can then use cardorder to switch cards and just omit a cardnumber from that list"""
+        settings.__init__(self)
+        settings.settings_get(self)
+        
+        
+        #self.settings_get()
+        self.cards_original = {}
+        self.cards_edited = {} #to turn latex commands into useable text
+        
+        self.bookname = ''            
+        self.columnnames = ['page','id','question','answer','topic','size']
+     
+        
+    def popline(self,index):
+        try:
+            self.df = self.df.drop(index)
+            self.df = self.df.reset_index(drop=True)
+            self.df.to_pickle(self.path)
+        except:
+            pass
+    def getid(self,index):
+        
+        line = self.df.iloc[index]
+        idnumber = line['id']
+        return idnumber
     
-class Flashcard():
-    def __init__(self,fontsize):
+    def loaddata(self,book = None):
+        if book:
+            self.bookname = book
+            self.path = os.path.join(self.notesdir, self.bookname+'.pkl')
+            try:
+                self.df = pd.read_pickle(self.path)
+                self.df = self.df.replace({np.nan: None})
+                self.loaddata2card()
+                
+            except FileNotFoundError: 
+                MessageBox(0, "Why would this file not exist?", "Error", MB_ICONINFORMATION)
+    
+    def loaddata2card(self):
+        cards = []
+        
+        for index in range(len(self.df)):
+            line = self.df.iloc[index]
+            #
+            
+            #all these try except statements happen because when a file is correctly pickled literal_eval will throw an error, this is just for an old file
+            try:
+                question = ast.literal_eval(line['question'])
+            except ValueError:
+                question = line['question']
+            if line['answer']:
+                try:
+                    answer = ast.literal_eval(line['answer'])
+                except ValueError:
+                    answer = line['answer']
+            else:
+                answer = None
+            topic = line['topic']
+            if index == 0:
+                topic = self.bookname
+            
+            try:
+                size = ast.literal_eval(line['size'])
+            except ValueError:
+                size = line['size']
+            if topic and index ==0:
+                width =  1240
+                height = int(math.ceil(len(topic)/40))*0.75*100
+                size[4] = (width,height)
+                
+            card_id = line['id']
+            page = line['page']
+            if topic:
+                """If it contains a topic, then add it as an extra card """
+                tsize = size[4]
+                cards.append({'index':index,'topic': topic,'size':tsize,'page':999,'pos':(0,0),'scale':1,'id':card_id})
+            size_qa = self.CardSizeWithoutTopic(size) #size of the whole Q/A card excluding the topic
+            
+            keylist = {'index':index,'question' : question,'questiontext':'','questionpic':'','answer': answer,'answertext':'','answerpic':'', 'size':size_qa,'page':999,'pos':(0,0),'scale':1,'border' : (0,0),'id':card_id}
+            
+        
+            
+            if answer: #add the answer key
+                keylist['answer'] = answer
+                if 'text' in answer:
+                    keylist['answertext'] = answer['text']
+                if 'pic' in answer:
+                    keylist['answerpic'] = answer['pic']    
+            
+            if 'text' in question:
+                keylist['questiontext'] = question['text']                
+            if 'pic' in question:
+                keylist['questionpic'] = question['pic']
+            cards.append(keylist)
+                
+        self.cards = cards
+        self.cardswithouttopic = []
+        for i,linedict in enumerate(self.cards):
+            if not 'topic' in linedict:
+                self.cardswithouttopic.append(linedict)
+        
+        
+        print(f"selfcards = {cards[-2]}")
+    def CardSizeWithoutTopic(self,tuples_list):
+        if isinstance(tuples_list,tuple):
+            tuples_list = [tuples_list]
+        if len(tuples_list) == 5:
+            tuples_list = tuples_list[:4]
+        totalwidth,totalheight = 0, 0 
+        for size in tuples_list:
+            w,h = size
+            totalwidth = max(totalwidth,w)
+            totalheight += h
+        return totalwidth,totalheight
+    
+    def __len__(self):
+        """nr of cards, without counting topics as separate cards"""
+        return len([x for x in self.cards if 'topic' not in x])
+        
+    def getcard_i(self,index,topic = False):
+        try:
+            return self.cardswithouttopic[index]
+        except KeyError:
+            return None
+        
+    def getallcards(self):
+        return self.cards
+    
+    def getoriginalcard_i(self,index,topic = False):
+        try:
+            #{'index': , 'question': {'pic': ..., 'text': ...}, 'questiontext': 'testttopic1', 'questionpic': ..., 'answer': None, 'answertext': '', 'answerpic': '', 'size': (987, 133), 'page': 999, 'pos': (0, 0), 'scale': 1.1581, 'border': (10, 10), 'id': 'k1Ht'}
+            
+            print(f"original card = {self.cards[index]}\n")
+            #return self.cardswithouttopic[index]
+            return self.df.iloc[index]
+        except KeyError:
+            print(f"original error card")
+            return None
+    def getcard_QATS(trueindex):
+        line = self.df.iloc[index]
+        question = line['question']
+        answer = line['answer']
+        topic = line['topic']
+        size = line['size']
+        qpic = None
+        
+class Flashcard(paths):
+    def __init__(self,fontsize = 20):
+        paths.__init__(self)
+        #self.path = os.path.join(savefolder, 'userdata.txt')
+        savefolder = self.notesdir
+        self.path = savefolder
+        self.idfile = os.path.join(savefolder, 'unique_ids.txt')
+        self.columnnames = ['page','id','question','answer','topic','subtopic','size','relsize']
+        """                [ 0    ,1234,{text:"hello", pic:"\path\img.jpg"}, ... , "topic",[(10,200),...(0,0)]    """
+        self.bookname = ''
+        self.dict = {}
+        self.load_data()
+        
+        ###
         self.a4page_w = 1240
-        self.question = ''
-        self.questionpic = ''
-        self.answer    = ''
-        self.answerpic = ''
+        self.question = {}
+        self.answer    = {}
+        self.idnr = 0
         self.mode      = 'Question'
         self.questionmode = True
         self.topic    = ''
+        self.subtopic = ''
         self.pic_question     = []
         self.pic_answer       = []
         self.pic_question_dir = []
@@ -309,17 +558,32 @@ class Flashcard():
         self.size_a_txt = (0,0)
         self.size_a_pic = (0,0)
         self.size_topic = (0,0)
-        self.sizelist = '[(0,0),(0,0),(0,0),(0,0),(0,0)]'
+        self.sizelist = [(0,0),(0,0),(0,0),(0,0),(0,0)] #qtext, qpic, atext,apic, topic
         self.LaTeXfontsize = fontsize
+        self.savefolder = savefolder
         
+        self.carddict = {}
+        self.questiondict = {}
+        self.answerdict = {}
+        
+        self.QuestionPicPaths = []
+        self.QuestionPicOrientation = []
+        self.AnswerPicPaths = []
+        self.AnswerPicOrientation = []
+        
+        self.pagenr = 1
     def reset(self):
-        self.question = ''
+        self.question = {}
+        self.answer    = {}
+        self.idnr = 0
+        
         self.questionpic = ''
-        self.answer   = ''
+        
         self.answerpic = ''
         self.mode     = 'Question'
         self.questionmode = True
         self.topic    = ''
+        self.subtopic = ''
         self.pic_question     = []
         self.pic_answer       = []
         self.pic_question_dir = []
@@ -330,37 +594,341 @@ class Flashcard():
         self.size_a_txt = (0,0)
         self.size_a_pic = (0,0)
         self.size_topic = (0,0)
-        self.sizelist = '[(0,0),(0,0),(0,0),(0,0),(0,0)]'
+        self.sizelist = [(0,0),(0,0),(0,0),(0,0),(0,0)]#qtext, qpic, atext,apic, topic
+        
+        
+        self.QuestionPicPaths = []
+        self.QuestionPicOrientation = []
+        self.AnswerPicPaths = []
+        self.AnswerPicOrientation = []
+    def generate_id(self):        
+        def loadid():
+            try:
+                df_id = pd.read_csv(self.idfile)
+            except FileNotFoundError: 
+                df_id = pd.DataFrame(columns=['id'])
+            return df_id
+        def saveid(df):
+            df.to_csv(self.idfile,index=False)
+        
+        df = loadid()
+        SEARCH = True
+        while SEARCH:
+            stringlow  = "abcdefghijklmnopqrstvwxyz"
+            stringup = stringlow.upper()
+            digits = '0123456789'
+            id_nr = ''.join(random.choices(stringlow+stringup+digits, k=4)) 
+            if id_nr not in set(df['id'].values):
+                #print(id_, set(df['id']), str(df['id'].values))
+                df = df.append({'id':str(id_nr)},ignore_index = True)    
+                saveid(df)
+                df = loadid()
+                SEARCH = False
+        return id_nr
+        
+    def setbook(self,bookname):
+        if bookname.strip():
+            self.bookname = bookname
+            self.path = os.path.join(self.savefolder, self.bookname+'.pkl')
+            
+    def load_data(self):
+        if self.bookname:
+            print(f"path = {self.path}")
+            try:
+                self.df = pd.read_pickle(self.path)
+                self.df = self.df.replace({np.nan: None})
+                self.check_columns()
+            except FileNotFoundError: 
+                self.df = pd.DataFrame(columns=self.columnnames)
+                self.save_data()
+        
+    def get_data(self):
+        return self.df
     
-    def setpiclist(self,mode,text):
-        if mode.lower() == 'question':
-            self.pic_question_dir = text
-        else:
-            self.pic_question_dir = text
+    def check_columns(self):
+        """To check if the saved file has enough columns, e.g. if I added more column names without adding data"""
+        columnnames = self.columnnames
+        nrcol = len(self.df.columns)
+        if len(columnnames) > nrcol:
+            for col in columnnames:
+                if col not in self.df.columns:
+                    pos = len(self.df.columns)
+                    self.df.insert(pos, col, None, True)
+    def setID(self):
+        #automatically generates a unique id
+        if not self.idnr:
+            self.idnr = self.generate_id()
+    def setCustomID(self,idnr):
+        #incase you want to reuse an ID: when you want to edit a card
+        self.idnr = idnr
             
-    def getpicdir(self,mode):
-        if mode.lower() == 'question':
-            return self.pic_question_dir
-        else:
-            return self.pic_question_dir
+    def saveCard(self):
+        self.load_data()
+        self.insert_data(page = self.pagenr, id = self.idnr,question = self.question, answer = self.answer, topic = self.topic,size = self.sizelist ,relsize = 100)
+        self.save_data()
+        self.idnr = 0
+             
+    def save_data(self):
+        if self.bookname and self.dict:
             
+            #set of all pages on which notes are taken
+            line = self.dict
+            pagenr = self.pagenr
+            page_list = set(self.df['page'])
+            page_df = self.df['page']
+            currentpage = self.pagenr
+            df2 = self.df.copy()
+            # find last index
+            absolute_difference = lambda list_value : abs(list_value - currentpage)
+            if page_list:
+                closest_pagenr = min(page_list, key=absolute_difference)    
+            else:#no entries
+                closest_pagenr = currentpage
+            """Use index of 0.5 so that you can put someting between index 2&3, using .reset_index() makes
+            sure that index 2.5 will now be renamed as 3 and the rest will be shifted 1 up"""
+            if page_list:
+                if closest_pagenr > pagenr:
+                    #if you want to ad something infront of the closest page
+                    closest_index = page_df.where(page_df==closest_pagenr).first_valid_index() - 0.5
+                else:
+                    #if you make a note on a page where already something exists, or at the end of the book, add it to the end.
+                    closest_index = page_df.where(page_df==closest_pagenr).last_valid_index() + 0.5
+            else:#no entries
+                closest_index = 0
+            
+            # append to dataframe
+            """You can't just put any dict into a dataframe,
+            in this case certain elements contain another dict, 
+            this gives an error if you try to put this directly into a dataframe.
+            If you use dict[key] = [dict] then it works fine"""
+            dfline = pd.DataFrame( index=[closest_index]) #empty dataframe
+            for key, value in line.items():
+                dfline[key] = [value]            
+            df2 = df2.append(dfline, ignore_index=False,sort = False)
+            df2 = df2.sort_index().reset_index(drop=True)
+            
+            #save and reset            
+            self.df = df2            
+            self.dict = {}            
+            self.df.to_pickle(self.path)
+    def replace_line(self,idnr):
+        
+        id_df = self.df['id']
+        index = id_df.where(id_df==idnr).first_valid_index()
+        
+        pagenr = self.df['page'].iloc[index]
+        original_idnr = self.df['id'].iloc[index]
+        if idnr == original_idnr:
+            
+            df2 = self.df.copy()
+            self.insert_data(page = pagenr, id = idnr,question = self.question, answer = self.answer, topic = self.topic,subtopic = self.subtopic,size = self.sizelist ,relsize = 100)     
+            print(f"dict = {len(self.dict)}\n\n"*20)
+            """You can't just put any dict into a dataframe,
+            in this case certain elements contain another dict, 
+            this gives an error if you try to put this directly into a dataframe.
+            If you use dict[key] = [dict] then it works fine"""
+            dfline = pd.DataFrame( index=[index]) #empty dataframe
+            for key, value in self.dict.items():
+                dfline[key] = [value]            
+            
+            
+            
+            
+            print(len(df2.iloc[index]))
+            print(df2.iloc[index])
+            
+            df2 = df2.drop(index)
+            df2 = df2.append(dfline, ignore_index=False,sort = False)
+            df2 = df2.sort_index().reset_index(drop=True)
+            
+            
+            
+            print(df2.values)
+            #save and reset            
+            self.df = df2    
+            self.dict = {}            
+            self.df.to_pickle(self.path)
+            
+            
+        else:
+            print(f"ID did not match\n"*20)
+        
+    def insert_data(self,**kwargs):
+        self.dict = {}
+        for key, value in kwargs.items():
+            print(f"key,value = {key,value}")
+            if key in self.columnnames and value:
+                self.dict[key] = value
+            elif key in self.columnnames and not value:
+                self.dict[key] = None
+            elif key not in self.columnnames:
+                print(f"argument '{key}' is not a column name of : {self.columnnames}")
+        
+    def get_idnr(self):
+        return self.idnr
+            
+    def get_colnames(self):
+        return self.columnnames
+    
+    def find_row(self,col,value):
+        if col in self.df.columns:
+            return self.df.loc[self.df[col] == value]    
+    
+    
+    
+    def setQ(self,text = '',pic = None):
+        if text.strip() != '':
+            self.question['text'] = text
+            imbool, im = f2.CreateTextCard(self,'manual',text)
+            print(f"text size is {imbool} {text}")
+            if imbool:
+                self.sizelist[0] = im.size
+                print(self.sizelist)
+        if pic:
+            #partial path to image
+            self.question['pic'] = pic 
+            imsize = imop.findpicturesize_relpath(self,pic)
+            self.sizelist[1] =  imsize
+    def setA(self,text = '',pic = None):
+        if text.strip() != '':
+            self.answer['text'] = text
+            image_exists, image = f2.CreateTextCard(self,'manual',text)
+            if image_exists:
+                self.sizelist[2] = image.size
+                #self.size_a_txt = image.size 
+        if pic:
+            #partial path to image
+            self.answer['pic'] = pic 
+            imsize = imop.findpicturesize_relpath(self,pic)
+            self.sizelist[3] =  imsize
+    def nrpics(self,mode):
+        try:
+            if mode.lower() == 'question':
+                return len(self.question['pic'])
+            else:
+                return len(self.answer['pic'])
+        except KeyError:
+            return 0
+        #def getquestionmode(self):
+        #    return self.questionmode
+    
+    def switchmode(self):
+        self.questionmode = not self.questionmode
+    
+    def is_question(self):
+        return self.questionmode
+    
+    def addpic(self,VerticalBool = True,fullpath = None):        
+        if self.is_question():
+            self.QuestionPicPaths.append(fullpath)
+            self.QuestionPicOrientation.append(VerticalBool)
+            print(self.QuestionPicPaths)
+            print(self.QuestionPicOrientation)
+            
+        else:
+            self.AnswerPicPaths.append(fullpath)
+            self.AnswerPicOrientation.append(VerticalBool)
+        
+            
+            
+    def fliporientation(self):
+        try:
+            if self.is_question():
+                self.QuestionPicOrientation[-1] = not self.QuestionPicOrientation[-1]
+            else:
+                self.AnswerPicOrientation[-1] = not self.AnswerPicOrientation[-1]
+        except IndexError:
+            pass
+    
+    def setT(self,text):
+        if text.strip():
+            self.topic = text
+            width_card = self.a4page_w
+            height_card = int(math.ceil(len(text)/40))*0.75*100
+            print(f"! topic = {text}, size = {width_card},{height_card}")
+            if height_card:
+                print("topic size",width_card,height_card)
+                self.sizelist[4] = (width_card,height_card)
+    
+    
+    def StitchPicsTogether(self):
+        """LOOK AT LIST OF PATHS 
+        IF THE ELEMENT OF THE LIST IS A PATHSTRING IT WILL JOIN THEM VERTICALLY
+        IF THE ELEMENT IS ANOTHER LIST OF PATHSTRINGS THEN THOSE WILL BE JOINED HORIZONTALLY
+        THE COMBINED PICTURE WILL BE SAVED AS THE FIRST PATHSTRING, THE OTHER PICTURES WILL BE DELETED"""
+        
+        
+        print("combine pics")
+        if self.is_question():
+            picpaths = self.QuestionPicPaths
+            orien = self.QuestionPicOrientation
+        else:
+            picpaths = self.AnswerPicPaths
+            orien = self.AnswerPicOrientation
+        
+        
+        originalpaths = picpaths.copy()
+        images = imop.fullpath_to_imagelist(picpaths)
+        index = 0
+        
+        if orien and picpaths:
+            """"""
+            orien[-1] = True
+            while False in orien:    
+                print("...")
+                if index < len(orien)-1:#last orientation does not matter
+                    if orien[index] == False:
+                        #combine with next
+                        combpic = imop.CombinePicturesHorizontal([images[index],images[index+1]])
+                        #replace the second image with the combined image, the combined image will then just assume the second pictures orientation
+                        images[index+1] = combpic            
+                        #pop the first bool and pic from list
+                        orien.pop(index)
+                        images.pop(index)            
+                    else:
+                        index += 1
+                else:
+                    break
+            """combine the images vertically"""
+            combinedim = imop.CombinePicturesVertical(images)            
+            combinedim.save(originalpaths[0]) #save the image as the first path, delete the other images that were merged    
+            for k, imagepath in enumerate(originalpaths):
+                if k != 0 and Path(imagepath).exists():
+                    Path(imagepath).unlink()
+                    
+            #convert fullpath to relpath
+            imagename = os.path.basename(originalpaths[0])
+            if self.is_question():
+                self.setQ(pic = imagename)
+            else:
+                self.setA(pic = imagename)
+            return originalpaths[0]
+    def getpiclist(self,mode):
+        try:
+            if mode.lower() == 'question':
+                return self.question['pic']
+            elif mode.lower() == 'answer':
+                return self.answer['pic']
+        except KeyError:
+            return []
+        
+    def QuestionExists(self):
+        if len(self.question):
+            return True
+    def setpagenr(self,pagenr):
+        self.pagenr = pagenr
+        
     def removepics(self):
         def unlinkpics(dir_):    
             print(f"dir = {dir_}")
             if len(dir_) > 1:
                 if isinstance(dir_,str):
-                    try:
-                        if Path(dir_).exists():
-                            Path(dir_).unlink()
-                    except:
-                        pass
+                    if Path(dir_).exists():
+                        Path(dir_).unlink()
                 elif isinstance(dir_,list):
                     for pic in dir_:
-                        try:
-                            if type(pic) == str and Path(pic).exists():
-                                Path(pic).unlink()
-                        except:
-                            pass
+                        if type(pic) == str and Path(pic).exists():
+                            Path(pic).unlink()
             elif len(dir_) == 1:
                 try:
                     #just one image
@@ -371,142 +939,14 @@ class Flashcard():
                     print("could not remove single image")
                     pass
                 
-        if len(self.pic_question_dir) > 0:
-            dir_ = self.pic_question_dir
+        if self.is_question():
+            dir_ = self.QuestionPicPaths
             unlinkpics(dir_)
-        if len(self.pic_answer_dir) > 0:
-            dir_ = self.pic_answer_dir    
-            unlinkpics(dir_)
+        else:
+            dir_ = self.AnswerPicPaths
+            unlinkpics(dir_)    
     
-    def addpic(self,mode,orientation,name,path):        
-        if mode == 'Question':
-            if orientation == 'vertical':
-                self.pic_question.append(name)  
-                self.pic_question_dir.append(path)  
-            elif orientation == 'horizontal':
-                try:
-                    self.pic_question[-1].append(name)  
-                    self.pic_question_dir[-1].append(path)  
-                except:
-                    self.pic_question.append([name])  
-                    self.pic_question_dir.append([path])  
-            else:
-                raise ValueError('Flashcard has been given a wrong orientation')
-        elif mode == 'Answer':  
-            if orientation == 'vertical':
-                self.pic_answer.append(name)  
-                self.pic_answer_dir.append(path)  
-            elif orientation == 'horizontal':
-                try:
-                    self.pic_answer[-1].append(name)  
-                    self.pic_answer_dir[-1].append(path)  
-                except:
-                    self.pic_answer.append([name])  
-                    self.pic_answer_dir.append([path])  
-            else:
-                raise ValueError('Flashcard has been given a wrong orientation')
-        else: 
-            raise ValueError('Flashcard has been given a wrong mode')
-            
-    def StitchCards(self,vertical_stitch):
-        if vertical_stitch:
-            #question mode
-            if self.questionmode and (len(self.pic_question) > 0) and (type(self.pic_question[-1]) is list) and (len(self.pic_question[-1])==1):
-                self.pic_question[-1] = self.pic_question[-1][0]
-                self.pic_question_dir[-1] = self.pic_question_dir[-1][0]
-            #answer mode
-            if (not self.questionmode) and (len(self.pic_answer) > 0) and (type(self.pic_answer[-1]) is list) and (len(self.pic_answer[-1])==1):
-                self.pic_answer[-1] = self.pic_answer[-1][0]
-                self.pic_answer_dir[-1] = self.pic_answer_dir[-1][0]    
-        #stitch it horizontally
-        else:
-            #question mode
-            if self.questionmode and (len(self.pic_question) > 0) and (type(self.pic_question[-1]) is not list):
-                self.pic_question[-1] = [self.pic_question[-1]]
-                self.pic_question_dir[-1] = [self.pic_question_dir[-1]]
-            #answer mode
-            if (not self.questionmode) and (len(self.pic_answer) > 0) and (type(self.pic_answer[-1]) is not list):
-                self.pic_answer[-1] = [self.pic_answer[-1]]
-                self.pic_answer_dir[-1] = [self.pic_answer_dir[-1]]
-    def QuestionExists(self):
-        if self.question.strip() != '' or self.questionpic.strip() != '':
-            return True
         
-    def getpiclist(self,mode):
-        if mode.lower() == 'question':
-            return self.pic_question_dir
-        elif mode.lower() == 'answer':
-            return self.pic_answer_dir
-    def nrpics(self,mode):
-        if mode.lower() == 'question':
-            return len(self.pic_question)
-        elif mode.lower() == 'answer':
-            return len(self.pic_answer)
-    def setSizes(self):
-        if len(self.pic_question_dir) == 1:
-            path = self.pic_question_dir[0]
-            try:
-                w,h = PIL.Image.open(path).size
-            except:
-                w,h = 'Error','Error'
-            self.size_q_pic = (w,h)
-        if len(self.pic_answer_dir) == 1:
-            path = self.pic_answer_dir[0]
-            try:
-                w,h = PIL.Image.open(path).size
-            except:
-                w,h = 'Error','Error'
-            self.size_a_pic = (w,h)
-        self.sizelist = str([self.size_q_txt, self.size_q_pic, 
-                             self.size_a_txt, self.size_a_pic, 
-                             self.size_topic])
-    #store user data and save sizes of images/text
-    def setT(self,text):
-        self.topic = text
-        width_card = self.a4page_w
-        height_card = int(math.ceil(len(text)/40))*0.75*100
-        print(f"! topic = {text}, size = {width_card},{height_card}")
-        if height_card != 0:
-            print("topic size",width_card,height_card)
-            self.size_topic = (width_card,height_card)                
-    def setQ(self,usertext):
-        if usertext.strip() != '':
-            self.question = r"\text{" + usertext + r"}"
-            imbool, im = f2.CreateTextCard(self,'manual',usertext)
-            print(f"text size is {imbool} {usertext}")
-            if imbool:
-                self.size_q_txt = im.size
-    def setQpic(self,partialpath):
-        self.questionpic = r"\pic{" + partialpath + r"}"        
-    def setA(self,usertext):
-        if usertext.strip() != '':
-            self.answer = r"\text{" + usertext + r"}"
-            image_exists, image = f2.CreateTextCard(self,'manual',usertext)
-            if image_exists:
-                self.size_a_txt = image.size 
-                
-    def getmode(self):
-        return str(self.mode)
-    def setApic(self,partialpath):
-        self.answerpic = r"\pic{" + partialpath + r"}"
-    #save the final card  
-    def saveCard(self,path):
-        self.setSizes()        
-        with open(path, 'a') as output:
-            output.write(r"\quiz{"  + self.question + self.questionpic + "}")
-            output.write(r"\ans{"   + self.answer   + self.answerpic   + "}")
-            output.write(r"\topic{" + self.topic    + "}")
-            output.write(r"\size{"  + self.sizelist + "}")
-            output.write("\n")
-    def switchmode(self):
-        if self.mode == 'Question':
-            self.mode = 'Answer'
-            self.questionmode = False
-        else:
-            self.mode = 'Question'
-            self.questionmode = True
-    def getquestionmode(self):
-        return self.questionmode
 
 
     
