@@ -9,6 +9,7 @@ import ctypes
 import img2pdf
 import numpy as np
 from pathlib import Path
+import pandas as pd
 import os
 from PIL import Image
 import PIL
@@ -234,9 +235,9 @@ class SortImages():
         else:
             self.datadict3[pagekey].update(dict_3)
     def removedata(self):
-        self.images_w = self.images_w[1:]                
-        self.images_s = self.images_s[1:]
-        self.library  = self.library[1:]
+        self.images_w.pop(0)              
+        self.images_s.pop(0)
+        self.library.pop(0)
         
     def sortpages(self):
         CUMSUMLEN = np.cumsum(self.images_w) 
