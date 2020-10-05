@@ -72,9 +72,9 @@ def createimage(self,card_i):
     #if 'answer' not in card_i:
     #    atext = ''
     #    apic = ''
-    print(f"card = {card_i}")
+    
     if 'topic' in card_i:
-        
+        print(f"topiccard = {card_i}")    
         topic = card_i['topic']
         #im = PIL.Image.new("RGB", (card_i['size']), 'white')
         #im = PIL.Image.new("RGB", (int(self.total_width*self.scale)+self.bordersize[0]*2 ,int(self.total_height*self.scale)+self.bordersize[1]*2+self.QAline_thickness), 'white')
@@ -153,15 +153,19 @@ def createimage(self,card_i):
 class SortImages():
     import numpy as np
     import bisect
-    def __init__(self, library = None, page_width = 1240, page_height = 1754,debug = False):
+    def __init__(self, cards = None, page_size = (1240,1754),debug = False):
         sizelist = []
+        page_width, page_height = page_size
         
-        for i,card_i in enumerate(library):
+        for i,card_i in enumerate(cards):
             size = card_i['size']
             sizelist.append(size)
-        self.library = library    
+        self.cards = cards 
         self.images_w = [x[0] for x in sizelist]
         self.images_s = sizelist
+        
+        self.pdf_df = pd.DataFrame(columns=['page','row','position','name','type'])
+        
         
         self.a4page_w = page_width
         self.a4page_h = page_height
@@ -179,6 +183,7 @@ class SortImages():
         self.page_x = 0
         self.page_y = 0
         self.page_nr += 1
+        
     def getcardmode(self,path):
         if 'card_' in path:
             _idx = path.find('card_')
@@ -212,17 +217,26 @@ class SortImages():
                     val_list = [val]
                     base = {subkey: val_list}
                     self.datadict2[key].update(base)
-        if 'topic' in self.library[0]:
-            cardname = 't'+str(self.library[0]['index']) #t0/q0 
+        if 'topic' in self.cards[0]:
+            cardname = 't'+str(self.cards[0]['index']) #t0/q0 
         else:
-            cardname = 'q'+str(self.library[0]['index']) #t0/q0 
+            cardname = 'q'+str(self.cards[0]['index']) #t0/q0 
         
-        w,h = self.library[0]['size']
+        w,h = self.cards[0]['size']
         Rect = (self.page_x, self.page_y, w, h)
         dict_ = {cardname : Rect}
-        dict_3 = {cardname: self.library[0]}
+        dict_3 = {cardname: self.cards[0]}
         pagekey = self.pdfpagename()
         
+        {'page':self.page_nr,'row':0,'position':Rect,'name':self.cards}
+        #print(f"self.cards = {self.cards[0]}\n\n")
+        #dfline = pd.DataFrame()  #empty dataframe
+        #    for key, value in line.items():
+        #        dfline[key] = [value]            
+        #    df2 = df2.append(dfline, ignore_index=False,sort = False)
+        
+        #if self.page_nr not in self.pdf_df['page']:
+            
         if pagekey not in  self.datadict.keys():
             self.datadict[pagekey] = dict_
         else:
@@ -237,14 +251,14 @@ class SortImages():
     def removedata(self):
         self.images_w.pop(0)              
         self.images_s.pop(0)
-        self.library.pop(0)
+        self.cards.pop(0)
         
     def sortpages(self):
         CUMSUMLEN = np.cumsum(self.images_w) 
         
         k = 0
         self.line_nr = 0
-        while self.images_w: #continue until all pictures have been processed     
+        while self.cards: #continue until all pictures have been processed     
             """Method:
             Cumsum the widths of images.
             Use bisect to look first instance where the cumsum is too large to fit on a page.
@@ -260,7 +274,11 @@ class SortImages():
                 log.DEBUGLOG(debugmode=self.debugmode, msg=f'PRINTMODULE: sortpages: too wide {CUMSUMLEN[0]}')
                 # rescale
                 w,h = self.images_s[0]    
-                w_resized,h_resized = (int(self.a4page_w),int(self.a4page_w/w*h))
+                if 'topic' not in self.cards[0]:
+                    w_resized,h_resized = (int(self.a4page_w),int(self.a4page_w/w*h))
+                else:
+                    print(f"topic card = {self.cards[0]}")
+                    w_resized, h_resized = w,h
                 # does it fit on the page?
                 if self.page_y + h_resized > self.a4page_h: 
                     self.newpage()
@@ -270,7 +288,6 @@ class SortImages():
                 self.page_x = 0
                 self.page_y += h_resized
                 self.line_nr += 1
-                
                 CUMSUMLEN = np.cumsum(self.images_w)  
             else:   # image(s) are combined not too wide
                 log.DEBUGLOG(debugmode=self.debugmode, msg=f'PRINTMODULE: sortpages: images are not too wide')
@@ -438,6 +455,8 @@ class pdfpage(settings):
         self.DICT_page_card_rect = DICT_page_card_rect #{pdfpage_nr: {cardname : Rect}}
         self.DICT_page_line_card = DICT_page_line_card #{pdfpage_nr: {self.line_nr:cardname}} 
         self.dict3 = dict3 #{pdfpage_nr: {cardname: ]}}
+        
+        
         
         self.a4page_w = a4page_w
         self.a4page_h = a4page_h
@@ -702,7 +721,7 @@ def notes2paper(self):
         ColumnWidths = [int(col/100*self.a4page_w) for col in columns if col != 0]                       
         if len(ColumnWidths) > 0:
             for _idx_ , card_i in enumerate(cards):
-                if 't' in card_i:
+                if 'topic' in card_i:
                     pass #don't resize
                     w,h = card_i["size"]
                     card_i['size'] = (self.a4page_w,h)
@@ -738,7 +757,7 @@ def notes2paper(self):
         delattr(self,'SortImages')
     
        
-    self.SortImages = SortImages(library = cards, page_width = self.a4page_w, page_height = self.a4page_h,debug = self.debugmode)
+    self.SortImages = SortImages(cards = cards, page_size = (self.a4page_w,self.a4page_h))
     DICT_page_card_rect, DICT_page_line_card, dct3 = self.SortImages.sortpages()
     
     
