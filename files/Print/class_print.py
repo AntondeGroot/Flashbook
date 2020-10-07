@@ -326,7 +326,8 @@ class printer(gui.MyFrame):
         t_preview(self) 
     def m_pdfButtonPrevOnButtonClick( self, event ):
         self.pdfpage.prevpage()
-        pdfimage_i = self.pdfpage.loadpage()
+        page_nr = self.pdfpage.getpage()
+        pdfimage_i = self.pdfpage.loadpage(page_nr)
         # display result
         _, PanelHeight = self.m_panel32.GetSize()
         PanelWidth = round(float(PanelHeight)/1754.0*1240.0)
@@ -348,7 +349,8 @@ class printer(gui.MyFrame):
 	
     def m_pdfButtonNextOnButtonClick( self, event ):
         self.pdfpage.nextpage()
-        pdfimage_i = self.pdfpage.loadpage()
+        page_nr = self.pdfpage.getpage()
+        pdfimage_i = self.pdfpage.loadpage(page_nr)
         # display result
         _, PanelHeight = self.m_panel32.GetSize()
         PanelWidth = round(float(PanelHeight)/1754.0*1240.0)

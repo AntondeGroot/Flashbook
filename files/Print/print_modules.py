@@ -515,9 +515,9 @@ class pdfpage(settings):
         def threadfunction(self,i,pdflist):
             path = os.path.join(self.tempdir,f"temporary_pdfpage{i}.png")
             self.page_nr = i
-            im = self.loadpage()
+            im = self.loadpage(self.page_nr)
             w,h = im.size
-            #scale = 0.5 #this determines the resolution / dpi of the final pdf page
+            #this scale determines the resolution / dpi of the final pdf page
             scale = 1
             im = im.resize((int(w*scale), int(h*scale)), PIL.Image.ANTIALIAS)
             im.save(path)
@@ -533,19 +533,23 @@ class pdfpage(settings):
                 
                 threads[i] = threading.Thread(target = threadfunction  , args=(self,i,pdflist))
                 threads[i].start()
+                
                                 
             for i,thread in enumerate(threads):
                 thread.join()
         self.page_nr = self.backuppage
+        print(f"pdflist = {pdflist}")
         return pdflist
         
-    def loadpage(self):
+    def loadpage(self,page_nr):
         
-        if self.page_nr not in self.sorted_df['page']:
+        
+        
+        if page_nr not in self.sorted_df['page']:
             #in case a user changed settings and there are fewer pages
-            self.page_nr = max(self.sorted_df['page'])
+            page_nr = max(self.sorted_df['page'])
         
-        linenumbers = self.sorted_df[self.sorted_df['page']==self.page_nr].index.tolist()
+        linenumbers = self.sorted_df[self.sorted_df['page']==page_nr].index.tolist()
         linenumbers = set(linenumbers)
         imcanvas = im = PIL.Image.new("RGB", (self.a4page_w ,self.a4page_h), 'white')        
         
@@ -555,12 +559,12 @@ class pdfpage(settings):
         self.TT.update("create images thread") 
         
         df = self.sorted_df
-        rowsonpage = df['row'].loc[df['page']==self.page_nr]
+        rowsonpage = df['row'].loc[df['page']==page_nr]
 
         
         for i,row in enumerate(rowsonpage):
-            cardsinrow_i = df['card'].loc[df['page']==self.page_nr].loc[df['row']==row].tolist()
-            rects = df['rect'].loc[df['page']==self.page_nr].loc[df['row']==row].tolist()
+            cardsinrow_i = df['card'].loc[df['page']==page_nr].loc[df['row']==row].tolist()
+            rects = df['rect'].loc[df['page']==page_nr].loc[df['row']==row].tolist()
             
             def threadfunction(self,cards,rects,im_pos):
                 xpos = [0]
@@ -598,7 +602,7 @@ class pdfpage(settings):
                         im = PIL.Image.new("RGB", (linerect[2]+d ,self.horiline_thickness), self.horiline_color)
                         pos = (linerect[0],linerect[1]+linerect[3])
                         im_pos.append({'im':im,'pos':pos})
-                
+            #threadfunction(self,cardsinrow_i,rects,im_pos)    
             threads[i] = threading.Thread(target = threadfunction  , args=(self,cardsinrow_i,rects,im_pos))
             threads[i].start()
         
@@ -750,7 +754,6 @@ def notes2paper(self):
     
        
     self.SortImages = SortImages(cards = cards, page_size = (self.a4page_w,self.a4page_h))
-    #DICT_page_card_rect, DICT_page_line_card, dct3 = self.SortImages.sortpages()
     self.SortImages.sortpages()
     
     
@@ -767,7 +770,7 @@ def notes2paper(self):
     self.pdfpage.setqaline(  color = self.QAline_color   , thickness = self.QAline_thickness   , visible = self.QAline_bool  )
     self.pdfpage.setvertline(color = self.vertline_color , thickness = self.vertline_thickness , visible = self.vertline_bool)
     self.pdfpage.sethoriline(color = self.horiline_color , thickness = self.horiline_thickness , visible = self.horiline_bool)
-    pdfimage_i = self.pdfpage.loadpage()
+    pdfimage_i = self.pdfpage.loadpage(pagenr)
     
     #%% display result
     TT.update("get panel size")
@@ -804,7 +807,6 @@ def notes2paper(self):
         try:
             imagelist = self.pdfpage.createpdf()
             with open(filename, "wb") as file:
-                #file.write(img2pdf.convert([im for im in imagelist if im.endswith(".png")]))
                 file.write(img2pdf.convert([im for im in imagelist]))
             file.close()
             self.printsuccessful = True
