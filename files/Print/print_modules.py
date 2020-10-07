@@ -561,29 +561,57 @@ class pdfpage(settings):
         df = self.sorted_df
         rowsonpage = df['row'].loc[df['page']==page_nr]
 
+        rowlist = df['row'].tolist()
+        pagelist = df['page'].tolist()
         
         for i,row in enumerate(rowsonpage):
-            cardsinrow_i = df['card'].loc[df['page']==page_nr].loc[df['row']==row].tolist()
-            rects = df['rect'].loc[df['page']==page_nr].loc[df['row']==row].tolist()
+            #rows = df.loc[df['page']==page_nr].loc[df['row']==row]
             
-            def threadfunction(self,cards,rects,im_pos):
+            #cardsinrow_i = list(rows['card'])#df['card'].loc[df['page']==page_nr].loc[df['row']==row].tolist()
+            #rects = list(rows['rect'])#df['rect'].loc[df['page']==page_nr].loc[df['row']==row].tolist()
+            
+            #def threadfunction(self,cards,rects,im_pos):
+            def threadfunction(self,page_nr,row,im_pos):
+                
+                #indices = (df.page.values == page_nr) * (df.row.values == row)
+                #indices = [i for i,bool_ in enumerate(indices) if bool_]#list of T,F to indexlist where True
+                #rows = df.at[indices]
+                
+                col_rows = df.row.values
+                page = df.page.values
+                
+                # Note: this is a view to a slice of df
+                rows = df.loc[
+                    (page == page_nr) &
+                    (col_rows == row)
+                    ]
+                
+                
+                #print(f"rows = {rows}")
+                #rows = df.loc[df['page']==page_nr].loc[df['row']==row]
+                
+                
+                cardsinrow_i = list(rows['card'])#df['card'].loc[df['page']==page_nr].loc[df['row']==row].tolist()
+                rects = list(rows['rect'])#df['rect'].loc[df['page']==page_nr].loc[df['row']==row].tolist()
                 xpos = [0]
                 ypos = [0]
                 linerect = (0,0,0,0)
                 
-                for i,card in enumerate(cards):         
+                
+                
+                for i,card in enumerate(cardsinrow_i):         
                     im = createimage(self,card)
-                    #print(f"cardsize = {card.keys()}")
+                    
                     x,y,w,h = rects[i]
                     im_pos.append({'im':im,'pos':(x,y)})
-                    #y += self.horiline_thickness
+                    
                     xpos += [x]
                     xpos += [x+w]
                     ypos += [y]
                     ypos += [y+h]
                     linerect = (min(linerect[0],x),max(linerect[1],y),linerect[2]+w,max(linerect[3],h))                    
                 
-                if len([x for x in cards if 't' in x]) == 0: #if it does not contain a topic card 'ti' 
+                if not 'topic' in cardsinrow_i[0]:#not [x for x in cardsinrow_i if 't' in x]: #if it does not contain a topic card 'ti' 
                     if self.vertline_bool:
                         for x_i in xpos:
                             im = PIL.Image.new("RGB", (int(self.vertline_thickness), int(linerect[3])), self.vertline_color) 
@@ -602,8 +630,21 @@ class pdfpage(settings):
                         im = PIL.Image.new("RGB", (linerect[2]+d ,self.horiline_thickness), self.horiline_color)
                         pos = (linerect[0],linerect[1]+linerect[3])
                         im_pos.append({'im':im,'pos':pos})
+                else:#
+                    #prints line at EVERY cards' bottom line across the whole row
+                    d = self.vertline_thickness * self.vertline_bool # *bool resulst in either 0 or VertlineThickness
+                    
+                    #imcanvas.paste(PIL.Image.new("RGB", (linerect[2]+d ,self.horiline_thickness), self.horiline_color), (linerect[0],linerect[1]))
+                    im = PIL.Image.new("RGB", (linerect[2]+d ,self.horiline_thickness), self.horiline_color)
+                    pos = (linerect[0],linerect[1])
+                    im_pos.append({'im':im,'pos':pos})
+                    #imcanvas.paste(PIL.Image.new("RGB", (linerect[2]+d ,self.horiline_thickness), self.horiline_color), (linerect[0],linerect[1]+linerect[3]))
+                    im = PIL.Image.new("RGB", (linerect[2]+d ,self.horiline_thickness), self.horiline_color)
+                    pos = (linerect[0],linerect[1]+linerect[3])
+                    im_pos.append({'im':im,'pos':pos})
             #threadfunction(self,cardsinrow_i,rects,im_pos)    
-            threads[i] = threading.Thread(target = threadfunction  , args=(self,cardsinrow_i,rects,im_pos))
+            #threads[i] = threading.Thread(target = threadfunction  , args=(self,cardsinrow_i,rects,im_pos))
+            threads[i] = threading.Thread(target = threadfunction  , args=(self,page_nr,row,im_pos))
             threads[i].start()
         
         self.TT.update("joining the threads")
@@ -718,7 +759,7 @@ def notes2paper(self):
         if len(ColumnWidths) > 0:
             for _idx_ , card_i in enumerate(cards):
                 if 'topic' in card_i:
-                    pass #don't resize
+                    #pass #don't resize
                     w,h = card_i["size"]
                     card_i['size'] = (self.a4page_w,h)
                 else:                    
