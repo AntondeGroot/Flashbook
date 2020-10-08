@@ -8,6 +8,7 @@ import json
 import math
 import os
 import _shared_operations.imageoperations as imop
+import Flashcard.userdata as userdata
 import PIL
 import PIL.Image
 import _logging.log_module as log
@@ -468,8 +469,8 @@ def DeleteCurrentCard(self):
     with open(str(Path(self.notesdir, self.filename)), 'w') as output: 
         for line in flines:
             output.write(line)    
-    set_stats(self)
-    save_stats(self)
+    userdata.set_stats(self)
+    userdata.save_stats(self)
     log.DEBUGLOG(debugmode=self.debugmode,msg=f"FC FUNCTIONS: card succesfully deleted")
     
 

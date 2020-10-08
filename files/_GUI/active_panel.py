@@ -8,7 +8,7 @@ import wx
 import Flashbook.events_mouse as evt_m
 import _GUI.historygraph as historygraph
 def SwitchPanel(self,n):
-    self.m_menubar1.EnableTop(2, False)#disable Flashcard menu
+    self.m_menubar1.EnableTop(1, False)#disable Flashcard menu
     self.m_menuHelp.Enable(True)
     self.panel0.Hide()
     self.panel1.Hide()

@@ -53,7 +53,7 @@ class Library(gui.MyFrame):
             self.listctrl.InsertColumn(0, "Topic")
             self.listctrl.SetColumnWidth(0,self.topicwidth)
             for i in range(columnnr):
-                self.listctrl.InsertColumn(i+1, f"Book title {i+1}")
+                self.listctrl.InsertColumn(i+1, f"Book Title {i+1}")
                 self.listctrl.SetColumnWidth(i+1,self.bookwidth)
         except:pass
         """resize ListCtrl"""

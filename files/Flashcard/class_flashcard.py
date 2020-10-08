@@ -82,7 +82,7 @@ class flashcard(gui.MyFrame):
                 panel.SwitchPanel(self,0) 
                 return None    
             else:
-                self.m_menubar1.EnableTop(2,True)
+                self.m_menubar1.EnableTop(1,True)
                 filepath = fileDialog.GetPaths()
                 m2.startprogram(self,filepath)
     # button events

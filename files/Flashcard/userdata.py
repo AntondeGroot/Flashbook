@@ -6,6 +6,7 @@ Created on Thu Aug 27 22:18:06 2020
 """
 import _logging.log_module as log
 import json
+from pathlib import Path
 
 def save_stats(self):
     """keep track of user progress data in a dict

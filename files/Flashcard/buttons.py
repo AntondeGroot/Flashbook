@@ -39,7 +39,7 @@ def buttonCorrect(self):
                     panel.SwitchPanel(self,0)
                     log.DEBUGLOG(debugmode=self.debugmode,msg=f"FC MODULE: flashcard program finished")
                     
-            self.m_menubar1.EnableTop(2,False)
+            self.m_menubar1.EnableTop(1,False)
             runprogram = False
             if hasattr(self,'bookname'): # to stop from pop-up windows from appearing after the test is done
                 delattr(self,'bookname')
@@ -85,7 +85,7 @@ def buttonWrong(self):
                 if dlg.ShowModal() == wx.ID_OK: 
                     panel.SwitchPanel(self,0)
                     log.DEBUGLOG(debugmode=self.debugmode,msg=f"FC MODULE: flashcard program finished")
-            self.m_menubar1.EnableTop(2,False)
+            self.m_menubar1.EnableTop(1,False)
             runprogram = False
             if hasattr(self,'bookname'): # to stop from pop-up windows from appearing after the test is done
                 delattr(self,'bookname')

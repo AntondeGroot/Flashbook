@@ -165,7 +165,7 @@ class MainFrame(settings,flashbook,flashcard,printer,filetransfer,menusettings,h
         
         self.library   = [None]
         
-        self.m_menubar1.EnableTop(2, False) # disable Flashcard menu
+        self.m_menubar1.EnableTop(1, False) # disable Flashcard menu
         self.Maximize(True) # open the app window maximized
         t_books = lambda self,delay : threading.Thread(target = p.checkBooks , args=(self, delay)).start()
         t_books(self, 0.1) 
