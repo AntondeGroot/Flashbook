@@ -191,9 +191,7 @@ def set_richtext(self):
                       "\t 2) You will need to manually fill in the IP address of the other device, you must do this on both devices.\n"
                       "\t 3) First click on 'synchronize' on one device.\n"
                        "\t 4) Then do the same on the other device within 60 seconds.\n" 
-                       "\t 3) It will only synchronize the PDF versions of the books, not the JPG version.\n"
-                       "\t    So After synching you will need to convert newly added books.\n"
-                       "\t 4) After completion you can safely continue using Flashbook.")
+                       "\t 5) After completion you can safely continue using Flashbook.")
     self.txt.EndFontSize()
     self.Layout()
 
