@@ -375,7 +375,7 @@ class RectangleDetection():
     def findRect(self,point):
         assert len(point) == 2 and type(point) == tuple
         NearestCoord = min(self.list, key=lambda x: self.distance(x, point))
-        return self.KeyFromValue(NearestCoord), NearestCoord
+        return self.KeyFromValue(NearestCoord)
 
 
 #ctypes:
@@ -477,6 +477,20 @@ class pdfpage(settings):
         self.tempdir = tempdir
         self.TT = TT
         self.debugmode = debug
+    def get_cardrect(self):
+        print(self.sorted_df)
+        
+        print(f"currentpage = {self.sorted_df[self.sorted_df['page']==self.page_nr]['rect']}")
+        
+        listofcarddict = self.sorted_df[self.sorted_df['page']==self.page_nr]['card'].tolist()
+        indexlist = [x['index'] for x in listofcarddict]
+        
+        print(f"currentcards = {indexlist}")
+        list_of_rects = self.sorted_df[self.sorted_df['page']==self.page_nr]['rect'].tolist()
+        
+        dictofrects = dict(zip(indexlist,list_of_rects))
+        
+        return dictofrects
     
     def add_margins(self,img):
         margin = 0.05

@@ -155,9 +155,11 @@ class printer(gui.MyFrame):
         
         pagerectdict = self.pdfpage.get_cardrect()
         self.RectangleDetection = m3.RectangleDetection(pagerectdict)
-        key = self.RectangleDetection.findRect((Wp,Hp))
-        index = key[0][1:]
-        trueindex = int(index)  
+        trueindex = self.RectangleDetection.findRect((Wp,Hp))
+        print(f"found index = {trueindex}")
+        
+        #index = key[0][1:]
+        #trueindex = int(index)  
         print(f"popup trueindex = {trueindex}")
         ltx.ShowPopupCard(self,trueindex)
         m3.notes2paper(self)     
