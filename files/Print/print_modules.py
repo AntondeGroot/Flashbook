@@ -163,6 +163,8 @@ class SortImages():
         self.images_w = [x[0] for x in sizelist]
         self.images_s = sizelist
         
+        print(f"nr cards to print is {len(cards)}\n"*20)
+        
         self.df_columnnames = ['page','row','rect','name','card','type']
         self.pdf_df = pd.DataFrame(columns=self.df_columnnames)
         
@@ -211,6 +213,7 @@ class SortImages():
         self.page_x = 0
         self.page_y = 0
         self.page_nr += 1
+        print(colored(f"CREATED NEW PAGE page_nr = {self.page_nr}",'red'))
         
     def getcardmode(self,path):
         if 'card_' in path:
@@ -266,6 +269,7 @@ class SortImages():
         k = 0
         self.line_nr = 0
         while self.cards: #continue until all pictures have been processed     
+            print(f"c = {len(self.cards)}")
             """Method:
             Cumsum the widths of images.
             Use bisect to look first instance where the cumsum is too large to fit on a page.
@@ -273,14 +277,15 @@ class SortImages():
             Recalculate cumsum and repeat."""            
             #combine horizontally until it doesn't fit on the page
             self.rowindex = bisect.bisect_left(CUMSUMLEN, self.a4page_w) 
-            
+            print(f"\n k ={k}\n")
             k += 1
             self.page_x = 0
             self.picindex = 0
-            if self.rowindex == 0: # image is too wide
+            if self.rowindex == 0: # image is too wide or only 1 image fits
                 log.DEBUGLOG(debugmode=self.debugmode, msg=f'PRINTMODULE: sortpages: too wide {CUMSUMLEN[0]}')
                 # rescale
                 w,h = self.images_s[0]    
+                print(f"hmax = 00, {k,w,self.a4page_w}")
                 if 'topic' not in self.cards[0]:
                     w_resized,h_resized = (int(self.a4page_w),int(self.a4page_w/w*h))
                 else:
@@ -299,12 +304,16 @@ class SortImages():
             else:   # image(s) are combined not too wide
                 log.DEBUGLOG(debugmode=self.debugmode, msg=f'PRINTMODULE: sortpages: images are not too wide')
                 h_max = max([x[1] for x in self.images_s[:self.rowindex]])
+                #check if a single image is too large
+                
+                
                 if self.page_y + h_max > self.a4page_h:
-                    
                     self.newpage()
+                    
                 # save data
                 pics = self.images_s[:self.rowindex]
                 for i,sizetuple in enumerate(pics):
+                    print(f"i = {i}, sizetuple = {sizetuple}")
                     self.picindex = i
                     
                     w_i,h_i = sizetuple 
@@ -315,6 +324,9 @@ class SortImages():
                 #self.removedata()
                 self.page_x  = 0
                 self.page_y += h_max
+                if self.page_y > self.a4page_h: #test
+                    self.newpage()
+                    
                 self.line_nr += 1
                 CUMSUMLEN = np.cumsum(self.images_w)  
             self.page_x = 0

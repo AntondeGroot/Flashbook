@@ -41,7 +41,6 @@ class flashbook(gui.MyFrame):
         self.m_bitmapScroll.SetBitmap(wx.Bitmap(wx.Image( 1,1 ))) # always empty bitmap, in case someone reruns the program
         self.m_CurrentPageFB.SetValue('')
         self.m_TotalPagesFB.SetValue('')                      
-        self.screenshotmode = False
         self.resetselection = False
         #short cuts
         
@@ -56,6 +55,7 @@ class flashbook(gui.MyFrame):
         self.BorderCoords   = []         
         self.colorlist      = self.bordercolors
         self.currentpage    = 1
+        self.isScreenshot   = False
         self.image          = []
         self.imagecopy      = []
         self.panel_pos      = (0,0)        
@@ -84,12 +84,13 @@ class flashbook(gui.MyFrame):
                 
     def m_btnScreenshotOnButtonClick( self, event ):
         self.BoolCropped = False # is image cropped
-        self.screenshotmode = True
+        
         if isinstance(self.currentpage,int):
             # If you keep pressing 'import screenshot' it should not override 
             # the backup with the string 'prtscr' 
             self.currentpage_backup = self.currentpage
-        self.currentpage = 'prtscr'
+        
+        self.isScreenshot = True
         screenshot.import_screenshot(self,event)
         
     def m_userInputOnEnterWindow( self, event ):
@@ -106,7 +107,7 @@ class flashbook(gui.MyFrame):
         self.Layout()
     
     def m_btnImportScreenshotOnButtonClick( self, event ):
-        self.screenshotmode = True
+        self.isScreenshot = True
         #load screenshot
         
         img = PIL.Image.open(str(Path(self.tempdir,"screenshot.png")))
@@ -139,11 +140,11 @@ class flashbook(gui.MyFrame):
 	
     # change page 
     def m_pageBackFBOnToolClicked( self, event ):
-        self.screenshotmode = False
+        self.isScreenshot = False
         page.previouspage(self,event)
 	
     def m_pageNextFBOnToolClicked( self, event ):
-        self.screenshotmode = False
+        self.isScreenshot = False
         page.nextpage(self,event)
     def m_pageUPOnToolClicked( self, event ):
         scroll.arrowscroll(self,event,'up')

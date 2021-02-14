@@ -8,6 +8,7 @@ import ast
 import pandas as pd
 import numpy as np
 filepath = r"C:\Users\Anton\AppData\Local\Flashbook\Borders\Java for Dummies (2018)_borders.pkl"
+filepath = r"C:\Users\Anton\AppData\Local\Flashbook\files\Java for Dummies (2018).pkl"
 
 df = pd.read_pickle(filepath)
 df = df.replace({np.nan: None})

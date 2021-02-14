@@ -69,7 +69,7 @@ def mousewheel(self,event):
     if scrollbar_exists:
         if topofpage and wheel_scrollsup:
             reset_scrollpos(self)
-            if not self.screenshotmode:
+            if not self.isScreenshot:
                 if self.currentpage != 1:
                     self.m_pageBackFBOnToolClicked(self)
                     scroll_end_of_page(scrollWin)
@@ -89,7 +89,7 @@ def mousewheel(self,event):
                 
         elif bottomofpage and wheel_scrollsdown:
             reset_scrollpos(self)
-            if not self.screenshotmode:
+            if not self.isScreenshot:
                 if self.currentpage < self.totalpages:
                     self.m_pageNextFBOnToolClicked(self)
                     scroll_begin_of_page(scrollWin)
