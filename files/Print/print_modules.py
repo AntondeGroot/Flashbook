@@ -179,7 +179,7 @@ class SortImages():
         #self.datadict2 = {}     # 
         #self.datadict3 = {}
         
-        self.rowindex = 0
+        self.colindex = 0
         self.debugmode = debug
         
     def sorted_df(self):
@@ -190,7 +190,7 @@ class SortImages():
         line = {}
         columns = self.df_columnnames
         for key, value in kwargs.items():
-            print(f"key,value = {key,value}")
+            #print(f"key,value = {key,value}")
             if key in columns:
                 line[key] = value
             elif key in columns and not value:
@@ -213,7 +213,8 @@ class SortImages():
         self.page_x = 0
         self.page_y = 0
         self.page_nr += 1
-        print(colored(f"CREATED NEW PAGE page_nr = {self.page_nr}",'red'))
+        print("#"*80)
+        print(colored(f"CREATED NEW PAGE page nr = {self.page_nr+1}",'red'))
         
     def getcardmode(self,path):
         if 'card_' in path:
@@ -265,23 +266,23 @@ class SortImages():
         
     def sortpages(self):
         CUMSUMLEN = np.cumsum(self.images_w) 
-        
+        print(colored(f"sortpages nr items = {len(CUMSUMLEN)}",'red'))
         k = 0
         self.line_nr = 0
         while self.cards: #continue until all pictures have been processed     
-            print(f"c = {len(self.cards)}")
+            
             """Method:
             Cumsum the widths of images.
             Use bisect to look first instance where the cumsum is too large to fit on a page.
             Store those pages in a list separately, eliminate those from the search.
             Recalculate cumsum and repeat."""            
             #combine horizontally until it doesn't fit on the page
-            self.rowindex = bisect.bisect_left(CUMSUMLEN, self.a4page_w) 
-            print(f"\n k ={k}\n")
+            self.colindex = bisect.bisect_left(CUMSUMLEN, self.a4page_w) 
+            print(colored(f"\nLOOP INDEX = {self.line_nr}, ROWINDEX = {self.page_y}\n",'red'))
             k += 1
             self.page_x = 0
             self.picindex = 0
-            if self.rowindex == 0: # image is too wide or only 1 image fits
+            if self.colindex == 0: # image is too wide or only 1 image fits
                 log.DEBUGLOG(debugmode=self.debugmode, msg=f'PRINTMODULE: sortpages: too wide {CUMSUMLEN[0]}')
                 # rescale
                 w,h = self.images_s[0]    
@@ -303,7 +304,7 @@ class SortImages():
                 CUMSUMLEN = np.cumsum(self.images_w)  
             else:   # image(s) are combined not too wide
                 log.DEBUGLOG(debugmode=self.debugmode, msg=f'PRINTMODULE: sortpages: images are not too wide')
-                h_max = max([x[1] for x in self.images_s[:self.rowindex]])
+                h_max = max([x[1] for x in self.images_s[:self.colindex]])
                 #check if a single image is too large
                 
                 
@@ -311,9 +312,9 @@ class SortImages():
                     self.newpage()
                     
                 # save data
-                pics = self.images_s[:self.rowindex]
+                pics = self.images_s[:self.colindex]
                 for i,sizetuple in enumerate(pics):
-                    print(f"i = {i}, sizetuple = {sizetuple}")
+                    print(f"card in column {i+1} has size {sizetuple}")
                     self.picindex = i
                     
                     w_i,h_i = sizetuple 
@@ -333,8 +334,8 @@ class SortImages():
             
         # finished
         log.DEBUGLOG(debugmode=self.debugmode, msg=f'PRINTMODULE: sortpages: finished sorting')
-        #return self.datadict, self.datadict2,self.datadict3
         return self.pdf_df
+    
 class pdfrow():
     def __init__(self):
         pass
@@ -518,7 +519,9 @@ class pdfpage(settings):
         self.page_nr = nr
         
     def getpageinfo(self):
-        return self.page_nr+1,self.page_max
+        print("&"*10)
+        print(f"currentpage {self.page_nr+1}, maxpage = {self.page_max+1}")
+        return self.page_nr+1,self.page_max+1 #for showing it to the user
     
     def setqaline(self,color = (0,0,0), thickness = 0 , visible = False):
         self.QAline_bool      = visible
@@ -572,8 +575,11 @@ class pdfpage(settings):
         
         
         if page_nr not in self.sorted_df['page']:
+            print(f"page_nr {page_nr} was not found in {self.sorted_df['page']}")
             #in case a user changed settings and there are fewer pages
             page_nr = max(self.sorted_df['page'])
+        else:
+            print(f"page_nr {page_nr} was found in {self.sorted_df['page']}")
         
         linenumbers = self.sorted_df[self.sorted_df['page']==page_nr].index.tolist()
         linenumbers = set(linenumbers)
@@ -694,7 +700,7 @@ class pdfpage(settings):
             self.page_nr = self.page_max - 1 
         
     def nextpage(self):
-        if self.page_nr != self.page_max-1:
+        if self.page_nr != self.page_max:
             self.page_nr += 1
         else:
             self.page_nr = 0
