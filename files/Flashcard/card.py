@@ -5,7 +5,10 @@ Created on Tue Aug 25 23:38:49 2020
 @author: Anton
 """
 import Flashcard.fc_functions as f2
+import Flashcard.userdata as userdata
 import _logging.log_module as log
+import wx
+from pathlib import Path
 
 def buttonPreviousCard(self):
     f2.clearbitmap(self)
@@ -23,8 +26,8 @@ def buttonPreviousCard(self):
         
         ## update stats
         if runprogram:
-            f2.set_stats(self)
-            f2.save_stats(self)    
+            userdata.set_stats(self)
+            userdata.save_stats(self)    
             f2.displaycard(self)
             f2.switch_bitmap(self)
         f2.SetScrollbars_fc(self)

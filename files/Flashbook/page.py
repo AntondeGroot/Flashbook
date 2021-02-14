@@ -19,7 +19,7 @@ def LoadPage(self):
     try:
         self.jpgdir = str(Path(self.booksdir, self.booknamepath, self.picnames[self.currentpage-1]))
         
-        if not self.screenshotmode:
+        if not self.isScreenshot:
             self.pageimage = PIL.Image.open(self.jpgdir)
             self.pageimagecopy = self.pageimage
         width, height = self.pageimage.size
@@ -49,8 +49,8 @@ def SavePageNr(self):
     
     path_file = Path(self.dirsettings, 'userdata_bookpages.txt')
     
-    if self.currentpage == 'prtscr' and hasattr(self,'currentpage_backup'):
-        self.currentpage = self.currentpage_backup
+    #if self.currentpage == 'prtscr' and hasattr(self,'currentpage_backup'):
+    #    self.currentpage = self.currentpage_backup
     
     if path_file.exists():
         with open(path_file,'r') as file:
@@ -85,7 +85,7 @@ def ShowPage_fb(self):
     image2 = wx.Image( width, height )
     image2.SetData( self.pageimage.tobytes() )
     self.m_bitmapScroll.SetBitmap(wx.Bitmap(image2))
-    if not self.screenshotmode:
+    if not self.isScreenshot:
         SavePageNr(self)
 
         
@@ -103,9 +103,8 @@ def switchpage(self,event):
     self.Layout()
     
 def nextpage(self,event):
-    if self.currentpage == 'prtscr':
-        self.currentpage = self.currentpage_backup
-    elif self.currentpage < self.totalpages:
+    
+    if (not self.isScreenshot) and self.currentpage < self.totalpages:
         self.currentpage += 1
     LoadPage(self)
     ShowPage_fb(self)
@@ -113,9 +112,8 @@ def nextpage(self,event):
     self.Layout()
     
 def previouspage(self,event):    
-    if self.currentpage == 'prtscr':
-        self.currentpage = self.currentpage_backup
-    elif self.currentpage > 1:
+    
+    if (not self.isScreenshot) and self.currentpage > 1:
         self.currentpage -= 1    
     LoadPage(self)
     ShowPage_fb(self)

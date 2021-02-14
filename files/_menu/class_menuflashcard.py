@@ -8,7 +8,7 @@ Created on Fri Jun 28 14:04:23 2019
 import _GUI.gui_flashbook as gui
 import wx
 import Flashcard.fc_functions as f2
-import Flashcard.fc_modules   as m2
+import Flashcard.card   as card
 import _shared_operations.latexoperations as ltx
 
 class flashcardmenu(gui.MyFrame):
@@ -45,4 +45,4 @@ class flashcardmenu(gui.MyFrame):
         self.Refresh()
            
     def m_menuPreviousCardOnMenuSelection( self, event ):
-        m2.buttonPreviousCard(self)
+        card.buttonPreviousCard(self)

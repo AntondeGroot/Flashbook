@@ -65,29 +65,6 @@ class MyFrame ( wx.Frame ):
 		
 		self.m_menubar1.Append( self.m_menuOpen, u"Folders" ) 
 		
-		self.m_menuBooks = wx.Menu()
-		self.m_menuItemConvert = wx.MenuItem( self.m_menuBooks, wx.ID_ANY, u"Convert Books", wx.EmptyString, wx.ITEM_NORMAL )
-		self.m_menuItemConvert.SetBitmap( data[1] )
-		self.m_menuBooks.Append( self.m_menuItemConvert )
-		
-		self.m_menuBooks.AppendSeparator()
-		
-		self.m_menuCombineBooks = wx.MenuItem( self.m_menuBooks, wx.ID_ANY, u"Combine booknotes", wx.EmptyString, wx.ITEM_NORMAL )
-		self.m_menuBooks.Append( self.m_menuCombineBooks )
-		
-		self.m_menuNewBook = wx.MenuItem( self.m_menuBooks, wx.ID_ANY, u"Create new topic", u"Only use this to create 'books'\nwhere you only use screenshots\nas the source material.", wx.ITEM_NORMAL )
-		self.m_menuBooks.Append( self.m_menuNewBook )
-		
-		self.m_menuAddPDF = wx.MenuItem( self.m_menuBooks, wx.ID_ANY, u"Add an extra PDF to a book", u"Only use this to create 'books'\nwhere you only use screenshots\nas the source material.", wx.ITEM_NORMAL )
-		self.m_menuBooks.Append( self.m_menuAddPDF )
-		
-		self.m_menuBooks.AppendSeparator()
-		
-		self.m_menuItemDelBook = wx.MenuItem( self.m_menuBooks, wx.ID_ANY, u"Delete book", wx.EmptyString, wx.ITEM_NORMAL )
-		self.m_menuBooks.Append( self.m_menuItemDelBook )
-		
-		self.m_menubar1.Append( self.m_menuBooks, u"Books" ) 
-		
 		self.m_menuCards = wx.Menu()
 		self.m_menuAddCard = wx.MenuItem( self.m_menuCards, wx.ID_ANY, u"Add card", wx.EmptyString, wx.ITEM_NORMAL )
 		self.m_menuCards.Append( self.m_menuAddCard )
@@ -1239,11 +1216,6 @@ class MyFrame ( wx.Frame ):
 		self.Bind( wx.EVT_MENU, self.m_menuItemJPGOnMenuSelection, id = self.m_menuItemJPG.GetId() )
 		self.Bind( wx.EVT_MENU, self.m_menuPDFfolderOnMenuSelection, id = self.m_menuPDFfolder.GetId() )
 		self.Bind( wx.EVT_MENU, self.m_menuItemBackToMainOnMenuSelection, id = self.m_menuItemBackToMain.GetId() )
-		self.Bind( wx.EVT_MENU, self.m_menuItemConvertOnMenuSelection, id = self.m_menuItemConvert.GetId() )
-		self.Bind( wx.EVT_MENU, self.m_menuCombineBooksOnMenuSelection, id = self.m_menuCombineBooks.GetId() )
-		self.Bind( wx.EVT_MENU, self.m_menuNewBookOnMenuSelection, id = self.m_menuNewBook.GetId() )
-		self.Bind( wx.EVT_MENU, self.m_menuAddPDFOnMenuSelection, id = self.m_menuAddPDF.GetId() )
-		self.Bind( wx.EVT_MENU, self.m_menuItemDelBookOnMenuSelection, id = self.m_menuItemDelBook.GetId() )
 		self.Bind( wx.EVT_MENU, self.m_menuAddCardOnMenuSelection, id = self.m_menuAddCard.GetId() )
 		self.Bind( wx.EVT_MENU, self.m_menuEditCardOnMenuSelection, id = self.m_menuEditCard.GetId() )
 		self.Bind( wx.EVT_MENU, self.m_menuPreviousCardOnMenuSelection, id = self.m_menuPreviousCard.GetId() )
@@ -1417,21 +1389,6 @@ class MyFrame ( wx.Frame ):
 		event.Skip()
 	
 	def m_menuItemBackToMainOnMenuSelection( self, event ):
-		event.Skip()
-	
-	def m_menuItemConvertOnMenuSelection( self, event ):
-		event.Skip()
-	
-	def m_menuCombineBooksOnMenuSelection( self, event ):
-		event.Skip()
-	
-	def m_menuNewBookOnMenuSelection( self, event ):
-		event.Skip()
-	
-	def m_menuAddPDFOnMenuSelection( self, event ):
-		event.Skip()
-	
-	def m_menuItemDelBookOnMenuSelection( self, event ):
 		event.Skip()
 	
 	def m_menuAddCardOnMenuSelection( self, event ):
@@ -2532,6 +2489,17 @@ class MyDialog9 ( wx.Dialog ):
 		
 		
 		fgSizer5.Add( bSizer113, 1, wx.EXPAND, 5 )
+		
+		self.m_staticText681 = wx.StaticText( self.m_panel32, wx.ID_ANY, u"Position", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_staticText681.Wrap( -1 )
+		self.m_staticText681.SetFont( wx.Font( 9, 74, 90, 90, False, "Verdana" ) )
+		
+		fgSizer5.Add( self.m_staticText681, 0, wx.ALL, 5 )
+		
+		self.m_textCtrlPos = wx.TextCtrl( self.m_panel32, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_textCtrlPos.SetMinSize( wx.Size( 200,-1 ) )
+		
+		fgSizer5.Add( self.m_textCtrlPos, 0, wx.ALL, 5 )
 		
 		
 		bSizer1111.Add( fgSizer5, 0, wx.EXPAND, 5 )

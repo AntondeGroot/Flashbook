@@ -99,11 +99,12 @@ def set_richtext(self):
     self.txt.EndBold()
     self.txt.WriteText("\t"*32+"(left click to close window)\n")
     self.txt.BeginFontSize(12)
-    self.txt.WriteText("\tThis will allow you to make flashcards while reading a book.\n")
+    self.txt.WriteText("\tThis will allow you to make flashcards while reading a book.\n\n")
+    self.txt.WriteText("\n")
     self.txt.WriteText(
-                      "\t1) Click in the menubar 'Folders/Book PDF folder' to open the correct Windows folder.\n"
-                        "\t2) Place the PDFs you would like to read there.\n"
-                        '\t3) Convert the PDFs to JPG files using the in-program PDF converter by clicking on "Books/Convert Books" in the menubar.\n\n'
+                      "\t1) Choose a topic, you can assign multiple books to a single topic.\n"
+                        "\t2) Add a PDF (or multiple).\n"
+                        '\t3) Flashbook will automatically convert the PDFs so they can be used\n\n'
                       '\tYou can now use Flashbook!\n\n\n\n' )
     self.txt.EndFontSize()
     self.txt.BeginBold()
@@ -190,9 +191,7 @@ def set_richtext(self):
                       "\t 2) You will need to manually fill in the IP address of the other device, you must do this on both devices.\n"
                       "\t 3) First click on 'synchronize' on one device.\n"
                        "\t 4) Then do the same on the other device within 60 seconds.\n" 
-                       "\t 3) It will only synchronize the PDF versions of the books, not the JPG version.\n"
-                       "\t    So After synching you will need to convert newly added books.\n"
-                       "\t 4) After completion you can safely continue using Flashbook.")
+                       "\t 5) After completion you can safely continue using Flashbook.")
     self.txt.EndFontSize()
     self.Layout()
 

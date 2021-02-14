@@ -165,7 +165,7 @@ class MainFrame(settings,flashbook,flashcard,printer,filetransfer,menusettings,h
         
         self.library   = [None]
         
-        self.m_menubar1.EnableTop(2, False) # disable Flashcard menu
+        self.m_menubar1.EnableTop(1, False) # disable Flashcard menu
         self.Maximize(True) # open the app window maximized
         t_books = lambda self,delay : threading.Thread(target = p.checkBooks , args=(self, delay)).start()
         t_books(self, 0.1) 
@@ -509,15 +509,10 @@ class Cardsdeck(settings):
         return self.cards
     
     def getoriginalcard_i(self,index,topic = False):
-        try:
-            #{'index': , 'question': {'pic': ..., 'text': ...}, 'questiontext': 'testttopic1', 'questionpic': ..., 'answer': None, 'answertext': '', 'answerpic': '', 'size': (987, 133), 'page': 999, 'pos': (0, 0), 'scale': 1.1581, 'border': (10, 10), 'id': 'k1Ht'}
-            
-            print(f"original card = {self.cards[index]}\n")
-            #return self.cardswithouttopic[index]
-            return self.df.iloc[index]
-        except KeyError:
-            print(f"original error card")
-            return None
+    
+        return self.df.iloc[index]
+        
+        
     def getcard_QATS(trueindex):
         line = self.df.iloc[index]
         question = line['question']

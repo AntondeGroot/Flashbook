@@ -36,7 +36,7 @@ def bitmapleftup(self,event):
         self.Borders.addtempborder(page = self.currentpage,idnr = idnr,border = self.BorderCoords)
             
         #crop image
-        if not self.screenshotmode:
+        if not self.isScreenshot:
             img = PIL.Image.open(self.jpgdir)
         else:
             img = self.pageimage
@@ -46,7 +46,7 @@ def bitmapleftup(self,event):
         FIND = True
         while FIND:
             rand_nr = str(randint(0, 9999)).rjust(4, "0") #The number must be of length 4: '0006' must be a possible result.
-            if not self.screenshotmode:
+            if not self.isScreenshot:
                 picname =  f"{self.bookname}_{self.currentpage}_{rand_nr}.jpg" 
             else:
                 picname =  f"{self.bookname}_prtscr_{rand_nr}.jpg"

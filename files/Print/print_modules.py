@@ -9,6 +9,7 @@ import ctypes
 import img2pdf
 import numpy as np
 from pathlib import Path
+import pandas as pd
 import os
 from PIL import Image
 import PIL
@@ -71,9 +72,9 @@ def createimage(self,card_i):
     #if 'answer' not in card_i:
     #    atext = ''
     #    apic = ''
-    print(f"card = {card_i}")
+    
     if 'topic' in card_i:
-        
+        print(f"topiccard = {card_i}")    
         topic = card_i['topic']
         #im = PIL.Image.new("RGB", (card_i['size']), 'white')
         #im = PIL.Image.new("RGB", (int(self.total_width*self.scale)+self.bordersize[0]*2 ,int(self.total_height*self.scale)+self.bordersize[1]*2+self.QAline_thickness), 'white')
@@ -84,7 +85,6 @@ def createimage(self,card_i):
             log.DEBUGLOG(debugmode=self.debugmode, msg=f'PRINTMODULE: createimage: topic card is created')
         return im
     else:
-        print("no topic card")
         d0 = card_i['pos'][0]+card_i['border'][0]
         d1 = card_i['pos'][1]+card_i['border'][1]
         
@@ -152,15 +152,22 @@ def createimage(self,card_i):
 class SortImages():
     import numpy as np
     import bisect
-    def __init__(self, library = None, page_width = 1240, page_height = 1754,debug = False):
+    def __init__(self, cards = None, page_size = (1240,1754),debug = False):
         sizelist = []
+        page_width, page_height = page_size
         
-        for i,card_i in enumerate(library):
+        for i,card_i in enumerate(cards):
             size = card_i['size']
             sizelist.append(size)
-        self.library = library    
+        self.cards = cards 
         self.images_w = [x[0] for x in sizelist]
         self.images_s = sizelist
+        
+        print(f"nr cards to print is {len(cards)}\n"*20)
+        
+        self.df_columnnames = ['page','row','rect','name','card','type']
+        self.pdf_df = pd.DataFrame(columns=self.df_columnnames)
+        
         
         self.a4page_w = page_width
         self.a4page_h = page_height
@@ -168,16 +175,47 @@ class SortImages():
         self.page_y  = 0
         self.page_nr = 0
         self.line_nr = 0
-        self.datadict = {}      # {pdfpagenr " {'q1': rect , ...}}
-        self.datadict2 = {}     # 
-        self.datadict3 = {}
-        self.datadict_path = {} # {"q1" : c://.../name}
-        self.rowindex = 0
+        #self.datadict = {}      # {pdfpagenr " {'q1': rect , ...}}
+        #self.datadict2 = {}     # 
+        #self.datadict3 = {}
+        
+        self.colindex = 0
         self.debugmode = debug
+        
+    def sorted_df(self):
+        self.pdf_df = self.pdf_df.reset_index(drop=True)
+        return self.pdf_df
+    
+    def insert_data(self,**kwargs):
+        line = {}
+        columns = self.df_columnnames
+        for key, value in kwargs.items():
+            #print(f"key,value = {key,value}")
+            if key in columns:
+                line[key] = value
+            elif key in columns and not value:
+                line[key] = None
+            elif key not in columns:
+                print(f"argument '{key}' is not a column name of : {self.df_columnnames}")
+        
+        df2 = self.pdf_df.copy()
+                
+        # append to dataframe
+        dfline = pd.DataFrame() #empty dataframe
+        for key, value in line.items():
+            dfline[key] = [value]            
+        df2 = df2.append(dfline, ignore_index=False,sort = False)
+        df2 = df2.reset_index(drop=True)
+        #save in variable            
+        self.pdf_df = df2            
+                
     def newpage(self):
         self.page_x = 0
         self.page_y = 0
         self.page_nr += 1
+        print("#"*80)
+        print(colored(f"CREATED NEW PAGE page nr = {self.page_nr+1}",'red'))
+        
     def getcardmode(self,path):
         if 'card_' in path:
             _idx = path.find('card_')
@@ -211,55 +249,49 @@ class SortImages():
                     val_list = [val]
                     base = {subkey: val_list}
                     self.datadict2[key].update(base)
-        if 'topic' in self.library[0]:
-            cardname = 't'+str(self.library[0]['index']) #t0/q0 
+        if 'topic' in self.cards[0]:
+            cardname = 't'+str(self.cards[0]['index']) #t0/q0 
         else:
-            cardname = 'q'+str(self.library[0]['index']) #t0/q0 
+            cardname = 'q'+str(self.cards[0]['index']) #t0/q0 
         
-        w,h = self.library[0]['size']
+        w,h = self.cards[0]['size']
         Rect = (self.page_x, self.page_y, w, h)
-        dict_ = {cardname : Rect}
-        dict_3 = {cardname: self.library[0]}
-        pagekey = self.pdfpagename()
-        
-        if pagekey not in  self.datadict.keys():
-            self.datadict[pagekey] = dict_
-        else:
-            self.datadict[pagekey].update(dict_)
             
-        dictdictlist(self,pagekey,self.line_nr,cardname)    
-        
-        if pagekey not in  self.datadict3.keys():
-            self.datadict3[pagekey] = dict_3
-        else:
-            self.datadict3[pagekey].update(dict_3)
+        self.insert_data(page=self.page_nr,row=self.line_nr,rect = Rect,name=cardname,card=self.cards[0])
+            
     def removedata(self):
-        self.images_w = self.images_w[1:]                
-        self.images_s = self.images_s[1:]
-        self.library  = self.library[1:]
+        self.images_w.pop(0)              
+        self.images_s.pop(0)
+        self.cards.pop(0)
         
     def sortpages(self):
         CUMSUMLEN = np.cumsum(self.images_w) 
-        
+        print(colored(f"sortpages nr items = {len(CUMSUMLEN)}",'red'))
         k = 0
         self.line_nr = 0
-        while self.images_w: #continue until all pictures have been processed     
+        while self.cards: #continue until all pictures have been processed     
+            
             """Method:
             Cumsum the widths of images.
             Use bisect to look first instance where the cumsum is too large to fit on a page.
             Store those pages in a list separately, eliminate those from the search.
             Recalculate cumsum and repeat."""            
             #combine horizontally until it doesn't fit on the page
-            self.rowindex = bisect.bisect_left(CUMSUMLEN, self.a4page_w) 
-            
+            self.colindex = bisect.bisect_left(CUMSUMLEN, self.a4page_w) 
+            print(colored(f"\nLOOP INDEX = {self.line_nr}, ROWINDEX = {self.page_y}\n",'red'))
             k += 1
             self.page_x = 0
             self.picindex = 0
-            if self.rowindex == 0: # image is too wide
+            if self.colindex == 0: # image is too wide or only 1 image fits
                 log.DEBUGLOG(debugmode=self.debugmode, msg=f'PRINTMODULE: sortpages: too wide {CUMSUMLEN[0]}')
                 # rescale
                 w,h = self.images_s[0]    
-                w_resized,h_resized = (int(self.a4page_w),int(self.a4page_w/w*h))
+                print(f"hmax = 00, {k,w,self.a4page_w}")
+                if 'topic' not in self.cards[0]:
+                    w_resized,h_resized = (int(self.a4page_w),int(self.a4page_w/w*h))
+                else:
+                    print(f"topic card = {self.cards[0]}")
+                    w_resized, h_resized = w,h
                 # does it fit on the page?
                 if self.page_y + h_resized > self.a4page_h: 
                     self.newpage()
@@ -269,17 +301,20 @@ class SortImages():
                 self.page_x = 0
                 self.page_y += h_resized
                 self.line_nr += 1
-                
                 CUMSUMLEN = np.cumsum(self.images_w)  
             else:   # image(s) are combined not too wide
                 log.DEBUGLOG(debugmode=self.debugmode, msg=f'PRINTMODULE: sortpages: images are not too wide')
-                h_max = max([x[1] for x in self.images_s[:self.rowindex]])
+                h_max = max([x[1] for x in self.images_s[:self.colindex]])
+                #check if a single image is too large
+                
+                
                 if self.page_y + h_max > self.a4page_h:
-                    
                     self.newpage()
+                    
                 # save data
-                pics = self.images_s[:self.rowindex]
+                pics = self.images_s[:self.colindex]
                 for i,sizetuple in enumerate(pics):
+                    print(f"card in column {i+1} has size {sizetuple}")
                     self.picindex = i
                     
                     w_i,h_i = sizetuple 
@@ -290,14 +325,17 @@ class SortImages():
                 #self.removedata()
                 self.page_x  = 0
                 self.page_y += h_max
+                if self.page_y > self.a4page_h: #test
+                    self.newpage()
+                    
                 self.line_nr += 1
                 CUMSUMLEN = np.cumsum(self.images_w)  
             self.page_x = 0
             
         # finished
         log.DEBUGLOG(debugmode=self.debugmode, msg=f'PRINTMODULE: sortpages: finished sorting')
-        return self.datadict, self.datadict2,self.datadict3
-
+        return self.pdf_df
+    
 class pdfrow():
     def __init__(self):
         pass
@@ -350,7 +388,7 @@ class RectangleDetection():
     def findRect(self,point):
         assert len(point) == 2 and type(point) == tuple
         NearestCoord = min(self.list, key=lambda x: self.distance(x, point))
-        return self.KeyFromValue(NearestCoord), NearestCoord
+        return self.KeyFromValue(NearestCoord)
 
 
 #ctypes:
@@ -430,18 +468,18 @@ def print_preview(self):
     
     
 class pdfpage(settings):
-    def __init__(self,pagenr,DICT_page_card_rect, DICT_page_line_card,dict3,a4page_w,a4page_h,tempdir = None,bookname = '', TT = '',debug = False):
+    def __init__(self,pagenr, sorted_df = None ,a4pagesize = (1240,1754),tempdir = None,bookname = '', TT = '',debug = False):
         settings.__init__(self)
         self.LaTeXfontsize = 20
-        self.bookname = bookname
-        self.DICT_page_card_rect = DICT_page_card_rect #{pdfpage_nr: {cardname : Rect}}
-        self.DICT_page_line_card = DICT_page_line_card #{pdfpage_nr: {self.line_nr:cardname}} 
-        self.dict3 = dict3 #{pdfpage_nr: {cardname: ]}}
         
-        self.a4page_w = a4page_w
-        self.a4page_h = a4page_h
+        self.bookname = bookname
+        self.sorted_df = sorted_df
+        
+        
+        
+        self.a4page_w,self.a4page_h = a4pagesize
         self.page_nr  = pagenr
-        self.page_max = len(DICT_page_card_rect.keys())
+        self.page_max = max(sorted_df['page'])
         self.vertline_bool = False
         self.horiline_bool = False
         self.vertline_thickness = 0
@@ -452,10 +490,20 @@ class pdfpage(settings):
         self.tempdir = tempdir
         self.TT = TT
         self.debugmode = debug
-        
     def get_cardrect(self):
-        key = self.pagekey()
-        return self.DICT_page_card_rect[key]
+        print(self.sorted_df)
+        
+        print(f"currentpage = {self.sorted_df[self.sorted_df['page']==self.page_nr]['rect']}")
+        
+        listofcarddict = self.sorted_df[self.sorted_df['page']==self.page_nr]['card'].tolist()
+        indexlist = [x['index'] for x in listofcarddict]
+        
+        print(f"currentcards = {indexlist}")
+        list_of_rects = self.sorted_df[self.sorted_df['page']==self.page_nr]['rect'].tolist()
+        
+        dictofrects = dict(zip(indexlist,list_of_rects))
+        
+        return dictofrects
     
     def add_margins(self,img):
         margin = 0.05
@@ -471,7 +519,9 @@ class pdfpage(settings):
         self.page_nr = nr
         
     def getpageinfo(self):
-        return self.page_nr+1,self.page_max
+        print("&"*10)
+        print(f"currentpage {self.page_nr+1}, maxpage = {self.page_max+1}")
+        return self.page_nr+1,self.page_max+1 #for showing it to the user
     
     def setqaline(self,color = (0,0,0), thickness = 0 , visible = False):
         self.QAline_bool      = visible
@@ -494,9 +544,9 @@ class pdfpage(settings):
         def threadfunction(self,i,pdflist):
             path = os.path.join(self.tempdir,f"temporary_pdfpage{i}.png")
             self.page_nr = i
-            im = self.loadpage()
+            im = self.loadpage(self.page_nr)
             w,h = im.size
-            #scale = 0.5 #this determines the resolution / dpi of the final pdf page
+            #this scale determines the resolution / dpi of the final pdf page
             scale = 1
             im = im.resize((int(w*scale), int(h*scale)), PIL.Image.ANTIALIAS)
             im.save(path)
@@ -506,68 +556,95 @@ class pdfpage(settings):
         self.backuppage = self.page_nr
         pdflist = [] #contains all images
         if self.tempdir:
-            threads = [None] * len(range(self.page_max))        
-            pdflist = [None] * len(range(self.page_max))        
-            for i in range(self.page_max):
-                
+            ### page_max is zero indexed. range(3) creates only 3 pages whereas it means there are 4 pages to be created
+            threads = [None] * len(range(self.page_max+1))        
+            pdflist = [None] * len(range(self.page_max+1))        
+            for i in range(self.page_max+1):
+                print(colored(f"create pdf page {i}",'red'))
                 threads[i] = threading.Thread(target = threadfunction  , args=(self,i,pdflist))
                 threads[i].start()
+                
                                 
             for i,thread in enumerate(threads):
                 thread.join()
         self.page_nr = self.backuppage
+        print(f"pdflist = {pdflist}")
         return pdflist
         
-    def loadpage(self):
-        key = f"pdfpage{self.page_nr}"
-        try:
-            linenumbers = self.DICT_page_line_card[key].keys()
-        except KeyError:
-            self.page_nr -= 1
-            key = f"pdfpage{self.page_nr}" #the current page no longer exists, look a page before it
-            linenumbers = self.DICT_page_line_card[key].keys()
-            
+    def loadpage(self,page_nr):
+        
+        
+        
+        if page_nr not in self.sorted_df['page']:
+            print(f"page_nr {page_nr} was not found in {self.sorted_df['page']}")
+            #in case a user changed settings and there are fewer pages
+            page_nr = max(self.sorted_df['page'])
+        else:
+            print(f"page_nr {page_nr} was found in {self.sorted_df['page']}")
+        
+        linenumbers = self.sorted_df[self.sorted_df['page']==page_nr].index.tolist()
+        linenumbers = set(linenumbers)
         imcanvas = im = PIL.Image.new("RGB", (self.a4page_w ,self.a4page_h), 'white')        
         
         threads = [None]*len(linenumbers)
         
         im_pos = [] #im,pos
         self.TT.update("create images thread") 
-        for i,line in enumerate(linenumbers):
-            def threadfunction(self,line,key,im_pos):
+        
+        df = self.sorted_df
+        rowsonpage = df['row'].loc[df['page']==page_nr]
+
+        rowlist = df['row'].tolist()
+        pagelist = df['page'].tolist()
+        
+        for i,row in enumerate(rowsonpage):
+            #rows = df.loc[df['page']==page_nr].loc[df['row']==row]
+            
+            #cardsinrow_i = list(rows['card'])#df['card'].loc[df['page']==page_nr].loc[df['row']==row].tolist()
+            #rects = list(rows['rect'])#df['rect'].loc[df['page']==page_nr].loc[df['row']==row].tolist()
+            
+            #def threadfunction(self,cards,rects,im_pos):
+            def threadfunction(self,page_nr,row,im_pos):
+                
+                #indices = (df.page.values == page_nr) * (df.row.values == row)
+                #indices = [i for i,bool_ in enumerate(indices) if bool_]#list of T,F to indexlist where True
+                #rows = df.at[indices]
+                
+                col_rows = df.row.values
+                page = df.page.values
+                
+                # Note: this is a view to a slice of df
+                rows = df.loc[
+                    (page == page_nr) &
+                    (col_rows == row)
+                    ]
+                
+                
+                #print(f"rows = {rows}")
+                #rows = df.loc[df['page']==page_nr].loc[df['row']==row]
+                
+                
+                cardsinrow_i = list(rows['card'])#df['card'].loc[df['page']==page_nr].loc[df['row']==row].tolist()
+                rects = list(rows['rect'])#df['rect'].loc[df['page']==page_nr].loc[df['row']==row].tolist()
                 xpos = [0]
                 ypos = [0]
                 linerect = (0,0,0,0)
-                #self.TT.update("single image created") 
-                cards = self.DICT_page_line_card[key][line]
-                for cardname in cards:
-                    card_i = self.dict3[key][cardname]
-                    im = createimage(self,card_i)
+                
+                
+                
+                for i,card in enumerate(cardsinrow_i):         
+                    im = createimage(self,card)
                     
-                    x,y,w,h = self.DICT_page_card_rect[key][cardname]
+                    x,y,w,h = rects[i]
                     im_pos.append({'im':im,'pos':(x,y)})
-                    #y += self.horiline_thickness
+                    
                     xpos += [x]
                     xpos += [x+w]
                     ypos += [y]
                     ypos += [y+h]
-                    linerect = (min(linerect[0],x),max(linerect[1],y),linerect[2]+w,max(linerect[3],h))
-                    ##try:
-                    ##    imcanvas.paste(im,(x,y))
-                    ##except:
-                    ##   error message
-                    """
-                    if self.QAline_bool:
-                        #both the program should have the QAline enabled AND the card should contain both Question and Answer
-                        
-                        imline = PIL.Image.new("RGB", (w, self.QAline_thickness), self.QAline_color)
-                        im_pos.append({'im':im,'pos':(x,y)})
-                        #pos = (x,y+...)
-                        #im_pos.append({'im':im,'pos':pos})
-                    """
-                    
+                    linerect = (min(linerect[0],x),max(linerect[1],y),linerect[2]+w,max(linerect[3],h))                    
                 
-                if len([x for x in cards if 't' in x]) == 0: #if it does not contain a topic card 'ti' 
+                if not 'topic' in cardsinrow_i[0]:#not [x for x in cardsinrow_i if 't' in x]: #if it does not contain a topic card 'ti' 
                     if self.vertline_bool:
                         for x_i in xpos:
                             im = PIL.Image.new("RGB", (int(self.vertline_thickness), int(linerect[3])), self.vertline_color) 
@@ -575,11 +652,9 @@ class pdfpage(settings):
                             im_pos.append({'im':im,'pos':pos})
                
                     if self.horiline_bool:
-                        #prints line at EVERY cards' bottom line across the whole page
-                        if self.vertline_bool:
-                            d = self.vertline_thickness
-                        else:
-                            d = 0
+                        #prints line at EVERY cards' bottom line across the whole row
+                        d = self.vertline_thickness * self.vertline_bool # *bool resulst in either 0 or VertlineThickness
+                        
                         #imcanvas.paste(PIL.Image.new("RGB", (linerect[2]+d ,self.horiline_thickness), self.horiline_color), (linerect[0],linerect[1]))
                         im = PIL.Image.new("RGB", (linerect[2]+d ,self.horiline_thickness), self.horiline_color)
                         pos = (linerect[0],linerect[1])
@@ -588,12 +663,27 @@ class pdfpage(settings):
                         im = PIL.Image.new("RGB", (linerect[2]+d ,self.horiline_thickness), self.horiline_color)
                         pos = (linerect[0],linerect[1]+linerect[3])
                         im_pos.append({'im':im,'pos':pos})
-                
-            threads[i] = threading.Thread(target = threadfunction  , args=(self,line,key,im_pos))
+                else:#
+                    #prints line at EVERY cards' bottom line across the whole row
+                    d = self.vertline_thickness * self.vertline_bool # *bool resulst in either 0 or VertlineThickness
+                    
+                    #imcanvas.paste(PIL.Image.new("RGB", (linerect[2]+d ,self.horiline_thickness), self.horiline_color), (linerect[0],linerect[1]))
+                    im = PIL.Image.new("RGB", (linerect[2]+d ,self.horiline_thickness), self.horiline_color)
+                    pos = (linerect[0],linerect[1])
+                    im_pos.append({'im':im,'pos':pos})
+                    #imcanvas.paste(PIL.Image.new("RGB", (linerect[2]+d ,self.horiline_thickness), self.horiline_color), (linerect[0],linerect[1]+linerect[3]))
+                    im = PIL.Image.new("RGB", (linerect[2]+d ,self.horiline_thickness), self.horiline_color)
+                    pos = (linerect[0],linerect[1]+linerect[3])
+                    im_pos.append({'im':im,'pos':pos})
+            #threadfunction(self,cardsinrow_i,rects,im_pos)    
+            #threads[i] = threading.Thread(target = threadfunction  , args=(self,cardsinrow_i,rects,im_pos))
+            threads[i] = threading.Thread(target = threadfunction  , args=(self,page_nr,row,im_pos))
             threads[i].start()
-            
+        
+        self.TT.update("joining the threads")
         for i,thread in enumerate(threads):
             thread.join()
+            
         self.TT.update("pasting the images together")
         for i,item in enumerate(im_pos):
             im = item['im']
@@ -611,7 +701,7 @@ class pdfpage(settings):
             self.page_nr = self.page_max - 1 
         
     def nextpage(self):
-        if self.page_nr != self.page_max-1:
+        if self.page_nr != self.page_max:
             self.page_nr += 1
         else:
             self.page_nr = 0
@@ -701,8 +791,8 @@ def notes2paper(self):
         ColumnWidths = [int(col/100*self.a4page_w) for col in columns if col != 0]                       
         if len(ColumnWidths) > 0:
             for _idx_ , card_i in enumerate(cards):
-                if 't' in card_i:
-                    pass #don't resize
+                if 'topic' in card_i:
+                    #pass #don't resize
                     w,h = card_i["size"]
                     card_i['size'] = (self.a4page_w,h)
                 else:                    
@@ -737,9 +827,8 @@ def notes2paper(self):
         delattr(self,'SortImages')
     
        
-    self.SortImages = SortImages(library = cards, page_width = self.a4page_w, page_height = self.a4page_h,debug = self.debugmode)
-    DICT_page_card_rect, DICT_page_line_card, dct3 = self.SortImages.sortpages()
-    
+    self.SortImages = SortImages(cards = cards, page_size = (self.a4page_w,self.a4page_h))
+    self.SortImages.sortpages()
     
     
     
@@ -750,12 +839,12 @@ def notes2paper(self):
         pagenr = self.pdfpage.getpage()
     else:
         pagenr = 0
-    self.pdfpage = pdfpage(pagenr, DICT_page_card_rect, DICT_page_line_card, 
-                           dct3,self.a4page_w,self.a4page_h,tempdir = self.tempdir,bookname = self.bookname, TT = TT,debug = self.debugmode)
+    self.pdfpage = pdfpage(pagenr, sorted_df = self.SortImages.sorted_df()
+                                    ,a4pagesize = (self.a4page_w,self.a4page_h),tempdir = self.tempdir,bookname = self.bookname, TT = TT,debug = self.debugmode)
     self.pdfpage.setqaline(  color = self.QAline_color   , thickness = self.QAline_thickness   , visible = self.QAline_bool  )
     self.pdfpage.setvertline(color = self.vertline_color , thickness = self.vertline_thickness , visible = self.vertline_bool)
     self.pdfpage.sethoriline(color = self.horiline_color , thickness = self.horiline_thickness , visible = self.horiline_bool)
-    pdfimage_i = self.pdfpage.loadpage()
+    pdfimage_i = self.pdfpage.loadpage(pagenr)
     
     #%% display result
     TT.update("get panel size")
@@ -792,7 +881,6 @@ def notes2paper(self):
         try:
             imagelist = self.pdfpage.createpdf()
             with open(filename, "wb") as file:
-                #file.write(img2pdf.convert([im for im in imagelist if im.endswith(".png")]))
                 file.write(img2pdf.convert([im for im in imagelist]))
             file.close()
             self.printsuccessful = True
