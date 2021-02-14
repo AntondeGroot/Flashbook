@@ -556,10 +556,11 @@ class pdfpage(settings):
         self.backuppage = self.page_nr
         pdflist = [] #contains all images
         if self.tempdir:
-            threads = [None] * len(range(self.page_max))        
-            pdflist = [None] * len(range(self.page_max))        
-            for i in range(self.page_max):
-                
+            ### page_max is zero indexed. range(3) creates only 3 pages whereas it means there are 4 pages to be created
+            threads = [None] * len(range(self.page_max+1))        
+            pdflist = [None] * len(range(self.page_max+1))        
+            for i in range(self.page_max+1):
+                print(colored(f"create pdf page {i}",'red'))
                 threads[i] = threading.Thread(target = threadfunction  , args=(self,i,pdflist))
                 threads[i].start()
                 
